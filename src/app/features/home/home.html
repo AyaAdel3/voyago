@@ -1,0 +1,99 @@
+<div class="bg-[#1a1f2e] min-h-screen text-white px-4 py-6">
+
+ 
+  <!-- Offers Section -->
+  <section class="mb-8">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="text-lg font-semibold">Offers</h2>
+      <div class="flex gap-2 text-gray-400 text-sm cursor-pointer">❮ ❯</div>
+    </div>
+    <div class="flex gap-4 overflow-x-auto pb-2">
+      @for (offer of offers; track offer.title) {
+        <div class="relative min-w-[200px] h-[140px] rounded-xl overflow-hidden flex-shrink-0">
+          <img [src]="offer.image" alt="offer" class="w-full h-full object-cover" />
+          <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-3">
+            <p class="text-white text-sm font-bold mb-2">{{ offer.title }}</p>
+            <button class="bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full w-fit">
+              BOOK NOW
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Recommended Section -->
+  <section class="mb-8">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="text-lg font-semibold">
+        Recommended in fayoum
+        <span class="text-red-500 text-xs ml-1">●</span>
+      </h2>
+      <div class="flex gap-2 text-gray-400 text-sm cursor-pointer">❮ ❯</div>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      @for (item of recommended; track item.name) {
+        <div class="bg-[#2a2f3e] rounded-xl overflow-hidden w-[220px]">
+          <div class="relative w-full">
+            <img [src]="item.image" alt="place" class="w-full h-[120px] object-cover" />
+            <button
+              (click)="toggleLike(item)"
+              class="absolute top-2 right-2 bg-white/80 rounded-full p-1 text-sm"
+            >
+              {{ item.liked ? '❤️' : '🤍' }}
+            </button>
+          </div>
+          <div class="p-2">
+            <p class="text-white text-xs font-semibold">{{ item.name }}</p>
+            <p class="text-gray-400 text-xs">
+              {{ item.price }}
+              <span class="text-yellow-400 ml-1">⭐ {{ item.rating }}</span>
+            </p>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Available This Week Section -->
+  <section class="mb-24">
+    <div class="flex justify-between items-center mb-3">
+      <h2 class="text-lg font-semibold">Available this week</h2>
+      <div class="flex gap-2 text-gray-400 text-sm cursor-pointer">❮ ❯</div>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      @for (item of availableThisWeek; track item.name) {
+        <div class="bg-[#2a2f3e] rounded-xl overflow-hidden w-[220px]">
+          <div class="relative w-full">
+            <img [src]="item.image" alt="place" class="w-full h-[120px] object-cover" />
+            <button
+              (click)="toggleLike(item)"
+              class="absolute top-2 right-2 bg-white/80 rounded-full p-1 text-sm"
+            >
+              {{ item.liked ? '❤️' : '🤍' }}
+            </button>
+          </div>
+          <div class="p-2">
+            <p class="text-white text-xs font-semibold">{{ item.name }}</p>
+            <p class="text-gray-400 text-xs">
+              {{ item.price }}
+              <span class="text-yellow-400 ml-1">⭐ {{ item.rating }}</span>
+            </p>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Floating Emergency Button -->
+  <div class="fixed bottom-6 right-4 flex items-center gap-2 z-50">
+    <div class="bg-yellow-400 text-black text-xs rounded-xl px-3 py-2 shadow-lg">
+      <p class="font-bold">Emergency Assistance</p>
+      <p>Need immediate help? Click here</p>
+    </div>
+    <div class="bg-blue-600 rounded-full w-12 h-12 flex items-center justify-center text-2xl shadow-lg cursor-pointer">
+      👩‍💼
+    </div>
+  </div>
+
+</div>
