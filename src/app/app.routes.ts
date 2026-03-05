@@ -46,24 +46,24 @@ export const routes: Routes = [
       { path: 'home', component: Home, title: 'Homepage' },
 
       // Hotel Routes
-      { path: 'hotel', component: HotelCard, title: 'Hotels' },
+      { path: 'Hotels', component: HotelCard, title: 'Hotels' },
       { path: 'hotel/details/:id', component: HotelDetails, title: 'Hotel Details' },
 
       // Restaurant Routes
-      { path: 'restaurant', component: RestaurantCard, title: 'Restaurants' },
+      { path: 'Restaurants', component: RestaurantCard, title: 'Restaurants' },
       { path: 'restaurant/details/:id', component: RestaurantDetails, title: 'Restaurant Details' },
       { path: 'restaurant/reservation/:id', component: Reservation, title: 'Restaurant Reservation' },
 
       // TourGuide Routes
-      { path: 'tour-guide', component: TourGuideCard, title: 'Tour Guides' },
+      { path: 'Tour Guide', component: TourGuideCard, title: 'Tour Guides' },
       { path: 'tour-guide/details/:id', component: TourGuideDetails, title: 'Tour Guide Details' },
 
       // TouristAttraction Routes
-      { path: 'tourist-attraction', component: TouristAttractionCard, title: 'Tourist Attractions' },
+      { path: 'Attractions', component: TouristAttractionCard, title: 'Tourist Attractions' },
       { path: 'tourist-attraction/details/:id', component: TouristAttractionDetails, title: 'Tourist Attraction Details' },
 
       // BudgetPlanning Routes
-      { path: 'budget-planning', component: BudgetMain, title: 'Budget Planning' },
+      { path: 'Budget Planning', component: BudgetMain, title: 'Budget Planning' },
       { path: 'budget-planning/plan', component: Plan, title: 'Create Plan' },
       { path: 'budget-planning/details/:id', component: BudgetDetails, title: 'Budget Details' },
 

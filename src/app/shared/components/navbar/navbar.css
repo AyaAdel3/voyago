@@ -1,0 +1,201 @@
+/* ══════════════════════════════════════
+   VOYAGO — Navbar Component Styles
+   navbar.css
+══════════════════════════════════════ */
+
+/* ── Host ── */
+:host {
+  display: block;
+  width: 100%;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ── Wrapper ── */
+.navbar {
+  width: 100%;
+  background: #0d1526;
+  padding: 0 52px;
+  animation: slideDown .45s cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════
+   ROW 1 — Logo + Auth
+══════════════════════════════════════ */
+.row-top {
+  padding: 16px 0 12px;
+}
+
+.logo-text {
+
+  color: #fff;
+}
+
+/* Dark Mode Pill */
+.dark-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, .07);
+  border: 1px solid rgba(255, 255, 255, .13);
+  border-radius: 999px;
+  padding: 4px 9px 4px 6px;
+  cursor: pointer;
+  transition: background .2s;
+  margin-left: 4px;
+}
+
+.dark-pill:hover {
+  background: rgba(255, 255, 255, .14);
+}
+
+.pill-label {
+  font-family: 'Outfit', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  color: #c8d6e8;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Auth Group */
+.auth-group {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.become-host {
+  font-size: 14px;
+  font-weight: 400;
+  color: #c8d6e8;
+  text-decoration: none;
+  transition: color .2s;
+}
+
+.become-host:hover {
+  color: #fff;
+}
+
+.btn-outline {
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, .75);
+  border-radius: 999px;
+  padding: 7px 22px;
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
+}
+
+.btn-outline:hover {
+  background: #fff;
+  color: #0d1526;
+  border-color: #fff;
+}
+
+/* ══════════════════════════════════════
+   ROW 2 — Nav Links
+══════════════════════════════════════ */
+.row-links {
+  gap: 44px;
+  padding: 15px 0 13px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: #c8d6e8;
+  text-decoration: none;
+  padding-bottom: 3px;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+  white-space: nowrap;
+}
+
+.nav-link svg {
+  flex-shrink: 0;
+  opacity: .9;
+}
+
+.nav-link:hover {
+  color: #fff;
+}
+
+/* Active state — applied via routerLinkActive */
+.nav-link.active-link {
+  color: #fff;
+  border-bottom-color: #f5c842;
+}
+
+/* ══════════════════════════════════════
+   ROW 3 — Search
+══════════════════════════════════════ */
+.row-search {
+  display: flex;
+  justify-content: center;
+  padding: 18px 0 20px;
+}
+
+.search-wrap {
+  position: relative;
+  width: 510px;
+}
+
+.search-input {
+  width: 100%;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, .22);
+  border-radius: 999px;
+  padding: 12px 58px 12px 26px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  color: #fff;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.search-input::placeholder {
+  color: #6b84a0;
+}
+
+.search-input:focus {
+  border-color: rgba(255, 255, 255, .45);
+  box-shadow: 0 0 0 3px rgba(245, 200, 66, .07);
+}
+
+.search-btn {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f5c842;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .2s, transform .15s;
+  box-shadow: 0 2px 12px rgba(245, 200, 66, .35);
+}
+
+.search-btn:hover {
+  background: #ffd95a;
+  transform: translateY(-50%) scale(1.07);
+}
+
+.search-btn:active {
+  transform: translateY(-50%) scale(.96);
+}

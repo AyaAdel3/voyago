@@ -1,0 +1,38 @@
+/* ══════════════════════════════════════
+   VOYAGO — Offers Slider Component
+   offers-slider.css
+══════════════════════════════════════ */
+
+:host {
+  display: block;
+  width: 100%;
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ── Slider viewport clips overflow ── */
+.slider-viewport {
+  width: 100%;
+}
+
+/* ── Each card glow on hover ── */
+.offer-card:hover .card-border {
+  border-color: rgba(99, 155, 255, 0.75);
+  box-shadow: 0 0 18px rgba(59, 130, 246, 0.3);
+}
+
+/* ── Dots ── */
+.dot-active {
+  width: 20px;
+  height: 6px;
+  background: #f5c842;
+}
+
+.dot-inactive {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.dot:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
