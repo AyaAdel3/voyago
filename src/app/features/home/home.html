@@ -1,15 +1,19 @@
 <div class="bg-[#1a1f2e] min-h-screen text-white px-4 py-6">
 
- 
+  
+
   <!-- Offers Section -->
   <section class="mb-8">
     <div class="flex justify-between items-center mb-3">
       <h2 class="text-lg font-semibold">Offers</h2>
-      <div class="flex gap-2 text-gray-400 text-sm cursor-pointer">❮ ❯</div>
+      <div class="flex gap-2 text-gray-400 text-sm">
+        <button (click)="prevOffer()" class="cursor-pointer hover:text-white">❮</button>
+        <button (click)="nextOffer()" class="cursor-pointer hover:text-white">❯</button>
+      </div>
     </div>
-    <div class="flex gap-4 overflow-x-auto pb-2">
-      @for (offer of offers; track offer.title) {
-        <div class="relative min-w-[200px] h-[140px] rounded-xl overflow-hidden flex-shrink-0">
+    <div class="flex gap-3">
+      @for (offer of visibleOffers; track offer.image) {
+        <div class="relative w-1/2 h-[160px] rounded-xl overflow-hidden flex-shrink-0">
           <img [src]="offer.image" alt="offer" class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-3">
             <p class="text-white text-sm font-bold mb-2">{{ offer.title }}</p>
@@ -18,6 +22,18 @@
             </button>
           </div>
         </div>
+      }
+    </div>
+    <!-- Dots -->
+    <div class="flex justify-center gap-1 mt-3">
+      @for (offer of offers; track offer.image; let i = $index) {
+        @if (i % 2 === 0) {
+          <span
+            (click)="currentOfferIndex = i"
+            class="h-2 rounded-full cursor-pointer transition-all duration-300"
+            [class]="i === currentOfferIndex ? 'bg-yellow-400 w-4' : 'bg-white/50 w-2'"
+          ></span>
+        }
       }
     </div>
   </section>
