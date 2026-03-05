@@ -1,36 +1,42 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
+import { Register } from '../../../core/Auth/register/register';
+import { Login } from '../../../core/Auth/login/login';
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive],
+  standalone: true,
+  imports: [RouterLink, RouterLinkActive, CommonModule, Register, Login],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
-export class Navbar {
+export class Navbar implements OnInit {
   isDarkMode = false;
 
-ngOnInit(): void {
-  const savedMode = localStorage.getItem('darkMode');
-  if (savedMode === 'true') {
-    this.isDarkMode = true;
+  constructor(public modal: AuthModalService) {}
+
+  ngOnInit(): void {
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode === 'true') {
+      this.isDarkMode = true;
+      this.applyDarkMode();
+    }
+  }
+
+  toggleDarkMode(): void {
+    this.isDarkMode = !this.isDarkMode;
     this.applyDarkMode();
+    localStorage.setItem('darkMode', this.isDarkMode.toString());
   }
-}
 
-toggleDarkMode(): void {
-  this.isDarkMode = !this.isDarkMode;
-  this.applyDarkMode();
-  localStorage.setItem('darkMode', this.isDarkMode.toString());
-}
-
-applyDarkMode(): void {
-  if (this.isDarkMode) {
-    document.body.classList.add('dark-mode');
-  } else {
-    document.body.classList.remove('dark-mode');
+  applyDarkMode(): void {
+    if (this.isDarkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
   }
-}
-
 }
 

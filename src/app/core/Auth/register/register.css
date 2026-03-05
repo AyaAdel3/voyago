@@ -1,0 +1,199 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-card {
+  background: #173b64;
+  border-radius: 18px;
+  padding: 40px 70px 30px;
+  width: 500px;
+  max-width: 95vw;
+  position: relative;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+}
+
+/* Title أصغر */
+.modal-title {
+  color: #f6faff;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 0 16px 0;
+  text-align: left;
+}
+
+/* Inputs أصغر */
+.field-group {
+  margin-bottom: 9px;
+}
+
+.field-group input {
+  width: 100%;
+  padding: 9px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid #f6faff;
+  color: #f6faff;
+  font-size: 0.85rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+.field-group input::placeholder {
+  color: #6a7f99;
+  outline: none;
+}
+
+.field-group input:focus {
+  border-bottom-color: #ffde70;
+  outline: none;
+}
+
+.input-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 1.5px solid #f6faff;
+}
+
+.input-icon-wrap input {
+  border-bottom: none !important;
+  flex: 1;
+}
+
+.input-icon-wrap.error-input {
+  border-bottom-color: #e05c5c;
+}
+
+.eye-btn {
+  background: none;
+  border: none;
+  color: #f6faff;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+}
+
+.error-msg {
+  color: #e05c5c;
+  font-size: 0.7rem;
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* Button */
+.btn-submit {
+  background: #ffde70;
+  color: #1a1a2e;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 32px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 14px;
+  margin-bottom: 8px;
+  display: block;
+  transition: background 0.2s;
+}
+
+.btn-submit:hover {
+  background: #e09400;
+}
+
+.switch-link {
+  color: #f6faff;
+  font-size: 0.8rem;
+  margin-bottom: 16px;
+}
+
+.switch-link a {
+  color: #ffde70;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #f6faff;
+}
+
+.divider span {
+  color: #f6faff;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* Social */
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.social-btn {
+  width: 46px;
+  height: 46px;
+  background: #2e3f58;
+  border: 1px solid #2e3f58;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.social-btn:hover {
+  border-color: #f5a623;
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: #f6faff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* لما تعمل focus الـ placeholder يبقى أصفر */
+.field-group input:focus::placeholder {
+  color: #ffde70;
+  transition: color 0.2s;
+}
+
+.input-icon-wrap:focus-within input::placeholder {
+  color: #ffde70;
+}
+
+.field-group input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-bottom-color: #ffde70;
+}

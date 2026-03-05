@@ -1,6 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
 @import 'tailwindcss';
-@import "flowbite/src/themes/default"; 
+@import 'flowbite/src/themes/default';
 @plugin "flowbite/plugin";
 @source "../node_modules/flowbite";
 
+:host {
+  display: contents;
+}
+
+app-register {
+  display: contents;
+}
+app-login {
+  display: contents;
+}
