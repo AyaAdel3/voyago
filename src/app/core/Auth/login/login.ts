@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule, FormBuilder, FormGroup,
@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
   styleUrl: './login.css',
   encapsulation: ViewEncapsulation.None
 })
-export class Login {
+export class Login implements OnDestroy {
   form: FormGroup;
   showPassword = false;
   isLoading    = false;
@@ -28,10 +28,15 @@ export class Login {
     private auth: AuthService,
     private router: Router
   ) {
+    document.body.classList.add('modal-open');
     this.form = this.fb.group({
       identifier: ['', Validators.required],
       password:   ['', Validators.required]
     });
+  }
+
+  ngOnDestroy(): void {
+    document.body.classList.remove('modal-open');
   }
 
   get identifier() { return this.form.get('identifier')!; }

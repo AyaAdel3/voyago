@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule, FormBuilder, FormGroup,
@@ -28,13 +28,12 @@ function passwordMatch(g: AbstractControl): ValidationErrors | null {
   styleUrl: './register.css',
   encapsulation: ViewEncapsulation.None
 })
-export class Register {
+export class Register implements OnDestroy {
   form: FormGroup;
   showPassword = false;
   showConfirmPassword = false;
   isLoading = false;
   errorMessage = '';
-  successMessage = '';
   emailTaken = false;
   phoneTaken = false;
 
@@ -43,6 +42,7 @@ export class Register {
     public modal: AuthModalService,
     private auth: AuthService
   ) {
+    document.body.classList.add('modal-open');
     this.form = this.fb.group({
       fullName:        ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30), alphabeticOnly]],
       email:           ['', [Validators.required, Validators.email]],
@@ -50,6 +50,10 @@ export class Register {
       password:        ['', [Validators.required, Validators.minLength(8), strongPassword]],
       confirmPassword: ['', Validators.required]
     }, { validators: passwordMatch });
+  }
+
+  ngOnDestroy() {
+    document.body.classList.remove('modal-open');
   }
 
   get fullName()        { return this.form.get('fullName')!; }
@@ -64,7 +68,6 @@ export class Register {
 
   onSubmit(): void {
     this.errorMessage = '';
-    this.successMessage = '';
     this.emailTaken = false;
     this.phoneTaken = false;
 
@@ -85,8 +88,7 @@ export class Register {
     this.isLoading = false;
 
     if (result.success) {
-  this.modal.openLogin();
-      setTimeout(() => this.modal.openLogin(), 1000);
+      this.modal.openLogin();
     } else if (result.message.includes('email')) {
       this.emailTaken = true;
     } else if (result.message.includes('phone')) {

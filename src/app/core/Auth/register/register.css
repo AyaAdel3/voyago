@@ -5,7 +5,7 @@
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(1px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -196,4 +196,7 @@
   outline: none !important;
   box-shadow: none !important;
   border-bottom-color: #ffde70;
+}
+.modal-overlay {
+  z-index: 99999;
 }

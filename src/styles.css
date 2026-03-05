@@ -14,3 +14,7 @@ app-register {
 app-login {
   display: contents;
 }
+
+body.modal-open {
+  overflow: hidden;
+}

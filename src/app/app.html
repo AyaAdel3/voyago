@@ -5,3 +5,7 @@
 
   <app-footer></app-footer>
 </div>
+
+<!-- Modals - هنا برا الـ main div -->
+<app-login *ngIf="modal.activeModal() === 'login'"></app-login>
+<app-register *ngIf="modal.activeModal() === 'signup'"></app-register>
