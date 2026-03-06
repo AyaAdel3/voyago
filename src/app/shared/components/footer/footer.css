@@ -25,14 +25,14 @@
   font-family: 'Outfit', sans-serif;
   font-size: 13.5px;
   font-weight: 400;
-  color: #8fa3c0;
+  color: #F6FAFF;
   text-decoration: none;
   transition: color 0.2s;
   white-space: nowrap;
 }
 
 .footer-link:hover {
-  color: #ffffff;
+  color: #d8dbdf;
 }
 
 /* ── Contact input focus ── */
