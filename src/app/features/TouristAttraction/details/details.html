@@ -1,1 +1,34 @@
-<p>details works!</p>
+@if (attraction) {
+<div class="details-page">
+
+  <button class="back-btn" (click)="goBack()">← Back</button>
+
+  <div class="details-container">
+
+    <div class="details-left">
+      <img [src]="attraction.image" [alt]="attraction.name" class="details-img" />
+      <h1 class="details-title">{{ attraction.name }}</h1>
+      <div class="details-rating">
+        @for (star of getStars(attraction.rating); track $index) {
+          <span class="star">★</span>
+        }
+      </div>
+      <h3>About</h3>
+      <p class="details-description">{{ attraction.description }}</p>
+    </div>
+
+    <div class="details-right">
+      <div class="info-card">
+        <div class="info-item"><span class="label">Place:</span> {{ attraction.place }}</div>
+        <div class="info-item"><span class="label">Date Of Inscription:</span> {{ attraction.dateOfInscription }}</div>
+        <div class="info-item"><span class="label">Criteria (VII):</span> {{ attraction.criteria }}</div>
+        <div class="info-item"><span class="label">Property:</span> {{ attraction.property }}</div>
+        <div class="info-item"><span class="label">Buffer Zone:</span> {{ attraction.bufferZone }}</div>
+        <div class="info-item"><span class="label">Dossier:</span> {{ attraction.dossier }}</div>
+        <div class="info-item"><span class="label">Ticket Price:</span> {{ attraction.ticketPrice }} LE</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+}

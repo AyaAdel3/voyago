@@ -1,1 +1,33 @@
-<p>card works!</p>
+<div class="attractions-page">
+   <div class="attractions-list">
+    @for (attraction of attractions; track attraction.id) {
+      <div class="attraction-card">
+
+        <div class="card-image">
+          <img [src]="attraction.image" [alt]="attraction.name" />
+        </div>
+
+        <div class="card-content">
+          <div class="card-header">
+            <h2 class="card-title">{{ attraction.name }}</h2>
+            <div class="card-rating">
+              @for (star of getStars(attraction.rating); track $index) {
+                <span class="star">★</span>
+              }
+            </div>
+          </div>
+
+          <p class="card-location">📍 {{ attraction.location }}</p>
+          <p class="card-description">{{ attraction.description }}</p>
+
+          <button class="show-btn" (click)="goToDetails(attraction.id)">
+            Show place
+          </button>
+        </div>
+
+      </div>
+    }
+  </div>
+    
+  </div>
+

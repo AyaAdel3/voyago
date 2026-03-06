@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './core/layouts/main-layout/main-layout';
 
+
+
+
 // Home
 import { Home } from './features/home/home';
 
@@ -18,8 +21,9 @@ import { Card as TourGuideCard } from './features/TourGuide/card/card';
 import { Details as TourGuideDetails } from './features/TourGuide/details/details';
 
 // TouristAttraction
-import { Card as TouristAttractionCard } from './features/TouristAttraction/card/card';
-import { Details as TouristAttractionDetails } from './features/TouristAttraction/details/details';
+import { TouristAttractionCard } from './features/TouristAttraction/card/card';
+import { TouristAttractionDetails } from './features/TouristAttraction/details/details';
+
 
 // BudgetPlanning
 import { Main as BudgetMain } from './features/BudgetPlanning/main/main';
@@ -33,6 +37,7 @@ import { SavedPlan } from './features/profile/saved-plan/saved-plan';
 
 // Not Found
 import { NotFound } from './features/not-found/not-found';
+
 
 export const routes: Routes = [
   {
@@ -77,3 +82,5 @@ export const routes: Routes = [
     ],
   },
 ];
+
+
