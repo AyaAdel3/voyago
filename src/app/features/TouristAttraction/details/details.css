@@ -1,6 +1,6 @@
 .details-page {
   min-height: 100vh;
-  background-color: #0d1b2a;
+  background-color: #021526;
   padding: 2rem;
   color: white;
 }
@@ -43,16 +43,16 @@
 }
 
 .details-rating { margin-bottom: 1rem; }
-.star { color: #f5c518; font-size: 1.4rem; }
+.star { color: #FFDE70; font-size: 1.4rem; }
 
 h3 {
   font-size: 1.2rem;
-  color: #f5c518;
+  color: #F6FAFF;
   margin-bottom: 0.5rem;
 }
 
 .details-description {
-  color: #ccc;
+  color: #F6FAFF;
   line-height: 1.9;
   font-size: 0.95rem;
 }
@@ -63,27 +63,27 @@ h3 {
 }
 
 .info-card {
-  background: #1b2e4b;
-  border-radius: 16px;
+  background: #A3C4EB;
+  border-radius: 40px;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  position: sticky;
-  top: 2rem;
+  gap: 0.5rem;
+  /* position: sticky; */
+  top: 1rem;
 }
 
 .info-item {
   font-size: 0.95rem;
-  color: #ccc;
-  border-bottom: 1px solid #2a3f5f;
+  color: #021526;
+  /* border-bottom: 1px solid #2a3f5f; */
   padding-bottom: 0.8rem;
 }
 
 .info-item:last-child { border-bottom: none; }
 
 .label {
-  color: white;
+  color: #021526;
   font-weight: bold;
   margin-right: 0.4rem;
 }

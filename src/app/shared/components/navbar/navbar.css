@@ -62,7 +62,7 @@
   font-family: 'Outfit', sans-serif;
   font-size: 9px;
   font-weight: 700;
-  color: #c8d6e8;
+  color: #F6FAFF;
   line-height: 1.2;
   text-align: center;
 }
@@ -77,20 +77,20 @@
 .become-host {
   font-size: 14px;
   font-weight: 400;
-  color: #c8d6e8;
+  color: #F6FAFF;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .become-host:hover {
-  color: #fff;
+  color: #F6FAFF;
 }
 
 .btn-outline {
   font-family: 'Outfit', sans-serif;
   font-size: 14px;
   font-weight: 500;
-  color: #fff;
+  color: #F6FAFF;
   background: transparent;
   border: 1.5px solid rgba(255, 255, 255, 0.75);
   border-radius: 999px;
