@@ -14,7 +14,11 @@
       <!-- ── ROW 1 ── -->
       <div class="row-top flex align-middle justify-between">
         <div class="flex align-middle gap-1.5">
-          <a routerLink="/home" routerLinkActive="text-black" class="flex align-middle gap-0.5 my-1">
+          <a
+            routerLink="/home"
+            routerLinkActive="text-black"
+            class="flex align-middle gap-0.5 my-1"
+          >
             <div class="logo-icon rounded-2xl w-7 h-7">
               <img src="image/icon.png" alt="logo" />
             </div>
@@ -102,6 +106,9 @@
       </div>
       <app-register *ngIf="modal.activeModal() === 'signup'"></app-register>
       <app-login *ngIf="modal.activeModal() === 'login'"></app-login>
+      <app-forgot-password *ngIf="modal.activeModal() === 'forgot-password'"></app-forgot-password>
+      <app-enter-code *ngIf="modal.activeModal() === 'enter-code'"></app-enter-code>
+      <app-reset-password *ngIf="modal.activeModal() === 'reset-password'"></app-reset-password>
     </nav>
   </body>
 </html>

@@ -16,5 +16,5 @@ app-login {
 }
 
 body.modal-open {
-  overflow: hidden;
+  overflow: hidden !important;
 }

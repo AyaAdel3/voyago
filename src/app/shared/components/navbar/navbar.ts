@@ -4,11 +4,14 @@ import { CommonModule } from '@angular/common';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { Register } from '../../../core/Auth/register/register';
 import { Login } from '../../../core/Auth/login/login';
+import { ForgotPassword } from '../../../core/Auth/forgot-password/forgot-password';
+import { EnterCode } from '../../../core/Auth/enter-code/enter-code';
+import { ResetPassword } from '../../../core/Auth/reset-password/reset-password';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, CommonModule, Register, Login],
+  imports: [RouterLink, RouterLinkActive, CommonModule, Register, Login, ForgotPassword, EnterCode, ResetPassword],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -39,4 +42,3 @@ export class Navbar implements OnInit {
     }
   }
 }
-

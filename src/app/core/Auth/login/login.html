@@ -62,7 +62,7 @@
         <span class="error-msg" *ngIf="isInvalid(password) && password.errors?.['required']"
           >Password is required.</span
         >
-        <p class="forgot-password"><a (click)="modal.close()">Forgot Password?</a></p>
+        <p class="forgot-password"><a (click)="modal.openForgotPassword()">Forgot Password?</a></p>
       </div>
 
       <button type="submit" class="btn-submit" [disabled]="isLoading">
