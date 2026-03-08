@@ -10,7 +10,8 @@ import { Home } from './features/home/home';
 // Hotel
 import { Card as HotelCard } from './features/Hotel/card/card';
 import { Details as HotelDetails } from './features/Hotel/details/details';
-
+import { Booking as HotelBooking }               from './features/Hotel/booking/booking';
+import { BookingConfirmed as HotelBookingConfirmed } from './features/Hotel/booking-confirmed/booking-confirmed';
 // Restaurant
 import { Card as RestaurantCard } from './features/Restaurant/card/card';
 import { Details as RestaurantDetails } from './features/Restaurant/details/details';
@@ -48,12 +49,13 @@ export const routes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
 
       // Home
-      { path: 'home', component: Home, title: 'Homepage' },
+      { path: 'home', component: Home, title: 'Home' },
 
       // Hotel Routes
       { path: 'Hotels', component: HotelCard, title: 'Hotels' },
       { path: 'hotel/details/:id', component: HotelDetails, title: 'Hotel Details' },
-
+      { path: 'hotel/booking',           component: HotelBooking,          title: 'Hotel Booking' },
+{ path: 'hotel/booking-confirmed', component: HotelBookingConfirmed, title: 'Booking Confirmed' },
       // Restaurant Routes
       { path: 'Restaurants', component: RestaurantCard, title: 'Restaurants' },
       { path: 'restaurant/details/:id', component: RestaurantDetails, title: 'Restaurant Details' },
