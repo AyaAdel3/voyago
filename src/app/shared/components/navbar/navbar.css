@@ -143,10 +143,9 @@
 
 /* Active state — applied via routerLinkActive */
 .nav-link.active-link {
-  color: #fff;
-  border-bottom-color: #f5c842;
+  color: #A3C4EB;
+ 
 }
-
 /* ══════════════════════════════════════
    ROW 3 — Search
 ══════════════════════════════════════ */
