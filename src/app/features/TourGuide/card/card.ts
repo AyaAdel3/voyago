@@ -1,84 +1,53 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { Details } from '../details/details';
 
-interface TourGuide {
+export interface TourGuide {
   id: number;
   name: string;
-  rating: number;
-  description: string;
   image: string;
-  isFavorite: boolean;
+  rating: number;
+  languages: string[];
   email: string;
   phone: string;
-  languages: string[];
-  aboutMe: string;
+  pricePerDay: number;
+  description: string;
+  liked: boolean;
 }
 
 @Component({
   selector: 'app-tour-guide-card',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, Details],
   templateUrl: './card.html',
+  styleUrl: './card.css'
 })
-export class Card {
-  searchQuery = '';
-  isPopupOpen = false;
+export class Card implements OnInit {
+  guides: TourGuide[] = [];
+  loading = true;
   selectedGuide: TourGuide | null = null;
 
-  guides: TourGuide[] = [
-    {
-      id: 1,
-      name: 'Mariam Mahmoud Yousif',
-      rating: 4.8,
-      description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec enim euismod diam.',
-      image: 'https://i.pravatar.cc/300?img=47',
-      isFavorite: true,
-      email: 'Mariammyousiff9@gmail.com',
-      phone: '+20 1045983677',
-      languages: ['English', 'Arabic', 'French'],
-      aboutMe: "I am a passionate and licensed tour guide with over 6 years of experience leading travelers through Egypt's most iconic historical and cultural sites. My goal is to create unforgettable experiences.",
-    },
-    {
-      id: 2,
-      name: 'Nattaya Wong',
-      rating: 4.5,
-      description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec enim euismod diam.',
-      image: 'https://i.pravatar.cc/300?img=11',
-      isFavorite: false,
-      email: 'nattaya@gmail.com',
-      phone: '+20 1012345678',
-      languages: ['English', 'Thai'],
-      aboutMe: 'Experienced guide specializing in cultural and historical tours across Egypt with 4 years of experience.',
-    },
-    {
-      id: 3,
-      name: 'Somchai Prasert',
-      rating: 4.1,
-      description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec enim euismod diam.',
-      image: 'https://i.pravatar.cc/300?img=53',
-      isFavorite: false,
-      email: 'somchai@gmail.com',
-      phone: '+20 1098765432',
-      languages: ['English', 'Arabic'],
-      aboutMe: 'Friendly and knowledgeable guide with deep passion for Egyptian history and warm atmosphere for every visitor.',
-    },
+ ngOnInit(): void {
+  this.guides = [
+    { id: 1, name: 'Araya Smith', image: 'https://randomuser.me/api/portraits/women/44.jpg', rating: 4.8, languages: ['English', 'Arabic'], email: 'araya.smith@gmail.com', phone: '+20 1012345678', pricePerDay: 150, description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh.', liked: false },
+    { id: 2, name: 'Nattaya Wong', image: 'https://randomuser.me/api/portraits/men/32.jpg', rating: 4.5, languages: ['English', 'French'], email: 'nattaya.wong@gmail.com', phone: '+20 1098765432', pricePerDay: 120, description: 'Lorem ipsum dolor sit amet consectetur. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh.', liked: false },
+    { id: 3, name: 'Somchai Prasert', image: 'https://randomuser.me/api/portraits/men/75.jpg', rating: 4.1, languages: ['English', 'Arabic', 'French'], email: 'somchai.p@gmail.com', phone: '+20 1123456789', pricePerDay: 100, description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec.', liked: false },
+    { id: 4, name: 'Miriam Hassan', image: 'https://randomuser.me/api/portraits/women/68.jpg', rating: 4.9, languages: ['English', 'Arabic', 'German'], email: 'miriam.hassan@gmail.com', phone: '+20 1056789012', pricePerDay: 180, description: 'A passionate and licensed tour guide with over 6 years of experience leading travelers through Egypt\'s most iconic historical and cultural sites.', liked: false },
+    { id: 5, name: 'Mariam Mahmoud', image: 'https://randomuser.me/api/portraits/women/90.jpg', rating: 4.7, languages: ['English', 'Arabic', 'French'], email: 'mariammyousiff9@gmail.com', phone: '+20 1045983677', pricePerDay: 150, description: 'I am a passionate and licensed tour guide with over 6 years of experience leading travelers through Egypt\'s most iconic historical and cultural sites.', liked: false }
   ];
+  this.loading = false;
+}
 
-  toggleFavorite(guide: TourGuide): void {
-    guide.isFavorite = !guide.isFavorite;
+  toggleFav(event: MouseEvent, guide: TourGuide): void {
+    event.stopPropagation();
+    guide.liked = !guide.liked;
   }
 
-  openPopup(guide: TourGuide): void {
+  openDetails(guide: TourGuide): void {
     this.selectedGuide = guide;
-    this.isPopupOpen = true;
-    document.body.style.overflow = 'hidden';
   }
 
-  closePopup(): void {
-    this.isPopupOpen = false;
+  closeDetails(): void {
     this.selectedGuide = null;
-    document.body.style.overflow = 'auto';
   }
 }
