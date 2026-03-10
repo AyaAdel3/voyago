@@ -42,6 +42,7 @@
   padding: 0 1rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1.25rem;
 }
 
@@ -51,7 +52,9 @@
   gap: 1.25rem;
   background: #A3C4EB;
   border-radius: 2.4rem;
-  padding: 0.36rem;
+  padding: 0.3rem;
+  width: 80rem;
+  height: 16rem;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -65,9 +68,11 @@
 .card-img-wrap {
   vertical-align: middle;
   position: relative;
+  transform: translateY(1.4px);
+  transform: translateX(-0.5px);
   flex-shrink: 0;
-  width: 210px;
-  height: 210px;
+  width: 245px;
+  height: 245px;
   border-radius: 2.4rem;
   overflow: hidden;
 }
@@ -82,8 +87,8 @@
 /* ── Favorite Button ────────────────────────────────────── */
 .fav-btn {
   position: absolute;
-  top: 10px;
-  left: 160px;
+  top: 12px;
+  left: 197px;
   width: 36px;
   height: 36px;
   background: rgba(0, 0, 0, 0.35);
@@ -103,7 +108,7 @@
 }
 
 .fav-btn.active {
-  background: rgba(244, 63, 94, 0.2);
+  background: rgba(255, 222, 112, 0.2);
 }
 
 /* ── Card Body ──────────────────────────────────────────── */
@@ -166,7 +171,7 @@
 }
 
 .btn-show {
-  background: #f5c518;
+  background: #FFDE70;
   color: #0d1526;
   border: none;
   padding: 0.6rem 1.6rem;
@@ -178,7 +183,7 @@
 }
 
 .btn-show:hover {
-  background: #e6b800;
+  background: #f5c842;
   transform: scale(1.03);
 }
 

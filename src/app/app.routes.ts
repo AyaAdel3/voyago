@@ -50,10 +50,15 @@ export const routes: Routes = [
       { path: 'home', component: Home, title: 'Home' },
 
       // Hotel Routes
-      { path: 'Hotels', component: HotelCard, title: 'Hotels' },
-      { path: 'hotel/details/:id', component: HotelDetails, title: 'Hotel Details' },
-      { path: 'hotel/booking',           component: HotelBooking,          title: 'Hotel Booking' },
-{ path: 'hotel/booking-confirmed', component: HotelBookingConfirmed, title: 'Booking Confirmed' },
+{
+  path: 'hotels',
+  children: [
+    { path: '', component: HotelCard, title: 'Hotels' }, // /hotels
+    { path: 'details/:id', component: HotelDetails, title: 'Hotel Details'  ,runGuardsAndResolvers: 'paramsChange'}, // /hotels/details/1
+    { path: 'booking', component: HotelBooking, title: 'Hotel Booking' },
+    { path: 'booking-confirmed', component: HotelBookingConfirmed, title: 'Booking Confirmed' },
+  ]
+},
       // Restaurant Routes
       { path: 'Restaurants', component: RestaurantCard, title: 'Restaurants' },
       { path: 'restaurant/details/:id', component: RestaurantDetails, title: 'Restaurant Details' },

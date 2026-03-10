@@ -1,1 +1,242 @@
-<p>details works!</p>
+<div class="hotel-page py-4 font-[Nunito Sans]">
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-wrap">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!loading && error" class="loading-wrap" style="color:white; flex-direction:column; gap:1rem;">
+    <p>Failed to load hotel. Please try again.</p>
+    <button
+      (click)="router.navigate(['/hotels'])"
+      style="background:#f5c518;border:none;padding:.5rem 1.5rem;border-radius:8px;cursor:pointer;font-weight:700;"
+    >
+      Back to Hotels
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error && hotel" class="outer-row">
+
+    <!-- LEFT COL -->
+    <div class="left-col w-225">
+
+      <!-- GALLERY -->
+      <div class="gallery">
+        <div class="gallery-main" (click)="openLightbox(activeImage)">
+          <img [src]="hotel.images[activeImage]" [alt]="hotel.name" />
+          <div class="main-overlay">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="white" style="opacity:.7">
+              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="gallery-thumbs">
+          <div
+            *ngFor="let img of hotel.images.slice(0, 3); let i = index"
+            class="gallery-thumb"
+            [class.active-thumb]="activeImage === i"
+            (click)="setActiveImage(i)"
+          >
+            <img [src]="img" [alt]="hotel.name + ' ' + (i+1)" />
+            <div
+              *ngIf="i === 2 && hotel.images.length > 3"
+              class="more-photos"
+              (click)="openLightbox(i); $event.stopPropagation()"
+            >
+              +{{ hotel.images.length - 3 }} photos
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DETAILS -->
+      <div class="details-section">
+        <h1 class="hotel-title">
+          {{ hotel.name }}
+          <span class="stars">
+            <svg *ngFor="let s of starsArray(hotel.stars)" viewBox="0 0 24 24" width="20" height="20" fill="#f5c518">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+            </svg>
+          </span>
+        </h1>
+        <p class="hotel-location">{{ hotel.location }}</p>
+
+        <div class="section-block">
+          <h2 class="section-title">About</h2>
+          <p class="about-text">{{ hotel.description }}</p>
+        </div>
+
+        <div class="section-block">
+          <h2 class="section-title">Great for your stay</h2>
+          <div class="amenities-row">
+            <div *ngFor="let a of hotel.amenities" class="amenity-chip">
+              <svg *ngIf="a === 'WiFi'" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
+              </svg>
+              <svg *ngIf="a === 'Restaurant'" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+              </svg>
+              <svg *ngIf="a === 'Pool' || a === 'private pool'" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M22 21c-1.11 0-1.73-.37-2.18-.64-.37-.22-.6-.36-1.15-.36-.56 0-.78.13-1.15.36-.46.27-1.07.64-2.19.64s-1.73-.37-2.18-.64c-.37-.22-.6-.36-1.15-.36-.56 0-.78.13-1.15.36-.46.27-1.08.64-2.19.64s-1.73-.37-2.19-.64c-.36-.22-.59-.36-1.14-.36s-.78.13-1.15.36c-.46.27-1.08.64-2.19.64v-2c.56 0 .78-.13 1.15-.36.46-.27 1.08-.64 2.19-.64s1.73.37 2.19.64c.36.22.59.36 1.14.36.56 0 .78-.13 1.15-.36.46-.27 1.08-.64 2.19-.64s1.73.37 2.18.64c.37.22.6.36 1.15.36.56 0 .78-.13 1.15-.36.46-.27 1.07-.64 2.18-.64v2z"/>
+              </svg>
+              <svg *ngIf="a === 'Spa'" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3 19l1.41 1.41 4.8-4.8.7.7-4.8 4.8 1.41 1.41 4.8-4.8.7.7-4.8 4.8 1.41 1.41 7.29-7.29z"/>
+              </svg>
+              {{ a }}
+            </div>
+          </div>
+        </div>
+
+        <div class="host-row">
+          <div class="host-avatar">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="#8899bb">
+              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+            </svg>
+          </div>
+          <span class="host-name">Yara morad</span>
+        </div>
+      </div>
+
+      <!-- REVIEWS -->
+      <div class="reviews-section">
+        <div class="write-review">
+          <div class="review-form-row">
+            <input type="text" placeholder="comment" [(ngModel)]="newComment" class="review-input" />
+            <button class="btn-submit" (click)="submitReview()">Submit</button>
+          </div>
+          <div class="star-picker">
+            <svg
+              *ngFor="let s of [1,2,3,4,5]"
+              viewBox="0 0 24 24" width="28" height="28"
+              [style.fill]="s <= newRating ? '#f5c518' : '#8899bb'"
+              (click)="newRating = s" style="cursor:pointer"
+            >
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+        </div>
+
+        
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Booking Widget -->
+    <div class="booking-widget font-[#173B64]">
+      <div class="price-row">
+        <span class="price-main font-bold">{{ hotel.pricePerNight | number }}LE</span>
+        <span class="per-night font-bold"> /Night</span>
+        <span *ngIf="hotel.originalPrice" class="price-original">{{ hotel.originalPrice }}$</span>
+      </div>
+
+      <div class="dates-row">
+        <div class="date-field">
+          <label class="font-medium ">Check in</label>
+          <input type="date" [(ngModel)]="checkIn" (change)="recalc()" class="date-input" />
+        </div>
+        <div class="date-field">
+          <label >Check out</label>
+          <input type="date" [(ngModel)]="checkOut" (change)="recalc()" class="date-input" />
+        </div>
+      </div>
+
+      <div class="widget-section">
+        <h4 class="widget-label">Features</h4>
+        <div *ngFor="let f of selectedFeatures; let i = index" class="option-row">
+          <span class="option-name">{{ f.name }}</span>
+          <div class="option-right">
+            <span class="option-price">{{ f.price }}LE</span>
+            <div class="qty-ctrl">
+              <button (click)="toggleFeature(i, false)" >-</button>
+              <input type="checkbox" [checked]="f.selected" (change)="toggleFeature(i, !f.selected)" class="bg-transparent border-[#173B64]  border-[1px] rounded-[4px]" />
+              <button (click)="toggleFeature(i, true)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget-section">
+        <h4 class="widget-label">Room</h4>
+        <div *ngFor="let r of selectedRooms; let i = index" class="option-row">
+          <span class="option-name">{{ r.type }}</span>
+          <div class="option-right">
+            <span class="option-price">{{ r.price }}LE</span>
+            <div class="qty-ctrl">
+              <button (click)="changeRoom(i, -1)">-</button>
+              <span class="qty-val">{{ r.quantity }}</span>
+              <button (click)="changeRoom(i, 1)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget-section">
+        <h4 class="widget-label">Price</h4>
+        <div class="price-summary">
+          <div class="s-row"><span>{{ nights }} Night{{ nights > 1 ? 's' : '' }}</span><span>{{ basePrice | number }}LE</span></div>
+          <div class="s-row s-discount"><span>20% Discount</span><span>-{{ discount | number }}LE</span></div>
+          <ng-container *ngFor="let f of selectedFeatures">
+            <div *ngIf="f.selected" class="s-row"><span>{{ f.name }}</span><span>{{ f.price | number }}LE</span></div>
+          </ng-container>
+          <div class="s-row"><span>Service</span><span>{{ serviceCharge | number }}LE</span></div>
+          <div class="s-row s-total"><span>Total</span><span>{{ totalAmount | number }}LE</span></div>
+        </div>
+      </div>
+
+      <button class="btn-book mx-[4.88rem]" (click)="bookNow()">Book now</button>
+    </div>
+
+  </div>
+<div class="show-review translate-x-[4.26rem] translate-y-[1rem]">
+     <h2 class="section-title">Customer Reviews</h2>
+        <div class="reviews-grid">
+          <div *ngFor="let review of reviews" class="review-card">
+            <div class="reviewer-info">
+              <div class="reviewer-avatar">{{ review.userName.charAt(0) }}</div>
+              <div>
+                <p class="reviewer-name">{{ review.userName }}</p>
+                <p class="reviewer-country">{{ review.userCountry }}</p>
+                <div class="review-stars">
+                  <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="11" height="11"
+                    [style.fill]="s <= review.rating ? '#f5c518' : '#3a5070'">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <p class="review-title">Amazing hotel</p>
+            <p class="review-comment">{{ review.comment }}</p>
+          </div>
+        </div>
+</div>
+  <!-- LIGHTBOX -->
+  <div class="lightbox" *ngIf="lightboxOpen" (click)="closeLightbox()">
+    <div class="lightbox-inner" (click)="$event.stopPropagation()">
+      <button class="lb-close" (click)="closeLightbox()">✕</button>
+      <button class="lb-arrow lb-prev" (click)="lbPrev()" [disabled]="lbIndex === 0">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+      </button>
+      <img [src]="hotel.images[lbIndex]" [alt]="hotel.name" class="lb-img" />
+      <button class="lb-arrow lb-next" (click)="lbNext()" [disabled]="lbIndex === hotel.images.length - 1">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+        </svg>
+      </button>
+      <div class="lb-counter">{{ lbIndex + 1 }} / {{ hotel.images.length }}</div>
+      <div class="lb-dots">
+        <span
+          *ngFor="let img of hotel.images; let i = index"
+          class="lb-dot"
+          [class.active]="i === lbIndex"
+          (click)="lbIndex = i"
+        ></span>
+      </div>
+    </div>
+  </div>
+
+</div>

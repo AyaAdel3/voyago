@@ -141,7 +141,7 @@ border-radius: 40px;
 /* زرار */
 .show-btn {
   align-self: flex-end;
-  background: #f5c518;
+  background: #FFDE70 !important;   /* اللون الأساسي */
   color: #000;
   font-weight: bold;
   border: none;
@@ -153,4 +153,6 @@ border-radius: 40px;
   margin-top: 1rem;         /* 👈 ينزل تحت */
 }
 
-.show-btn:hover { background: #e6b800; }
+.show-btn:hover {
+  background: #ffd95a ;   /* لون الهوفر */
+}
