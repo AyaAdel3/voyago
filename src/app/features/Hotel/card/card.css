@@ -17,7 +17,7 @@
   gap: 1rem;
   padding: 7rem;
   transform: translateY(5rem);
-  color: #F6FAFF;
+  color: #f6faff;
 }
 
 .spinner {
@@ -30,7 +30,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ── Page ───────────────────────────────────────────────── */
@@ -43,20 +45,23 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 /* ── Hotel Card ─────────────────────────────────────────── */
 .hotel-card {
   display: flex;
-  gap: 1.25rem;
-  background: #A3C4EB;
-  border-radius: 2.4rem;
-  padding: 0.3rem;
-  width: 80rem;
+  gap: 1.5rem;
+  background: #a3c4eb;
+  border-radius: 2.5rem;
+  padding: 6px;
+  padding-left: 10px;
+  width: 74rem;
   height: 16rem;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .hotel-card:hover {
@@ -66,14 +71,11 @@
 
 /* ── Card Image ─────────────────────────────────────────── */
 .card-img-wrap {
-  vertical-align: middle;
   position: relative;
-  transform: translateY(1.4px);
-  transform: translateX(-0.5px);
   flex-shrink: 0;
-  width: 245px;
+  width: 400px;
   height: 245px;
-  border-radius: 2.4rem;
+  border-radius: 2.7rem;
   overflow: hidden;
 }
 
@@ -88,7 +90,7 @@
 .fav-btn {
   position: absolute;
   top: 12px;
-  left: 197px;
+  right: 12px;
   width: 36px;
   height: 36px;
   background: rgba(0, 0, 0, 0.35);
@@ -99,7 +101,9 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
+  transition:
+    transform 0.2s,
+    background 0.2s;
 }
 
 .fav-btn:hover {
@@ -117,6 +121,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  padding: 0px 30px 10px 0px;
 }
 
 .card-header {
@@ -147,8 +152,8 @@
   color: #021526;
   padding: 4px 10px;
   border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 0.9rem;
   white-space: nowrap;
 }
 
@@ -171,7 +176,7 @@
 }
 
 .btn-show {
-  background: #FFDE70;
+  background: #ffde70;
   color: #0d1526;
   border: none;
   padding: 0.6rem 1.6rem;
@@ -179,7 +184,9 @@
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  transition:
+    background 0.2s,
+    transform 0.15s;
 }
 
 .btn-show:hover {

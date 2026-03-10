@@ -1,38 +1,103 @@
 @if (attraction) {
-<div class="details-page">
+  <div class="details-page">
+    <button class="back-btn" (click)="goBack()">← Back</button>
 
-  <button class="back-btn" (click)="goBack()">← Back</button>
+    <div class="details-container">
+      <div class="details-left">
+        <!-- Gallery -->
+        <div class="gallery">
+          <div class="gallery-main" (click)="openLightbox(activeImage)">
+            <img [src]="attraction.images[activeImage]" [alt]="attraction.name" />
+            <div class="main-overlay"></div>
+          </div>
 
-  <div class="details-container">
+          <div class="gallery-thumbs">
+            @for (img of attraction.images.slice(1, 4); track $index) {
+              <div
+                class="gallery-thumb"
+                [class.active-thumb]="activeImage === $index + 1"
+                (click)="setActiveImage($index + 1)"
+              >
+                <img [src]="img" [alt]="attraction.name" />
+                @if ($index === 2 && attraction.images.length > 4) {
+                  <div
+                    class="more-photos"
+                    (click)="openLightbox($index + 1); $event.stopPropagation()"
+                  >
+                    +{{ attraction.images.length - 4 }} photos
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
 
-    <div class="details-left">
-      <img [src]="attraction.image" [alt]="attraction.name" class="details-img" />
-      
-       <div class="details-rating flex ">
-        <div class="mx-4"><h1 class="details-title">{{ attraction.name }}</h1></div>
-        @for (star of getStars(attraction.rating); track $index) {
-          <span class="star my-2">★</span>
-        }
+        <!-- Title & Stars -->
+        <div class="details-rating">
+          <h1 class="details-title">{{ attraction.name }}</h1>
+          <div class="stars-row">
+            @for (star of getStars(attraction.rating); track $index) {
+              <span class="star">★</span>
+            }
+          </div>
+        </div>
+
+        <!-- About -->
+        <div class="about-section">
+          <h3>About</h3>
+          <p class="details-description">{{ attraction.description }}</p>
+        </div>
       </div>
-      <div class="mx-3.5">
-           <h3>About</h3>
-      <p class="details-description">{{ attraction.description }}</p>
+
+      <!-- Info Card -->
+      <div class="details-right">
+        <div class="info-card">
+          <div class="info-item"><span class="label">Place:</span> {{ attraction.place }}</div>
+          <div class="info-item">
+            <span class="label">Date Of Inscription:</span> {{ attraction.dateOfInscription }}
+          </div>
+          <div class="info-item">
+            <span class="label">Criteria (VII):</span> {{ attraction.criteria }}
+          </div>
+          <div class="info-item">
+            <span class="label">Property:</span> {{ attraction.property }}
+          </div>
+          <div class="info-item">
+            <span class="label">Buffer Zone:</span> {{ attraction.bufferZone }}
+          </div>
+          <div class="info-item"><span class="label">Dossier:</span> {{ attraction.dossier }}</div>
+          <div class="info-item">
+            <span class="label">Ticket Price:</span> {{ attraction.ticketPrice }} LE
+          </div>
+        </div>
       </div>
-      
     </div>
-
-    <div class="details-right ">
-      <div class="info-card w-[250px]  p-2 gap-y-6">
-        <div class="info-item"><span class="label">Place:</span> {{ attraction.place }}</div>
-        <div class="info-item"><span class="label">Date Of Inscription:</span> {{ attraction.dateOfInscription }}</div>
-        <div class="info-item"><span class="label">Criteria (VII):</span> {{ attraction.criteria }}</div>
-        <div class="info-item"><span class="label">Property:</span> {{ attraction.property }}</div>
-        <div class="info-item"><span class="label">Buffer Zone:</span> {{ attraction.bufferZone }}</div>
-        <div class="info-item"><span class="label">Dossier:</span> {{ attraction.dossier }}</div>
-        <div class="info-item"><span class="label">Ticket Price:</span> {{ attraction.ticketPrice }} LE</div>
-      </div>
-    </div>
-
   </div>
-</div>
+
+  @if (lightboxOpen) {
+    <div class="lightbox" (click)="closeLightbox()">
+      <div class="lightbox-inner" (click)="$event.stopPropagation()">
+        <button class="lb-close" (click)="closeLightbox()">✕</button>
+        <button class="lb-arrow lb-prev" (click)="lbPrev()" [disabled]="lbIndex === 0">‹</button>
+        <img class="lb-img" [src]="attraction.images[lbIndex]" [alt]="attraction.name" />
+        <button
+          class="lb-arrow lb-next"
+          (click)="lbNext()"
+          [disabled]="lbIndex === attraction.images.length - 1"
+        >
+          ›
+        </button>
+        <p class="lb-counter">{{ lbIndex + 1 }} / {{ attraction.images.length }}</p>
+        <div class="lb-dots">
+          @for (img of attraction.images; track $index) {
+            <span
+              class="lb-dot"
+              [class.active]="lbIndex === $index"
+              (click)="lbIndex = $index"
+            ></span>
+          }
+        </div>
+      </div>
+    </div>
+  }
 }

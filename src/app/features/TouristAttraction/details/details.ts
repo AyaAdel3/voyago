@@ -9,8 +9,12 @@ const ATTRACTIONS: Attraction[] = [
     name: 'Wadi El Hitan Protected Area',
     location: 'Fayoum, Egypt',
     rating: 4,
-    image: 'https://picsum.photos/seed/wadi/800/400',
-
+    images: [
+      'https://picsum.photos/seed/wadi1/800/500',
+      'https://picsum.photos/seed/wadi2/400/300',
+      'https://picsum.photos/seed/wadi3/400/300',
+      'https://picsum.photos/seed/wadi4/400/300',
+    ],
     description: 'Wadi El Hitan, Whale Valley, is a paleontological site in the Faiyum desert of Egypt. It contains fossils of the earliest, and now extinct, suborder of whales. Wadi El Hitan at Night. The Pathway of Female Pharaohs: Wadi El Hitan is one of the most famous natural reserves in Egypt.',
     place: 'Fayoum, Egypt',
     dateOfInscription: 2005,
@@ -25,8 +29,12 @@ const ATTRACTIONS: Attraction[] = [
     name: 'Wadi El Rayan Waterfalls',
     location: 'Fayoum, Egypt',
     rating: 5,
-    image: 'https://picsum.photos/seed/rayan/800/400',
-
+    images: [
+      'https://picsum.photos/seed/rayan1/800/500',
+      'https://picsum.photos/seed/rayan2/400/300',
+      'https://picsum.photos/seed/rayan3/400/300',
+      'https://picsum.photos/seed/rayan4/400/300',
+    ],
     description: 'Wadi El Rayan is a protected area in Fayoum. It includes two lakes and the only natural waterfall in Egypt.',
     place: 'Fayoum, Egypt',
     dateOfInscription: 2003,
@@ -41,9 +49,13 @@ const ATTRACTIONS: Attraction[] = [
     name: 'Lake Qarun',
     location: 'Fayoum, Egypt',
     rating: 4,
-    image: 'https://picsum.photos/seed/qarun/800/400',
-
-    description: 'Lake Qarun is a saltwater lake in Fayoum Governorate. It is one of the oldest lakes in the world.',
+    images: [
+      'https://picsum.photos/seed/qarun1/800/500',
+      'https://picsum.photos/seed/qarun2/400/300',
+      'https://picsum.photos/seed/qarun3/400/300',
+      'https://picsum.photos/seed/qarun4/400/300',
+    ],
+    description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area. It is one of the oldest lakes in the world.',
     place: 'Fayoum, Egypt',
     dateOfInscription: 1998,
     criteria: 'IX',
@@ -63,6 +75,9 @@ const ATTRACTIONS: Attraction[] = [
 })
 export class TouristAttractionDetails implements OnInit {
   attraction: Attraction | undefined;
+  activeImage = 0;
+  lightboxOpen = false;
+  lbIndex = 0;
 
   constructor(private route: ActivatedRoute, private router: Router) {}
 
@@ -73,7 +88,11 @@ export class TouristAttractionDetails implements OnInit {
 
   goBack() { this.router.navigate(['/Attractions']); }
 
-  getStars(rating: number): number[] {
-    return Array(rating).fill(0);
-  }
+  getStars(rating: number): number[] { return Array(rating).fill(0); }
+
+  setActiveImage(index: number): void { this.activeImage = index; }
+  openLightbox(index: number): void { this.lbIndex = index; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; }
+  closeLightbox(): void { this.lightboxOpen = false; document.body.style.overflow = ''; }
+  lbPrev(): void { if (this.lbIndex > 0) this.lbIndex--; }
+  lbNext(): void { if (this.attraction && this.lbIndex < this.attraction.images.length - 1) this.lbIndex++; }
 }

@@ -6,7 +6,7 @@
       (click)="goToDetails(attraction.id)"
     >
       <div class="card-image">
-        <img [src]="attraction.image" [alt]="attraction.name" />
+        <img [src]="attraction.images[0]" [alt]="attraction.name" />
         <button class="heart-btn" (click)="toggleFavorite($event, attraction.id)">
           <svg viewBox="0 0 24 24" width="20" height="20">
             <path
