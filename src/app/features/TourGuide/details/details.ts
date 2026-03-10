@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { TourGuide } from '../card/card';
 
 @Component({
-  selector: 'app-details',
+   selector: 'app-tour-guide-details',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './details.html',

@@ -52,7 +52,7 @@ export class TouristAttractionCard {
       location: 'Fayoum, Egypt',
       rating: 5,
       image: 'https://picsum.photos/seed/rayan/800/400',
-      description: 'Wadi El Rayan is a protected area featuring the only natural waterfalls in Egypt.Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh. Cras orci fames velit tincidunt. Ultrices iaculis lobortis accumsan semper non lectus bibendum porta urna..',
+      description: 'Wadi El Rayan is a protected area featuring the only natural waterfalls in Egypt. Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh. Cras orci fames velit tincidunt. Ultrices iaculis lobortis accumsan semper non lectus bibendum porta urna.',
       place: 'Fayoum, Egypt',
       dateOfInscription: 2003,
       criteria: 'VII',
@@ -67,7 +67,7 @@ export class TouristAttractionCard {
       location: 'Fayoum, Egypt',
       rating: 4,
       image: 'https://picsum.photos/seed/qarun/800/400',
-      description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area. Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh. Cras orci fames velit tincidunt. Ultrices iaculis lobortis accumsan semper non lectus bibendum porta urna..',
+      description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area. Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh. Cras orci fames velit tincidunt. Ultrices iaculis lobortis accumsan semper non lectus bibendum porta urna.',
       place: 'Fayoum, Egypt',
       dateOfInscription: 1989,
       criteria: 'IX',
@@ -94,5 +94,9 @@ export class TouristAttractionCard {
 
   goToDetails(id: number) {
     this.router.navigate(['/tourist-attraction/details', id]);
+  }
+
+  getStars(rating: number): number[] {
+    return Array(Math.round(rating)).fill(0);
   }
 }

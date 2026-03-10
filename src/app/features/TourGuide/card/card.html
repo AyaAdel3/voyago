@@ -1,49 +1,74 @@
-<div class="tour-guide-page">
-  <div class="guides-list">
-    <div class="guide-card" *ngFor="let guide of guides">
-      <div class="guide-image-wrap">
-        <img [src]="guide.image" [alt]="guide.name" class="guide-image" />
-        <button class="like-btn" (click)="toggleLike(guide)">
-          <svg
-            *ngIf="guide.liked"
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="#f5c518"
-          >
+<div class="guidepage bg-[#021526]">
+  <!-- Loading Spinner -->
+  <div *ngIf="loading" class="loading-wrap">
+    <div class="spinner"></div>
+    <p>Finding the best tour guides for you…</p>
+  </div>
+
+  <!-- Guides List -->
+  <div *ngIf="!loading" class="guides-page">
+    <div *ngFor="let guide of guides" class="guide-card" (click)="openDetails(guide)">
+      <!-- صورة + زرار القلب -->
+      <div class="card-img-wrap">
+        <img [src]="guide.image" [alt]="guide.name" class="card-img" loading="lazy" />
+        <button
+          class="fav-btn"
+          [class.active]="guide.liked"
+          (click)="toggleFav($event, guide)"
+          aria-label="Add to favorites"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20">
             <path
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-            />
-          </svg>
-          <svg
-            *ngIf="!guide.liked"
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            stroke-width="2"
-          >
-            <path
-              d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                 C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
+                 c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+              [attr.fill]="guide.liked ? '#FFDE70' : 'none'"
+              [attr.stroke]="guide.liked ? '#FFDE70' : 'white'"
+              stroke-width="2"
             />
           </svg>
         </button>
       </div>
 
-      <div class="guide-info">
-        <div class="guide-header">
-          <h3 class="guide-name">{{ guide.name }}</h3>
-          <span class="guide-rating">★ {{ guide.rating }}</span>
+      <!-- محتوى الكارد -->
+      <div class="card-body font-[Nunito Sans]">
+        <div class="card-header translate-y-4 gap-[3px]">
+          <div>
+            <h3 class="guide-name">{{ guide.name }}</h3>
+            <p class="guide-price">{{ guide.pricePerDay }}LE / day</p>
+          </div>
+          <!-- Rating Badge -->
+          <div class="rating-badge me-2">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="#021526">
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
+              />
+            </svg>
+            <span>{{ guide.rating }}</span>
+          </div>
         </div>
-        <p class="guide-desc">{{ guide.description }}</p>
-        <button class="btn-show-more" (click)="openDetails(guide)">Show more</button>
+
+        <p class="guide-desc font-normal translate-y-4">{{ guide.description }}</p>
+
+        <!-- Show More Button -->
+        <div class="card-footer">
+          <button
+            class="btn-show mb-1.5 me-2"
+            (click)="openDetails(guide); $event.stopPropagation()"
+          >
+            Show more
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <app-details *ngIf="selectedGuide" [guide]="selectedGuide" (closeDetails)="closeDetails()">
-  </app-details>
+  <!-- Popup -->
+  <app-tour-guide-details
+    *ngIf="selectedGuide"
+    [guide]="selectedGuide"
+    (closeDetails)="closeDetails()"
+  >
+  </app-tour-guide-details>
 </div>

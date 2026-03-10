@@ -1,158 +1,158 @@
 .attractions-page {
-  background-color: #0d1b2a;
+  background: #021526;
   min-height: 100vh;
-  padding: 2rem;
+  padding: 1rem 0;
 }
-
 .attractions-list {
+  max-width: 61rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
-  width: 100%;
-  min-height: 100vh;
-  padding: 3rem 4rem;
-  box-sizing: border-box;
-  background-color: #0d1b2a;
+  align-items: center;
+  gap: 1.25rem;
 }
-
-
 
 .attraction-card {
   display: flex;
-  flex-direction: row;
-  background: #A3C4EB;
-  border-radius: 40px;
-  padding: 12px;
-  transition: transform 0.2s;
-  min-height: 22px;
-  align-items: center;
-width: 1280;
-height: 305px;
-top: 370px;
-
-
+  gap: 1.25rem;
+  background: #a3c4eb;
+  border-radius: 2.4rem;
+  padding: 0.3rem;
+  width: 80rem;
+  height: 16rem;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.attraction-card:hover { transform: translateY(-4px); }
+.attraction-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
 
-/* الصورة */
 .card-image {
   position: relative;
-  width: 260px;
-  min-width: 260px;
-  height: 220px;
-  border-radius: 14px;
-  overflow: hidden;
   flex-shrink: 0;
-  align-self: center;
-  
+  width: 245px;
+  height: 245px;
+  border-radius: 2.4rem;
+  overflow: hidden;
 }
 
 .card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 12px;
-  display: block; 
-   width: 477;
-height: 294;
-top: 6px;
-left: 16px;
-angle: 0 deg;
-opacity: 1;
-border-radius: 40px;
 }
 
-
-
-/* قلب */
 .heart-btn {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(255,255,255,0.85);
-  border: none;
-  border-radius: 50%;
+  top: 12px;
+  right: 12px;
   width: 36px;
   height: 36px;
-  font-size: 1rem;
-  cursor: pointer;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  border: none;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s;
-  z-index: 10;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    background 0.2s;
 }
 
-.heart-btn:hover { transform: scale(1.2); }
+.heart-btn:active {
+  transform: scale(1.15);
+  background: rgba(0, 0, 0, 0.5);
+}
 
-/* المحتوى */
+.heart-btn:hover {
+  background: rgba(255, 222, 112, 0.2);
+}
 .card-content {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  flex: 2;
-  padding: 0.6rem 0.4rem;
+  flex: 1;
+  padding: 0px 0px 1px;
+  height: 100%;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.6rem;
+  align-items: center;
+  gap: 12px;
 }
 
 .card-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #0d1b2a;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0d1526;
   margin: 0;
+  flex: 1;
+  padding: 20px 0px;
 }
 
-/* رايتنج */
 .card-rating {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
+  background: transparent;
+  color: #021526;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 
-.star { color: #f5c518; font-size: 1rem; }
+.star {
+  color: #021526;
+  font-size: 1rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
 
 .rating-number {
-  font-weight: bold;
-  color: #0d1b2a;
-  font-size: 0.95rem;
-}
-
-/* الوصف */
-.card-description {
-  color: #173B64;
+  font-weight: 700;
+  color: #021526;
   font-size: 0.9rem;
-  line-height: 1.7;
-  display: -webkit-box;
-  -webkit-line-clamp: 5;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex: 1;
-  margin-bottom: 0.8rem;
 }
 
-/* زرار */
+.card-description {
+  font-size: 0.88rem;
+  color: #2a3d56;
+  line-height: 1.6;
+  flex: 1;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  padding: 5px 0px;
+}
+
 .show-btn {
   align-self: flex-end;
-  background: #FFDE70 !important;   /* اللون الأساسي */
-  color: #000;
-  font-weight: bold;
+  background: #ffde70;
+  color: #021526;
+  font-weight: 700;
+  font-size: 0.95rem;
   border: none;
   border-radius: 25px;
-  padding: 0.7rem 2rem;    /* 👈 كبر */
+  padding: 0.6rem 1.6rem;
   cursor: pointer;
   transition: background 0.2s;
-  font-size: 1rem;          /* 👈 كبر الخط */
-  margin-top: 1rem;         /* 👈 ينزل تحت */
+  margin-bottom: 8px;
+  margin-right: 8px;
 }
 
 .show-btn:hover {
-  background: #ffd95a ;   /* لون الهوفر */
+  background: #ffd040;
 }

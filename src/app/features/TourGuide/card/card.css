@@ -1,116 +1,185 @@
-.tour-guide-page {
-  background: #0f1b2d;
+.guidepage {
+  background: #021526;
   min-height: 100vh;
-  padding: 32px 24px;
+  padding: 1rem 0;
 }
 
-.guides-list {
+/* Loading */
+.loading-wrap {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  max-width: 900px;
-  margin: 0 auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 7rem;
+  transform: translateY(5rem);
+  color: #f6faff;
 }
 
-.guide-card {
-  background: #a3c4eb;
-  border-radius: 16px;
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #284974;
+  border-top-color: #f5c518;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Page */
+.guides-page {
+  max-width: 61rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
   display: flex;
-  gap: 20px;
-  padding: 20px;
-  align-items: flex-start;
-  transition: transform 0.2s;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* Card */
+.guide-card {
+  display: flex;
+  gap: 1.25rem;
+  background: #a3c4eb;
+  border-radius: 2.4rem;
+  padding: 0.3rem;
+  width: 80rem;
+  height: 16rem;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .guide-card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-.guide-image-wrap {
+/* Image */
+.card-img-wrap {
   position: relative;
   flex-shrink: 0;
+  width: 245px;
+  height: 245px;
+  border-radius: 2.4rem;
+  overflow: hidden;
 }
-.guide-image {
-  width: 120px;
-  height: 140px;
+.card-img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: 12px;
 }
-.like-btn {
+
+/* Favorite Button */
+.fav-btn {
   position: absolute;
-  top: 8px;
-  right: 8px;
-  background: rgba(0, 0, 0, 0.4);
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
   border: none;
   border-radius: 50%;
-  width: 32px;
-  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s;
+  transition:
+    transform 0.2s,
+    background 0.2s;
 }
-.like-btn:hover {
-  background: rgba(0, 0, 0, 0.7);
+.fav-btn:hover {
+  transform: scale(1.15);
+  background: rgba(0, 0, 0, 0.5);
+}
+.fav-btn.active {
+  background: rgba(255, 222, 112, 0.2);
 }
 
-.guide-info {
+/* Card Body */
+.card-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
 }
-.guide-header {
+.card-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: flex-start;
 }
 .guide-name {
-  color: #173b64;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
+  color: #0d1526;
   margin: 0;
 }
-.guide-rating {
-  color: #ffde70;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-.guide-desc {
-  color: #173b64;
+.guide-price {
   font-size: 0.85rem;
+  color: #3a5070;
+  margin: 0.2rem 0 0;
+}
+
+/* Rating Badge */
+.rating-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  color: #021526;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Description */
+.guide-desc {
+  font-size: 0.88rem;
+  color: #2a3d56;
   line-height: 1.6;
-  margin: 0;
+  flex: 1;
+  overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
-  overflow: hidden;
 }
-.btn-show-more {
-  align-self: flex-end;
+
+/* Footer */
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+.btn-show {
   background: #ffde70;
-  color: #0f1b2d;
+  color: #0d1526;
   border: none;
-  border-radius: 50px;
-  padding: 8px 24px;
-  font-size: 0.85rem;
+  padding: 0.6rem 1.6rem;
+  border-radius: 24px;
   font-weight: 700;
+  font-size: 0.95rem;
   cursor: pointer;
   transition:
     background 0.2s,
     transform 0.15s;
-  margin-top: 8px;
 }
-.btn-show-more:hover {
-  background: #d4a900;
-  transform: translateY(-1px);
+.btn-show:hover {
+  background: #f5c842;
+  transform: scale(1.03);
 }
 
+/* Responsive */
 @media (max-width: 600px) {
   .guide-card {
     flex-direction: column;
   }
-  .guide-image {
+  .card-img-wrap {
     width: 100%;
     height: 200px;
   }
