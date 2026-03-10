@@ -1,0 +1,117 @@
+.tour-guide-page {
+  background: #0f1b2d;
+  min-height: 100vh;
+  padding: 32px 24px;
+}
+
+.guides-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.guide-card {
+  background: #a3c4eb;
+  border-radius: 16px;
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  align-items: flex-start;
+  transition: transform 0.2s;
+}
+.guide-card:hover {
+  transform: translateY(-2px);
+}
+
+.guide-image-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.guide-image {
+  width: 120px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+.like-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.like-btn:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.guide-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.guide-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.guide-name {
+  color: #173b64;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+.guide-rating {
+  color: #ffde70;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.guide-desc {
+  color: #173b64;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.btn-show-more {
+  align-self: flex-end;
+  background: #ffde70;
+  color: #0f1b2d;
+  border: none;
+  border-radius: 50px;
+  padding: 8px 24px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.15s;
+  margin-top: 8px;
+}
+.btn-show-more:hover {
+  background: #d4a900;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 600px) {
+  .guide-card {
+    flex-direction: column;
+  }
+  .guide-image {
+    width: 100%;
+    height: 200px;
+  }
+}

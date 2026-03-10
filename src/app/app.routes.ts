@@ -18,9 +18,7 @@ import { Details as RestaurantDetails } from './features/Restaurant/details/deta
 import { Reservation } from './features/Restaurant/reservation/reservation';
 
 // TourGuide
-import { Card as TourGuideCard } from './features/TourGuide/card/card';
-import { Details as TourGuideDetails } from './features/TourGuide/details/details';
-
+import { Card } from './features/TourGuide/card/card';
 // TouristAttraction
 import { TouristAttractionCard } from './features/TouristAttraction/card/card';
 import { TouristAttractionDetails } from './features/TouristAttraction/details/details';
@@ -62,8 +60,7 @@ export const routes: Routes = [
       { path: 'restaurant/reservation/:id', component: Reservation, title: 'Restaurant Reservation' },
 
       // TourGuide Routes
-      { path: 'Tour Guide', component: TourGuideCard, title: 'Tour Guides' },
-      { path: 'tour-guide/details/:id', component: TourGuideDetails, title: 'Tour Guide Details' },
+      { path: 'tour-guide', component: Card , title: 'Tour Guides'  },
 
       // TouristAttraction Routes
       { path: 'Attractions', component: TouristAttractionCard, title: 'Tourist Attractions' },
