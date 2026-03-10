@@ -189,8 +189,13 @@
           <div class="s-row s-total"><span>Total</span><span>{{ totalAmount | number }}LE</span></div>
         </div>
       </div>
+      
+      <!-- Error Message -->
+<p *ngIf="bookingError" style="color:#ef4444; font-size:.82rem; text-align:center; margin:.5rem 0 0;">
+  {{ bookingError }}
+</p>
 
-      <button class="btn-book mx-[4.88rem]" (click)="bookNow()">Book now</button>
+<button class="btn-book mx-[4.88rem]" (click)="bookNow()">Book now</button>
     </div>
 
   </div>

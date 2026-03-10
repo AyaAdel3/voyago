@@ -1,0 +1,333 @@
+/* ============================================================
+   booking.css  →  src/app/features/Hotel/booking/
+============================================================ */
+.booking-mainpage {
+  background: #021526;
+  min-height: 100vh;
+  padding: 1.5rem 1rem 3rem;
+  overflow-x: hidden;
+}
+
+.booking-page {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.page-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #F6FAFF;
+  margin-bottom: .5rem;
+}
+
+.page-subtitle {
+  color: #F6FAFF;
+  font-size: 1.3rem;
+  font-weight: 500;
+  font-family: 'Inter', serif;
+  margin-bottom: 2rem;
+}
+
+.booking-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+/* ── Payment Methods Container ──────────────────────────── */
+.payment-methods-box {
+  background: #A3C4EB;
+  border-radius: 2.5rem;
+  padding: 1.2rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.payment-method-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #173B64;
+  margin: 0 0 .8rem .4rem;
+}
+
+/* ── Payment Option ─────────────────────────────────────── */
+.payment-option {
+  display: flex;
+  align-items: flex-start;
+  gap: .9rem;
+  background: transparent;
+  border-radius: 1.5rem;
+  padding: .85rem 1rem;
+  margin-bottom: .5rem;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: background .2s, border-color .2s;
+}
+.payment-option:last-child { margin-bottom: 0; }
+
+.payment-option.selected {
+  background: #021526;
+  border-color: #F6FAFF;
+  border-width:  .2rem .2rem;
+  border-style: solid;
+  
+}
+
+.payment-option.selected .option-title { color: #F6FAFF; }
+.payment-option.selected .option-sub   { color: #F6FAFF; }
+.payment-option.selected .cash-note    { color: #F6FAFF; }
+.payment-option.selected .brand        { background:#A3C4EB; color: #173B64; border-radius: 2rem;  }
+
+.radio-dot {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #173B64;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 3px;
+  transition: background .2s, border-color .2s;
+}
+.radio-dot.active {
+  background: white;
+  border-color: white;
+  box-shadow: inset 0 0 0 4px #1e3a5f;
+}
+
+.option-icon {
+  width: 40px;
+  height: 40px;
+  background: #021526;
+  border-radius: 3.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.option-title { font-weight: 700; color: #0d1526; margin: 0; font-size: .95rem; }
+.option-sub   { font-size: .82rem; color: #173B64; margin: .2rem 0 .4rem; }
+.cash-note    { font-size: .82rem; color: #173B64; margin: .3rem 0 0; }
+
+.card-brands { display: flex; gap: .4rem; }
+.brand {
+  background: #A3C4EB;
+  color: #173B64;
+  font-size: .7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* ── Credit Card Form ───────────────────────────────────── */
+.card-form {
+  background: #A3C4EB;
+  border-radius: 2rem;
+  padding: 1.2rem;
+  margin-top: .5rem;
+}
+
+.form-header {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: 1rem;
+}
+
+.form-title  { font-weight: 700; color: #0F1A2E; font-size: 1.2rem; }
+
+.f-label {
+  font-size: .9rem;
+  color: #000000;
+  display: block;
+  margin-bottom: .3rem;
+  font-weight: 500;
+}
+
+.f-input {
+  width: 100%;
+  background: #173B64;
+  border: none;
+  border-radius: 8px;
+  padding: .65rem 1rem;
+  color: #FFFFFF;
+  font-size: .9rem;
+  margin-bottom: .8rem;
+  box-sizing: border-box;
+}
+.f-input::placeholder { color: #8899bb; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .75rem;
+}
+
+.secure-note {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .78rem;
+  color: #000000;
+  margin: 0;
+}
+
+/* ── Vodafone Cash ──────────────────────────────────────── */
+.vf-icon { background: #021526 !important; }
+
+.vf-input-row {
+  display: flex;
+  gap: .6rem;
+  align-items: center;
+  margin-bottom: .8rem;
+}
+
+.btn-otp {
+  background: #173B64;
+  color: white;
+  border: none;
+  padding: .65rem 1rem;
+  border-radius: 8px;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .2s;
+}
+.btn-otp:hover:not(:disabled) { background: #2d4f7a; }
+.btn-otp:disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── Deposit Section ────────────────────────────────────── */
+.deposit-section {
+  background: #A3C4EB;
+  border-radius: 2.5rem;
+  padding: 1rem 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.deposit-notice {
+  background: #173B64;
+ 
+  border-radius: 1.7rem;
+  padding: .75rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.deposit-title  { font-size: .78rem; font-weight: 700; color: #F6FAFF; margin: 0 0 .2rem; }
+.deposit-amount { font-size: 1.4rem; font-weight: 800; color: #F6FAFF; margin: 0 0 .2rem; }
+.deposit-sub    { font-size: .78rem; font-weight: 400; color: #F6FAFF; }
+.deposit-desc   { font-size: .8rem; color: #F6FAFF; margin: 0; }
+
+.deposit-choose-label {
+  font-size: .85rem;
+  font-weight: 700;
+  color: #173B64;
+  margin: 0 0 .6rem;
+}
+
+.deposit-tabs {
+  display: flex;
+  gap: .5rem;
+  margin-bottom: .8rem;
+}
+
+.deposit-tab {
+  flex: 1;
+  padding: .55rem;
+  border-radius: 10px;
+  background: #ced4db;
+  color: #000000;
+  font-size: .82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+}
+.deposit-tab.active-tab {
+  border-color: #1e3a5f;
+  background: #1e3a5f;
+  color: white;
+}
+
+/* ── Summary Box ────────────────────────────────────────── */
+.summary-box   { background: #A3C4EB; border-radius: 2rem; padding: 1.25rem; }
+.summary-title { font-size: 1.1rem; font-weight: 800; color: #0d1526; margin: 0 0 1rem; }
+
+.summary-items {
+  
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .8rem;
+}
+
+.s-item  { display: flex; align-items: center; gap: .8rem; }
+.s-icon  { width: 34px; height: 34px; background: #021526; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.s-label { font-size: .72rem; color: #173B64; margin: 0; }
+.s-val   { font-size: .88rem; color: #173B64; font-weight: 600; margin: .1rem 0 0; }
+
+.breakdown { margin-bottom: 1rem; }
+.b-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: .85rem;
+  color: #173B64;
+  padding: .3rem 0;
+  border-bottom: 1px solid #F6FAFF;
+}
+.b-total {
+  border: none;
+  padding-top: .5rem;
+  font-weight: 700;
+  color: #173B64;
+  font-size: 1rem;
+}
+.total-num { font-size: 1.2rem; font-weight: 800; }
+
+.b-deposit {
+  color: #540404;
+  font-weight: 700;
+  border-top: 1px solid #F6FAFF;
+  border-bottom: none;
+  margin-top: .3rem;
+  padding-top: .3rem;
+}
+
+.btn-confirm {
+  width: 100%;
+  background: #FFDE70;
+  color: #0d1526;
+  border: none;
+  padding: .85rem;
+  border-radius: 24px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background .2s;
+}
+.btn-confirm:hover:not(:disabled) { background: #f5c518; }
+.btn-confirm:disabled { opacity: .6; cursor: not-allowed; }
+
+.terms {
+  font-size: .75rem;
+  color: #F6FAFF;
+  text-align: center;
+  margin: .6rem 0 0;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .booking-layout { grid-template-columns: 1fr; }
+}
+.field-error {
+  color: #ef4444;
+  font-size: .78rem;
+  font-weight: 500;
+  margin: -.4rem 0 .5rem;
+}
+
+.f-input.input-error {
+  border: 1.5px solid #ef4444;
+}

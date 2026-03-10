@@ -129,32 +129,49 @@ export class Details implements OnInit {
   }
 
   changeRoom(i: number, delta: number): void {
-    this.selectedRooms[i].quantity = Math.max(0, this.selectedRooms[i].quantity + delta);
-    this.recalc();
+  this.selectedRooms[i].quantity = Math.max(0, this.selectedRooms[i].quantity + delta);
+  
+  // لو في room محددة امسح الـ error
+  if (this.selectedRooms.some(r => r.quantity > 0)) {
+    this.bookingError = '';
   }
+  
+  this.recalc();
+}
 
   toggleFeature(i: number, val: boolean): void {
     this.selectedFeatures[i].selected = val;
     this.recalc();
   }
 
-  bookNow(): void {
-    const bookingData: BookingData = {
-      hotelId:       this.hotel.id,
-      hotelName:     this.hotel.name,
-      checkIn:       this.checkIn,
-      checkOut:      this.checkOut,
-      rooms:         this.selectedRooms.filter(r => r.quantity > 0),
-      features:      this.selectedFeatures,
-      totalNights:   this.nights,
-      discount:      this.discount,
-      serviceCharge: this.serviceCharge,
-      totalAmount:   this.totalAmount,
-    };
-    this.hotelService.setBooking(bookingData);
-    this.router.navigate(['/hotel/booking']);
+  bookingError = '';  // ← أضيف ده مع باقي الـ variables
+
+bookNow(): void {
+  const selectedRooms = this.selectedRooms.filter(r => r.quantity > 0);
+
+  if (selectedRooms.length === 0) {
+    this.bookingError = 'Please select at least one room to continue.';
+    return;
   }
 
+  this.bookingError = '';  // امسح الـ error لو اختار room
+
+  const bookingData: BookingData = {
+    hotelId:       this.hotel.id,
+    hotelName:     this.hotel.name,
+    checkIn:       this.checkIn,
+    checkOut:      this.checkOut,
+    rooms:         selectedRooms,
+    features:      this.selectedFeatures,
+    totalNights:   this.nights,
+    discount:      this.discount,
+    serviceCharge: this.serviceCharge,
+    totalAmount:   this.totalAmount,
+  };
+
+  this.hotelService.setBooking(bookingData);
+  this.router.navigate(['/hotels/booking']);
+}
   submitReview(): void {
     if (!this.newComment.trim()) return;
     this.hotelService.submitReview(this.hotel.id, this.newComment, this.newRating).subscribe({
