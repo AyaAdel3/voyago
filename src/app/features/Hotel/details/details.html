@@ -53,24 +53,24 @@
       </div>
 
       <!-- DETAILS -->
-      <div class="details-section">
-        <h1 class="hotel-title">
+      <div class="details-section flex flex-col gap-2 text-[#F6FAFF]">
+        <h1 class="hotel-title flex items-center gap-2 text-[1.55rem] font-extrabold  m-0">
           {{ hotel.name }}
-          <span class="stars">
-            <svg *ngFor="let s of starsArray(hotel.stars)" viewBox="0 0 24 24" width="20" height="20" fill="#f5c518">
+          <span class="stars flex ">
+            <svg *ngFor="let s of starsArray(hotel.stars)" viewBox="0 0 24 24" width="20" height="20" fill="#FFDE70" class="translate-1" >
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
             </svg>
           </span>
         </h1>
-        <p class="hotel-location">{{ hotel.location }}</p>
+        <p class="hotel-location font-normal ">{{ hotel.location }}</p>
 
-        <div class="section-block">
-          <h2 class="section-title">About</h2>
+        <div class="section-block ">
+          <h2 class="section-title font-bold ">About</h2>
           <p class="about-text">{{ hotel.description }}</p>
         </div>
 
         <div class="section-block">
-          <h2 class="section-title">Great for your stay</h2>
+          <h2 class="section-title font-bold">Great for your stay</h2>
           <div class="amenities-row">
             <div *ngFor="let a of hotel.amenities" class="amenity-chip">
               <svg *ngIf="a === 'WiFi'" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -92,31 +92,35 @@
 
         <div class="host-row">
           <div class="host-avatar">
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="#8899bb">
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="#fff">
               <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
             </svg>
           </div>
-          <span class="host-name">Yara morad</span>
+          <span class="host-name font-medium ">Yara morad</span>
         </div>
       </div>
 
       <!-- REVIEWS -->
-      <div class="reviews-section">
+      <div class="reviews-section translate-x-[-1rem] translate-y-[-1rem]">
         <div class="write-review">
-          <div class="review-form-row">
+          <div class="review-form-row ">
             <input type="text" placeholder="comment" [(ngModel)]="newComment" class="review-input" />
-            <button class="btn-submit" (click)="submitReview()">Submit</button>
-          </div>
-          <div class="star-picker">
+           <div>
+                <div class="star-picker p-0.5 mb-1 mx-[.6rem]">
             <svg
               *ngFor="let s of [1,2,3,4,5]"
-              viewBox="0 0 24 24" width="28" height="28"
-              [style.fill]="s <= newRating ? '#f5c518' : '#8899bb'"
+              viewBox="0 0 24 24" width="20" height="20"
+              [style.fill]="s <= newRating ? '#FFDE70' : '#F6FAFF'"
               (click)="newRating = s" style="cursor:pointer"
             >
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
             </svg>
           </div>
+           <button class="btn-submit w-[8.7rem] h-10 rounded-[3rem]" (click)="submitReview()">Submit</button>
+           </div>
+            
+          </div>
+         
         </div>
 
         
@@ -190,7 +194,7 @@
     </div>
 
   </div>
-<div class="show-review translate-x-[4.26rem] translate-y-[1rem]">
+<div class="show-review translate-x-[4.26rem] translate-y-[-1.5rem] text-[#F6FAFF]">
      <h2 class="section-title">Customer Reviews</h2>
         <div class="reviews-grid">
           <div *ngFor="let review of reviews" class="review-card">

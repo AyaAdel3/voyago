@@ -23,9 +23,10 @@ export interface Attraction {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './card.html',
-  styleUrl: './card.css'
+  styleUrls: ['./card.css']
 })
 export class TouristAttractionCard {
+
   favorites: number[] = JSON.parse(localStorage.getItem('favorites') || '[]');
 
   constructor(private router: Router) {}
@@ -37,7 +38,7 @@ export class TouristAttractionCard {
       location: 'Fayoum, Egypt',
       rating: 4,
       image: 'https://picsum.photos/seed/wadi/800/400',
-      description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh. Cras orci fames velit tincidunt. Ultrices iaculis lobortis accumsan semper non lectus bibendum porta urna. earliest extinct suborder of whales.',
+      description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh.',
       place: 'Fayoum, Egypt',
       dateOfInscription: 2005,
       criteria: 'VIII',
@@ -52,7 +53,7 @@ export class TouristAttractionCard {
       location: 'Fayoum, Egypt',
       rating: 5,
       image: 'https://picsum.photos/seed/rayan/800/400',
-      description: 'Wadi El Rayan is a protected area featuring the only natural waterfalls in Egypt.Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh. Cras orci fames velit tincidunt. Ultrices iaculis lobortis accumsan semper non lectus bibendum porta urna..',
+      description: 'Wadi El Rayan is a protected area featuring the only natural waterfalls in Egypt.',
       place: 'Fayoum, Egypt',
       dateOfInscription: 2003,
       criteria: 'VII',
@@ -67,7 +68,7 @@ export class TouristAttractionCard {
       location: 'Fayoum, Egypt',
       rating: 4,
       image: 'https://picsum.photos/seed/qarun/800/400',
-      description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area. Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh. Cras orci fames velit tincidunt. Ultrices iaculis lobortis accumsan semper non lectus bibendum porta urna..',
+      description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area.',
       place: 'Fayoum, Egypt',
       dateOfInscription: 1989,
       criteria: 'IX',
@@ -78,21 +79,29 @@ export class TouristAttractionCard {
     }
   ];
 
+  // ⭐ generate stars for rating
+  getStars(rating: number): number[] {
+    return Array(Math.round(rating)).fill(0);
+  }
+
   isFavorite(id: number): boolean {
     return this.favorites.includes(id);
   }
 
   toggleFavorite(event: Event, id: number) {
     event.stopPropagation();
+
     if (this.isFavorite(id)) {
       this.favorites = this.favorites.filter(f => f !== id);
     } else {
       this.favorites.push(id);
     }
+
     localStorage.setItem('favorites', JSON.stringify(this.favorites));
   }
 
   goToDetails(id: number) {
     this.router.navigate(['/tourist-attraction/details', id]);
   }
+
 }

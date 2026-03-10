@@ -168,14 +168,5 @@ export class Details implements OnInit {
   }
 
   starsArray(n: number): number[] { return Array(n).fill(0); }
-    formatDate(dateStr: string): string {
-    const d = new Date(dateStr);
-    const months = ['Jan','Feb','Mar','Apr','May','Jun',
-                    'Jul','Aug','Sep','Oct','Nov','Dec'];
-    const day = d.getDate();
-    const suffix = day === 1||day===21||day===31 ? 'st'
-                 : day === 2||day===22 ? 'nd'
-                 : day === 3||day===23 ? 'rd' : 'th';
-    return `${months[d.getMonth()]} ${day}${suffix}, ${d.getFullYear()}`;
-  }
+  
 }
