@@ -17,7 +17,7 @@ export class Details {
 
   selectedDate: string = '';
   selectedTime: string = '18:00-19:00';
-  days: number = 2;
+  days: number = 1;
   paymentMethod: 'arrival' | 'online' | '' = '';
   isLoading = false;
   errorMessage = '';
