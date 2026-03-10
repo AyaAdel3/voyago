@@ -225,14 +225,14 @@
 .star-picker { display:flex; gap:.2rem; }
 
 .reviews-grid    { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:.75rem; }
-.review-card     { background:#0d2540; border-radius:12px; padding:.85rem; }
+.review-card     { background:#FEF5D6; border-radius:12px; padding:.85rem; }
 .reviewer-info   { display:flex; gap:.5rem; margin-bottom:.5rem; }
-.reviewer-avatar { width:32px;height:32px;background:#1e3a5f;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#F6FAFF;font-weight:700;font-size:.8rem;flex-shrink:0; }
-.reviewer-name   { font-size:.8rem; font-weight:700; color:#F6FAFF; margin:0; }
-.reviewer-country{ font-size:.7rem; color:#8899bb; margin:.1rem 0 .15rem; }
+.reviewer-avatar { width:32px;height:32px;background:#E6D0A1;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#F6FAFF;font-weight:700;font-size:.8rem;flex-shrink:0; }
+.reviewer-name   { font-size:.8rem; font-weight:700; color:#2D2323; margin:0; }
+.reviewer-country{ font-size:.7rem; color:#7B7266; margin:.1rem 0 .15rem; }
 .review-stars    { display:flex; gap:2px; }
-.review-title    { font-size:.82rem; font-weight:700; color:#F6FAFF; margin:0 0 .2rem; }
-.review-comment  { font-size:.76rem; color:#8899bb; line-height:1.5; margin:0; }
+.review-title    { font-size:1rem; font-weight:700; color:#1A1919; margin:0 0 .2rem; }
+.review-comment  { font-size:.76rem; color:#1A1919; line-height:1.5; margin:0; }
 
 /* ════════════════════════════════════════════════════════
    BOOKING WIDGET 
