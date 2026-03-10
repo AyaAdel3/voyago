@@ -7,7 +7,7 @@ import { Login } from '../../../core/Auth/login/login';
 import { ForgotPassword } from '../../../core/Auth/forgot-password/forgot-password';
 import { EnterCode } from '../../../core/Auth/enter-code/enter-code';
 import { ResetPassword } from '../../../core/Auth/reset-password/reset-password';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -15,11 +15,11 @@ import { ResetPassword } from '../../../core/Auth/reset-password/reset-password'
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
+
 export class Navbar implements OnInit {
   isDarkMode = false;
 
-  constructor(public modal: AuthModalService) {}
-
+constructor(public modal: AuthModalService, public router: Router) {}
   ngOnInit(): void {
     const savedMode = localStorage.getItem('darkMode');
     if (savedMode === 'true') {

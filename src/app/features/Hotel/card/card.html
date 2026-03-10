@@ -11,10 +11,10 @@
 </div>
 
 <!-- Hotels List -->
-<div *ngIf="!loading" class="hotels-page">
+<div *ngIf="!loading" class="hotels-page ">
   <div
     *ngFor="let hotel of hotels"
-    class="hotel-card"
+    class="hotel-card "
     (click)="goToDetails(hotel.id)"
   >
     <!-- ── صورة + زرار القلب ── -->
@@ -39,8 +39,8 @@
                2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
                C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
                c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-            [attr.fill]="hotelService.isFavorite(hotel.id) ? '#f43f5e' : 'none'"
-            [attr.stroke]="hotelService.isFavorite(hotel.id) ? '#f43f5e' : 'white'"
+            [attr.fill]="hotelService.isFavorite(hotel.id) ? '#FFDE70' : 'none'"
+            [attr.stroke]="hotelService.isFavorite(hotel.id) ? '#FFDE70' : 'white'"
             stroke-width="2"
           />
         </svg>

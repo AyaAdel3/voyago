@@ -36,7 +36,7 @@ export class Card implements OnInit {
   }
 
   goToDetails(id: number): void {
-    this.router.navigate(['/hotel/details', id]);
+    this.router.navigate(['/hotels/details', id]);
   }
 
   toggleFav(event: MouseEvent, hotelId: number): void {

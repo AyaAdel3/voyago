@@ -103,7 +103,7 @@
 
 .show-btn {
   align-self: flex-end;
-  background: #f5c518;
+  background: #FFDE70 !important;   /* اللون الأساسي */
   color: #000;
   font-weight: bold;
   border: none;
@@ -113,4 +113,6 @@
   transition: background 0.2s;
 }
 
-.show-btn:hover { background: #e6b800; }
+.show-btn:hover {
+  background: #ffd95a ;   /* لون الهوفر */
+}
