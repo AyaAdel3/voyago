@@ -1,10 +1,21 @@
-<div class="attractions-page">
-   <div class="attractions-list">
-    @for (attraction of attractions; track attraction.id) {
-      <div class="attraction-card">
+<div class="attractions-list">
 
-        <div class="card-image">
-          <img [src]="attraction.image" [alt]="attraction.name" />
+  @for (attraction of attractions; track attraction.id) {
+  <div class="attraction-card">
+
+    <div class="card-image">
+      <img [src]="attraction.image" [alt]="attraction.name" />
+      <button class="heart-btn" (click)="toggleFavorite($event, attraction.id)">
+        {{ isFavorite(attraction.id) ? '❤️' : '🤍' }}
+      </button>
+    </div>
+
+    <div class="card-content">
+      <div class="card-header">
+        <h3 class="card-title">{{ attraction.name }}</h3>
+        <div class="card-rating">
+          <span class="star">★</span>
+          <span class="rating-number">{{ attraction.rating }}.0</span>
         </div>
 
         <div class="card-content">
@@ -26,8 +37,11 @@
         </div>
 
       </div>
-    }
-  </div>
-    
-  </div>
+      <p class="card-description">{{ attraction.description }}</p>
+      <button class="show-btn" (click)="goToDetails(attraction.id)">Show place</button>
+    </div>
 
+  </div>
+  }
+
+</div>

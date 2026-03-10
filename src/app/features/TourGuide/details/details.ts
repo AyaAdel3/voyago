@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-details',
-  imports: [],
+  selector: 'app-tour-guide-details',
+  standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './details.html',
-  styleUrl: './details.css',
 })
 export class Details {}
