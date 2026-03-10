@@ -26,6 +26,8 @@ export interface Attraction {
   styleUrl: './card.css'
 })
 export class TouristAttractionCard {
+  favorites: number[] = JSON.parse(localStorage.getItem('favorites') || '[]');
+
   constructor(private router: Router) {}
 
   attractions: Attraction[] = [
@@ -34,8 +36,8 @@ export class TouristAttractionCard {
       name: 'Wadi El Hitan Protected Area',
       location: 'Fayoum, Egypt',
       rating: 4,
-      image: 'https://images.unsplash.com/photo-1539768942893-daf53e448371?w=800',
-      description: 'Wadi El Hitan, Whale Valley, is a UNESCO World Heritage Site in the Western Desert of Egypt. It contains 40-million-year-old fossils of the earliest extinct suborder of whales.',
+      image: 'https://picsum.photos/seed/wadi/800/400',
+      description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh. Cras orci fames velit tincidunt. Ultrices iaculis lobortis accumsan semper non lectus bibendum porta urna. earliest extinct suborder of whales.',
       place: 'Fayoum, Egypt',
       dateOfInscription: 2005,
       criteria: 'VIII',
@@ -49,8 +51,8 @@ export class TouristAttractionCard {
       name: 'Wadi El Rayan Waterfalls',
       location: 'Fayoum, Egypt',
       rating: 5,
-      image: 'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=800',
-      description: 'Wadi El Rayan is a protected area featuring the only natural waterfalls in Egypt. It includes two beautiful lakes connected by cascading waterfalls in the heart of the desert.',
+      image: 'https://picsum.photos/seed/rayan/800/400',
+      description: 'Wadi El Rayan is a protected area featuring the only natural waterfalls in Egypt.Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh. Cras orci fames velit tincidunt. Ultrices iaculis lobortis accumsan semper non lectus bibendum porta urna..',
       place: 'Fayoum, Egypt',
       dateOfInscription: 2003,
       criteria: 'VII',
@@ -64,8 +66,8 @@ export class TouristAttractionCard {
       name: 'Lake Qarun',
       location: 'Fayoum, Egypt',
       rating: 4,
-      image: 'https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=800',
-      description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area. It is a haven for migratory birds and offers water sports and fishing activities.',
+      image: 'https://picsum.photos/seed/qarun/800/400',
+      description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area. Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh. Cras orci fames velit tincidunt. Ultrices iaculis lobortis accumsan semper non lectus bibendum porta urna..',
       place: 'Fayoum, Egypt',
       dateOfInscription: 1989,
       criteria: 'IX',
@@ -76,11 +78,21 @@ export class TouristAttractionCard {
     }
   ];
 
-  goToDetails(id: number) {
-    this.router.navigate(['/tourist-attraction/details', id]);
+  isFavorite(id: number): boolean {
+    return this.favorites.includes(id);
   }
 
-  getStars(rating: number): number[] {
-    return Array(rating).fill(0);
+  toggleFavorite(event: Event, id: number) {
+    event.stopPropagation();
+    if (this.isFavorite(id)) {
+      this.favorites = this.favorites.filter(f => f !== id);
+    } else {
+      this.favorites.push(id);
+    }
+    localStorage.setItem('favorites', JSON.stringify(this.favorites));
+  }
+
+  goToDetails(id: number) {
+    this.router.navigate(['/tourist-attraction/details', id]);
   }
 }

@@ -1,116 +1,156 @@
 .attractions-page {
-  min-height: 100vh;
   background-color: #0d1b2a;
+  min-height: 100vh;
   padding: 2rem;
-  color: white;
-}
-
-.search-bar {
-  display: flex;
-  align-items: center;
-  background: #1b2e4b;
-  border-radius: 30px;
-  padding: 0.5rem 1rem;
-  width: 50%;
-  margin: 0 auto 2rem auto;
-}
-
-.search-bar input {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: white;
-  font-size: 1rem;
-  flex: 1;
-}
-
-.search-bar input::placeholder { color: #aaa; }
-
-.search-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
 }
 
 .attractions-list {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  max-width: 900px;
-  margin: 0 auto;
+  gap: 2rem;
+  width: 100%;
+  min-height: 100vh;
+  padding: 3rem 4rem;
+  box-sizing: border-box;
+  background-color: #0d1b2a;
 }
+
+
 
 .attraction-card {
   display: flex;
-  gap: 1.5rem;
-  background: #1b2e4b;
-  border-radius: 16px;
-  overflow: hidden;
+  flex-direction: row;
+  background: #A3C4EB;
+  border-radius: 40px;
+  padding: 12px;
   transition: transform 0.2s;
+  min-height: 22px;
+  align-items: center;
+width: 1280;
+height: 305px;
+top: 370px;
+
+
 }
 
-.attraction-card:hover {
-  transform: translateY(-4px);
-}
+.attraction-card:hover { transform: translateY(-4px); }
 
+/* الصورة */
 .card-image {
-  width: 280px;
-  min-width: 280px;
-  height: 200px;
+  position: relative;
+  width: 260px;
+  min-width: 260px;
+  height: 220px;
+  border-radius: 14px;
   overflow: hidden;
+  flex-shrink: 0;
+  align-self: center;
+  
 }
 
 .card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 12px;
+  display: block; 
+   width: 477;
+height: 294;
+top: 6px;
+left: 16px;
+angle: 0 deg;
+opacity: 1;
+border-radius: 40px;
 }
 
+
+
+/* قلب */
+.heart-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255,255,255,0.85);
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+  z-index: 10;
+}
+
+.heart-btn:hover { transform: scale(1.2); }
+
+/* المحتوى */
 .card-content {
-  padding: 1.2rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  flex: 1;
+  flex: 2;
+  padding: 0.6rem 0.4rem;
 }
 
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  margin-bottom: 0.6rem;
 }
 
 .card-title {
   font-size: 1.2rem;
   font-weight: bold;
-  color: white;
+  color: #0d1b2a;
   margin: 0;
 }
 
-.card-rating { color: #f5c518; font-size: 1.1rem; }
-.card-location { color: #aaa; font-size: 0.9rem; margin: 0.3rem 0; }
-
-.card-description {
-  color: #ccc;
-  font-size: 0.9rem;
-  line-height: 1.6;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+/* رايتنج */
+.card-rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
 }
 
+.star { color: #f5c518; font-size: 1rem; }
+
+.rating-number {
+  font-weight: bold;
+  color: #0d1b2a;
+  font-size: 0.95rem;
+}
+
+/* الوصف */
+.card-description {
+  color: #173B64;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  flex: 1;
+  margin-bottom: 0.8rem;
+}
+
+/* زرار */
 .show-btn {
   align-self: flex-end;
   background: #f5c518;
   color: #000;
   font-weight: bold;
   border: none;
-  border-radius: 20px;
-  padding: 0.5rem 1.5rem;
+  border-radius: 25px;
+  padding: 0.7rem 2rem;    /* 👈 كبر */
   cursor: pointer;
   transition: background 0.2s;
+  font-size: 1rem;          /* 👈 كبر الخط */
+  margin-top: 1rem;         /* 👈 ينزل تحت */
 }
 
 .show-btn:hover { background: #e6b800; }
