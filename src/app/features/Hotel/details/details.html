@@ -54,18 +54,18 @@
 
       <!-- DETAILS -->
       <div class="details-section flex flex-col gap-2 text-[#F6FAFF]">
-        <h1 class="hotel-title flex items-center gap-2 text-[1.55rem] font-extrabold  m-0">
+        <h1 class="hotel-title flex items-center gap-2 text-[1.55rem] font-extrabold m-0">
           {{ hotel.name }}
-          <span class="stars flex ">
-            <svg *ngFor="let s of starsArray(hotel.stars)" viewBox="0 0 24 24" width="20" height="20" fill="#FFDE70" class="translate-1" >
+          <span class="stars flex">
+            <svg *ngFor="let s of starsArray(hotel.stars)" viewBox="0 0 24 24" width="20" height="20" fill="#FFDE70" class="translate-1">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
             </svg>
           </span>
         </h1>
-        <p class="hotel-location font-normal ">{{ hotel.location }}</p>
+        <p class="hotel-location font-normal">{{ hotel.location }}</p>
 
-        <div class="section-block ">
-          <h2 class="section-title font-bold ">About</h2>
+        <div class="section-block">
+          <h2 class="section-title font-bold">About</h2>
           <p class="about-text">{{ hotel.description }}</p>
         </div>
 
@@ -96,34 +96,30 @@
               <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
             </svg>
           </div>
-          <span class="host-name font-medium ">Yara morad</span>
+          <span class="host-name font-medium">Yara morad</span>
         </div>
       </div>
 
       <!-- REVIEWS -->
       <div class="reviews-section translate-x-[-1rem] translate-y-[-1rem]">
         <div class="write-review">
-          <div class="review-form-row ">
+          <div class="review-form-row">
             <input type="text" placeholder="comment" [(ngModel)]="newComment" class="review-input" />
-           <div>
-                <div class="star-picker p-0.5 mb-1 mx-[.6rem]">
-            <svg
-              *ngFor="let s of [1,2,3,4,5]"
-              viewBox="0 0 24 24" width="20" height="20"
-              [style.fill]="s <= newRating ? '#FFDE70' : '#F6FAFF'"
-              (click)="newRating = s" style="cursor:pointer"
-            >
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
-            </svg>
+            <div>
+              <div class="star-picker p-0.5 mb-1 mx-[.6rem]">
+                <svg
+                  *ngFor="let s of [1,2,3,4,5]"
+                  viewBox="0 0 24 24" width="20" height="20"
+                  [style.fill]="s <= newRating ? '#FFDE70' : '#F6FAFF'"
+                  (click)="newRating = s" style="cursor:pointer"
+                >
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <button class="btn-submit w-[8.7rem] h-10 rounded-[3rem]" (click)="submitReview()">Submit</button>
+            </div>
           </div>
-           <button class="btn-submit w-[8.7rem] h-10 rounded-[3rem]" (click)="submitReview()">Submit</button>
-           </div>
-            
-          </div>
-         
         </div>
-
-        
       </div>
 
     </div>
@@ -138,12 +134,24 @@
 
       <div class="dates-row">
         <div class="date-field">
-          <label class="font-medium ">Check in</label>
-          <input type="date" [(ngModel)]="checkIn" (change)="recalc()" class="date-input" />
+          <label class="font-medium">Check in</label>
+          <input
+            type="date"
+            [(ngModel)]="checkIn"
+            (change)="onDateChange()"
+            class="date-input"
+            [class.input-date-error]="bookingError && !checkIn"
+          />
         </div>
         <div class="date-field">
-          <label >Check out</label>
-          <input type="date" [(ngModel)]="checkOut" (change)="recalc()" class="date-input" />
+          <label>Check out</label>
+          <input
+            type="date"
+            [(ngModel)]="checkOut"
+            (change)="onDateChange()"
+            class="date-input"
+            [class.input-date-error]="bookingError && !checkOut"
+          />
         </div>
       </div>
 
@@ -154,8 +162,8 @@
           <div class="option-right">
             <span class="option-price">{{ f.price }}LE</span>
             <div class="qty-ctrl">
-              <button (click)="toggleFeature(i, false)" >-</button>
-              <input type="checkbox" [checked]="f.selected" (change)="toggleFeature(i, !f.selected)" class="bg-transparent border-[#173B64]  border-[1px] rounded-[4px]" />
+              <button (click)="toggleFeature(i, false)">-</button>
+              <input type="checkbox" [checked]="f.selected" (change)="toggleFeature(i, !f.selected)" class="bg-transparent border-[#173B64] border-[1px] rounded-[4px]" />
               <button (click)="toggleFeature(i, true)">+</button>
             </div>
           </div>
@@ -189,38 +197,37 @@
           <div class="s-row s-total"><span>Total</span><span>{{ totalAmount | number }}LE</span></div>
         </div>
       </div>
-      
-      <!-- Error Message -->
-<p *ngIf="bookingError" style="color:#ef4444; font-size:.82rem; text-align:center; margin:.5rem 0 0;">
-  {{ bookingError }}
-</p>
 
-<button class="btn-book mx-[4.88rem]" (click)="bookNow()">Book now</button>
+      <p *ngIf="bookingError" class="booking-error-msg">{{ bookingError }}</p>
+
+      <button class="btn-book mx-[4.88rem]" (click)="bookNow()">Book now</button>
     </div>
 
   </div>
-<div class="show-review translate-x-[4.26rem] translate-y-[-1.5rem] text-[#F6FAFF]">
-     <h2 class="section-title">Customer Reviews</h2>
-        <div class="reviews-grid">
-          <div *ngFor="let review of reviews" class="review-card">
-            <div class="reviewer-info">
-              <div class="reviewer-avatar">{{ review.userName.charAt(0) }}</div>
-              <div>
-                <p class="reviewer-name">{{ review.userName }}</p>
-                <p class="reviewer-country">{{ review.userCountry }}</p>
-                <div class="review-stars">
-                  <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="11" height="11"
-                    [style.fill]="s <= review.rating ? '#f5c518' : '#3a5070'">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
-                  </svg>
-                </div>
-              </div>
+
+  <div class="show-review translate-x-[4.26rem] translate-y-[-1.5rem] text-[#F6FAFF]">
+    <h2 class="section-title">Customer Reviews</h2>
+    <div class="reviews-grid">
+      <div *ngFor="let review of reviews" class="review-card">
+        <div class="reviewer-info">
+          <div class="reviewer-avatar">{{ review.userName.charAt(0) }}</div>
+          <div>
+            <p class="reviewer-name">{{ review.userName }}</p>
+            <p class="reviewer-country">{{ review.userCountry }}</p>
+            <div class="review-stars">
+              <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="11" height="11"
+                [style.fill]="s <= review.rating ? '#f5c518' : '#3a5070'">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+              </svg>
             </div>
-            <p class="review-title">Amazing hotel</p>
-            <p class="review-comment">{{ review.comment }}</p>
           </div>
         </div>
-</div>
+        <p class="review-title">Amazing hotel</p>
+        <p class="review-comment">{{ review.comment }}</p>
+      </div>
+    </div>
+  </div>
+
   <!-- LIGHTBOX -->
   <div class="lightbox" *ngIf="lightboxOpen" (click)="closeLightbox()">
     <div class="lightbox-inner" (click)="$event.stopPropagation()">

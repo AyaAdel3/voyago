@@ -1,0 +1,72 @@
+/* ============================================================
+   booking-confirmed.css  →  src/app/features/Hotel/booking-confirmed/
+============================================================ */
+.confirmed-mainpage{
+      background: #021526;
+  min-height: 100vh;
+  padding: 1.5rem 1rem 3rem;
+  overflow-x: hidden;
+}
+.confirmed-page {
+  max-width:600px; margin:2rem auto; padding:0 1rem;
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+}
+
+/* ── Globe ──────────────────────────────────────────────── */
+.globe-wrap { position:relative; width:170px; height:150px; margin-bottom:1.5rem; font-size:2.5rem; }
+.globe { position:absolute; bottom:0; left:50%; transform:translateX(-50%); animation:float 3s ease-in-out infinite; }
+.pin   { position:absolute; top:0; right:10px; font-size:1.8rem; animation:bounce 1.5s ease-in-out infinite; }
+.plane { position:absolute; top:5px; left:5px; font-size:1.5rem; animation:fly 3s linear infinite; }
+
+@keyframes float  { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(-8px)} }
+@keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+@keyframes fly    { 0%{transform:translate(0,0) rotate(-10deg)} 50%{transform:translate(10px,-5px) rotate(5deg)} 100%{transform:translate(0,0) rotate(-10deg)} }
+
+/* ── Title ──────────────────────────────────────────────── */
+.title    { font-size:2rem; font-weight:800; color:#F6FAFF; margin:0 0 .5rem;  font-family: 'DM Serif Display', serif;
+ }
+.subtitle { color:#F6FAFF; font-size:.8rem; font-weight:600;margin:0 0 1.5rem; line-height:1.6;   font-family: 'Inter', serif;
+}
+
+/* ── Booking Card ───────────────────────────────────────── */
+.booking-card { width:100%; background:#A3C4EB; border-radius:2.5rem; overflow:hidden; margin-bottom:1.5rem; }
+
+.id-row  { background:#173B64; padding:2.2rem 1.2rem; border-radius: 28px;display:flex; justify-content:space-between; align-items:center; }
+.id-label { color:#F6FAFF; font-size:.85rem; }
+.id-val   { color:#F6FAFF; font-weight:600; font-size:.7rem; }
+
+.card-body { padding:1rem 1.2rem; display:flex; flex-direction:column; gap:.9rem; }
+
+.detail-item { display:flex; align-items:center; gap:.8rem; }
+.d-icon { width:36px;height:36px;background:#021526;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+.d-label { font-size:.75rem; color:#173B64; margin:0; transform: translateX(-.7rem);}
+.d-val   { font-size:.9rem; font-weight:600; color:#173B64; margin:.1rem 0 0; }
+.d-sub   { font-size:.78rem; color:#173B64; margin:.1rem 0 0; transform: translateX(-.5rem);}
+.d-label1{
+ font-size:.75rem; color:#173B64; margin:0; transform: translateX(-1.3rem);
+}
+.divider { height:1px; background:#F6FAFF; margin:0 1.2rem; }
+
+.payment-row { padding:1rem 1.2rem; display:flex; justify-content:space-between; align-items:center; }
+.pay-left    { display:flex; align-items:center; gap:.8rem; }
+.pay-right   { text-align:right; }
+
+.status-badge {
+  display:inline-block; background:#22c55e; color:#F6FAFF;
+  font-size:.75rem; font-weight:700; padding:2px 10px; border-radius:20px; margin-top:.2rem;
+}
+.status-badge.pending { background:#173B64; }
+.total-val { font-size:1rem; font-weight:700; color:#173B64; margin:.1rem 0 0; }
+
+/* ── Footer ─────────────────────────────────────────────── */
+.farewell { color:#F6FAFF; font-size:.77rem; font-weight:500;margin-bottom:1.5rem; }
+
+.btn-home {
+  background:#FFDE70; color:#0d1526; border:none;
+  padding:.8rem 2.5rem; border-radius:24px; font-weight:700; font-size:1rem;
+  cursor:pointer; transition:background .2s,transform .15s; margin-bottom:2rem;
+}
+.btn-home:hover { background:#f5c842; transform:scale(1.03); }
+
+.brand-name { font-size:1.5rem; font-weight:800; color:#A3C4EB; margin:0;  font-family: 'Manrope', serif;}
+.brand-tag  { color:#F6FAFF; font-size:.82rem; margin:.2rem 0 0; }

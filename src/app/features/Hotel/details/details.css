@@ -615,3 +615,14 @@
     right: -44px;
   }
 }
+.booking-error-msg {
+  color: #ef4444;
+  font-size: .82rem;
+  text-align: center;
+  margin: .5rem 0 0;
+  font-weight: 500;
+}
+
+.input-date-error {
+  border: 1.5px solid #ef4444 !important;
+}

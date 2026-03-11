@@ -36,6 +36,7 @@ export class Details implements OnInit {
   discount = 0;
   serviceCharge = 750;
   totalAmount = 0;
+  bookingError = '';
 
   // Review form
   newComment = '';
@@ -56,15 +57,10 @@ export class Details implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const id = +params['id'];
-      console.log('>>> params:', params);
-      console.log('>>> parsed id:', id);
-
       if (!id || isNaN(id)) {
-        console.warn('Invalid id, redirecting...');
         this.router.navigate(['/hotels']);
         return;
       }
-
       this.loading = true;
       this.error = false;
       this.hotel = null!;
@@ -77,14 +73,10 @@ export class Details implements OnInit {
   private loadHotel(id: number): void {
     this.hotelService.getHotelById(id).subscribe({
       next: hotel => {
-        console.log('>>> hotel response:', hotel);
-
         if (!hotel) {
-          console.warn('Hotel is null/undefined, redirecting...');
           this.router.navigate(['/hotels']);
           return;
         }
-
         this.hotel = hotel;
         this.selectedRooms    = this.hotelService.getDefaultRooms();
         this.selectedFeatures = this.hotelService.getDefaultFeatures();
@@ -93,8 +85,7 @@ export class Details implements OnInit {
         this.cdr.detectChanges();
         this.recalc();
       },
-      error: (err) => {
-        console.error('>>> loadHotel error:', err);
+      error: () => {
         this.loading = false;
         this.error = true;
         this.cdr.detectChanges();
@@ -111,14 +102,14 @@ export class Details implements OnInit {
     });
   }
 
-  // Gallery methods
+  // Gallery
   setActiveImage(index: number): void { this.activeImage = index; }
   openLightbox(index: number): void   { this.lbIndex = index; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; }
   closeLightbox(): void               { this.lightboxOpen = false; document.body.style.overflow = ''; }
   lbPrev(): void { if (this.lbIndex > 0) this.lbIndex--; }
   lbNext(): void { if (this.lbIndex < this.hotel.images.length - 1) this.lbIndex++; }
 
-  // Booking methods
+  // Booking
   recalc(): void {
     this.nights = calcNights(this.checkIn, this.checkOut);
     const rooms    = this.selectedRooms.reduce((s, r) => s + r.price * r.quantity, 0);
@@ -128,50 +119,68 @@ export class Details implements OnInit {
     this.totalAmount = this.basePrice - this.discount + features + this.serviceCharge;
   }
 
-  changeRoom(i: number, delta: number): void {
-  this.selectedRooms[i].quantity = Math.max(0, this.selectedRooms[i].quantity + delta);
-  
-  // لو في room محددة امسح الـ error
-  if (this.selectedRooms.some(r => r.quantity > 0)) {
-    this.bookingError = '';
+  private canClearError(): boolean {
+    return (
+      this.selectedRooms.some(r => r.quantity > 0) &&
+      !!this.checkIn &&
+      !!this.checkOut &&
+      new Date(this.checkOut) > new Date(this.checkIn)
+    );
   }
-  
-  this.recalc();
-}
+
+  onDateChange(): void {
+    if (this.canClearError()) this.bookingError = '';
+    this.recalc();
+  }
+
+  changeRoom(i: number, delta: number): void {
+    this.selectedRooms[i].quantity = Math.max(0, this.selectedRooms[i].quantity + delta);
+    if (this.canClearError()) this.bookingError = '';
+    this.recalc();
+  }
 
   toggleFeature(i: number, val: boolean): void {
     this.selectedFeatures[i].selected = val;
     this.recalc();
   }
 
-  bookingError = '';  // ← أضيف ده مع باقي الـ variables
+  bookNow(): void {
+    const selectedRooms = this.selectedRooms.filter(r => r.quantity > 0);
 
-bookNow(): void {
-  const selectedRooms = this.selectedRooms.filter(r => r.quantity > 0);
+    if (selectedRooms.length === 0) {
+      this.bookingError = 'Please select at least one room to continue.';
+      return;
+    }
 
-  if (selectedRooms.length === 0) {
-    this.bookingError = 'Please select at least one room to continue.';
-    return;
+    if (!this.checkIn || !this.checkOut) {
+      this.bookingError = 'Please select check-in and check-out dates.';
+      return;
+    }
+
+    if (new Date(this.checkOut) <= new Date(this.checkIn)) {
+      this.bookingError = 'Check-out date must be after check-in date.';
+      return;
+    }
+
+    this.bookingError = '';
+
+    const bookingData: BookingData = {
+      hotelId:       this.hotel.id,
+      hotelName:     this.hotel.name,
+      checkIn:       this.checkIn,
+      checkOut:      this.checkOut,
+      rooms:         selectedRooms,
+      features:      this.selectedFeatures,
+      totalNights:   this.nights,
+      discount:      this.discount,
+      serviceCharge: this.serviceCharge,
+      totalAmount:   this.totalAmount,
+    };
+
+    this.hotelService.setBooking(bookingData);
+    this.router.navigate(['/hotels/booking']);
   }
 
-  this.bookingError = '';  // امسح الـ error لو اختار room
-
-  const bookingData: BookingData = {
-    hotelId:       this.hotel.id,
-    hotelName:     this.hotel.name,
-    checkIn:       this.checkIn,
-    checkOut:      this.checkOut,
-    rooms:         selectedRooms,
-    features:      this.selectedFeatures,
-    totalNights:   this.nights,
-    discount:      this.discount,
-    serviceCharge: this.serviceCharge,
-    totalAmount:   this.totalAmount,
-  };
-
-  this.hotelService.setBooking(bookingData);
-  this.router.navigate(['/hotels/booking']);
-}
   submitReview(): void {
     if (!this.newComment.trim()) return;
     this.hotelService.submitReview(this.hotel.id, this.newComment, this.newRating).subscribe({
@@ -185,5 +194,4 @@ bookNow(): void {
   }
 
   starsArray(n: number): number[] { return Array(n).fill(0); }
-  
 }

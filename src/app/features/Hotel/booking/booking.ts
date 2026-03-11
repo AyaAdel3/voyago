@@ -23,10 +23,11 @@ export class Booking implements OnInit {
   cvv        = '';
 
   // Vodafone Cash fields
-  vodafoneNumber = '';
-  vodafoneOtp    = '';
-  otpSent        = false;
-  otpSending     = false;
+  vodafoneNumber        = '';
+  vodafoneOtp           = '';
+  otpSent               = false;
+  otpSending            = false;
+  private otpSentForNumber = '';
 
   // Cash on arrival deposit method
   depositMethod: 'credit' | 'vodafone' = 'credit';
@@ -63,18 +64,19 @@ export class Booking implements OnInit {
   }
 
   private resetFields(): void {
-    this.cardNumber     = '';
-    this.expiryDate     = '';
-    this.cvv            = '';
-    this.vodafoneNumber = '';
-    this.vodafoneOtp    = '';
-    this.otpSent        = false;
-    this.otpSending     = false;
-    this.cardError      = '';
-    this.expiryError    = '';
-    this.cvvError       = '';
-    this.vodafoneError  = '';
-    this.otpError       = '';
+    this.cardNumber       = '';
+    this.expiryDate       = '';
+    this.cvv              = '';
+    this.vodafoneNumber   = '';
+    this.vodafoneOtp      = '';
+    this.otpSent          = false;
+    this.otpSending       = false;
+    this.otpSentForNumber = '';
+    this.cardError        = '';
+    this.expiryError      = '';
+    this.cvvError         = '';
+    this.vodafoneError    = '';
+    this.otpError         = '';
   }
 
   // ── Credit Card Formatting & Validation ─────────────────
@@ -111,7 +113,7 @@ export class Booking implements OnInit {
     if (!/^\d{2}\/\d{2}$/.test(this.expiryDate)) return false;
     const [mm, yy] = this.expiryDate.split('/').map(Number);
     if (mm < 1 || mm > 12) return false;
-    const now = new Date();
+    const now       = new Date();
     const cardYear  = 2000 + yy;
     const cardMonth = mm;
     return (
@@ -142,8 +144,17 @@ export class Booking implements OnInit {
   // ── Vodafone Cash Validation ─────────────────────────────
 
   validateVodafoneNumber(): void {
-    this.vodafoneError = '';
+    this.vodafoneError  = '';
     this.vodafoneNumber = this.vodafoneNumber.replace(/\D/g, '');
+
+    // لو غير الرقم بعد ما بعت الـ OTP، reset
+    if (this.otpSent && this.vodafoneNumber !== this.otpSentForNumber) {
+      this.otpSent          = false;
+      this.otpSending       = false;
+      this.vodafoneOtp      = '';
+      this.otpError         = '';
+      this.otpSentForNumber = '';
+    }
   }
 
   validateOtp(): void {
@@ -163,8 +174,9 @@ export class Booking implements OnInit {
     if (!this.isValidVodafoneNumber()) return;
     this.otpSending = true;
     setTimeout(() => {
-      this.otpSent    = true;
-      this.otpSending = false;
+      this.otpSent          = true;
+      this.otpSending       = false;
+      this.otpSentForNumber = this.vodafoneNumber;
     }, 1500);
   }
 
