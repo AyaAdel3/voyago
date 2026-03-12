@@ -1,1 +1,267 @@
-<p>details works!</p>
+<!-- ============================================================
+  details.html  →  src/app/features/Restaurant/details/
+  الديزاين: gallery على اليسار + reservation widget على اليمين
+  وتحتهم: about + amenities + host + reviews
+============================================================ -->
+
+<div class="rest-page font-[Nunito Sans]">
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-wrap">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="!loading && error" class="loading-wrap" style="color:white;flex-direction:column;gap:1rem;">
+    <p>Failed to load restaurant. Please try again.</p>
+    <button (click)="router.navigate(['/Restaurants'])"
+      style="background:#f5c518;border:none;padding:.5rem 1.5rem;border-radius:8px;cursor:pointer;font-weight:700;">
+      Back to Restaurants
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!loading && !error && restaurant">
+
+    <!-- ══ TOP SECTION: gallery + widget ══ -->
+    <div class="top-row">
+
+      <!-- ── GALLERY (اليسار) ── -->
+      <div class="gallery-col">
+
+        <!-- Gallery grid: صورة كبيرة + grid صور صغيرة -->
+        <div class="gallery">
+          <!-- الصورة الكبيرة -->
+          <div class="gallery-main" (click)="openLightbox(activeImage)">
+            <img [src]="restaurant.images[activeImage]" [alt]="restaurant.name" />
+            <div class="main-overlay">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="white" style="opacity:.7">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+              </svg>
+            </div>
+          </div>
+
+          <!-- الصور الصغيرة (2x2 grid) -->
+          <div class="gallery-grid">
+            <div *ngFor="let img of restaurant.images.slice(1,5); let i = index"
+              class="gallery-thumb"
+              [class.active-thumb]="activeImage === i + 1"
+              (click)="setActiveImage(i + 1)">
+              <img [src]="img" [alt]="restaurant.name + ' ' + (i+2)" />
+              <!-- +N photos على آخر thumb -->
+              <div *ngIf="i === 3 && restaurant.images.length > 5"
+                class="more-photos"
+                (click)="openLightbox(i+1); $event.stopPropagation()">
+                +{{ restaurant.images.length - 5 }} photos
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- اسم الريستورانت + نجوم -->
+        <div class="rest-header">
+          <h1 class="rest-name">
+            {{ restaurant.name }}
+            <span class="stars translate-y-1">
+              <svg *ngFor="let s of starsArray(restaurant.stars)" viewBox="0 0 24 24" width="18" height="18" fill="#FFDE70">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+              </svg>
+            </span>
+          </h1>
+          <p class="rest-address">{{ restaurant.address }}</p>
+          <p class="rest-meta">{{ restaurant.cuisine }} • {{ restaurant.priceRange }}</p>
+        </div>
+
+        <!-- About -->
+        <div class="section-block">
+          <h2 class="section-title">About</h2>
+          <p class="about-text">{{ restaurant.description }}</p>
+        </div>
+
+        <!-- Amenities -->
+        <div class="section-block">
+          <h2 class="section-title">Great for your stay</h2>
+          <div class="amenities-row">
+            <div *ngFor="let a of restaurant.amenities" class="amenity-chip">
+              <!-- Valet parking icon -->
+              <svg *ngIf="a.toLowerCase().includes('valet') || a.toLowerCase().includes('parking')"
+                viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5z"/>
+              </svg>
+              <!-- Smoking icon -->
+              <svg *ngIf="a.toLowerCase().includes('smoking')"
+                viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M2 16h15v3H2zm18.5 0H22v3h-1.5zM18 16h1.5v3H18zM18.85 4C17.23 4 16 5.26 16 6.9V8h-2V6.9C14 4.16 16.1 2 18.85 2 21.6 2 23 3.67 23 5.9c0 1.9-1.15 3.58-3 4.4V12h-2v-2.1c1.2-.7 1.85-1.85 1.85-2.9-.01-1.57-.8-3-1-3z"/>
+              </svg>
+              {{ a }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Host (Yara morad) -->
+        <div class="host-row">
+          <div class="host-avatar">
+            <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff">
+              <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+            </svg>
+          </div>
+          <span class="host-name">Yara morad</span>
+        </div>
+       <!-- Review form -->
+          <div class="write-review">
+            <div class="review-form-row">
+              <input type="text" placeholder="comment" [(ngModel)]="newComment" class="review-input" />
+              <div class="review-actions">
+                <div class="star-picker">
+                  <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="22" height="22"
+                    [style.fill]="s <= newRating ? '#FFDE70' : '#8899bb'"
+                    (click)="newRating = s" style="cursor:pointer">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                  </svg>
+                </div>
+                <!-- TODO: تحقق من login قبل الـ submit -->
+                <button class="btn-submit" (click)="submitReview()">Submit</button>
+              </div>
+            </div>
+          </div>
+        
+      </div>
+
+      <!-- ── RESERVATION WIDGET (اليمين) ── -->
+      <div class="reservation-widget">
+
+        <!-- Date + Time -->
+        <div class="dt-row">
+          <div class="dt-field">
+            <label>Date</label>
+            <!-- Custom date display زي الهوتيل -->
+            <div class="custom-date" [class.field-error]="resError && !selectedDate">
+              <input type="date" [(ngModel)]="selectedDate" (change)="resError=''" class="date-input-hidden" />
+              <span class="date-display" [class.placeholder]="!selectedDate">
+                {{ selectedDate ? formatDate(selectedDate) : 'Select date' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="dt-field">
+            <label>Time</label>
+            <!-- Time selector على شكل pill زي الديزاين -->
+            <div class="time-select-wrap" [class.field-error]="resError && !selectedTime">
+             
+             <select [(ngModel)]="selectedTime" (change)="resError=''" class="time-select translate-x-2">
+  <option value="" disabled selected style="text-align:center">Select time</option>
+  <option *ngFor="let t of availableTimes" [value]="t">{{ t }}</option>
+</select>
+            </div>
+          </div>
+        </div>
+
+        <!-- How Many People -->
+        <div class="widget-section">
+          <h4 class="widget-label">How Many People?</h4>
+          <div class="guest-counter">
+            <button class="counter-btn" (click)="changeGuests(-1)" [disabled]="guestCount <= 1">-</button>
+            <span class="counter-val">{{ guestCount }}</span>
+            <button class="counter-btn" (click)="changeGuests(1)">+</button>
+          </div>
+        </div>
+
+        <!-- Table selection -->
+        <div class="widget-section">
+          <h4 class="widget-label">Table</h4>
+          <div *ngFor="let t of selectedTables; let i = index" class="option-row">
+            <span class="option-name">{{ t.type }}</span>
+            <div class="qty-ctrl">
+              <button (click)="changeTable(i, -1)">-</button>
+              <input type="checkbox" [checked]="t.quantity > 0"
+                (change)="changeTable(i, t.quantity > 0 ? -t.quantity : 1)"
+                class="table-check" />
+              <button (click)="changeTable(i, 1)">+</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guest Name -->
+        <div class="widget-section ">
+          <h4 class="widget-label ">Guest Name</h4>
+          <input type="text" placeholder="EX:Ahmed" [(ngModel)]="guestName"
+            (input)="resError=''"
+            class="text-input" [class.field-error]="resError && !guestName.trim()" />
+        </div>
+
+        <!-- Phone Number -->
+        <div class="widget-section">
+          <h4 class="widget-label">Phone Number</h4>
+          <input type="tel" placeholder="EX:0123456789" [(ngModel)]="phone"
+            (input)="resError=''"
+            class="text-input" [class.field-error]="resError && !phone.trim()" />
+        </div>
+
+        <!-- Error Message -->
+        <p *ngIf="resError" class="res-error-msg">⚠ {{ resError }}</p>
+
+        <!-- Reservation Button: TODO تحقق من login -->
+        <button class="btn-reserve" (click)="makeReservation()">Reservation</button>
+
+      </div>
+      
+    </div>
+    <!-- ══ REVIEWS SECTION ══ -->
+     <div class="comment ">
+      
+        <div class="reviews-section ">
+          <h2 class="section-title">Customer Reviews</h2>
+
+
+          <!-- Reviews grid -->
+          <div class="reviews-grid">
+            <div *ngFor="let rv of reviews" class="review-card">
+              <div class="reviewer-info">
+                <div class="reviewer-avatar">
+                  <img *ngIf="rv.userAvatar" [src]="rv.userAvatar" [alt]="rv.userName" class="avatar-img" />
+                  <span *ngIf="!rv.userAvatar">{{ rv.userName.charAt(0) }}</span>
+                </div>
+                <div>
+                  <p class="reviewer-name">{{ rv.userName }}</p>
+                  <p class="reviewer-country">{{ rv.userCountry }}</p>
+                  <div class="review-stars">
+                    <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="11" height="11"
+                      [style.fill]="s <= rv.rating ? '#f5c518' : '#3a5070'">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <p class="review-title">Amazing Resturant</p>
+              <p class="review-comment">{{ rv.comment }}</p>
+            </div>
+          </div>
+
+        </div>
+     </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" *ngIf="lightboxOpen" (click)="closeLightbox()">
+    <div class="lightbox-inner" (click)="$event.stopPropagation()">
+      <button class="lb-close" (click)="closeLightbox()">✕</button>
+      <button class="lb-arrow lb-prev" (click)="lbPrev()" [disabled]="lbIndex === 0">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+        </svg>
+      </button>
+      <img [src]="restaurant.images[lbIndex]" [alt]="restaurant.name" class="lb-img" />
+      <button class="lb-arrow lb-next" (click)="lbNext()" [disabled]="lbIndex === restaurant.images.length - 1">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+        </svg>
+      </button>
+      <div class="lb-counter">{{ lbIndex + 1 }} / {{ restaurant.images.length }}</div>
+      <div class="lb-dots">
+        <span *ngFor="let img of restaurant.images; let i = index"
+          class="lb-dot" [class.active]="i === lbIndex" (click)="lbIndex = i"></span>
+      </div>
+    </div>
+  </div>
+
+</div>

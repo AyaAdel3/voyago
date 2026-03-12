@@ -205,7 +205,8 @@
 
   </div>
 
-  <div class="show-review translate-x-[4.26rem] translate-y-[-1.5rem] text-[#F6FAFF]">
+  <div class="comment">
+    <div class="show-review text-[#F6FAFF]">
     <h2 class="section-title">Customer Reviews</h2>
     <div class="reviews-grid">
       <div *ngFor="let review of reviews" class="review-card">
@@ -226,6 +227,7 @@
         <p class="review-comment">{{ review.comment }}</p>
       </div>
     </div>
+  </div>
   </div>
 
   <!-- LIGHTBOX -->

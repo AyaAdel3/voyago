@@ -1,1 +1,105 @@
-<p>reservation works!</p>
+<!-- ============================================================
+  reservation.html  →  src/app/features/Restaurant/reservation/
+  صفحة تأكيد الحجز — زي الـ confirm_reservation.png بالظبط
+============================================================ -->
+
+<div class="confirm-page font-[Nunito Sans]">
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-wrap">
+    <div class="spinner"></div>
+  </div>
+
+  <div *ngIf="!loading && reservation" class="confirm-content">
+
+    <!-- Icon -->
+    <div class="confirm-icon">
+      <svg viewBox="0 0 24 24" width="48" height="48" fill="#f6faff">
+        <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+      </svg>
+    </div>
+
+    <!-- Title -->
+    <h1 class="confirm-title">Reservation Confirmed</h1>
+    <p class="confirm-subtitle">Your table has been successfully reserved</p>
+
+    <!-- Details Card -->
+    <div class="details-card">
+      <h2 class="rest-name-conf">{{ reservation.restaurantName }}</h2>
+
+      <div class="info-list">
+
+        <!-- Date -->
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#f6faff">
+              <path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="info-label">Date</p>
+            <p class="info-value">{{ formatDate(reservation.date) }}</p>
+          </div>
+        </div>
+
+        <!-- Time -->
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#f6faff">
+              <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L11 13.5V7h1.5v5.76l4.74 2.74-1.01 1.5z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="info-label">Time</p>
+            <p class="info-value">{{ formatTimeRange(reservation.time) }}</p>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#f6faff">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="info-label">Location</p>
+            <p class="info-value">123 Gourmet Avenue, Culinary District</p>
+          </div>
+        </div>
+
+        <!-- Guests -->
+        <div class="info-row">
+          <div class="info-icon">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="#f6faff">
+              <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="info-label">Guests</p>
+            <p class="info-value">{{ reservation.guestCount }} Guests</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Confirmation Number -->
+    <div class="conf-number">
+      <p class="conf-label">Confirmation Number</p>
+      <p class="conf-value">{{ confirmationNumber }}</p>
+    </div>
+
+    <!-- Return button -->
+    <button class="btn-return" (click)="router.navigate(['/home'])">
+      Return To Home
+    </button>
+
+    <!-- Footer branding -->
+    <div class="brand-footer">
+      <p class="brand-name">Voyago</p>
+      <p class="brand-tagline">Where Moments Become Memories</p>
+    </div>
+
+  </div>
+</div>
