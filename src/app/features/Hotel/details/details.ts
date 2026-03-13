@@ -26,7 +26,6 @@ export class Details implements OnInit {
   loading = true;
   error = false;
 
-  // Booking
   checkIn  = '';
   checkOut = '';
   nights   = 1;
@@ -38,11 +37,9 @@ export class Details implements OnInit {
   totalAmount = 0;
   bookingError = '';
 
-  // Review form
   newComment = '';
-  newRating = 5;
+  newRating = 0;
 
-  // Gallery
   activeImage = 0;
   lightboxOpen = false;
   lbIndex = 0;
@@ -72,7 +69,7 @@ export class Details implements OnInit {
 
   private loadHotel(id: number): void {
     this.hotelService.getHotelById(id).subscribe({
-      next: hotel => {
+      next: (hotel: Hotel | undefined) => {
         if (!hotel) {
           this.router.navigate(['/hotels']);
           return;
@@ -95,21 +92,19 @@ export class Details implements OnInit {
 
   private loadReviews(id: number): void {
     this.hotelService.getReviews(id).subscribe({
-      next: reviews => {
+      next: (reviews: Review[]) => {
         this.reviews = reviews;
         this.cdr.detectChanges();
       }
     });
   }
 
-  // Gallery
   setActiveImage(index: number): void { this.activeImage = index; }
   openLightbox(index: number): void   { this.lbIndex = index; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; }
   closeLightbox(): void               { this.lightboxOpen = false; document.body.style.overflow = ''; }
   lbPrev(): void { if (this.lbIndex > 0) this.lbIndex--; }
   lbNext(): void { if (this.lbIndex < this.hotel.images.length - 1) this.lbIndex++; }
 
-  // Booking
   recalc(): void {
     this.nights = calcNights(this.checkIn, this.checkOut);
     const rooms    = this.selectedRooms.reduce((s, r) => s + r.price * r.quantity, 0);
@@ -151,12 +146,10 @@ export class Details implements OnInit {
       this.bookingError = 'Please select at least one room to continue.';
       return;
     }
-
     if (!this.checkIn || !this.checkOut) {
       this.bookingError = 'Please select check-in and check-out dates.';
       return;
     }
-
     if (new Date(this.checkOut) <= new Date(this.checkIn)) {
       this.bookingError = 'Check-out date must be after check-in date.';
       return;
@@ -182,12 +175,12 @@ export class Details implements OnInit {
   }
 
   submitReview(): void {
-    if (!this.newComment.trim()) return;
+    if (!this.newComment.trim() || this.newRating === 0) return;
     this.hotelService.submitReview(this.hotel.id, this.newComment, this.newRating).subscribe({
-      next: review => {
+      next: (review: Review) => {
         this.reviews    = [review, ...this.reviews];
         this.newComment = '';
-        this.newRating  = 5;
+        this.newRating  = 0;
         this.cdr.detectChanges();
       },
     });

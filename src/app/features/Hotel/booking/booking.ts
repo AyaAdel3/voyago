@@ -17,22 +17,18 @@ export class Booking implements OnInit {
   selectedMethod: 'credit' | 'cash' | 'vodafone' = 'credit';
   isProcessing = false;
 
-  // Credit card fields
   cardNumber = '';
   expiryDate = '';
   cvv        = '';
 
-  // Vodafone Cash fields
   vodafoneNumber        = '';
   vodafoneOtp           = '';
   otpSent               = false;
   otpSending            = false;
   private otpSentForNumber = '';
 
-  // Cash on arrival deposit method
   depositMethod: 'credit' | 'vodafone' = 'credit';
 
-  // Error messages
   cardError     = '';
   expiryError   = '';
   cvvError      = '';
@@ -78,8 +74,6 @@ export class Booking implements OnInit {
     this.vodafoneError    = '';
     this.otpError         = '';
   }
-
-  // ── Credit Card Formatting & Validation ─────────────────
 
   formatCard(): void {
     this.cardError  = '';
@@ -141,13 +135,10 @@ export class Booking implements OnInit {
     return sum % 10 === 0;
   }
 
-  // ── Vodafone Cash Validation ─────────────────────────────
-
   validateVodafoneNumber(): void {
     this.vodafoneError  = '';
     this.vodafoneNumber = this.vodafoneNumber.replace(/\D/g, '');
 
-    // لو غير الرقم بعد ما بعت الـ OTP، reset
     if (this.otpSent && this.vodafoneNumber !== this.otpSentForNumber) {
       this.otpSent          = false;
       this.otpSending       = false;
@@ -180,12 +171,9 @@ export class Booking implements OnInit {
     }, 1500);
   }
 
-  // ── Confirm Booking ──────────────────────────────────────
-
   confirmBooking(): void {
     if (!this.booking) return;
 
-    // reset errors
     this.cardError = this.expiryError = this.cvvError = this.vodafoneError = this.otpError = '';
 
     let hasError = false;
