@@ -1,0 +1,213 @@
+/* ============================================================
+   details.css  →  src/app/features/BudgetPlanning/details/
+============================================================ */
+
+/* ── Page ───────────────────────────────────────────────── */
+.details-page {
+  background: #021526;
+  min-height: 100vh;
+  padding: 1.5rem 2rem 4rem;
+  color: #f6faff;
+}
+
+/* ── Page Header ─────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: .6rem;
+}
+.your-plan-label { font-size: .78rem; color: #8899bb; margin: 0 0 .2rem; }
+.plan-title      { font-size: 1.6rem; color: #f6faff; margin: 0; font-weight: 400; }
+.plan-title strong { font-weight: 800; }
+
+.header-budget       { text-align: right; }
+.header-budget-label { font-size: .78rem; color: #8899bb; display: block; }
+.header-budget-val   { font-size: 1.8rem; font-weight: 800; color: #f6faff; }
+
+/* ── Meta Row (Date / Time / Venue) ─────────────────────── */
+.meta-row {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.meta-item  { display: flex; align-items: center; gap: .6rem; }
+.meta-icon  {
+  width: 34px; height: 34px;
+  background: #173b64; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.meta-label { font-size: .72rem; color: #8899bb; margin: 0 0 .1rem; }
+.meta-value { font-size: .85rem; color: #f6faff; margin: 0; font-weight: 500; }
+
+/* ── Main Content Card ───────────────────────────────────── */
+.content-card {
+  background: #0d2540;
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* ── Section Title ───────────────────────────────────────── */
+.section-title { font-size: 1.4rem; font-weight: 700; color: #f6faff; margin: 0 0 .9rem; }
+
+/* ════════════════════════════════════════════════════════
+   SELECTED HOTEL (big card)
+════════════════════════════════════════════════════════ */
+.hotel-card-big {
+  background: #a3c4eb;
+  border-radius: 1rem;
+  overflow: hidden;
+  margin-bottom: 1.75rem;
+}
+.hotel-img-wrap { position: relative; height: 200px; }
+.hotel-img      { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Stars overlay на снимке */
+.stars-overlay {
+  position: absolute; bottom: 8px; left: 10px;
+  display: flex; align-items: center; gap: 4px;
+  background: rgba(0,0,0,.45); backdrop-filter: blur(4px);
+  padding: .25rem .6rem; border-radius: 12px;
+}
+.stars-count { font-size: .78rem; color: #f6faff; font-weight: 600; }
+
+.hotel-info        { padding: .9rem 1rem 1rem; }
+.hotel-name        { font-size: 1rem; font-weight: 700; color: #0d1526; margin: 0 0 .15rem; }
+.hotel-location    { font-size: .78rem; color: #3a5070; margin: 0 0 .5rem; }
+
+.amenities-row  { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .6rem; }
+.amenity-chip   {
+  display: flex; align-items: center; gap: .3rem;
+  background: rgba(23,59,100,.15); color: #0d2540;
+  padding: .22rem .65rem; border-radius: 12px; font-size: .72rem;
+}
+
+.hotel-price-row   { display: flex; gap: 2rem; }
+.price-per-night   { font-size: 1.1rem; font-weight: 700; color: #0d1526; margin: 0; }
+.price-total       { font-size: 1.1rem; font-weight: 700; color: #0d1526; margin: 0; }
+.price-label       { font-size: .72rem; color: #5a7090; margin: 0; }
+
+/* ════════════════════════════════════════════════════════
+   RESTAURANTS & ATTRACTIONS GRIDS
+════════════════════════════════════════════════════════ */
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.mini-card      { background: #021526; border-radius: .9rem; overflow: hidden; }
+.mini-img-wrap  { height: 110px; overflow: hidden; }
+.mini-img       { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s; }
+.mini-card:hover .mini-img { transform: scale(1.05); }
+
+.mini-info      { padding: .6rem .75rem .75rem; }
+.mini-name-row  { display: flex; justify-content: space-between; align-items: center; margin-bottom: .15rem; }
+.mini-name      { font-size: .82rem; font-weight: 700; color: #c8d6e8; }
+.mini-rating    { display: flex; align-items: center; gap: 3px; font-size: .75rem; color: #f6faff; }
+.mini-sub       { font-size: .72rem; color: #8899bb; margin: 0 0 .5rem; }
+
+.btn-view-sm {
+  background: #ffde70; color: #173b64;
+  border: none; padding: .3rem .85rem;
+  border-radius: 24px; font-size: .75rem; font-weight: 700;
+  cursor: pointer; transition: background .15s;
+  width: 100%;
+}
+.btn-view-sm:hover { background: #f5c842; }
+
+/* ════════════════════════════════════════════════════════
+   RIGHT SIDE — Cost Breakdown + Note + Save
+════════════════════════════════════════════════════════ */
+.right-side { display: flex; flex-direction: column; gap: .9rem; }
+
+/* Cost card */
+.cost-card {
+  background: #021526;
+  border-radius: 1rem;
+  padding: 1rem;
+}
+.cost-header {
+  display: flex; align-items: center; gap: .5rem;
+  background: #173b64; border-radius: .6rem;
+  padding: .6rem .9rem; margin-bottom: .85rem;
+  font-weight: 700; font-size: .9rem;
+}
+
+.cost-row {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .45rem 0;
+  border-bottom: 1px solid #0d2540;
+}
+.cost-row:last-of-type { border-bottom: none; }
+
+/* Icon circles */
+.cost-icon {
+  width: 28px; height: 28px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.hotel-icon { background: #173b64; }
+.rest-icon  { background: #1e3a5f; }
+.attr-icon  { background: #0f2e50; }
+
+.cost-name   { flex: 1; font-size: .8rem; color: #c8d6e8; }
+.cost-amount { font-size: .78rem; color: #f6faff; font-weight: 600; white-space: nowrap; }
+.cost-link   { color: #ffde70; cursor: pointer; text-decoration: underline; font-size: .75rem; }
+.cost-link:hover { color: #f5c842; }
+
+.cost-divider    { border: none; border-top: 1px solid #1e3a5f; margin: .5rem 0; }
+.cost-total-row  { display: flex; justify-content: space-between; align-items: center; }
+.cost-total-row span:first-child { font-size: .85rem; color: #8899bb; }
+.cost-total-val  { font-size: 1rem; font-weight: 800; color: #ffde70; }
+
+/* Note card */
+.note-card {
+  background: #0d2540;
+  border: 1px solid #1e3a5f;
+  border-radius: .75rem;
+  padding: .85rem;
+  display: flex; gap: .6rem; align-items: flex-start;
+  font-size: .76rem; color: #8bb5d9; line-height: 1.6;
+}
+.note-card p { margin: 0; }
+
+/* Save button */
+.btn-save-trip {
+  width: 100%;
+  background: #ffde70; color: #173b64;
+  border: none; padding: .75rem;
+  border-radius: 24px; font-weight: 700; font-size: .95rem;
+  cursor: pointer; transition: background .2s, transform .15s;
+}
+.btn-save-trip:hover { background: #f5c842; transform: scale(1.02); }
+
+/* ── No plan state ───────────────────────────────────────── */
+.no-plan {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  min-height: 100vh; gap: 1rem; color: #f6faff;
+}
+.no-plan button {
+  background: #ffde70; color: #173b64;
+  border: none; padding: .65rem 2rem;
+  border-radius: 24px; font-weight: 700;
+  cursor: pointer;
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .content-card   { grid-template-columns: 1fr; }
+  .items-grid     { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 540px) {
+  .items-grid     { grid-template-columns: 1fr; }
+  .meta-row       { flex-direction: column; gap: .75rem; }
+}

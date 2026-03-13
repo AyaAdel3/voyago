@@ -1,1 +1,221 @@
-<p>plan works!</p>
+<!-- ============================================================
+  plan.html  →  src/app/features/BudgetPlanning/plan/
+  Input Section + Generated Plan cards
+============================================================ -->
+
+<div class="budget-page font-[Nunito Sans]">
+
+  <!-- ══ INPUT SECTION ══════════════════════════════════ -->
+  <div class="input-section">
+    <div class="input-card">
+
+      <!-- Total Budget -->
+      <div class="input-field">
+        <label>Total Budget</label>
+        <input
+          type="number"
+          placeholder="Ex:2000EGP"
+          [(ngModel)]="totalBudget"
+          (input)="inputError=''"
+          class="budget-input"
+          min="0"
+        />
+      </div>
+
+      <!-- Number of Days -->
+      <div class="input-field">
+        <label>Number Of Days</label>
+        <div class="days-ctrl">
+          <button (click)="days = days > 1 ? days - 1 : 1" class="days-btn">-</button>
+          <span class="days-val">{{ days }}</span>
+          <button (click)="days = days + 1" class="days-btn">+</button>
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <button class="btn-generate" (click)="generatePlan()">Generate Plan</button>
+
+    </div>
+
+    <!-- Input Error -->
+    <p *ngIf="inputError" class="input-error">⚠ {{ inputError }}</p>
+  </div>
+
+  <!-- ══ GENERATED PLAN ════════════════════════════════ -->
+  <div *ngIf="planGenerated" class="plan-section">
+
+    <!-- Daily Budget Header -->
+    <div class="daily-header">
+      <div>
+        <p class="daily-label">Daily Budget</p>
+      </div>
+      <span class="daily-amount">{{ dailyBudget | number }}EGP</span>
+    </div>
+
+    <!-- Budget Breakdown pills -->
+    <div class="breakdown-row">
+      <div class="breakdown-pill">
+        <span class="pill-label">🏨 Hotels (50%)</span>
+        <span class="pill-amount">{{ breakdown.hotelBudget | number }}LE</span>
+      </div>
+      <div class="breakdown-pill">
+        <span class="pill-label">🍽 Restaurants (30%)</span>
+        <span class="pill-amount">{{ breakdown.restaurantBudget | number }}LE</span>
+      </div>
+      <div class="breakdown-pill">
+        <span class="pill-label">🏛 Attractions (20%)</span>
+        <span class="pill-amount">{{ breakdown.attractionBudget | number }}LE</span>
+      </div>
+    </div>
+    <hr class="divider" />
+
+    <!-- ════ HOTELS SECTION ════ -->
+    <div class="section-block">
+      <div class="section-header">
+        <h2 class="section-title">Recommended Hotels Section</h2>
+        <div class="carousel-btns">
+          <button class="carousel-btn" (click)="scrollHotels('prev')"
+            [disabled]="!canScroll(recommendedHotels, hotelOffset, 'prev')">‹</button>
+          <button class="carousel-btn" (click)="scrollHotels('next')"
+            [disabled]="!canScroll(recommendedHotels, hotelOffset, 'next')">›</button>
+        </div>
+      </div>
+
+      <!-- Hotel Warning -->
+      <p *ngIf="hotelWarning" class="section-warning">{{ hotelWarning }}</p>
+
+      <div class="cards-grid">
+        <div *ngFor="let h of visibleHotels()" class="item-card" [class.selected-card]="isHotelSelected(h.id)">
+          <div class="card-img-wrap">
+            <img [src]="h.images[0]" [alt]="h.name" class="card-img" />
+            <!-- selected badge -->
+            <div *ngIf="isHotelSelected(h.id)" class="selected-badge">✓ Selected</div>
+          </div>
+          <div class="card-info">
+            <div class="card-name-row">
+              <span class="card-name">{{ h.name }}</span>
+              <span class="card-rating">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                </svg>
+                {{ h.rating }}
+              </span>
+            </div>
+            <p class="card-price">{{ h.pricePerNight | number }}le for 1 night</p>
+            <p class="card-desc">{{ h.description | slice:0:100 }}...</p>
+            <div class="card-btns">
+              <button class="btn-view"    (click)="viewHotelDetails(h.id)">View Details</button>
+              <button class="btn-add"     (click)="addHotelToPlan(h)"
+                [class.btn-remove]="isHotelSelected(h.id)">
+                {{ isHotelSelected(h.id) ? 'Remove' : 'Add To Plan' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <p *ngIf="recommendedHotels.length === 0" class="empty-msg">
+        No hotels found within your budget. Try increasing your budget.
+      </p>
+    </div>
+
+    <!-- ════ RESTAURANTS SECTION ════ -->
+    <div class="section-block">
+      <div class="section-header">
+        <h2 class="section-title">Recommended Restaurants Section</h2>
+        <div class="carousel-btns">
+          <button class="carousel-btn" (click)="scrollRestaurants('prev')"
+            [disabled]="!canScroll(recommendedRestaurants, restaurantOffset, 'prev')">‹</button>
+          <button class="carousel-btn" (click)="scrollRestaurants('next')"
+            [disabled]="!canScroll(recommendedRestaurants, restaurantOffset, 'next')">›</button>
+        </div>
+      </div>
+
+      <p class="section-info">Select up to {{ days }} restaurant{{ days > 1 ? 's' : '' }} ({{ selectedRestaurants.length }}/{{ days }} selected)</p>
+      <p *ngIf="restaurantWarning" class="section-warning">{{ restaurantWarning }}</p>
+
+      <div class="cards-grid">
+        <div *ngFor="let r of visibleRestaurants()" class="item-card" [class.selected-card]="isRestaurantSelected(r.id)">
+          <div class="card-img-wrap">
+            <img [src]="r.images[0]" [alt]="r.name" class="card-img" />
+            <div *ngIf="isRestaurantSelected(r.id)" class="selected-badge">✓ Selected</div>
+          </div>
+          <div class="card-info">
+            <div class="card-name-row">
+              <span class="card-name">{{ r.name }}</span>
+              <span class="card-rating">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                </svg>
+                {{ r.rating }}
+              </span>
+            </div>
+            <p class="card-price">{{ r.cuisine }} • {{ r.priceRange }}</p>
+            <p class="card-desc">{{ r.description | slice:0:100 }}...</p>
+            <div class="card-btns">
+              <button class="btn-view"  (click)="viewRestaurantDetails(r.id)">View Details</button>
+              <button class="btn-add"   (click)="addRestaurantToPlan(r)"
+                [class.btn-remove]="isRestaurantSelected(r.id)">
+                {{ isRestaurantSelected(r.id) ? 'Remove' : 'Add To Plan' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ ATTRACTIONS SECTION ════ -->
+    <div class="section-block">
+      <div class="section-header">
+        <h2 class="section-title">Tourist Attractions Section</h2>
+        <div class="carousel-btns">
+          <button class="carousel-btn" (click)="scrollAttractions('prev')"
+            [disabled]="!canScroll(recommendedAttractions, attractionOffset, 'prev')">‹</button>
+          <button class="carousel-btn" (click)="scrollAttractions('next')"
+            [disabled]="!canScroll(recommendedAttractions, attractionOffset, 'next')">›</button>
+        </div>
+      </div>
+
+      <p class="section-info">Select up to {{ maxAttractions }} attractions ({{ selectedAttractions.length }}/{{ maxAttractions }} selected)</p>
+      <p *ngIf="attractionWarning" class="section-warning">{{ attractionWarning }}</p>
+
+      <div class="cards-grid">
+        <div *ngFor="let a of visibleAttractions()" class="item-card" [class.selected-card]="isAttractionSelected(a.id)">
+          <div class="card-img-wrap">
+            <img [src]="a.images[0]" [alt]="a.name" class="card-img" />
+            <div *ngIf="isAttractionSelected(a.id)" class="selected-badge">✓ Selected</div>
+            <div *ngIf="a.entryFee === 0" class="free-badge">Free</div>
+          </div>
+          <div class="card-info">
+            <div class="card-name-row">
+              <span class="card-name">{{ a.name }}</span>
+              <span class="card-rating">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                </svg>
+                {{ a.rating }}
+              </span>
+            </div>
+            <p class="card-price">{{ a.entryFee === 0 ? 'Free Entry' : (a.entryFee | number) + 'LE entry' }}</p>
+            <p class="card-desc">{{ a.description | slice:0:100 }}...</p>
+            <div class="card-btns">
+              <button class="btn-view"  (click)="viewAttractionDetails(a.id)">View Details</button>
+              <button class="btn-add"   (click)="addAttractionToPlan(a)"
+                [class.btn-remove]="isAttractionSelected(a.id)">
+                {{ isAttractionSelected(a.id) ? 'Remove' : 'Add To Plan' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ SAVE / DELETE ════ -->
+    <div class="plan-actions">
+      <button class="btn-save"   (click)="savePlan()">Save Plan</button>
+      <button class="btn-delete" (click)="deletePlan()">Delete Plan</button>
+    </div>
+
+  </div>
+</div>

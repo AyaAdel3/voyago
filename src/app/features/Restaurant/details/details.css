@@ -301,7 +301,13 @@
   margin-top: .5rem; transition: background .2s, transform .15s;
 }
 .btn-reserve:hover { background: #f5c842; transform: scale(1.02); }
-
+.qty-val {
+  min-width: 20px;
+  text-align: center;
+  font-weight: 700;
+  font-size: .9rem;
+  color: #173b64;
+}
 /* ════════════════════════════════════════════════════════
    LIGHTBOX
 ════════════════════════════════════════════════════════ */

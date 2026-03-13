@@ -102,11 +102,23 @@ export class Details implements OnInit {
     ) this.resError = '';
   }
 
+  formatPhone(): void {
+    this.phone = this.phone.replace(/\D/g, '').substring(0, 11);
+    if (this.resError) this.tryCleanError();
+  }
+
   makeReservation(): void {
     if (!this.selectedDate) { this.resError = 'Please select a date.'; return; }
     if (!this.selectedTime) { this.resError = 'Please select a time.'; return; }
     if (!this.guestName.trim()) { this.resError = 'Please enter your name.'; return; }
-    if (!this.phone.trim())     { this.resError = 'Please enter your phone number.'; return; }
+    if (!this.phone.trim()) { this.resError = 'Please enter your phone number.'; return; }
+
+    const validPrefixes = ['010', '011', '012', '015'];
+    const cleanPhone = this.phone.replace(/\D/g, '');
+    if (cleanPhone.length !== 11 || !validPrefixes.some(p => cleanPhone.startsWith(p))) {
+      this.resError = 'Please enter a valid Egyptian number (010, 011, 012, 015).';
+      return;
+    }
 
     this.resError = '';
 
@@ -118,7 +130,7 @@ export class Details implements OnInit {
       guestCount:     this.guestCount,
       tables:         this.selectedTables.filter(t => t.quantity > 0),
       guestName:      this.guestName,
-      phone:          this.phone,
+      phone:          cleanPhone,
       totalAmount:    0,
     };
 

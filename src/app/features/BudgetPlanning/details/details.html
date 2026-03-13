@@ -1,1 +1,231 @@
-<p>details works!</p>
+<!-- ============================================================
+  details.html  →  src/app/features/BudgetPlanning/details/
+  صفحة البلان المحفوظ — زي Budget_planning_details.png
+============================================================ -->
+
+<div class="details-page font-[Nunito Sans]" *ngIf="plan">
+
+  <!-- ══ TOP HEADER ══ -->
+  <div class="page-header">
+    <div>
+      <p class="your-plan-label">Your Trip Plan</p>
+      <h1 class="plan-title">
+        {{ plan.selectedHotel?.name ?? 'Your Trip' }},
+        <strong>{{ plan.selectedHotel?.location ?? '' }}</strong>
+      </h1>
+    </div>
+    <div class="header-budget">
+      <span class="header-budget-label">Daily Budget</span>
+      <span class="header-budget-val">{{ plan.dailyBudget | number }}EGP</span>
+    </div>
+  </div>
+
+  <!-- Event meta row (date/time/venue placeholders) -->
+  <div class="meta-row">
+    <div class="meta-item">
+      <div class="meta-icon">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="#f6faff">
+          <path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="meta-label">Event Date</p>
+        <p class="meta-value">{{ plan.createdAt | date:'EEEE, MMMM d, y' }}</p>
+      </div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-icon">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="#f6faff">
+          <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L11 13.5V7h1.5v5.76l4.74 2.74-1.01 1.5z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="meta-label">Event Time</p>
+        <p class="meta-value">6:00 PM – 11:00 PM</p>
+      </div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-icon">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="#f6faff">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+      </div>
+      <div>
+        <p class="meta-label">Venue</p>
+        <p class="meta-value">{{ plan.selectedHotel?.location ?? 'TBD' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MAIN CONTENT ══ -->
+  <div class="content-card">
+
+    <!-- ════ LEFT SIDE ════ -->
+    <div class="left-side">
+
+      <!-- Selected Hotel -->
+      <section *ngIf="plan.selectedHotel">
+        <h2 class="section-title">Selected Hotel</h2>
+        <div class="hotel-card-big">
+          <div class="hotel-img-wrap">
+            <img [src]="plan.selectedHotel.images[0]" [alt]="plan.selectedHotel.name" class="hotel-img" />
+            <!-- Stars overlay -->
+            <div class="stars-overlay">
+              <svg *ngFor="let s of starsArray(plan.selectedHotel.stars)" viewBox="0 0 24 24" width="14" height="14" fill="#f5c518">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+              </svg>
+              <span class="stars-count">{{ plan.selectedHotel.rating }}</span>
+            </div>
+          </div>
+          <div class="hotel-info">
+            <h3 class="hotel-name">{{ plan.selectedHotel.name }}</h3>
+            <p class="hotel-location">{{ plan.selectedHotel.location }}</p>
+            <!-- Amenities chips -->
+            <div class="amenities-row">
+              <span *ngFor="let a of plan.selectedHotel.amenities.slice(0,3)" class="amenity-chip">
+                {{ a }}
+              </span>
+            </div>
+            <div class="hotel-price-row">
+              <div>
+                <p class="price-per-night">{{ plan.selectedHotel.pricePerNight | number }}LE</p>
+                <p class="price-label">Per Night</p>
+              </div>
+              <div>
+                <p class="price-total">{{ hotelTotalCost | number }}LE</p>
+                <p class="price-label">{{ plan.days }} Nights Total</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Selected Restaurants -->
+      <section *ngIf="plan.selectedRestaurants.length > 0">
+        <h2 class="section-title">Selected Restaurants</h2>
+        <div class="items-grid">
+          <div *ngFor="let r of plan.selectedRestaurants" class="mini-card">
+            <div class="mini-img-wrap">
+              <img [src]="r.images[0]" [alt]="r.name" class="mini-img" />
+            </div>
+            <div class="mini-info">
+              <div class="mini-name-row">
+                <span class="mini-name">{{ r.name }}</span>
+                <span class="mini-rating">
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="#f5c518">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                  </svg>
+                  {{ r.rating }}
+                </span>
+              </div>
+              <p class="mini-sub">{{ r.cuisine }}</p>
+              <button class="btn-view-sm" (click)="viewRestaurantDetails(r.id)">View Details</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Tourist Attractions -->
+      <section *ngIf="plan.selectedAttractions.length > 0">
+        <h2 class="section-title">Tourist Attractions</h2>
+        <div class="items-grid">
+          <div *ngFor="let a of plan.selectedAttractions" class="mini-card">
+            <div class="mini-img-wrap">
+              <img [src]="a.images[0]" [alt]="a.name" class="mini-img" />
+            </div>
+            <div class="mini-info">
+              <div class="mini-name-row">
+                <span class="mini-name">{{ a.name }}</span>
+                <span class="mini-rating">
+                  <svg viewBox="0 0 24 24" width="10" height="10" fill="#f5c518">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                  </svg>
+                  {{ a.rating }}
+                </span>
+              </div>
+              <p class="mini-sub">{{ a.category }}</p>
+              <button class="btn-view-sm" (click)="viewAttractionDetails(a.id)">View Details</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ════ RIGHT SIDE (Cost Breakdown + Save) ════ -->
+    <div class="right-side">
+
+      <!-- Cost Breakdown card -->
+      <div class="cost-card">
+        <div class="cost-header">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="#f6faff">
+            <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+          </svg>
+          <span>Cost Breakdown</span>
+        </div>
+
+        <!-- Hotel cost -->
+        <div *ngIf="plan.selectedHotel" class="cost-row">
+          <div class="cost-icon hotel-icon">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="#f6faff">
+              <path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/>
+            </svg>
+          </div>
+          <span class="cost-name">{{ plan.selectedHotel.name }}</span>
+          <span class="cost-amount">{{ hotelTotalCost | number }}LE</span>
+        </div>
+
+        <!-- Restaurants costs -->
+        <div *ngFor="let r of plan.selectedRestaurants" class="cost-row">
+          <div class="cost-icon rest-icon">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="#f6faff">
+              <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+            </svg>
+          </div>
+          <span class="cost-name">{{ r.name }}</span>
+          <span class="cost-amount cost-link" (click)="viewRestaurantDetails(r.id)">Reservation Table</span>
+        </div>
+
+        <!-- Attractions costs -->
+        <div *ngFor="let a of plan.selectedAttractions" class="cost-row">
+          <div class="cost-icon attr-icon">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="#f6faff">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+            </svg>
+          </div>
+          <span class="cost-name">{{ a.name }}</span>
+          <span class="cost-amount cost-link" (click)="viewAttractionDetails(a.id)">
+            {{ a.entryFee === 0 ? 'Free' : (a.entryFee | number) + 'LE' }}
+          </span>
+        </div>
+
+        <hr class="cost-divider" />
+
+        <!-- Total -->
+        <div class="cost-total-row">
+          <span>Budget Used</span>
+          <span class="cost-total-val">{{ plan.totalCost | number }}LE</span>
+        </div>
+      </div>
+
+      <!-- Note card -->
+      <div class="note-card">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="#8bb5d9" style="flex-shrink:0;margin-top:2px">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+        <p>Saving Your Plan Does Not Complete Any Bookings. You Can Proceed To Book Individual Hotels, Restaurants, Or Tour Guides Separately At Your Convenience.</p>
+      </div>
+
+      <!-- Save Trip Plan button -->
+      <button class="btn-save-trip" (click)="saveTripPlan()">Save Trip Plan</button>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- No plan state -->
+<div *ngIf="!plan" class="no-plan">
+  <p>No plan found.</p>
+  <button (click)="router.navigate(['/Budget Planning'])">Create a Plan</button>
+</div>

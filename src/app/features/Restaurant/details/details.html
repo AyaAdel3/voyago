@@ -108,22 +108,22 @@
           <span class="host-name">Yara morad</span>
         </div>
        <!-- Review form -->
-        <!-- Review form -->
-<div class="write-review">
-  <div class="review-form-row">
-    <input type="text" placeholder="comment" [(ngModel)]="newComment" class="review-input" />
-    <div class="review-actions">
-      <div class="star-picker">
-        <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="22" height="22"
-          [style.fill]="s <= newRating ? '#FFDE70' : '#8899bb'"
-          (click)="newRating = s" style="cursor:pointer">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
-        </svg>
-      </div>
-      <button class="btn-submit" (click)="submitReview()">Submit</button>
-    </div>
-  </div>
-</div>
+          <div class="write-review">
+            <div class="review-form-row">
+              <input type="text" placeholder="comment" [(ngModel)]="newComment" class="review-input" />
+              <div class="review-actions">
+                <div class="star-picker">
+                  <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="22" height="22"
+                    [style.fill]="s <= newRating ? '#FFDE70' : '#8899bb'"
+                    (click)="newRating = s" style="cursor:pointer">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                  </svg>
+                </div>
+                <!-- TODO: تحقق من login قبل الـ submit -->
+                <button class="btn-submit" (click)="submitReview()">Submit</button>
+              </div>
+            </div>
+          </div>
         
       </div>
 
@@ -167,20 +167,18 @@
         </div>
 
         <!-- Table selection -->
-        <div class="widget-section">
-          <h4 class="widget-label">Table</h4>
-          <div *ngFor="let t of selectedTables; let i = index" class="option-row">
-            <span class="option-name">{{ t.type }}</span>
-            <div class="qty-ctrl">
-              <button (click)="changeTable(i, -1)">-</button>
-              <input type="checkbox" [checked]="t.quantity > 0"
-                (change)="changeTable(i, t.quantity > 0 ? -t.quantity : 1)"
-                class="table-check" />
-              <button (click)="changeTable(i, 1)">+</button>
-            </div>
-          </div>
-        </div>
-
+      <!-- Table selection -->
+<div class="widget-section">
+  <h4 class="widget-label">Table</h4>
+  <div *ngFor="let t of selectedTables; let i = index" class="option-row">
+    <span class="option-name">{{ t.type }}</span>
+    <div class="qty-ctrl">
+      <button (click)="changeTable(i, -1)" [disabled]="t.quantity === 0">-</button>
+      <span class="qty-val">{{ t.quantity }}</span>
+      <button (click)="changeTable(i, 1)">+</button>
+    </div>
+  </div>
+</div>
         <!-- Guest Name -->
         <div class="widget-section ">
           <h4 class="widget-label ">Guest Name</h4>
