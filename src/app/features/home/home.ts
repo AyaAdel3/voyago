@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Chatbot } from '../../shared/components/chatbot/chatbot';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, Chatbot],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -51,7 +53,7 @@ export class Home implements OnInit, OnDestroy {
   ngOnInit() {
     this.autoSlideInterval = setInterval(() => {
       this.nextOffer();
-      this.cdr.detectChanges(); // ← ده اللي بيحل المشكلة
+      this.cdr.detectChanges();
     }, 3000);
   }
 
@@ -61,15 +63,17 @@ export class Home implements OnInit, OnDestroy {
 
   nextOffer() {
     this.currentOfferIndex = (this.currentOfferIndex + 2) % this.offers.length;
-    this.cdr.detectChanges(); // ← وهنا برضو
+    this.cdr.detectChanges();
   }
 
   prevOffer() {
     this.currentOfferIndex = (this.currentOfferIndex - 2 + this.offers.length) % this.offers.length;
-    this.cdr.detectChanges(); // ← وهنا
+    this.cdr.detectChanges();
   }
 
   toggleLike(item: any) {
     item.liked = !item.liked;
   }
+
+   chatbotOpen = false;
 }

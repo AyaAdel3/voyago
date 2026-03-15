@@ -4,31 +4,37 @@
 
     <div class="details-container">
       <div class="details-left">
-        <!-- Gallery -->
+        <!-- GALLERY -->
         <div class="gallery">
+          <!-- صورة كبيرة -->
           <div class="gallery-main" (click)="openLightbox(activeImage)">
             <img [src]="attraction.images[activeImage]" [alt]="attraction.name" />
-            <div class="main-overlay"></div>
+            <div class="main-overlay">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="white" style="opacity: 0.7">
+                <path
+                  d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                />
+              </svg>
+            </div>
           </div>
 
+          <!-- صور صغيرة -->
           <div class="gallery-thumbs">
-            @for (img of attraction.images.slice(1, 4); track $index) {
+            <div
+              *ngFor="let img of attraction.images.slice(0, 3); let i = index"
+              class="gallery-thumb"
+              [class.active-thumb]="activeImage === i"
+              (click)="setActiveImage(i)"
+            >
+              <img [src]="img" [alt]="attraction.name + ' ' + (i + 1)" />
               <div
-                class="gallery-thumb"
-                [class.active-thumb]="activeImage === $index + 1"
-                (click)="setActiveImage($index + 1)"
+                *ngIf="i === 2 && attraction.images.length > 3"
+                class="more-photos"
+                (click)="openLightbox(i); $event.stopPropagation()"
               >
-                <img [src]="img" [alt]="attraction.name" />
-                @if ($index === 2 && attraction.images.length > 4) {
-                  <div
-                    class="more-photos"
-                    (click)="openLightbox($index + 1); $event.stopPropagation()"
-                  >
-                    +{{ attraction.images.length - 4 }} photos
-                  </div>
-                }
+                +{{ attraction.images.length - 3 }} photos
               </div>
-            }
+            </div>
           </div>
         </div>
 
@@ -36,9 +42,17 @@
         <div class="details-rating">
           <h1 class="details-title">{{ attraction.name }}</h1>
           <div class="stars-row">
-            @for (star of getStars(attraction.rating); track $index) {
-              <span class="star">★</span>
-            }
+            <svg
+              *ngFor="let s of getStars(attraction.rating)"
+              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              fill="#FFDE70"
+            >
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
+              />
+            </svg>
           </div>
         </div>
 
@@ -74,30 +88,35 @@
     </div>
   </div>
 
-  @if (lightboxOpen) {
-    <div class="lightbox" (click)="closeLightbox()">
-      <div class="lightbox-inner" (click)="$event.stopPropagation()">
-        <button class="lb-close" (click)="closeLightbox()">✕</button>
-        <button class="lb-arrow lb-prev" (click)="lbPrev()" [disabled]="lbIndex === 0">‹</button>
-        <img class="lb-img" [src]="attraction.images[lbIndex]" [alt]="attraction.name" />
-        <button
-          class="lb-arrow lb-next"
-          (click)="lbNext()"
-          [disabled]="lbIndex === attraction.images.length - 1"
+  <!-- LIGHTBOX -->
+  <div class="lightbox" *ngIf="lightboxOpen" (click)="closeLightbox()">
+    <div class="lightbox-inner" (click)="$event.stopPropagation()">
+      <button class="lb-close" (click)="closeLightbox()">✕</button>
+      <button class="lb-arrow lb-prev" (click)="lbPrev()" [disabled]="lbIndex === 0">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+        </svg>
+      </button>
+      <img [src]="attraction.images[lbIndex]" [alt]="attraction.name" class="lb-img" />
+      <button
+        class="lb-arrow lb-next"
+        (click)="lbNext()"
+        [disabled]="lbIndex === attraction.images.length - 1"
+      >
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+        </svg>
+      </button>
+      <div class="lb-counter">{{ lbIndex + 1 }} / {{ attraction.images.length }}</div>
+      <div class="lb-dots">
+        <span
+          *ngFor="let img of attraction.images; let i = index"
+          class="lb-dot"
+          [class.active]="i === lbIndex"
+          (click)="lbIndex = i"
         >
-          ›
-        </button>
-        <p class="lb-counter">{{ lbIndex + 1 }} / {{ attraction.images.length }}</p>
-        <div class="lb-dots">
-          @for (img of attraction.images; track $index) {
-            <span
-              class="lb-dot"
-              [class.active]="lbIndex === $index"
-              (click)="lbIndex = $index"
-            ></span>
-          }
-        </div>
+        </span>
       </div>
     </div>
-  }
+  </div>
 }

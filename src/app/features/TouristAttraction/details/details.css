@@ -65,8 +65,12 @@
   position: absolute;
   inset: 0;
   background: rgba(2, 21, 38, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background 0.2s;
 }
+
 .gallery-main:hover .main-overlay {
   background: rgba(2, 21, 38, 0.3);
 }
@@ -123,7 +127,8 @@
 .details-rating {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 .details-title {
   font-size: 1.6rem;
@@ -138,9 +143,10 @@
 
 .stars-row {
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 2px;
-  padding-top: 4px;
+  padding-top: 8px;
 }
 /* ── About ── */
 .about-section h3 {

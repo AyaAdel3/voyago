@@ -36,9 +36,9 @@
 .card-image {
   position: relative;
   flex-shrink: 0;
-  width: 380px;
-  height: 245px;
-  border-radius: 2.7rem;
+  width: 400px;
+  height: 100%;
+  border-radius: 2.4rem;
   overflow: hidden;
 }
 
