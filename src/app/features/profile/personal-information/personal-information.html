@@ -1,1 +1,77 @@
-<p>personal-information works!</p>
+<div class="profile-container">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="profile-image-wrapper">
+      <img src="https://i.pravatar.cc/150?img=47" alt="profile" class="profile-img" />
+      <span class="camera-icon">📷</span>
+    </div>
+
+    <ul class="sidebar-links">
+      <li routerLink="/profile/personal-information" routerLinkActive="active">
+        <span>👤</span> Personal Information
+      </li>
+      <li routerLink="/profile/favorites" routerLinkActive="active">
+        <span>🤍</span> Favorites
+      </li>
+      <li routerLink="/profile/saved-plan" routerLinkActive="active">
+        <span>📋</span> Saved Plan
+      </li>
+    </ul>
+
+    <div class="logout">↪ Log Out</div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="info-header">
+      <h2>Personal Information</h2>
+      <button class="edit-btn" *ngIf="!isEditing" (click)="onEdit()">Edit</button>
+      <button class="save-btn" *ngIf="isEditing" (click)="onSave()">Save</button>
+    </div>
+
+    <!-- View Mode -->
+    <ng-container *ngIf="!isEditing">
+      <p>{{ user.name }}</p>
+      <p>{{ user.email }}</p>
+      <p>{{ user.phone }}</p>
+    </ng-container>
+
+    <!-- Edit Mode -->
+    <ng-container *ngIf="isEditing">
+
+      <div class="input-group">
+        <input
+          type="text"
+          [(ngModel)]="editData.name"
+          placeholder="Enter your full name"
+          class="edit-input" />
+      </div>
+
+      <div class="input-group">
+        <input
+          type="email"
+          [(ngModel)]="editData.email"
+          placeholder="Enter your email"
+          class="edit-input"
+          [class.error]="emailError"
+          (blur)="validateEmail()" />
+        <span class="error-msg" *ngIf="emailError">{{ emailError }}</span>
+      </div>
+
+      <div class="input-group">
+        <input
+          type="text"
+          [(ngModel)]="editData.phone"
+          placeholder="01XXXXXXXXX"
+          class="edit-input"
+          [class.error]="phoneError"
+          (blur)="validatePhone()" />
+        <span class="error-msg" *ngIf="phoneError">{{ phoneError }}</span>
+      </div>
+
+    </ng-container>
+
+  </div>
+
+</div>

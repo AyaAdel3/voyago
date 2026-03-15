@@ -1,0 +1,156 @@
+:host {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 140px);
+}
+
+.profile-container {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  background-color: #0d1b2a;
+  color: white;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: 350px;
+  min-width: 260px;
+  background-color: #0d1b2a;
+  padding: 35px 35px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-right: 8px solid #3a5068;
+}
+
+.profile-image-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.profile-img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.camera-icon {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: #1e2e40;
+  border-radius: 50%;
+  padding: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.sidebar-links li {
+  padding: 12px 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #aaa;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.sidebar-links li.active {
+  color: #f5c842;
+  border-bottom: 2px solid #f5c842;
+  font-weight: bold;
+}
+
+.logout {
+  margin-top: 40px;
+  padding-top: 16px;
+  color: #aaa;
+  font-size: 14px;
+  cursor: pointer;
+  align-self: flex-start;
+  padding-left: 10px;
+}
+
+/* ===== Content ===== */
+.content {
+  flex: 1;
+  padding: 60px 80px;
+  background-color: #0f2236;
+}
+
+.info-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 350px;
+  margin-bottom: 24px;
+  white-space: nowrap;
+}
+
+.info-header h2 {
+  font-size: 22px;
+  color: white;
+  white-space: nowrap;
+}
+
+.edit-btn,
+.save-btn {
+  background-color: #f5c842;
+  color: #0d1b2a;
+  border: none;
+  padding: 8px 24px;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.content p {
+  color: #7a9cc6;
+  margin-bottom: 14px;
+  font-size: 15px;
+}
+
+/* ===== Edit Inputs ===== */
+.input-group {
+  margin-bottom: 16px;
+}
+
+.edit-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #f5c842;
+  color: #7a9cc6;
+  font-size: 15px;
+  padding: 6px 0;
+  width: 300px;
+  outline: none;
+}
+
+.edit-input::placeholder {
+  color: #f5c842;
+  opacity: 0.8;
+}
+
+.edit-input.error {
+  border-bottom: 1px solid #ff4d4d;
+}
+
+.error-msg {
+  color: #ff4d4d;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}

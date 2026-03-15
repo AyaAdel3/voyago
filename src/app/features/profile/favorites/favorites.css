@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+:host {
+    display: block;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* لمنع اختيار الصور بالماوس */
+img {
+    -webkit-user-drag: none;
+}
+
+/* تحسين السكرول */
+main {
+    max-height: 100vh;
+    overflow-y: auto;
+}

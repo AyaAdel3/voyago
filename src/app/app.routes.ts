@@ -1,17 +1,15 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './core/layouts/main-layout/main-layout';
 
-
-
-
 // Home
 import { Home } from './features/home/home';
 
 // Hotel
 import { Card as HotelCard } from './features/Hotel/card/card';
 import { Details as HotelDetails } from './features/Hotel/details/details';
-import { Booking as HotelBooking }               from './features/Hotel/booking/booking';
+import { Booking as HotelBooking } from './features/Hotel/booking/booking';
 import { BookingConfirmed as HotelBookingConfirmed } from './features/Hotel/booking-confirmed/booking-confirmed';
+
 // Restaurant
 import { Card as RestaurantCard } from './features/Restaurant/card/card';
 import { Details as RestaurantDetails } from './features/Restaurant/details/details';
@@ -19,10 +17,10 @@ import { Reservation } from './features/Restaurant/reservation/reservation';
 
 // TourGuide
 import { Card } from './features/TourGuide/card/card';
+
 // TouristAttraction
 import { TouristAttractionCard } from './features/TouristAttraction/card/card';
 import { TouristAttractionDetails } from './features/TouristAttraction/details/details';
-
 
 // BudgetPlanning
 import { Main as BudgetMain } from './features/BudgetPlanning/main/main';
@@ -30,9 +28,9 @@ import { Plan } from './features/BudgetPlanning/plan/plan';
 import { Details as BudgetDetails } from './features/BudgetPlanning/details/details';
 
 // Profile
-import { Favorites } from './features/profile/favorites/favorites';
+import { FavoritesComponent } from './features/profile/favorites/favorites'; 
 import { PersonalInformation } from './features/profile/personal-information/personal-information';
-import { SavedPlan } from './features/profile/saved-plan/saved-plan';
+import { SavedPlanComponent } from './features/profile/saved-plan/saved-plan';
 
 // Not Found
 import { NotFound } from './features/not-found/not-found';
@@ -50,22 +48,23 @@ export const routes: Routes = [
       { path: 'home', component: Home, title: 'Home' },
 
       // Hotel Routes
-{
-  path: 'hotels',
-  children: [
-    { path: '', component: HotelCard, title: 'Hotels' }, // /hotels
-    { path: 'details/:id', component: HotelDetails, title: 'Hotel Details'  ,runGuardsAndResolvers: 'paramsChange'}, // /hotels/details/1
-    { path: 'booking', component: HotelBooking, title: 'Hotel Booking' },
-    { path: 'booking-confirmed', component: HotelBookingConfirmed, title: 'Booking Confirmed' },
-  ]
-},
+      {
+        path: 'hotels',
+        children: [
+          { path: '', component: HotelCard, title: 'Hotels' },
+          { path: 'details/:id', component: HotelDetails, title: 'Hotel Details', runGuardsAndResolvers: 'paramsChange' },
+          { path: 'booking', component: HotelBooking, title: 'Hotel Booking' },
+          { path: 'booking-confirmed', component: HotelBookingConfirmed, title: 'Booking Confirmed' },
+        ]
+      },
+
       // Restaurant Routes
       { path: 'Restaurants', component: RestaurantCard, title: 'Restaurants' },
       { path: 'restaurant/details/:id', component: RestaurantDetails, title: 'Restaurant Details' },
       { path: 'restaurant/reservation/:id', component: Reservation, title: 'Restaurant Reservation' },
 
       // TourGuide Routes
-      { path: 'tour-guide', component: Card , title: 'Tour Guides'  },
+      { path: 'tour-guide', component: Card, title: 'Tour Guides' },
 
       // TouristAttraction Routes
       { path: 'Attractions', component: TouristAttractionCard, title: 'Tourist Attractions' },
@@ -77,9 +76,10 @@ export const routes: Routes = [
       { path: 'budget-planning/details/:id', component: BudgetDetails, title: 'Budget Details' },
 
       // Profile Routes
-      { path: 'profile/favorites', component: Favorites, title: 'My Favorites' },
+      { path: 'profile', redirectTo: 'profile/personal-information', pathMatch: 'full' },
       { path: 'profile/personal-information', component: PersonalInformation, title: 'Personal Information' },
-      { path: 'profile/saved-plan', component: SavedPlan, title: 'Saved Plans' },
+      { path: 'profile/favorites', component: FavoritesComponent, title: 'My Favorites' }, 
+      { path: 'profile/saved-plan', component: SavedPlanComponent, title: 'Saved Plans' },
 
       // Not Found
       { path: '**', component: NotFound, title: 'Page Not Found' },
