@@ -1,10 +1,11 @@
 import { Component, Input, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { TourGuide } from '../card/card';
 
 @Component({
-   selector: 'app-tour-guide-details',
+  selector: 'app-tour-guide-details',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './details.html',
@@ -19,8 +20,10 @@ export class Details {
   selectedTime: string = '18:00-19:00';
   days: number = 1;
   paymentMethod: 'arrival' | 'online' | '' = '';
-  isLoading = false;
   errorMessage = '';
+  isLoading = false;
+
+  constructor(private router: Router) {}
 
   get totalPrice(): number {
     return this.guide.pricePerDay * this.days;
@@ -36,15 +39,33 @@ export class Details {
   onClose(): void { this.closeDetails.emit(); }
 
   onBookNow(): void {
-    if (!this.selectedDate) { this.errorMessage = 'Please select a date.'; return; }
-    if (!this.paymentMethod) { this.errorMessage = 'Please select a payment method.'; return; }
-    if (this.days < 1) { this.errorMessage = 'Duration must be at least 1 day.'; return; }
+    if (!this.selectedDate) {
+      this.errorMessage = 'Please select a date.';
+      return;
+    }
+    if (!this.selectedTime) {
+      this.errorMessage = 'Please select a time.';
+      return;
+    }
+    if (this.days < 1) {
+      this.errorMessage = 'Duration must be at least 1 day.';
+      return;
+    }
+
     this.errorMessage = '';
     this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
-      alert('Booking confirmed! Total: ' + this.totalPrice + ' LE');
-      this.onClose();
-    }, 1000);
+
+    const bookingData = {
+      guideId:    this.guide.id,
+      guideName:  this.guide.name,
+      guideImage: this.guide.image,
+      date:       this.selectedDate,
+      time:       this.selectedTime,
+      days:       this.days,
+      totalPrice: this.totalPrice,
+    };
+    sessionStorage.setItem('tourGuideBooking', JSON.stringify(bookingData));
+
+    this.router.navigate(['/tour-guide/booking']);
   }
 }

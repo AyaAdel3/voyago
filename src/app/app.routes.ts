@@ -1,38 +1,39 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './core/layouts/main-layout/main-layout';
 
-
-
-
 // Home
 import { Home } from './features/home/home';
 
 // Hotel
-import { Card as HotelCard } from './features/Hotel/card/card';
-import { Details as HotelDetails } from './features/Hotel/details/details';
-import { Booking as HotelBooking }               from './features/Hotel/booking/booking';
+import { Card as HotelCard }                        from './features/Hotel/card/card';
+import { Details as HotelDetails }                  from './features/Hotel/details/details';
+import { Booking as HotelBooking }                  from './features/Hotel/booking/booking';
 import { BookingConfirmed as HotelBookingConfirmed } from './features/Hotel/booking-confirmed/booking-confirmed';
+
 // Restaurant
-import { Card as RestaurantCard } from './features/Restaurant/card/card';
+import { Card as RestaurantCard }   from './features/Restaurant/card/card';
 import { Details as RestaurantDetails } from './features/Restaurant/details/details';
-import { Reservation } from './features/Restaurant/reservation/reservation';
+import { Reservation }              from './features/Restaurant/reservation/reservation';
 
 // TourGuide
-import { Card } from './features/TourGuide/card/card';
+import { Card as TourGuideCard }                          from './features/TourGuide/card/card';
+import { Details as TourGuideDetails }                    from './features/TourGuide/details/details';
+import { Booking as TourGuideBooking }                    from './features/TourGuide/booking/booking';
+import { BookingConfirmed as TourGuideBookingConfirmed }  from './features/TourGuide/booking-confirmed/booking-confirmed';
+
 // TouristAttraction
-import { TouristAttractionCard } from './features/TouristAttraction/card/card';
+import { TouristAttractionCard }    from './features/TouristAttraction/card/card';
 import { TouristAttractionDetails } from './features/TouristAttraction/details/details';
 
-
 // BudgetPlanning
-import { Main as BudgetMain } from './features/BudgetPlanning/main/main';
-import { Plan } from './features/BudgetPlanning/plan/plan';
+import { Main as BudgetMain }       from './features/BudgetPlanning/main/main';
+import { Plan }                     from './features/BudgetPlanning/plan/plan';
 import { Details as BudgetDetails } from './features/BudgetPlanning/details/details';
 
 // Profile
-import { Favorites } from './features/profile/favorites/favorites';
-import { PersonalInformation } from './features/profile/personal-information/personal-information';
-import { SavedPlan } from './features/profile/saved-plan/saved-plan';
+import { Favorites }            from './features/profile/favorites/favorites';
+import { PersonalInformation }  from './features/profile/personal-information/personal-information';
+import { SavedPlan }            from './features/profile/saved-plan/saved-plan';
 
 // Not Found
 import { NotFound } from './features/not-found/not-found';
@@ -49,37 +50,46 @@ export const routes: Routes = [
       // Home
       { path: 'home', component: Home, title: 'Home' },
 
-      // Hotel Routes
-{
-  path: 'hotels',
-  children: [
-    { path: '', component: HotelCard, title: 'Hotels' }, // /hotels
-    { path: 'details/:id', component: HotelDetails, title: 'Hotel Details'  ,runGuardsAndResolvers: 'paramsChange'}, // /hotels/details/1
-    { path: 'booking', component: HotelBooking, title: 'Hotel Booking' },
-    { path: 'booking-confirmed', component: HotelBookingConfirmed, title: 'Booking Confirmed' },
-  ]
-},
-      // Restaurant Routes
-      { path: 'Restaurants', component: RestaurantCard, title: 'Restaurants' },
-      { path: 'restaurant/details/:id', component: RestaurantDetails, title: 'Restaurant Details' },
-      { path: 'restaurant/reservation/:id', component: Reservation, title: 'Restaurant Reservation' },
+      // ── Hotel Routes ──────────────────────────────────────
+      {
+        path: 'hotels',
+        children: [
+          { path: '',                component: HotelCard,             title: 'Hotels' },
+          { path: 'details/:id',     component: HotelDetails,          title: 'Hotel Details', runGuardsAndResolvers: 'paramsChange' },
+          { path: 'booking',         component: HotelBooking,          title: 'Hotel Booking' },
+          { path: 'booking-confirmed', component: HotelBookingConfirmed, title: 'Booking Confirmed' },
+        ],
+      },
 
-      // TourGuide Routes
-      { path: 'tour-guide', component: Card , title: 'Tour Guides'  },
+      // ── Restaurant Routes ─────────────────────────────────
+      { path: 'Restaurants',                  component: RestaurantCard,    title: 'Restaurants' },
+      { path: 'restaurant/details/:id',       component: RestaurantDetails, title: 'Restaurant Details' },
+      { path: 'restaurant/reservation/:id',   component: Reservation,       title: 'Restaurant Reservation' },
 
-      // TouristAttraction Routes
-      { path: 'Attractions', component: TouristAttractionCard, title: 'Tourist Attractions' },
-      { path: 'tourist-attraction/details/:id', component: TouristAttractionDetails, title: 'Tourist Attraction Details' },
+      // ── TourGuide Routes ──────────────────────────────────
+      {
+        path: 'tour-guide',
+        children: [
+          { path: '',                  component: TourGuideCard,             title: 'Tour Guides' },
+          { path: 'details/:id',       component: TourGuideDetails,          title: 'Tour Guide Details' },
+          { path: 'booking',           component: TourGuideBooking,          title: 'Tour Guide Booking' },
+          { path: 'booking-confirmed', component: TourGuideBookingConfirmed, title: 'Tour Guide Booking Confirmed' },
+        ],
+      },
 
-      // BudgetPlanning Routes
-      { path: 'Budget Planning', component: BudgetMain, title: 'Budget Planning' },
-      { path: 'budget-planning/plan', component: Plan, title: 'Create Plan' },
+      // ── TouristAttraction Routes ──────────────────────────
+      { path: 'Attractions',                        component: TouristAttractionCard,    title: 'Tourist Attractions' },
+      { path: 'tourist-attraction/details/:id',     component: TouristAttractionDetails, title: 'Tourist Attraction Details' },
+
+      // ── BudgetPlanning Routes ─────────────────────────────
+      { path: 'Budget Planning',          component: BudgetMain,    title: 'Budget Planning' },
+      { path: 'budget-planning/plan',     component: Plan,          title: 'Create Plan' },
       { path: 'budget-planning/details/:id', component: BudgetDetails, title: 'Budget Details' },
 
-      // Profile Routes
-      { path: 'profile/favorites', component: Favorites, title: 'My Favorites' },
+      // ── Profile Routes ────────────────────────────────────
+      { path: 'profile/favorites',            component: Favorites,           title: 'My Favorites' },
       { path: 'profile/personal-information', component: PersonalInformation, title: 'Personal Information' },
-      { path: 'profile/saved-plan', component: SavedPlan, title: 'Saved Plans' },
+      { path: 'profile/saved-plan',           component: SavedPlan,           title: 'Saved Plans' },
 
       // Not Found
       { path: '**', component: NotFound, title: 'Page Not Found' },
