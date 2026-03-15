@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="flex gap-3">
-      @for (offer of visibleOffers; track offer.image) {
+      @for (offer of visibleOffers; track $index) {
         <div class="relative w-1/2 h-[160px] rounded-xl overflow-hidden flex-shrink-0">
           <img [src]="offer.image" alt="offer" class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-3">
@@ -21,14 +21,13 @@
         </div>
       }
     </div>
-    <!-- Dots -->
     <div class="flex justify-center gap-1 mt-3">
-      @for (offer of offers; track offer.image; let i = $index) {
+      @for (offer of offers; track $index; let i = $index) {
         @if (i % 2 === 0) {
           <span
             (click)="currentOfferIndex = i"
             class="h-2 rounded-full cursor-pointer transition-all duration-300"
-            [class]="i === currentOfferIndex ? '#ffde70 w-4' : 'bg-white/50 w-2'"
+            [class]="i === currentOfferIndex ? 'bg-yellow-400 w-4' : 'bg-white/50 w-2'"
           ></span>
         }
       }
@@ -45,7 +44,7 @@
       <div class="flex gap-2 text-gray-400 text-sm cursor-pointer">❮ ❯</div>
     </div>
     <div class="flex flex-wrap gap-2">
-      @for (item of recommended; track item.name) {
+      @for (item of recommended; track $index) {
         <div class="bg-[#2a2f3e] rounded-xl overflow-hidden w-[220px]">
           <div class="relative w-full">
             <img [src]="item.image" alt="place" class="w-full h-[120px] object-cover" />
@@ -75,7 +74,7 @@
       <div class="flex gap-2 text-gray-400 text-sm cursor-pointer">❮ ❯</div>
     </div>
     <div class="flex flex-wrap gap-2">
-      @for (item of availableThisWeek; track item.name) {
+      @for (item of availableThisWeek; track $index) {
         <div class="bg-[#2a2f3e] rounded-xl overflow-hidden w-[220px]">
           <div class="relative w-full">
             <img [src]="item.image" alt="place" class="w-full h-[120px] object-cover" />
@@ -98,16 +97,16 @@
     </div>
   </section>
 
-  <!-- Floating Emergency Button -->
-  <div class="fixed bottom-6 right-4 flex items-center gap-2 z-10">
-    <div class="bg-yellow-400 text-black text-xs rounded-xl px-3 py-2 shadow-lg">
-      <p class="font-bold">Emergency Assistance</p>
-      <p>Need immediate help? Click here</p>
-    </div>
+  <!-- Emergency + Chatbot -->
+  <div class="fixed bottom-6 right-4 flex items-end z-10">
     <div
-      class="bg-blue-600 rounded-full w-12 h-12 flex items-center justify-center text-2xl shadow-lg cursor-pointer"
+      *ngIf="!chatbotOpen"
+      class="bg-[#a3c4eb] text-white text-sm rounded-2xl px-5 py-2 shadow-lg mb-15 mr-16"
+      style="border-radius: 50px 50px 0px 50px"
     >
-      👩‍💼
+      <p class="font-bold text-red-400">Emergency Assistance</p>
+      <p class="text-black text-xs">Need immediate help? Click here</p>
     </div>
+    <app-chatbot (openChange)="chatbotOpen = $event"></app-chatbot>
   </div>
 </div>
