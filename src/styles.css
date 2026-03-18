@@ -173,6 +173,7 @@ body:not(.dark-mode) .modal-card .divider::after {
 ══════════════════════════════════════ */
 body:not(.dark-mode) .bg-\[\#021526\] {
   background-color: #f0f4f8 !important;
+  color: #060606;
 }
 body:not(.dark-mode) .bg-\[\#2a2f3e\] {
   background-color: #ffffff !important;
