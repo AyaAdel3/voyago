@@ -9,12 +9,14 @@ import { Card as RestaurantCard } from './features/Restaurant/card/card';
 import { Details as RestaurantDetails } from './features/Restaurant/details/details';
 import { Reservation } from './features/Restaurant/reservation/reservation';
 import { Card } from './features/TourGuide/card/card';
+import { Booking as TourGuideBooking } from './features/TourGuide/booking/booking';
+import { BookingConfirmed as TourGuideBookingConfirmed } from './features/TourGuide/booking-confirmed/booking-confirmed';
 import { TouristAttractionCard } from './features/TouristAttraction/card/card';
 import { TouristAttractionDetails } from './features/TouristAttraction/details/details';
 import { Main as BudgetMain } from './features/BudgetPlanning/main/main';
 import { Plan } from './features/BudgetPlanning/plan/plan';
 import { Details as BudgetDetails } from './features/BudgetPlanning/details/details';
-import { FavoritesComponent } from './features/profile/favorites/favorites'; 
+import { FavoritesComponent } from './features/profile/favorites/favorites';
 import { PersonalInformation } from './features/profile/personal-information/personal-information';
 import { SavedPlanComponent } from './features/profile/saved-plan/saved-plan';
 import { NotFound } from './features/not-found/not-found';
@@ -26,6 +28,8 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: Home, title: 'Home' },
+
+      // Hotel Routes
       {
         path: 'hotels',
         children: [
@@ -35,18 +39,32 @@ export const routes: Routes = [
           { path: 'booking-confirmed', component: HotelBookingConfirmed, title: 'Booking Confirmed' },
         ]
       },
+
+      // Restaurant Routes
       { path: 'Restaurants', component: RestaurantCard, title: 'Restaurants' },
       { path: 'restaurant/details/:id', component: RestaurantDetails, title: 'Restaurant Details' },
       { path: 'restaurant/reservation/:id', component: Reservation, title: 'Restaurant Reservation' },
+
+      // Tour Guide Routes
       { path: 'tour-guide', component: Card, title: 'Tour Guides' },
+      { path: 'tour-guide/booking', component: TourGuideBooking, title: 'Tour Guide Booking' },
+      { path: 'tour-guide/booking-confirmed', component: TourGuideBookingConfirmed, title: 'Tour Guide Booking Confirmed' },
+
+      // Tourist Attraction Routes
       { path: 'Attractions', component: TouristAttractionCard, title: 'Tourist Attractions' },
       { path: 'tourist-attraction/details/:id', component: TouristAttractionDetails, title: 'Tourist Attraction Details' },
+
+      // Budget Planning Routes
       { path: 'Budget Planning', component: BudgetMain, title: 'Budget Planning' },
       { path: 'budget-planning/plan', component: Plan, title: 'Create Plan' },
       { path: 'budget-planning/details/:id', component: BudgetDetails, title: 'Budget Details' },
+
+      // Profile Routes
       { path: 'profile/personal-information', component: PersonalInformation, title: 'Personal Information' },
-      { path: 'profile/favorites', component: FavoritesComponent, title: 'My Favorites' }, 
+      { path: 'profile/favorites', component: FavoritesComponent, title: 'My Favorites' },
       { path: 'profile/saved-plan', component: SavedPlanComponent, title: 'Saved Plans' },
+
+      // Not Found
       { path: '**', component: NotFound, title: 'Page Not Found' },
     ],
   },

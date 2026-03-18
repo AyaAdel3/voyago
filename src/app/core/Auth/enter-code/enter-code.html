@@ -1,7 +1,7 @@
 <div class="modal-overlay" (click)="modal.close()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="modal.close()">✕</button>
-    <h1 class="modal-title">Enter Your Code</h1>
+    <h1 class="modal-title">{{ lang.t('code.title') }}</h1>
 
     <div class="api-error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
@@ -10,24 +10,26 @@
         <input
           type="text"
           formControlName="code"
-          placeholder="Code"
+          [placeholder]="lang.t('code.placeholder')"
           [class.error-input]="isInvalid(code)"
           maxlength="6"
         />
-        <span class="error-msg" *ngIf="isInvalid(code) && code.errors?.['required']"
-          >Code is required.</span
-        >
-        <span class="error-msg" *ngIf="isInvalid(code) && code.errors?.['minlength']"
-          >Enter a valid code.</span
-        >
+        <span class="error-msg" *ngIf="isInvalid(code) && code.errors?.['required']">{{
+          lang.t('err.codeRequired')
+        }}</span>
+        <span class="error-msg" *ngIf="isInvalid(code) && code.errors?.['minlength']">{{
+          lang.t('err.codeInvalid')
+        }}</span>
       </div>
 
       <button type="submit" class="btn-submit" [disabled]="isLoading">
-        <span *ngIf="!isLoading">Submit</span>
+        <span *ngIf="!isLoading">{{ lang.t('code.btn') }}</span>
         <span *ngIf="isLoading" class="spinner"></span>
       </button>
 
-      <p class="switch-link">Didn't Get Code? <a (click)="resendCode()">resend code</a></p>
+      <p class="switch-link">
+        {{ lang.t('code.noCode') }} <a (click)="resendCode()">{{ lang.t('code.resend') }}</a>
+      </p>
     </form>
   </div>
 </div>

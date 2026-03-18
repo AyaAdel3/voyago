@@ -1,7 +1,7 @@
 <div class="modal-overlay" (click)="modal.close()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="modal.close()">✕</button>
-    <h1 class="modal-title">Let`S Get Started!</h1>
+    <h1 class="modal-title">{{ lang.t('register.title') }}</h1>
 
     <div class="api-error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
@@ -11,22 +11,22 @@
         <input
           type="text"
           formControlName="fullName"
-          placeholder="Enter your full name"
+          [placeholder]="lang.t('register.fullName')"
           [class.error-input]="isInvalid(fullName)"
         />
         <ng-container *ngIf="isInvalid(fullName)">
-          <span class="error-msg" *ngIf="fullName.errors?.['required']"
-            >Full name is required.</span
-          >
-          <span class="error-msg" *ngIf="fullName.errors?.['minlength']"
-            >Minimum 3 characters.</span
-          >
-          <span class="error-msg" *ngIf="fullName.errors?.['maxlength']"
-            >Maximum 30 characters.</span
-          >
-          <span class="error-msg" *ngIf="fullName.errors?.['alphabeticOnly']"
-            >Letters only — no numbers or symbols.</span
-          >
+          <span class="error-msg" *ngIf="fullName.errors?.['required']">{{
+            lang.t('err.nameRequired')
+          }}</span>
+          <span class="error-msg" *ngIf="fullName.errors?.['minlength']">{{
+            lang.t('err.nameMin')
+          }}</span>
+          <span class="error-msg" *ngIf="fullName.errors?.['maxlength']">{{
+            lang.t('err.nameMax')
+          }}</span>
+          <span class="error-msg" *ngIf="fullName.errors?.['alphabeticOnly']">{{
+            lang.t('err.nameAlpha')
+          }}</span>
         </ng-container>
       </div>
 
@@ -35,16 +35,18 @@
         <input
           type="email"
           formControlName="email"
-          placeholder="Enter your E-Mail"
+          [placeholder]="lang.t('register.email')"
           [class.error-input]="isInvalid(email) || emailTaken"
         />
         <ng-container *ngIf="isInvalid(email)">
-          <span class="error-msg" *ngIf="email.errors?.['required']">Email is required.</span>
-          <span class="error-msg" *ngIf="email.errors?.['email']"
-            >Enter a valid email (e.g. example&#64;gmail.com).</span
-          >
+          <span class="error-msg" *ngIf="email.errors?.['required']">{{
+            lang.t('err.emailRequired')
+          }}</span>
+          <span class="error-msg" *ngIf="email.errors?.['email']">{{
+            lang.t('err.emailInvalid')
+          }}</span>
         </ng-container>
-        <span class="error-msg" *ngIf="emailTaken">This email is already registered.</span>
+        <span class="error-msg" *ngIf="emailTaken">{{ lang.t('err.emailTaken') }}</span>
       </div>
 
       <!-- Phone -->
@@ -52,17 +54,19 @@
         <input
           type="tel"
           formControlName="phone"
-          placeholder="Enter phone number"
+          [placeholder]="lang.t('register.phone')"
           maxlength="11"
           [class.error-input]="isInvalid(phone) || phoneTaken"
         />
         <ng-container *ngIf="isInvalid(phone)">
-          <span class="error-msg" *ngIf="phone.errors?.['required']">Phone is required.</span>
-          <span class="error-msg" *ngIf="phone.errors?.['pattern']"
-            >Enter a valid Egyptian number (01XXXXXXXXX).</span
-          >
+          <span class="error-msg" *ngIf="phone.errors?.['required']">{{
+            lang.t('err.phoneRequired')
+          }}</span>
+          <span class="error-msg" *ngIf="phone.errors?.['pattern']">{{
+            lang.t('err.phoneInvalid')
+          }}</span>
         </ng-container>
-        <span class="error-msg" *ngIf="phoneTaken">This phone number is already registered.</span>
+        <span class="error-msg" *ngIf="phoneTaken">{{ lang.t('err.phoneTaken') }}</span>
       </div>
 
       <!-- Password -->
@@ -71,7 +75,7 @@
           <input
             [type]="showPassword ? 'text' : 'password'"
             formControlName="password"
-            placeholder="Enter password"
+            [placeholder]="lang.t('register.password')"
           />
           <button type="button" class="eye-btn" (click)="togglePassword()">
             <svg
@@ -106,13 +110,15 @@
           </button>
         </div>
         <ng-container *ngIf="isInvalid(password)">
-          <span class="error-msg" *ngIf="password.errors?.['required']">Password is required.</span>
-          <span class="error-msg" *ngIf="password.errors?.['minlength']"
-            >Minimum 8 characters.</span
-          >
-          <span class="error-msg" *ngIf="password.errors?.['weakPassword']"
-            >Must include uppercase, number, and special character (@#$%!&*).</span
-          >
+          <span class="error-msg" *ngIf="password.errors?.['required']">{{
+            lang.t('err.passRequired')
+          }}</span>
+          <span class="error-msg" *ngIf="password.errors?.['minlength']">{{
+            lang.t('err.passMin')
+          }}</span>
+          <span class="error-msg" *ngIf="password.errors?.['weakPassword']">{{
+            lang.t('err.passWeak')
+          }}</span>
         </ng-container>
       </div>
 
@@ -128,7 +134,7 @@
           <input
             [type]="showConfirmPassword ? 'text' : 'password'"
             formControlName="confirmPassword"
-            placeholder="Re-Enter password"
+            [placeholder]="lang.t('register.confirmPass')"
           />
           <button type="button" class="eye-btn" (click)="toggleConfirmPassword()">
             <svg
@@ -163,26 +169,31 @@
           </button>
         </div>
         <ng-container *ngIf="confirmPassword.touched">
-          <span class="error-msg" *ngIf="confirmPassword.errors?.['required']"
-            >Please confirm your password.</span
-          >
+          <span class="error-msg" *ngIf="confirmPassword.errors?.['required']">{{
+            lang.t('err.confirmRequired')
+          }}</span>
           <span
             class="error-msg"
             *ngIf="!confirmPassword.errors?.['required'] && form.errors?.['passwordMismatch']"
-            >Passwords do not match.</span
+            >{{ lang.t('err.passMismatch') }}</span
           >
         </ng-container>
       </div>
 
       <button type="submit" class="btn-submit" [disabled]="isLoading">
-        <span *ngIf="!isLoading">Sign up</span>
+        <span *ngIf="!isLoading">{{ lang.t('register.btn') }}</span>
         <span *ngIf="isLoading" class="spinner"></span>
       </button>
 
-      <p class="switch-link">already a member? <a (click)="modal.openLogin()">sign in</a></p>
+      <p class="switch-link">
+        {{ lang.t('register.alreadyMember') }}
+        <a (click)="modal.openLogin()">{{ lang.t('register.signIn') }}</a>
+      </p>
     </form>
 
-    <div class="divider"><span>Or Register with</span></div>
+    <div class="divider">
+      <span>{{ lang.t('register.orWith') }}</span>
+    </div>
     <div class="social-buttons">
       <button type="button" class="social-btn" (click)="loginWithGoogle()">
         <svg width="24" height="24" viewBox="0 0 24 24">

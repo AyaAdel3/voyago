@@ -1,7 +1,9 @@
 <div class="modal-overlay" (click)="modal.close()">
   <div class="modal-card" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="modal.close()">✕</button>
-    <h1 class="modal-title">Welcome Back!</h1>
+    <h1 class="modal-title" [style.textAlign]="lang.currentLang() === 'ar' ? 'right' : 'left'">
+      {{ lang.t('login.title') }}
+    </h1>
 
     <div class="api-error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
@@ -11,12 +13,12 @@
         <input
           type="text"
           formControlName="identifier"
-          placeholder="Enter your mail or phone number"
+          [placeholder]="lang.t('login.identifier')"
           [class.error-input]="isInvalid(identifier)"
         />
-        <span class="error-msg" *ngIf="isInvalid(identifier) && identifier.errors?.['required']"
-          >Email or phone is required.</span
-        >
+        <span class="error-msg" *ngIf="isInvalid(identifier) && identifier.errors?.['required']">
+          {{ lang.t('err.identifierRequired') }}
+        </span>
       </div>
 
       <!-- Password -->
@@ -25,7 +27,7 @@
           <input
             [type]="showPassword ? 'text' : 'password'"
             formControlName="password"
-            placeholder="Enter password"
+            [placeholder]="lang.t('login.password')"
           />
           <button type="button" class="eye-btn" (click)="togglePassword()">
             <svg
@@ -59,21 +61,28 @@
             </svg>
           </button>
         </div>
-        <span class="error-msg" *ngIf="isInvalid(password) && password.errors?.['required']"
-          >Password is required.</span
-        >
-        <p class="forgot-password"><a (click)="modal.openForgotPassword()">Forgot Password?</a></p>
+        <span class="error-msg" *ngIf="isInvalid(password) && password.errors?.['required']">
+          {{ lang.t('err.passRequired') }}
+        </span>
+        <p class="forgot-password">
+          <a (click)="modal.openForgotPassword()">{{ lang.t('login.forgotPass') }}</a>
+        </p>
       </div>
 
       <button type="submit" class="btn-submit" [disabled]="isLoading">
-        <span *ngIf="!isLoading">Sign in</span>
+        <span *ngIf="!isLoading">{{ lang.t('login.btn') }}</span>
         <span *ngIf="isLoading" class="spinner"></span>
       </button>
 
-      <p class="switch-link">Don't have an account? <a (click)="modal.openSignup()">sign up</a></p>
+      <p class="switch-link">
+        {{ lang.t('login.noAccount') }}
+        <a (click)="modal.openSignup()">{{ lang.t('login.signUp') }}</a>
+      </p>
     </form>
 
-    <div class="divider"><span>Or Register with</span></div>
+    <div class="divider">
+      <span>{{ lang.t('login.orWith') }}</span>
+    </div>
     <div class="social-buttons">
       <button type="button" class="social-btn" (click)="loginWithGoogle()">
         <svg width="24" height="24" viewBox="0 0 24 24">

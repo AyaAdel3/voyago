@@ -6,6 +6,7 @@ import {
 } from '@angular/forms';
 import { AuthModalService } from '../../services/auth-modal.service';
 import { AuthService } from '../../services/auth.service';
+import { LanguageService } from '../../services/language.service';
 
 function alphabeticOnly(c: AbstractControl): ValidationErrors | null {
   return /^[a-zA-Z\s]+$/.test(c.value || '') ? null : { alphabeticOnly: true };
@@ -40,7 +41,8 @@ export class Register implements OnDestroy {
   constructor(
     private fb: FormBuilder,
     public modal: AuthModalService,
-    private auth: AuthService
+    private auth: AuthService,
+    public lang: LanguageService
   ) {
     document.body.classList.add('modal-open');
     this.form = this.fb.group({

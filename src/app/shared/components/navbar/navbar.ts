@@ -8,6 +8,7 @@ import { ForgotPassword } from '../../../core/Auth/forgot-password/forgot-passwo
 import { EnterCode } from '../../../core/Auth/enter-code/enter-code';
 import { ResetPassword } from '../../../core/Auth/reset-password/reset-password';
 import { Router } from '@angular/router';
+import { LanguageService } from '../../../core/services/language.service';
 
 @Component({
   selector: 'app-navbar',
@@ -19,7 +20,11 @@ import { Router } from '@angular/router';
 export class Navbar implements OnInit {
   isDarkMode = false;
 
-  constructor(public modal: AuthModalService, public router: Router) {}
+  constructor(
+    public modal: AuthModalService,
+    public router: Router,
+    public lang: LanguageService
+  ) {}
 
   ngOnInit(): void {
     const savedMode = localStorage.getItem('darkMode');
@@ -43,24 +48,12 @@ export class Navbar implements OnInit {
     }
   }
 
-  isHotelsActive(): boolean {
-    return this.router.url.startsWith('/hotels');
+  isHotelsActive(): boolean      { return this.router.url.startsWith('/hotels'); }
+  isRestaurantsActive(): boolean { return this.router.url.startsWith('/Restaurants') || this.router.url.startsWith('/restaurant'); }
+  isAttractionsActive(): boolean { return this.router.url.startsWith('/Attractions') || this.router.url.startsWith('/tourist-attraction'); }
+  isTourGuideActive(): boolean   { return this.router.url.startsWith('/tour-guide'); }
+  isBudgetActive(): boolean {
+    const url = decodeURIComponent(this.router.url);
+    return url.startsWith('/Budget Planning') || url.startsWith('/budget-planning');
   }
-
-  isRestaurantsActive(): boolean {
-    return this.router.url.startsWith('/Restaurants') || this.router.url.startsWith('/restaurant');
-  }
-
-  isAttractionsActive(): boolean {
-    return this.router.url.startsWith('/Attractions') || this.router.url.startsWith('/tourist-attraction');
-  }
-
-  isTourGuideActive(): boolean {
-    return this.router.url.startsWith('/tour-guide');
-  }
-
- isBudgetActive(): boolean {
-  const url = decodeURIComponent(this.router.url);
-  return url.startsWith('/Budget Planning') || url.startsWith('/budget-planning');
-}
 }

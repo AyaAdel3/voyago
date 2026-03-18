@@ -2,6 +2,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthModalService } from '../../services/auth-modal.service';
+import { LanguageService } from '../../services/language.service';
 
 function strongPassword(c: AbstractControl): ValidationErrors | null {
   const v = c.value || '';
@@ -21,12 +22,16 @@ function passwordMatch(g: AbstractControl): ValidationErrors | null {
 })
 export class ResetPassword {
   form: FormGroup;
-  showPassword = false;
+  showPassword        = false;
   showConfirmPassword = false;
-  isLoading = false;
-  errorMessage = '';
+  isLoading           = false;
+  errorMessage        = '';
 
-  constructor(private fb: FormBuilder, public modal: AuthModalService) {
+  constructor(
+    private fb: FormBuilder,
+    public modal: AuthModalService,
+    public lang: LanguageService
+  ) {
     this.form = this.fb.group({
       password:        ['', [Validators.required, Validators.minLength(8), strongPassword]],
       confirmPassword: ['', Validators.required]
@@ -37,7 +42,7 @@ export class ResetPassword {
   get confirmPassword() { return this.form.get('confirmPassword')!; }
 
   isInvalid(c: AbstractControl) { return c.invalid && (c.dirty || c.touched); }
-  togglePassword()        { this.showPassword = !this.showPassword; }
+  togglePassword()        { this.showPassword        = !this.showPassword; }
   toggleConfirmPassword() { this.showConfirmPassword = !this.showConfirmPassword; }
 
   onSubmit(): void {

@@ -2,6 +2,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { AuthModalService } from '../../services/auth-modal.service';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -16,7 +17,7 @@ export class ForgotPassword {
   isLoading = false;
   errorMessage = '';
 
-  constructor(private fb: FormBuilder, public modal: AuthModalService) {
+  constructor(private fb: FormBuilder, public modal: AuthModalService , public lang: LanguageService) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });

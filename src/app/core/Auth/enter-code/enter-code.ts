@@ -2,6 +2,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { AuthModalService } from '../../services/auth-modal.service';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-enter-code',
@@ -13,10 +14,14 @@ import { AuthModalService } from '../../services/auth-modal.service';
 })
 export class EnterCode {
   form: FormGroup;
-  isLoading = false;
+  isLoading    = false;
   errorMessage = '';
 
-  constructor(private fb: FormBuilder, public modal: AuthModalService) {
+  constructor(
+    private fb: FormBuilder,
+    public modal: AuthModalService,
+    public lang: LanguageService
+  ) {
     this.form = this.fb.group({
       code: ['', [Validators.required, Validators.minLength(4)]]
     });

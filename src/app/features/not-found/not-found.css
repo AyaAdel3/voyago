@@ -1,0 +1,244 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Nunito+Sans:wght@400;600;700&display=swap');
+
+/* ── Page ── */
+.nf-page {
+  position: relative;
+  min-height: 100vh;
+  background: #021526;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  font-family: 'Nunito Sans', sans-serif;
+}
+
+/* ── Floating particles ── */
+.particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #a3c4eb 0%, transparent 70%);
+  opacity: 0;
+  animation: float-up ease-in-out infinite;
+}
+
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+  20% {
+    opacity: 0.35;
+  }
+  80% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-120px) scale(0.4);
+  }
+}
+
+/* ── Content ── */
+.nf-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 2rem 1rem;
+  animation: fade-in-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── 404 numbers ── */
+.nf-404-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.1em;
+  line-height: 1;
+  margin-bottom: 0.3rem;
+}
+
+.nf-4,
+.nf-0 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(6rem, 20vw, 12rem);
+  color: #f6faff;
+  display: inline-block;
+}
+
+.nf-4-left {
+  animation: sway-left 3.5s ease-in-out infinite;
+  color: #a3c4eb;
+}
+.nf-0 {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+  color: #ffde70;
+  text-shadow:
+    0 0 40px rgba(255, 222, 112, 0.4),
+    0 0 80px rgba(255, 222, 112, 0.15);
+}
+.nf-4-right {
+  animation: sway-right 3.5s ease-in-out infinite;
+  color: #a3c4eb;
+}
+
+@keyframes sway-left {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  30% {
+    transform: rotate(-6deg) translateY(-8px);
+  }
+  60% {
+    transform: rotate(3deg) translateY(4px);
+  }
+}
+@keyframes sway-right {
+  0%,
+  100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  30% {
+    transform: rotate(6deg) translateY(-8px);
+  }
+  60% {
+    transform: rotate(-3deg) translateY(4px);
+  }
+}
+@keyframes pulse-glow {
+  0%,
+  100% {
+    transform: scale(1);
+    text-shadow: 0 0 40px rgba(255, 222, 112, 0.4);
+  }
+  50% {
+    transform: scale(1.05);
+    text-shadow:
+      0 0 70px rgba(255, 222, 112, 0.7),
+      0 0 120px rgba(255, 222, 112, 0.2);
+  }
+}
+
+/* ── Divider ── */
+.nf-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 0.5rem auto 1.5rem;
+  width: min(320px, 80%);
+}
+
+.nf-divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(163, 196, 235, 0.4), transparent);
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.nf-divider-icon {
+  color: #f5c518;
+  font-size: 0.7rem;
+  animation: spin-slow 8s linear infinite;
+}
+
+@keyframes shimmer {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Title ── */
+.nf-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.5rem, 4vw, 2.4rem);
+  color: #f6faff;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.01em;
+  animation: fade-in-up 0.8s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Subtitle ── */
+.nf-sub {
+  font-size: 1rem;
+  color: #a3c4eb;
+  line-height: 1.8;
+  margin: 0 0 2rem;
+  animation: fade-in-up 0.8s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Button ── */
+.nf-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #ffde70;
+  color: #0d1526;
+  border: none;
+  padding: 0.85rem 2.2rem;
+  border-radius: 999px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(245, 197, 24, 0.3);
+  animation: fade-in-up 0.8s 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.nf-btn:hover {
+  background: #f5c518;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(245, 197, 24, 0.45);
+}
+.nf-btn:active {
+  transform: translateY(0);
+}
+
+/* ── Light Mode ── */
+body:not(.dark-mode) .nf-page {
+  background: #f0f4f8 !important;
+}
+body:not(.dark-mode) .nf-4 {
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .nf-title {
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .nf-sub {
+  color: #5a6a7a !important;
+}
+body:not(.dark-mode) .particle {
+  background: radial-gradient(circle, #173b64 0%, transparent 70%);
+}

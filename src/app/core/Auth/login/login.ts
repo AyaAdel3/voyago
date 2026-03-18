@@ -7,6 +7,7 @@ import {
 import { AuthModalService } from '../../services/auth-modal.service';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { LanguageService } from '../../services/language.service';
 
 @Component({
   selector: 'app-login',
@@ -26,7 +27,8 @@ export class Login implements OnDestroy {
     private fb: FormBuilder,
     public modal: AuthModalService,
     private auth: AuthService,
-    private router: Router
+    private router: Router,
+    public lang: LanguageService
   ) {
     document.body.classList.add('modal-open');
     this.form = this.fb.group({

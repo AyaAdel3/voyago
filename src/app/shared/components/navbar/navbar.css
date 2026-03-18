@@ -143,8 +143,7 @@
 
 /* Active state — applied via routerLinkActive */
 .nav-link.active-link {
-  color: #A3C4EB;
- 
+  color: #a3c4eb;
 }
 /* ══════════════════════════════════════
    ROW 3 — Search
@@ -192,7 +191,7 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #FFDE70;
+  background: #ffde70;
   border: none;
   cursor: pointer;
   display: flex;
@@ -211,4 +210,22 @@
 
 .search-btn:active {
   transform: translateY(-50%) scale(0.96);
+}
+
+/* ── Language Pill ── */
+.lang-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 999px;
+  padding: 4px 9px 4px 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-left: 4px;
+  color: #f6faff;
+}
+.lang-pill:hover {
+  background: rgba(255, 255, 255, 0.14);
 }

@@ -200,3 +200,7 @@
 .modal-overlay {
   z-index: 99999;
 }
+
+:root[dir='rtl'] .modal-title {
+  text-align: right !important;
+}
