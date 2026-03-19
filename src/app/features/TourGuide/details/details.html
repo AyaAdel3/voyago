@@ -13,17 +13,33 @@
         <img [src]="guide.image" [alt]="guide.name" class="popup-avatar" />
         <p class="detail-name">{{ guide.name }}</p>
         <p class="detail-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,12 2,6"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,12 2,6" />
           </svg>
           {{ guide.email }}
         </p>
         <p class="detail-item">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2.76h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 5.69 5.69l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2.76h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 5.69 5.69l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
+            />
           </svg>
           {{ guide.phone }}
         </p>
@@ -47,19 +63,28 @@
           <div class="booking-field">
             <label>Date</label>
             <!-- لما اليوزر يسيلكت تاريخ → امسح الـ error -->
-            <input type="date" [(ngModel)]="selectedDate" [min]="minDate" class="booking-input"
-              (change)="errorMessage = ''" />
+            <input
+              type="date"
+              [(ngModel)]="selectedDate"
+              [min]="minDate"
+              class="booking-input"
+              (change)="errorMessage = ''"
+            />
           </div>
           <div class="booking-field">
             <label>Time</label>
             <!-- لما اليوزر يكتب وقت → امسح الـ error -->
-            <input type="text" [(ngModel)]="selectedTime" class="booking-input"
-              (input)="errorMessage = ''" />
+            <input
+              type="text"
+              [(ngModel)]="selectedTime"
+              class="booking-input"
+              (input)="errorMessage = ''"
+            />
           </div>
         </div>
 
         <div class="trip-type-row">
-          <span class="trip-label">Trip Type</span>
+          <span class="trip-label">Number of Days</span>
           <div class="days-counter">
             <span class="price-per-day">day &nbsp; {{ guide.pricePerDay }}LE</span>
             <!-- لما اليوزر يغير عدد الأيام → امسح الـ error -->

@@ -95,6 +95,9 @@ body:not(.dark-mode) .nav-link:hover {
 body:not(.dark-mode) .nav-link.active-link {
   color: #173b64 !important;
 }
+body:not(.dark-mode) .lang-pill span {
+  color: #ffffff !important;
+}
 
 /* ── Search ── */
 body:not(.dark-mode) input[placeholder='search anything'],
