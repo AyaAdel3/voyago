@@ -1,65 +1,52 @@
-<div class="flex bg-[#0A1128] text-white min-h-screen font-['Poppins']">
-  
-  <aside class="w-1/5 border-r border-gray-800 p-6 flex flex-col justify-between">
-    <div>
-      <div class="relative w-28 h-28 mx-auto mb-10">
-         <img src="https://i.pravatar.cc/150?img=47" alt="profile" class="profile-img" />
-         <span class="camera-icon">📷</span>
-      </div>
-
-      <nav class="space-y-6 pl-2">
-        <a routerLink="/profile/personal-information" routerLinkActive="text-[#E9C46A]" class="flex items-center gap-3 text-gray-400 hover:text-white transition">
-          <span class="text-lg">👤</span> Personal Information
-        </a>
-        <a routerLink="/profile/favorites" routerLinkActive="text-[#E9C46A]" class="flex items-center gap-3 text-[#E9C46A] relative">
-          <span class="text-lg">❤️</span> Favorites
-          <span class="absolute -bottom-1 left-0 w-8 h-0.5 bg-[#E9C46A]"></span>
-        </a>
-        <a routerLink="/profile/saved-plan" routerLinkActive="text-[#E9C46A]" class="flex items-center gap-3 text-gray-400 hover:text-white transition">
-          <span class="text-lg">📅</span> Saved Plan
-        </a>
-      </nav>
+<div class="profile-layout">
+  <aside class="sidebar">
+    <div class="image-container">
+       <img src="https://i.pravatar.cc/150?img=47" alt="Profile">
+      <button class="camera-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+      </button>
     </div>
 
-    <button class="flex items-center gap-3 text-gray-400 hover:text-red-400 transition pl-2 mb-6">
-      <span class="text-lg">↪️</span> Log Out
+    <nav class="nav-links">
+      <a routerLink="/profile/personal-information" routerLinkActive="active-link">
+        <span>👤</span> Personal Information
+      </a>
+      <a routerLink="/profile/favorites" routerLinkActive="active-link">
+        <span>❤️</span> Favorites
+      </a>
+      <a routerLink="/profile/saved-plan" routerLinkActive="active-link">
+       <span class="icon">🔖</span> Saved Plan
+      </a>
+    </nav>
+
+     <button class="logout-btn">
+      <span class="icon">↪</span> Log Out
     </button>
   </aside>
 
-  <main class="flex-1 p-8">
-    <h1 class="text-3xl font-bold mb-8">Favourites</h1>
+  <main class="content">
+    <div class="info-header">
+      <h1>Favourites</h1>
+    </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      <div *ngFor="let item of favorites; let i = index" class="group relative">
-        <div class="relative overflow-hidden rounded-[2rem] h-52 mb-3 shadow-lg border border-gray-800 bg-[#16203a]">
-          <img [src]="item.img" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" [alt]="item.title">
-          
-          <button (click)="removeItem(i)" class="absolute top-3 left-3 bg-black/60 p-1.5 rounded-full text-white hover:bg-red-600 transition z-20">
-             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-          </button>
-          
-          <button class="absolute top-3 right-3 text-[#E9C46A] z-20">
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"></path></svg>
-          </button>
-        </div>
-        
-        <div class="px-1">
-          <h3 class="font-medium text-base mb-0.5 group-hover:text-[#E9C46A] transition line-clamp-1">{{ item.title }}</h3>
-          <div class="flex justify-between items-center text-sm">
-            <p class="text-gray-400">
-              <span class="text-[#E9C46A] font-bold">{{ item.price }}le</span> / night
-            </p>
-            <div class="flex items-center gap-1">
-              <span class="text-[#E9C46A]">★</span> {{ item.rating }}
+    <div class="plan-grid">
+      @for (item of myFavorites; track item.title; let i = $index) {
+        <div class="favorite-card">
+          <div class="card-image-wrapper">
+            <img [src]="item.image" class="card-img" />
+            <button class="remove-x-btn" (click)="deleteFav(i)">✕</button>
+            <span class="heart-icon">💛</span>
+          </div>
+          <div class="card-info">
+            <h3>{{ item.title }}</h3>
+            <div class="item-meta">
+              <span class="item-price">{{ item.price }}</span>
+              <span class="dot">•</span>
+              <span class="item-rating">⭐ {{ item.rating }}</span>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div *ngIf="favorites.length === 0" class="flex flex-col items-center justify-center py-20 opacity-50">
-       <span class="text-5xl mb-4">Empty ❤️</span>
-       <p class="text-gray-400">Add items from the website to see them here.</p>
+      }
     </div>
   </main>
 </div>

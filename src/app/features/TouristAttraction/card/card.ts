@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { FavoritesService } from '../../../core/services/favorites.service';
+
 
 export interface Attraction {
   id: number;
@@ -27,9 +29,10 @@ export interface Attraction {
 })
 export class TouristAttractionCard {
 
-  favorites: number[] = JSON.parse(localStorage.getItem('favorites') || '[]');
-
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private favoritesService: FavoritesService // حقن السيرفس الموحدة
+  ) {}
 
   attractions: Attraction[] = [
     {
@@ -37,13 +40,8 @@ export class TouristAttractionCard {
       name: 'Wadi El Hitan Protected Area',
       location: 'Fayoum, Egypt',
       rating: 4,
-      images: [
-        'https://picsum.photos/seed/wadi1/800/500',
-        'https://picsum.photos/seed/wadi2/400/300',
-        'https://picsum.photos/seed/wadi3/400/300',
-        'https://picsum.photos/seed/wadi4/400/300',
-      ],
-      description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh.',
+      images: ['https://picsum.photos/seed/wadi1/800/500'],
+      description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod.',
       place: 'Fayoum, Egypt',
       dateOfInscription: 2005,
       criteria: 'VIII',
@@ -57,13 +55,8 @@ export class TouristAttractionCard {
       name: 'Wadi El Rayan Waterfalls',
       location: 'Fayoum, Egypt',
       rating: 5,
-      images: [
-        'https://picsum.photos/seed/rayan1/800/500',
-        'https://picsum.photos/seed/rayan2/400/300',
-        'https://picsum.photos/seed/rayan3/400/300',
-        'https://picsum.photos/seed/rayan4/400/300',
-      ],
-      description: 'Wadi El Rayan is a protected area featuring the only natural waterfalls in Egypt. Lorem ipsum dolor sit amet consectetur.',
+      images: ['https://picsum.photos/seed/rayan1/800/500'],
+      description: 'Wadi El Rayan is a protected area featuring the only natural waterfalls in Egypt.',
       place: 'Fayoum, Egypt',
       dateOfInscription: 2003,
       criteria: 'VII',
@@ -77,13 +70,8 @@ export class TouristAttractionCard {
       name: 'Lake Qarun',
       location: 'Fayoum, Egypt',
       rating: 4,
-      images: [
-        'https://picsum.photos/seed/qarun1/800/500',
-        'https://picsum.photos/seed/qarun2/400/300',
-        'https://picsum.photos/seed/qarun3/400/300',
-        'https://picsum.photos/seed/qarun4/400/300',
-      ],
-      description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area. Lorem ipsum dolor sit amet consectetur.',
+      images: ['https://picsum.photos/seed/qarun1/800/500'],
+      description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area.',
       place: 'Fayoum, Egypt',
       dateOfInscription: 1989,
       criteria: 'IX',
@@ -94,22 +82,26 @@ export class TouristAttractionCard {
     }
   ];
 
-  getStars(rating: number): number[] {
-    return Array(Math.round(rating)).fill(0);
+  // فنكشن التأكد من المفضلة عن طريق الاسم
+  isFavorite(name: string): boolean {
+    return this.favoritesService.getFavorites().some(f => f.title === name);
   }
 
-  isFavorite(id: number): boolean {
-    return this.favorites.includes(id);
-  }
-
-  toggleFavorite(event: Event, id: number) {
+  // فنكشن الـ Toggle الموحدة
+  toggleFavorite(event: Event, attraction: Attraction) {
     event.stopPropagation();
-    if (this.isFavorite(id)) {
-      this.favorites = this.favorites.filter(f => f !== id);
+    if (this.isFavorite(attraction.name)) {
+      const favs = this.favoritesService.getFavorites();
+      const index = favs.findIndex(f => f.title === attraction.name);
+      this.favoritesService.removeFavorite(index);
     } else {
-      this.favorites.push(id);
+      this.favoritesService.addToFavorites({
+        title: attraction.name,
+        image: attraction.images[0],
+        price: attraction.ticketPrice + ' le / Ticket', // شكل السعر في المفضلة
+        rating: attraction.rating
+      });
     }
-    localStorage.setItem('favorites', JSON.stringify(this.favorites));
   }
 
   goToDetails(id: number) {

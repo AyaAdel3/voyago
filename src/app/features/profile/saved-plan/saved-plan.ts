@@ -1,73 +1,78 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { PlanService } from '../../../core/services/plan.service';
 
 @Component({
   selector: 'app-saved-plan',
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './saved-plan.html',
-  styleUrl: './saved-plan.css'
+  styleUrls: ['./saved-plan.css']
 })
-export class SavedPlanComponent implements OnInit {
-  // ملاحظة: الاسم هنا SavedPlanComponent عشان يطابق الـ Routes
-  
-  myPlan = {
-    hotel: {
-      name: 'House in tunis village',
-      location: 'Fayoum, Egypt',
-      rating: 5.0,
-      pricePerNight: 285,
-      totalPrice: 1995,
-      nights: 7,
-      img: 'https://picsum.photos/seed/hotel1/800/400',
-      features: ['Restaurant', 'private pool', 'WIFI']
-    },
-    restaurants: [
-      { 
-        name: 'Urban Palate', 
-        rating: 4.8, 
-        type: 'Traditional Catalan', 
-        img: 'https://picsum.photos/seed/res1/400/300' 
-      },
-      { 
-        name: 'The Modern Bite', 
-        rating: 4.8, 
-        type: 'Traditional Catalan', 
-        img: 'https://picsum.photos/seed/res2/400/300' 
-      },
-      { 
-        name: 'Social Table', 
-        rating: 4.8, 
-        type: 'Spanish Gastronomy', 
-        img: 'https://picsum.photos/seed/res3/400/300' 
-      }
-    ],
-    attractions: [
-      { 
-        name: 'Wadi El Hitan Area', 
-        rating: 4.8, 
-        desc: 'Fossil Of Whale Skeletons', 
-        img: 'https://picsum.photos/seed/att1/400/300' 
-      },
-      { 
-        name: 'Wadi El Rayan Waterfalls', 
-        rating: 4.8, 
-        desc: 'Recreational And Tourist Activities', 
-        img: 'https://picsum.photos/seed/att2/400/300' 
-      },
-      { 
-        name: 'Lake Qarun', 
-        rating: 4.8, 
-        desc: 'One Of The Largest Natural Lakes', 
-        img: 'https://picsum.photos/seed/att3/400/300' 
-      }
-    ]
-  };
+export class SavedPlanComponent implements OnInit, OnDestroy {
+  myPlan: any = null;
+  private planSub?: Subscription;
 
-  constructor() {}
+  constructor(private planService: PlanService, private router: Router) {}
 
   ngOnInit(): void {
-    // هنا مستقبلاً هننادي على الـ Service عشان نسحب الداتا الحقيقية
+    // 1. لقطة سريعة من الكاش أول ما يفتح عشان الصور تظهر فوراً
+    const cached = localStorage.getItem('user_plan');
+    if (cached) {
+      this.myPlan = JSON.parse(cached);
+    }
+
+    // 2. متابعة التحديثات الحية من السيرفيس
+    this.planSub = this.planService['savedPlan$'].subscribe((data: any) => {
+      if (data) this.myPlan = data;
+    });
+  }
+
+  /**
+   * التنقل للعنوان (URL) حرفياً لضمان عدم حدوث 404
+   * بناءً على الـ Routes بتاعتك: 
+   * /restaurant/details/:id
+   * /tourist-attraction/details/:id
+   */
+  goToDetails(category: string, id: any) {
+    if (!id) {
+      console.error("ID مفقود لهذا العنصر!");
+      return;
+    }
+    const fullUrl = `/${category}/details/${id}`;
+    console.log("Navigating directly to:", fullUrl);
+    this.router.navigateByUrl(fullUrl);
+  }
+
+  /**
+   * مصلح الصور الذكي: بيضمن إن الموقع دايماً شكله شيك
+   * لو الصورة من الداتا بايظة أو مسارها غلط، بيحط صورة احترافية بديلة
+   */
+  getImage(item: any, type: 'hotel' | 'rest' | 'attr'): string {
+    const path = item?.image || item?.imagePath || item?.img || item?.hotelImage || item?.restaurantImage;
+    
+    // لو المسار موجود وطوله منطقي (أكبر من 5 حروف)
+    if (path && path.length > 5) return path;
+
+    // صور Fallback احترافية (عشان متبقاش فيه صورة بايظة)
+    const fallbacks = {
+      hotel: 'https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&q=80',
+      rest: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80',
+      attr: 'https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=800&q=80'
+    };
+    return fallbacks[type];
+  }
+
+  // فنكشن لملء الفراغات لحد 3 كروت في الجريد
+  getFillers(currentArray: any[] | undefined | null): any[] {
+    const count = currentArray ? currentArray.length : 0;
+    const needed = 3 - count;
+    return needed > 0 ? new Array(needed) : [];
+  }
+
+  ngOnDestroy(): void {
+    if (this.planSub) this.planSub.unsubscribe();
   }
 }

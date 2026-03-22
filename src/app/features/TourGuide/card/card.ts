@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Details } from '../details/details';
+import { FavoritesService } from '../../../core/services/favorites.service';
+
 
 export interface TourGuide {
   id: number;
@@ -27,6 +29,8 @@ export class Card implements OnInit {
   loading = true;
   selectedGuide: TourGuide | null = null;
 
+  constructor(private favoritesService: FavoritesService) {} // حقن السيرفس
+
   ngOnInit(): void {
     this.guides = [
       { id: 1, name: 'Araya Smith', image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=400&fit=crop', rating: 4.8, languages: ['English', 'Arabic'], email: 'araya.smith@gmail.com', phone: '+20 1012345678', pricePerDay: 150, description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh.', liked: false },
@@ -38,9 +42,28 @@ export class Card implements OnInit {
     this.loading = false;
   }
 
+  // فنكشن تلوين القلب بناءً على السيرفس
+  isGuideInFav(name: string): boolean {
+    return this.favoritesService.getFavorites().some(f => f.title === name);
+  }
+
   toggleFav(event: MouseEvent, guide: TourGuide): void {
     event.stopPropagation();
-    guide.liked = !guide.liked;
+    
+    if (this.isGuideInFav(guide.name)) {
+      const favs = this.favoritesService.getFavorites();
+      const index = favs.findIndex(f => f.title === guide.name);
+      if (index !== -1) {
+        this.favoritesService.removeFavorite(index);
+      }
+    } else {
+      this.favoritesService.addToFavorites({
+        title: guide.name,
+        image: guide.image,
+        price: guide.pricePerDay + ' LE / day',
+        rating: guide.rating
+      });
+    }
   }
 
   openDetails(guide: TourGuide): void {

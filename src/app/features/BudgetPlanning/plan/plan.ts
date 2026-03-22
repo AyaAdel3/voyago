@@ -1,11 +1,6 @@
 // ============================================================
 // plan.ts  →  src/app/features/BudgetPlanning/plan/
-// التعديلات:
-//   1. حد أدنى للبادجت — بيحسب أقل سعر متاح لكل section
-//   2. لو البادجت أقل من الحد → error message
-//   3. الفنادق: بس 3 كروت (اختر منها واحد)
-//   4. الريستورانتات: كل المتاحة للبادجت
-//   5. الـ attractions: كل المتاحة للبادجت
+// التعديل: استخدام المسار (Budget Planning) مع الـ B كابتل والمسافة
 // ============================================================
 
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
@@ -16,7 +11,7 @@ import { Hotel } from '../../../core/model/hotel.model';
 import { Restaurant } from '../../../core/model/restaurant.model';
 import { Attraction, BudgetBreakdown, BudgetPlan } from '../../../core/model/Budget.model';
 import { BudgetService } from '../../../core/services/budget.service';
-
+import { PlanService } from '../../../core/services/plan.service';
 
 @Component({
   selector: 'app-budget-plan',
@@ -26,55 +21,36 @@ import { BudgetService } from '../../../core/services/budget.service';
   styleUrl: './plan.css',
 })
 export class Plan implements OnInit {
- 
-  // ── Input fields ──────────────────────────────────────────
+  
   totalBudget = 0;
   days        = 1;
   inputError  = '';
- 
-  // ── Generated data ────────────────────────────────────────
   planGenerated = false;
   breakdown!:   BudgetBreakdown;
   dailyBudget   = 0;
- 
-  // كل البيانات الجاية من الـ service
   allHotels:      Hotel[]      = [];
   allRestaurants: Restaurant[] = [];
   allAttractions: Attraction[] = [];
- 
-  // الفنادق: أفضل 3 ضمن الـ budget (اختار منها واحد)
   recommendedHotels: Hotel[] = [];
- 
-  // الريستورانتات والـ attractions: كل المتاحة للبادجت
   availableRestaurants: Restaurant[] = [];
   availableAttractions: Attraction[] = [];
- 
-  // ── User selections ───────────────────────────────────────
   selectedHotel:       Hotel       | null = null;
   selectedRestaurants: Restaurant[]       = [];
   selectedAttractions: Attraction[]       = [];
- 
-  // ── Carousel للفنادق (3 كروت فقط visible) ─────────────────
   hotelOffset = 0;
- 
-  // ── Warnings ──────────────────────────────────────────────
   hotelWarning      = '';
   restaurantWarning = '';
   attractionWarning = '';
- 
-  // ── الحد الأدنى للبادجت ────────────────────────────────────
   minRequiredBudget = 0;
- 
-  // ── تكلفة الوجبة الواحدة في الريستورانت ──────────────────
-  // public عشان الـ template يقدر يوصلها
   readonly RESTAURANT_COST = 150;
- 
+  
   constructor(
     private budgetService: BudgetService,
+    private planService: PlanService, 
     private router:        Router,
     private cdr:           ChangeDetectorRef,
   ) {}
- 
+  
   ngOnInit(): void {
     this.budgetService.getHotels().subscribe(h => {
       this.allHotels = h;
@@ -88,27 +64,19 @@ export class Plan implements OnInit {
       this.recalcMinBudget();
     });
   }
- 
-  // ════════════════════════════════════════════════════════
-  // الحد الأدنى للبادجت
-  // ════════════════════════════════════════════════════════
- 
+  
   private recalcMinBudget(): void {
     if (!this.allHotels.length) return;
     const cheapestHotel = Math.min(...this.allHotels.map(h => h.pricePerNight));
     this.minRequiredBudget = Math.ceil((cheapestHotel * this.days) / 0.50);
   }
- 
+  
   onDaysChange(): void {
     this.recalcMinBudget();
     if (this.planGenerated) this.resetPlan();
     if (this.inputError) this.inputError = '';
   }
- 
-  // ════════════════════════════════════════════════════════
-  // GENERATE PLAN
-  // ════════════════════════════════════════════════════════
- 
+  
   generatePlan(): void {
     if (!this.totalBudget || this.totalBudget <= 0) {
       this.inputError = 'Please enter a valid total budget.';
@@ -118,50 +86,34 @@ export class Plan implements OnInit {
       this.inputError = 'Please enter a valid number of days.';
       return;
     }
- 
     if (this.minRequiredBudget > 0 && this.totalBudget < this.minRequiredBudget) {
-      this.inputError = `⚠ Budget is too low for ${this.days} day${this.days > 1 ? 's' : ''}. Minimum required is ${this.minRequiredBudget.toLocaleString()}LE (based on cheapest available hotel).`;
+      this.inputError = `⚠ Budget is too low for ${this.days} day${this.days > 1 ? 's' : ''}. Minimum required is ${this.minRequiredBudget.toLocaleString()}LE.`;
       return;
     }
- 
     this.inputError = '';
- 
     this.breakdown   = this.budgetService.calculateBreakdown(this.totalBudget);
     this.dailyBudget = this.budgetService.calculateDailyBudget(this.totalBudget, this.days);
- 
-    // الفنادق: أفضل 3 ضمن الـ hotelBudget
     const hotelsInBudget = this.allHotels
       .filter(h => h.pricePerNight * this.days <= this.breakdown.hotelBudget)
       .sort((a, b) => b.rating - a.rating);
- 
     this.recommendedHotels = hotelsInBudget.length > 0
       ? hotelsInBudget.slice(0, 3)
       : [...this.allHotels].sort((a, b) => a.pricePerNight - b.pricePerNight).slice(0, 3);
- 
-    // الريستورانتات: كل المتاحة مرتبة بـ rating
     this.availableRestaurants = [...this.allRestaurants].sort((a, b) => b.rating - a.rating);
- 
-    // الـ attractions: كل اللي سعر دخولها <= attractionBudget
     this.availableAttractions = this.allAttractions
       .filter(a => a.entryFee <= this.breakdown.attractionBudget)
       .sort((a, b) => b.rating - a.rating);
- 
-    this.selectedHotel        = null;
-    this.selectedRestaurants  = [];
-    this.selectedAttractions  = [];
-    this.hotelOffset          = 0;
-    this.hotelWarning         = '';
-    this.restaurantWarning    = '';
-    this.attractionWarning    = '';
- 
+    this.selectedHotel         = null;
+    this.selectedRestaurants   = [];
+    this.selectedAttractions   = [];
+    this.hotelOffset           = 0;
+    this.hotelWarning          = '';
+    this.restaurantWarning     = '';
+    this.attractionWarning     = '';
     this.planGenerated = true;
     this.cdr.detectChanges();
   }
- 
-  // ════════════════════════════════════════════════════════
-  // HOTEL — يختار واحد بس من أفضل 3
-  // ════════════════════════════════════════════════════════
- 
+  
   addHotelToPlan(hotel: Hotel): void {
     if (this.selectedHotel?.id === hotel.id) {
       this.selectedHotel = null;
@@ -174,158 +126,90 @@ export class Plan implements OnInit {
       : '';
     this.selectedHotel = hotel;
   }
- 
-  isHotelSelected(id: number): boolean {
-    return this.selectedHotel?.id === id;
-  }
- 
+  
+  isHotelSelected(id: number): boolean { return this.selectedHotel?.id === id; }
   canScrollHotels(dir: 'prev' | 'next'): boolean {
-    return dir === 'next'
-      ? this.hotelOffset + 3 < this.recommendedHotels.length
-      : this.hotelOffset > 0;
+    return dir === 'next' ? this.hotelOffset + 3 < this.recommendedHotels.length : this.hotelOffset > 0;
   }
- 
   scrollHotels(dir: 'prev' | 'next'): void {
     if (dir === 'next' && this.hotelOffset + 3 < this.recommendedHotels.length) this.hotelOffset++;
     if (dir === 'prev' && this.hotelOffset > 0) this.hotelOffset--;
   }
- 
-  visibleHotels(): Hotel[] {
-    return this.recommendedHotels.slice(this.hotelOffset, this.hotelOffset + 3);
-  }
- 
-  // ════════════════════════════════════════════════════════
-  // RESTAURANT
-  // المنطق: كل ريستورانت تكلفته = RESTAURANT_COST × days
-  // اليوزر يقدر يختار براحته طالما المجموع <= restaurantBudget
-  // ════════════════════════════════════════════════════════
- 
-  get restaurantBudgetUsed(): number {
-    // كل ريستورانت مضروب في عدد الأيام (هيزوره كل يوم)
-    return this.selectedRestaurants.length * this.RESTAURANT_COST * this.days;
-  }
- 
-  get restaurantBudgetRemaining(): number {
-    return this.breakdown ? this.breakdown.restaurantBudget - this.restaurantBudgetUsed : 0;
-  }
- 
+  visibleHotels(): Hotel[] { return this.recommendedHotels.slice(this.hotelOffset, this.hotelOffset + 3); }
+  
+  get restaurantBudgetUsed(): number { return this.selectedRestaurants.length * this.RESTAURANT_COST * this.days; }
+  get restaurantBudgetRemaining(): number { return this.breakdown ? this.breakdown.restaurantBudget - this.restaurantBudgetUsed : 0; }
+  
   addRestaurantToPlan(r: Restaurant): void {
     const idx = this.selectedRestaurants.findIndex(x => x.id === r.id);
- 
-    // deselect
     if (idx >= 0) {
       this.selectedRestaurants = this.selectedRestaurants.filter(x => x.id !== r.id);
       this.restaurantWarning   = '';
       return;
     }
- 
-    // تكلفة إضافة هذا الريستورانت = 150LE × عدد الأيام
     const addedCost = this.RESTAURANT_COST * this.days;
- 
     if (this.restaurantBudgetUsed + addedCost > this.breakdown.restaurantBudget) {
       this.restaurantWarning = `⚠ Budget exceeded. Only ${this.restaurantBudgetRemaining.toLocaleString()}LE remaining.`;
       return;
     }
- 
     this.selectedRestaurants = [...this.selectedRestaurants, r];
- 
-    const remaining = this.restaurantBudgetRemaining;
-    this.restaurantWarning = remaining < addedCost * 2
-      ? `⚠ Only ${remaining.toLocaleString()}LE left in restaurant budget.`
-      : '';
   }
- 
-  isRestaurantSelected(id: number): boolean {
-    return this.selectedRestaurants.some(r => r.id === id);
-  }
- 
-  // ════════════════════════════════════════════════════════
-  // ATTRACTION
-  // ════════════════════════════════════════════════════════
- 
-  get selectedAttractionsCost(): number {
-    return this.selectedAttractions.reduce((s, a) => s + a.entryFee, 0);
-  }
- 
-  get attractionBudgetRemaining(): number {
-    return this.breakdown ? this.breakdown.attractionBudget - this.selectedAttractionsCost : 0;
-  }
- 
-  get maxAttractions(): number {
-    return Math.max(3, Math.floor(this.days * 0.5));
-  }
- 
+  
+  isRestaurantSelected(id: number): boolean { return this.selectedRestaurants.some(r => r.id === id); }
+  
+  get selectedAttractionsCost(): number { return this.selectedAttractions.reduce((s, a) => s + a.entryFee, 0); }
+  get attractionBudgetRemaining(): number { return this.breakdown ? this.breakdown.attractionBudget - this.selectedAttractionsCost : 0; }
+  
   addAttractionToPlan(a: Attraction): void {
     const idx = this.selectedAttractions.findIndex(x => x.id === a.id);
- 
     if (idx >= 0) {
       this.selectedAttractions = this.selectedAttractions.filter(x => x.id !== a.id);
       this.attractionWarning   = '';
       return;
     }
- 
     if (this.selectedAttractionsCost + a.entryFee > this.breakdown.attractionBudget) {
       this.attractionWarning = `⚠ Budget exceeded. Only ${this.attractionBudgetRemaining.toLocaleString()}LE remaining.`;
       return;
     }
- 
     this.selectedAttractions = [...this.selectedAttractions, a];
- 
-    const remaining = this.attractionBudgetRemaining;
-    this.attractionWarning = remaining < 100 && remaining > 0
-      ? `⚠ Only ${remaining.toLocaleString()}LE left in attractions budget.`
-      : '';
   }
- 
-  isAttractionSelected(id: number): boolean {
-    return this.selectedAttractions.some(a => a.id === id);
-  }
- 
-  // ════════════════════════════════════════════════════════
-  // TOTAL COST
-  // ════════════════════════════════════════════════════════
- 
+  
+  isAttractionSelected(id: number): boolean { return this.selectedAttractions.some(a => a.id === id); }
+  
   get totalCost(): number {
-    return this.budgetService.calculateTotalCost(
-      this.selectedHotel,
-      this.selectedRestaurants,
-      this.selectedAttractions,
-      this.days,
-    );
+    return this.budgetService.calculateTotalCost(this.selectedHotel, this.selectedRestaurants, this.selectedAttractions, this.days);
   }
- 
-  get budgetRemaining(): number {
-    return this.totalBudget - this.totalCost;
-  }
- 
+  
+  get budgetRemaining(): number { return this.totalBudget - this.totalCost; }
+  
   // ════════════════════════════════════════════════════════
-  // SAVE / DELETE PLAN
+  // SAVE PLAN - النسخة النهائية المطابقة للـ Routes
   // ════════════════════════════════════════════════════════
- 
-  savePlan(): void {
-    const plan: BudgetPlan = {
-      id:                  Date.now(),
-      totalBudget:         this.totalBudget,
-      days:                this.days,
-      dailyBudget:         this.dailyBudget,
-      selectedHotel:       this.selectedHotel,
-      selectedRestaurants: this.selectedRestaurants,
-      selectedAttractions: this.selectedAttractions,
-      totalCost:           this.totalCost,
-      createdAt:           new Date().toISOString(),
-    };
-    this.budgetService.setCurrentPlan(plan);
-    this.budgetService.savePlan(plan);
-    this.router.navigate(['/budget-planning/details', plan.id]);
-  }
- 
+ // plan.ts
+// ابحث عن الميثود دي في ملف plan.ts واستبدلها
+savePlan(): void {
+  // تجميع الداتا بأسماء بسيطة عشان الـ HTML يلقطها
+  const dataToSave = {
+    hotel: this.selectedHotel,         // بنبعته باسم hotel
+    restaurants: this.selectedRestaurants, // بنبعته باسم restaurants
+    attractions: this.selectedAttractions, // بنبعته باسم attractions
+    totalCost: this.totalCost,
+    days: this.days
+  };
+
+  // نداء السيرفيس
+  this.planService.savePlan(dataToSave);
+
+  // التحويل لصفحة السيف بلان
+  this.router.navigate(['/profile/saved-plan']);
+}
   deletePlan(): void {
     this.resetPlan();
     this.totalBudget = 0;
     this.days        = 1;
     this.recalcMinBudget();
   }
- 
+  
   private resetPlan(): void {
     this.planGenerated       = false;
     this.selectedHotel       = null;
@@ -336,11 +220,9 @@ export class Plan implements OnInit {
     this.restaurantWarning   = '';
     this.attractionWarning   = '';
   }
- 
-  // ── Navigation ────────────────────────────────────────────
-  viewHotelDetails(id: number):      void { this.router.navigate(['/hotels/details', id]); }
-  viewRestaurantDetails(id: number): void { this.router.navigate(['/restaurant/details', id]); }
-  viewAttractionDetails(id: number): void { this.router.navigate(['/tourist-attraction/details', id]); }
- 
+  
+  viewHotelDetails(id: number): void { this.router.navigate(['/hotels/details', id]); }
+  viewRestaurantDetails(id: number): void { this.router.navigate(['/Restaurants/details', id]); }
+  viewAttractionDetails(id: number): void { this.router.navigate(['/Attractions/details', id]); }
   starsArray(n: number): number[] { return Array(n).fill(0); }
 }

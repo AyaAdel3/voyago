@@ -1,156 +1,144 @@
 :host {
-  display: flex;
-  flex: 1;
-  min-height: calc(100vh - 140px);
+  display: block;
+  font-family: 'Poppins', sans-serif; /* تأكد من استدعاء الخط في index.html */
 }
 
-.profile-container {
+.profile-layout {
   display: flex;
-  flex: 1;
-  width: 100%;
-  background-color: #0d1b2a;
+  background-color: #0A1128; /* نفس درجة الكحلي في الصورة */
+  min-height: 100vh;
   color: white;
 }
 
-/* ===== Sidebar ===== */
+/* Sidebar */
 .sidebar {
-  width: 350px;
-  min-width: 260px;
-  background-color: #0d1b2a;
-  padding: 35px 35px;
+  width: 300px;
+  border-right: 1px solid #1e2e40;
+  padding: 50px 30px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  border-right: 8px solid #3a5068;
 }
 
-.profile-image-wrapper {
+.image-container {
   position: relative;
-  margin-bottom: 20px;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 50px;
 }
 
-.profile-img {
-  width: 110px;
-  height: 110px;
+.image-container img {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
+  border: 2px solid #ccc;
   object-fit: cover;
-  display: block;
 }
 
-.camera-icon {
+.camera-btn {
   position: absolute;
-  bottom: 2px;
-  right: 2px;
+  bottom: 5px;
+  right: 5px;
   background: #1e2e40;
   border-radius: 50%;
   padding: 6px;
-  font-size: 16px;
-  cursor: pointer;
-  line-height: 1;
-}
-
-.sidebar-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-}
-
-.sidebar-links li {
-  padding: 12px 10px;
-  cursor: pointer;
   font-size: 14px;
-  color: #aaa;
+}
+
+.nav-links {
   display: flex;
-  gap: 8px;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.nav-links a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  display: flex;
   align-items: center;
-  white-space: nowrap;
+  gap: 12px;
+  opacity: 0.8;
 }
 
-.sidebar-links li.active {
-  color: #f5c842;
-  border-bottom: 2px solid #f5c842;
-  font-weight: bold;
+.active-link {
+  color: #FFE194 !important; /* اللون الأصفر من الصورة */
+  opacity: 1 !important;
+  border-bottom: 2px solid #FFE194;
+  width: fit-content;
+  padding-bottom: 5px;
 }
 
-.logout {
-  margin-top: 40px;
-  padding-top: 16px;
-  color: #aaa;
-  font-size: 14px;
+.logout-btn {
+  margin-top: auto;
+  background: none;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   cursor: pointer;
-  align-self: flex-start;
-  padding-left: 10px;
+  font-size: 16px;
+  padding: 0;
 }
 
-/* ===== Content ===== */
+/* Main Content */
 .content {
   flex: 1;
-  padding: 60px 80px;
-  background-color: #0f2236;
+  padding: 60px 100px;
 }
 
 .info-header {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   align-items: center;
-  gap: 350px;
-  margin-bottom: 24px;
-  white-space: nowrap;
+  margin-bottom: 50px;
 }
 
-.info-header h2 {
-  font-size: 22px;
-  color: white;
-  white-space: nowrap;
+.info-header h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin: 0;
 }
 
-.edit-btn,
-.save-btn {
-  background-color: #f5c842;
-  color: #0d1b2a;
+.edit-btn, .save-btn {
+  background-color: #FFE194;
+  color: #0A1128;
   border: none;
-  padding: 8px 24px;
+  padding: 8px 45px;
   border-radius: 20px;
   font-weight: bold;
+  font-size: 16px;
   cursor: pointer;
-  font-size: 14px;
 }
 
-.content p {
-  color: #7a9cc6;
-  margin-bottom: 14px;
-  font-size: 15px;
+.details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
-/* ===== Edit Inputs ===== */
-.input-group {
-  margin-bottom: 16px;
+.data-value {
+  font-size: 20px;
+  color: #7a9cc6; /* درجة الأزرق الفاتح للنصوص */
+  margin: 0;
 }
 
-.edit-input {
+/* Edit Mode Styling */
+.profile-input {
   background: transparent;
   border: none;
-  border-bottom: 1px solid #f5c842;
+  border-bottom: 1px solid #FFE194;
   color: #7a9cc6;
-  font-size: 15px;
-  padding: 6px 0;
-  width: 300px;
+  font-size: 20px;
+  width: 100%;
+  max-width: 400px;
+  padding: 5px 0;
   outline: none;
-}
-
-.edit-input::placeholder {
-  color: #f5c842;
-  opacity: 0.8;
-}
-
-.edit-input.error {
-  border-bottom: 1px solid #ff4d4d;
 }
 
 .error-msg {
   color: #ff4d4d;
   font-size: 12px;
-  margin-top: 4px;
   display: block;
+  margin-top: 5px;
 }

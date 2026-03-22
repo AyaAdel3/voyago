@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Chatbot } from '../../shared/components/chatbot/chatbot';
+import { FavoritesService } from '../../core/services/favorites.service';
+
 
 @Component({
   selector: 'app-home',
@@ -14,7 +16,11 @@ export class Home implements OnInit, OnDestroy {
   currentOfferIndex = 0;
   private autoSlideInterval: any;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  // 1. إضافة السيرفس في الكونستراكتور
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private favoritesService: FavoritesService 
+  ) {}
 
   offers = [
     { title: 'Luxury Redefined, Now With Exclusive Discounts!', image: 'https://picsum.photos/seed/hotel1/800/400' },
@@ -55,6 +61,9 @@ export class Home implements OnInit, OnDestroy {
       this.nextOffer();
       this.cdr.detectChanges();
     }, 3000);
+
+    // اختيار اختياري: تحديث حالة الـ liked بناءً على المخزن عند تحميل الصفحة
+    this.syncFavorites();
   }
 
   ngOnDestroy() {
@@ -71,9 +80,37 @@ export class Home implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  // 2. تعديل فنكشن الـ Like عشان تبعت للسيرفس
   toggleLike(item: any) {
     item.liked = !item.liked;
+    
+    if (item.liked) {
+      // بنبعت البيانات للسيرفس (حولنا name لـ title عشان السيرفس بتاعتك)
+      const favItem = {
+        title: item.name,
+        image: item.image,
+        price: item.price,
+        rating: item.rating
+      };
+      this.favoritesService.addToFavorites(favItem);
+    } else {
+      // لو شال اللايك، بنمسحه من السيرفس
+      const favorites = this.favoritesService.getFavorites();
+      const index = favorites.findIndex(f => f.title === item.name);
+      if (index !== -1) {
+        this.favoritesService.removeFavorite(index);
+      }
+    }
   }
 
-   chatbotOpen = false;
+  // فنكشن اختيارية عشان لو الصفحة عملت ريفريش يفضل القلب أحمر لو متسيف
+  syncFavorites() {
+    const favorites = this.favoritesService.getFavorites();
+    const allItems = [...this.recommended, ...this.availableThisWeek];
+    allItems.forEach(item => {
+      item.liked = favorites.some(f => f.title === item.name);
+    });
+  }
+
+  chatbotOpen = false;
 }

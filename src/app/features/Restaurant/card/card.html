@@ -1,83 +1,75 @@
-<!-- ============================================================
-  card.html  →  src/app/features/Restaurant/card/
-  قائمة الريستورانتات — نفس ديزاين Hotel card بالظبط
-============================================================ -->
+<div class="restaurantpage bg-[#021526] min-h-screen">
 
-<div class="restaurantpage bg-[#021526]">
-
-  <!-- Loading -->
   <div *ngIf="loading" class="loading-wrap">
     <div class="spinner"></div>
     <p>Finding the best restaurants for you…</p>
   </div>
 
-  <!-- Restaurants List -->
-  <div *ngIf="!loading" class="restaurants-page">
+  <div *ngIf="!loading" class="restaurants-page p-6">
     <div
       *ngFor="let r of restaurants"
-      class="restaurant-card"
+      class="restaurant-card bg-[#2a2f3e] rounded-2xl overflow-hidden mb-6 cursor-pointer shadow-xl transition-transform hover:scale-[1.02]"
       (click)="goToDetails(r.id)"
     >
 
-      <!-- صورة + زرار القلب -->
-      <div class="card-img-wrap">
-        <img [src]="r.images[0]" [alt]="r.name" class="card-img" loading="lazy" />
+      <div class="card-img-wrap relative">
+        <img 
+          [src]="r.images[0]" 
+          [alt]="r.name" 
+          class="card-img w-full h-[200px] object-cover" 
+          loading="lazy" 
+        />
 
-        <!-- زرار الـ Favorite: stopPropagation عشان ميفتحش الصفحة -->
         <button
-          class="fav-btn"
-          [class.active]="restaurantService.isFavorite(r.id)"
-          (click)="toggleFav($event, r.id)"
-          aria-label="Add to favorites"
+          class="fav-btn absolute top-4 right-4 bg-white/10 backdrop-blur-md p-2 rounded-full border border-white/20 transition-all hover:bg-white/20"
+          [class.active]="isRestaurantInFav(r.name)"
+          (click)="toggleFav($event, r)"
         >
-          <svg viewBox="0 0 24 24" width="20" height="20">
+          <svg viewBox="0 0 24 24" width="22" height="22">
             <path
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-                 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
-                 C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
+              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 
+                 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09 
+                 C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5 
                  c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-              [attr.fill]="restaurantService.isFavorite(r.id) ? '#FFDE70' : 'none'"
-              [attr.stroke]="restaurantService.isFavorite(r.id) ? '#FFDE70' : 'white'"
+              [attr.fill]="isRestaurantInFav(r.name) ? '#FFDE70' : 'none'"
+              [attr.stroke]="isRestaurantInFav(r.name) ? '#FFDE70' : 'white'"
               stroke-width="2"
             />
           </svg>
         </button>
       </div>
 
-      <!-- محتوى الكارد -->
-      <div class="card-body font-[Nunito Sans]">
-        <div class="card-header translate-y-4">
-
-          <!-- اسم + cuisine -->
+      <div class="card-body p-5 font-[Nunito Sans]">
+        <div class="card-header flex justify-between items-center mb-3">
           <div>
-            <h3 class="restaurant-name">{{ r.name }}</h3>
-            <p class="restaurant-cuisine">{{ r.cuisine }} • {{ r.priceRange }}</p>
+            <h3 class="restaurant-name text-white font-bold text-xl">{{ r.name }}</h3>
+            <p class="restaurant-cuisine text-[#7a9cc6] text-sm font-medium">
+              {{ r.cuisine }} • {{ r.priceRange }}
+            </p>
           </div>
 
-          <!-- Rating Badge -->
-          <div class="rating-badge me-2">
-            <svg viewBox="0 0 24 24" width="14" height="14" fill="#021526">
+          <div class="rating-badge flex items-center bg-[#FFDE70] px-2 py-1 rounded-lg">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="#021526" class="mr-1">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
             </svg>
-            <span>{{ r.rating }}</span>
+            <span class="text-[#021526] font-extrabold text-xs">{{ r.rating }}</span>
           </div>
-
         </div>
 
-        <p class="restaurant-desc translate-y-4">{{ r.description }}</p>
+        <p class="restaurant-desc text-gray-400 text-sm line-clamp-2 leading-relaxed">
+          {{ r.description }}
+        </p>
 
-        <!-- Show Restaurant Button -->
-        <div class="card-footer">
+        <div class="card-footer mt-5">
           <button
-  class="btn-show mb-1.5 me-2"
-  (click)="$event.stopPropagation(); goToDetails(r.id)"
->
-            Show Resturant
+            class="btn-show w-full py-3 border border-[#FFDE70] text-[#FFDE70] font-bold rounded-xl transition-all hover:bg-[#FFDE70] hover:text-[#021526]"
+            (click)="$event.stopPropagation(); goToDetails(r.id)"
+          >
+            Show Restaurant
           </button>
         </div>
       </div>
 
     </div>
   </div>
-
 </div>

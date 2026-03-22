@@ -1,10 +1,6 @@
 // ============================================================
 // details.ts  →  src/app/features/BudgetPlanning/details/
-// صفحة تفاصيل البلان المحفوظ:
-//   - Selected Hotel card كبير + Cost Breakdown widget
-//   - Selected Restaurants grid
-//   - Tourist Attractions grid
-//   - Save Trip Plan button
+// التعديل النهائي: إصلاح كل المسارات (Capital & Spaces) لعدم ظهور Not Found
 // ============================================================
 
 import { Component, OnInit } from '@angular/core';
@@ -12,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BudgetPlan } from '../../../core/model/Budget.model';
 import { BudgetService } from '../../../core/services/budget.service';
+import { PlanService } from '../../../core/services/plan.service';
 
 @Component({
   selector: 'app-budget-details',
@@ -25,36 +22,62 @@ export class Details implements OnInit {
 
   constructor(
     private budgetService: BudgetService,
-    private route:         ActivatedRoute,
-    public  router:        Router,
+    private planService: PlanService,
+    private route:          ActivatedRoute,
+    public  router:         Router,
   ) {}
 
   ngOnInit(): void {
     // جيب الـ plan من الـ service
     this.plan = this.budgetService.getCurrentPlan();
 
-    // لو مفيش plan ارجع للـ main
+    // لو مفيش plan ارجع للـ main (عدلنا المسار ليطابق الـ Routes بالظبط)
     if (!this.plan) {
       this.router.navigate(['/Budget Planning']);
     }
   }
 
-  // ── Navigation ────────────────────────────────────────────
-  viewHotelDetails(id: number):      void { this.router.navigate(['/hotels/details', id]); }
-  viewRestaurantDetails(id: number): void { this.router.navigate(['/restaurant/details', id]); }
-  viewAttractionDetails(id: number): void { this.router.navigate(['/tourist-attraction/details', id]); }
-
-  // ── Save Trip Plan (يحفظه في الـ profile/saved-plan) ──────
-  saveTripPlan(): void {
-    if (this.plan) {
-      this.budgetService.savePlan(this.plan);
-      // TODO: فيديباك للمستخدم (toast notification)
-      this.router.navigate(['/profile/saved-plan']);
-    }
+  // ── Navigation (تم تعديل المسارات لتطابق الـ app.routes.ts بالمللي) ──────
+  
+  viewHotelDetails(id: number): void { 
+    this.router.navigate(['/hotels/details', id]); 
   }
 
+  // الـ R كابتل والـ A كابتل عشان الـ Router يلاقيهم
+  viewRestaurantDetails(id: number): void { 
+    this.router.navigate(['/Restaurants/details', id]); 
+  }
+
+  viewAttractionDetails(id: number): void { 
+    this.router.navigate(['/Attractions/details', id]); 
+  }
+
+  // ── Save Trip Plan (بينقلك لصفحة الـ Saved Plan في البروفايل) ──────
+ saveTripPlan(): void {
+  if (this.plan) {
+    // 1. تجهيز الداتا بالأسماء اللي صفحة البروفايل "فاهماها" بالظبط
+    const dataToSave = {
+      hotel: this.plan.selectedHotel,
+      restaurants: this.plan.selectedRestaurants, // لازم جمع ومصفوفة
+      attractions: this.plan.selectedAttractions, // لازم الاسم ده عشان الـ HTML يلقطه
+      totalCost: this.plan.totalCost
+    };
+
+    // 2. مناداة السيرفيس (دي أهم خطوة عشان الصور تظهر)
+    this.planService.savePlan(dataToSave);
+
+    // 3. الحفظ في الـ Budget Service (لو محتاجه للـ History)
+    this.budgetService.savePlan(this.plan);
+
+    // 4. التوجه لصفحة الـ Saved Plans
+    this.router.navigate(['/profile/saved-plan']);
+  }
+}
+
   // ── Helpers ───────────────────────────────────────────────
-  starsArray(n: number): number[] { return Array(Math.round(n)).fill(0); }
+  starsArray(n: number): number[] { 
+    return Array(Math.round(n)).fill(0); 
+  }
 
   get hotelTotalCost(): number {
     if (!this.plan?.selectedHotel) return 0;

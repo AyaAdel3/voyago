@@ -1,13 +1,10 @@
-// ============================================================
-// card.ts  →  src/app/features/Restaurant/card/
-// قائمة الريستورانتات — نفس pattern بتاعة Hotel/card
-// ============================================================
-
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Restaurant } from '../../../core/model/restaurant.model';
 import { RestaurantService } from '../../../core/services/resturant.service';
+import { FavoritesService } from '../../../core/services/favorites.service';
+
 
 @Component({
   selector: 'app-restaurant-card',
@@ -22,6 +19,7 @@ export class Card implements OnInit {
 
   constructor(
     public restaurantService: RestaurantService,
+    private favoritesService: FavoritesService, 
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
@@ -40,14 +38,39 @@ export class Card implements OnInit {
     });
   }
 
-  /** الانتقال لصفحة تفاصيل الريستورانت */
-  goToDetails(id: number): void {
-    this.router.navigate(['/restaurant/details', id]);
+  /** فنكشن تلوين القلب بناءً على الاسم المتسيف في السيرفس **/
+  isRestaurantInFav(name: string): boolean {
+    const favs = this.favoritesService.getFavorites();
+    return favs.some(f => f.title === name);
   }
 
-  /** toggle الـ favorite مع وقف الـ event عشان ميفتحش الصفحة */
-  toggleFav(event: MouseEvent, id: number): void {
-    event.stopPropagation();
-    this.restaurantService.toggleFavorite(id);
+  /** الانتقال لصفحة التفاصيل - تم تعديل المسار لـ restaurants (بالجمع) ليطابق الـ Routes **/
+  goToDetails(id: number): void {
+    this.router.navigate(['/restaurants/details', id]);
+  }
+
+  /** الـ toggle عشان يضيف أو يمسح من المفضلة العامة **/
+  toggleFav(event: MouseEvent, r: any): void {
+    event.stopPropagation(); // منع فتح صفحة التفاصيل عند الضغط على القلب
+    
+    // سطر الـ toggle القديم بتاعك (اختياري لو السيرفس بتاعتك بتعمل حاجة تانية)
+    this.restaurantService.toggleFavorite(r.id);
+
+    if (this.isRestaurantInFav(r.name)) {
+      // لو موجود نمسحه
+      const favs = this.favoritesService.getFavorites();
+      const index = favs.findIndex(f => f.title === r.name);
+      if (index !== -1) {
+        this.favoritesService.removeFavorite(index);
+      }
+    } else {
+      // لو مش موجود نضيفه بالبيانات الموحدة (Title, Image, Price, Rating)
+      this.favoritesService.addToFavorites({
+        title: r.name,
+        image: r.images[0],
+        price: r.cuisine + ' • ' + r.priceRange,
+        rating: r.rating
+      });
+    }
   }
 }
