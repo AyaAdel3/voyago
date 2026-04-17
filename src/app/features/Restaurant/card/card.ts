@@ -45,9 +45,9 @@ export class Card implements OnInit {
   }
 
   /** الانتقال لصفحة التفاصيل - تم تعديل المسار لـ restaurants (بالجمع) ليطابق الـ Routes **/
-  goToDetails(id: number): void {
-    this.router.navigate(['/restaurants/details', id]);
-  }
+goToDetails(id: number): void {
+  this.router.navigate(['restaurant/details', id]);
+}
 
   /** الـ toggle عشان يضيف أو يمسح من المفضلة العامة **/
   toggleFav(event: MouseEvent, r: any): void {
