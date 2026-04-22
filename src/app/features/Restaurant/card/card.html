@@ -9,7 +9,8 @@
     <div
       *ngFor="let r of restaurants"
       class="restaurant-card"
-      (click)="goToDetails(r.id)"
+      [class.card-inactive]="r.status === 'Inactive'"
+      (click)="r.status !== 'Inactive' && goToDetails(r.id)"
     >
 
       <div class="card-img-wrap">
@@ -37,6 +38,11 @@
             />
           </svg>
         </button>
+
+        <!-- Inactive overlay -->
+        <div class="inactive-overlay" *ngIf="r.status === 'Inactive'">
+          🚫 Not available right now
+        </div>
       </div>
 
       <div class="card-body font-[Nunito Sans]">
@@ -59,7 +65,8 @@
         <div class="card-footer">
           <button
             class="btn-show"
-            (click)="$event.stopPropagation(); goToDetails(r.id)"
+            [disabled]="r.status === 'Inactive'"
+            (click)="$event.stopPropagation(); r.status !== 'Inactive' && goToDetails(r.id)"
           >
             Show Restaurant
           </button>

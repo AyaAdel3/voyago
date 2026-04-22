@@ -1,0 +1,72 @@
+.dashboard { display: flex; flex-direction: column; gap: 1.25rem; }
+
+.overview-title { font-size: 1.1rem; font-weight: 700; color: #fff; }
+
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+}
+.overview-card {
+  background: #c8dff0;
+  border-radius: 14px;
+  padding: 1rem;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s;
+  overflow: hidden;
+}
+.overview-card:hover { transform: translateY(-2px); }
+.ov-value { font-size: 1.6rem; font-weight: 800; color: #0d1526; }
+.ov-label { font-size: 0.78rem; color: #3a5070; font-weight: 600; }
+.ov-link { font-size: 0.72rem; color: #1e6ab0; font-weight: 600; display: block; margin-top: 0.25rem; }
+.ov-icon-wrap {
+  position: absolute;
+  top: 0.75rem; right: 0.75rem;
+  width: 30px; height: 30px;
+  background: rgba(255,255,255,0.35);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #1e3a5a;
+}
+
+.recent-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.recent-block { background: #162a40; border-radius: 14px; padding: 1rem; border: 1px solid rgba(163,196,235,0.1); }
+.full-width { grid-column: 1 / -1; }
+
+.recent-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 0.75rem;
+}
+.recent-header h3 { font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0; }
+.view-all-btn {
+  font-size: 0.78rem; color: #7a9cbf; font-weight: 600;
+  background: rgba(163,196,235,0.1); padding: 0.25rem 0.75rem;
+  border-radius: 20px; text-decoration: none;
+  transition: background 0.2s;
+}
+.view-all-btn:hover { background: rgba(163,196,235,0.2); }
+
+.mini-table { display: flex; flex-direction: column; gap: 0.35rem; }
+.mini-header {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 1.5fr;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem; font-weight: 700; color: #7a9cbf;
+}
+.mini-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 1.5fr;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  align-items: center;
+  font-size: 0.82rem;
+}
+.mini-name { font-weight: 700; color: #0d1526; font-size: 0.8rem; }
+.mini-muted { color: #64748b; font-size: 0.78rem; }
+.mini-rating { display: flex; align-items: center; gap: 3px; color: #0d1526; font-weight: 700; font-size: 0.8rem; }
+.mini-actions { display: flex; align-items: center; gap: 0.4rem; }
+
+.guides-header { grid-template-columns: 2fr 1fr 1fr 1fr; }
+.guides-row { grid-template-columns: 2fr 1fr 1fr 1fr; }

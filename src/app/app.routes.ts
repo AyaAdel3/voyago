@@ -28,13 +28,25 @@ import { Plan } from './features/BudgetPlanning/plan/plan';
 import { Details as BudgetDetails } from './features/BudgetPlanning/details/details';
 
 // Profile
-import { FavoritesComponent } from './features/profile/favorites/favorites'; 
+import { FavoritesComponent } from './features/profile/favorites/favorites';
 import { PersonalInformation } from './features/profile/personal-information/personal-information';
-// تم تعديل الاسم هنا ليكون مطابقاً لـ SavedPlanComponent
 import { SavedPlanComponent } from './features/profile/saved-plan/saved-plan';
 
 // Not Found
 import { NotFound } from './features/not-found/not-found';
+
+// Admin
+import { AdminLayout } from './features/admin/admin-layout/admin-layout';
+import { AdminDashboard } from './features/admin/dashboard/dashboard/dashboard';
+import { AdminHotels } from './features/admin/hotels/hotels/hotels';
+import { ManageHotel } from './features/admin/hotels/manage-hotel/manage-hotel';
+import { AdminRestaurants } from './features/admin/restaurants/restaurants/restaurants';
+import { ManageRestaurant } from './features/admin/restaurants/manage-restaurant/manage-restaurant';
+import { AdminAttractions } from './features/admin/attractions/attractions/attractions';
+import { ManageAttraction } from './features/admin/attractions/manage-attraction/manage-attraction';
+import { AdminTourGuides } from './features/admin/tour-guides/tour-guides/tour-guides';
+import { ManageTourGuide } from './features/admin/tour-guides/manag-tour-guide/manag-tour-guide';
+import { AdminUsers } from './features/admin/users/users/users';
 
 
 export const routes: Routes = [
@@ -79,12 +91,40 @@ export const routes: Routes = [
       // Profile Routes
       { path: 'profile', redirectTo: 'profile/personal-information', pathMatch: 'full' },
       { path: 'profile/personal-information', component: PersonalInformation, title: 'Personal Information' },
-      { path: 'profile/favorites', component: FavoritesComponent, title: 'My Favorites' }, 
-      // تم تعديل الـ component هنا لـ SavedPlanComponent
+      { path: 'profile/favorites', component: FavoritesComponent, title: 'My Favorites' },
       { path: 'profile/saved-plan', component: SavedPlanComponent, title: 'Saved Plans' },
-
-      // Not Found
-      { path: '**', component: NotFound, title: 'Page Not Found' },
     ],
   },
+
+  // Admin
+  {
+    path: 'admin',
+    component: AdminLayout,
+    children: [
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: AdminDashboard, title: 'Admin Dashboard' },
+
+      // Hotels
+      { path: 'hotels', component: AdminHotels, title: 'Manage Hotels' },
+      { path: 'hotels/manage', component: ManageHotel, title: 'Hotel Form' },
+
+      // Restaurants
+      { path: 'restaurants', component: AdminRestaurants, title: 'Manage Restaurants' },
+      { path: 'restaurants/manage', component: ManageRestaurant, title: 'Restaurant Form' },
+
+      // Attractions
+      { path: 'attractions', component: AdminAttractions, title: 'Manage Attractions' },
+      { path: 'attractions/manage', component: ManageAttraction, title: 'Attraction Form' },
+
+      // Tour Guides
+      { path: 'tour-guides', component: AdminTourGuides, title: 'Manage Tour Guides' },
+      { path: 'tour-guides/manage', component: ManageTourGuide, title: 'Tour Guide Form' },
+
+      // Users
+      { path: 'users', component: AdminUsers, title: 'Manage Users' },
+    ],
+  },
+
+  // Not Found - يجي في الآخر دايمًا
+  { path: '**', component: NotFound, title: 'Page Not Found' },
 ];

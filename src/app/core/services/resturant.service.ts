@@ -1,10 +1,6 @@
-// ============================================================
-// restaurant.service.ts  →  src/app/core/services/
-// كل الـ data logic بتاعة الريستورنت
-// ============================================================
-
 import { Injectable, signal } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import {
   Restaurant, RestaurantReview, TableType, ReservationData,
   MOCK_RESTAURANTS, MOCK_RESTAURANT_REVIEWS, DEFAULT_TABLES,
@@ -13,37 +9,33 @@ import {
 @Injectable({ providedIn: 'root' })
 export class RestaurantService {
 
-  // ── Favorites (signal عشان reactivity) ───────────────────
-  private favIds = signal<Set<number>>(new Set());
+  // ── Reactive store ───────────────────────────────────────
+  private restaurantsSubject = new BehaviorSubject<Restaurant[]>([...MOCK_RESTAURANTS]);
+  restaurants$ = this.restaurantsSubject.asObservable();
 
-  // ── Current Reservation (يتعدي بين الصفحات) ──────────────
+  // ── Signals ──────────────────────────────────────────────
+  private favIds             = signal<Set<number>>(new Set());
   private currentReservation = signal<ReservationData | null>(null);
 
-  // ════════════════════════════════════════════════════════
-  // GET METHODS — هيتبدلوا بـ HttpClient.get() لما الـ API يجهز
-  // ════════════════════════════════════════════════════════
+  // ── READ ─────────────────────────────────────────────────
 
-  /** جيب كل الريستورانتات */
   getRestaurants(): Observable<Restaurant[]> {
-    // TODO: return this.http.get<Restaurant[]>('/api/restaurants');
-    return of(MOCK_RESTAURANTS);
+    return this.restaurants$;
   }
 
-  /** جيب ريستورانت واحد بالـ ID */
   getRestaurantById(id: number): Observable<Restaurant | undefined> {
-    // TODO: return this.http.get<Restaurant>(`/api/restaurants/${id}`);
-    return of(MOCK_RESTAURANTS.find(r => r.id === id));
+    return this.restaurants$.pipe(
+      map(list => list.find(r => r.id === id))
+    );
   }
 
-  /** جيب الريفيوز بتاعة ريستورانت معين */
   getReviews(restaurantId: number): Observable<RestaurantReview[]> {
-    // TODO: return this.http.get<RestaurantReview[]>(`/api/restaurants/${restaurantId}/reviews`);
-    return of(MOCK_RESTAURANT_REVIEWS.filter(r => r.restaurantId === restaurantId));
+    return new BehaviorSubject<RestaurantReview[]>(
+      MOCK_RESTAURANT_REVIEWS.filter(r => r.restaurantId === restaurantId)
+    ).asObservable();
   }
 
-  /** ابعت ريفيو جديد */
   submitReview(restaurantId: number, comment: string, rating: number): Observable<RestaurantReview> {
-    // TODO: return this.http.post<RestaurantReview>(`/api/restaurants/${restaurantId}/reviews`, { comment, rating });
     const newReview: RestaurantReview = {
       id:           Date.now(),
       restaurantId,
@@ -53,12 +45,31 @@ export class RestaurantService {
       comment,
       date:         new Date().toISOString().split('T')[0],
     };
-    return of(newReview);
+    return new BehaviorSubject(newReview).asObservable();
   }
 
-  // ════════════════════════════════════════════════════════
-  // FAVORITES
-  // ════════════════════════════════════════════════════════
+  // ── WRITE ────────────────────────────────────────────────
+
+  addRestaurant(restaurant: Restaurant): void {
+    const current = this.restaurantsSubject.getValue();
+    this.restaurantsSubject.next([...current, restaurant]);
+  }
+
+  updateRestaurant(updated: Restaurant): void {
+    const current = this.restaurantsSubject.getValue();
+    const index   = current.findIndex(r => r.id === updated.id);
+    if (index === -1) return;
+    const newList  = [...current];
+    newList[index] = { ...updated };
+    this.restaurantsSubject.next(newList);
+  }
+
+  deleteRestaurant(id: number): void {
+    const current = this.restaurantsSubject.getValue();
+    this.restaurantsSubject.next(current.filter(r => r.id !== id));
+  }
+
+  // ── Favorites ────────────────────────────────────────────
 
   isFavorite(id: number): boolean {
     return this.favIds().has(id);
@@ -70,9 +81,7 @@ export class RestaurantService {
     this.favIds.set(current);
   }
 
-  // ════════════════════════════════════════════════════════
-  // RESERVATION — يتحفظ ويتجاب بين صفحة الديتيلز والريزرفيشن
-  // ════════════════════════════════════════════════════════
+  // ── Reservation ──────────────────────────────────────────
 
   setReservation(data: ReservationData): void {
     this.currentReservation.set(data);
@@ -82,16 +91,15 @@ export class RestaurantService {
     return this.currentReservation();
   }
 
-  /** نسخة من الـ tables الافتراضية (مهم: نسخة جديدة مش reference) */
   getDefaultTables(): TableType[] {
     return DEFAULT_TABLES.map(t => ({ ...t }));
   }
 
-  /** Confirm الحجز وارجع confirmation number */
   confirmReservation(): Observable<string> {
-    // TODO: return this.http.post<{confirmationNumber: string}>('/api/reservations', this.currentReservation()).pipe(map(r => r.confirmationNumber));
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const rand  = Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-    return of(`RES-${rand}`);
+    const rand  = Array.from({ length: 8 }, () =>
+      chars[Math.floor(Math.random() * chars.length)]
+    ).join('');
+    return new BehaviorSubject(`RES-${rand}`).asObservable();
   }
 }

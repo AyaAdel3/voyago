@@ -1,0 +1,68 @@
+<div>
+  <h2 class="section-title">Tour Guides Management</h2>
+
+  <div class="stats-row">
+    <div *ngFor="let s of stats" class="stat-card" [ngClass]="s.type">
+      <p class="stat-label">{{ s.label }}</p>
+      <div class="stat-value">{{ s.value }} <span>{{ s.icon }}</span></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="toolbar-search">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="#4a6a88">
+        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+      </svg>
+      <input type="text" placeholder="Search Tour Guides..." [(ngModel)]="searchQuery" />
+    </div>
+    <a class="btn-add" [routerLink]="'/admin/tour-guides/manage'">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      Add Tour Guides
+    </a>
+  </div>
+
+  <div class="admin-table">
+    <div class="table-header guides-grid">
+      <span>Total Tour Name</span>
+      <span>Email</span>
+      <span>Languages</span>
+      <span>Phone</span>
+      <span>Rating</span>
+      <span>Tours</span>
+      <span>Status</span>
+      <span>Actions</span>
+    </div>
+
+    <div *ngFor="let g of filtered" class="table-row guides-grid">
+      <span class="cell-name">{{ g.name }}</span>
+      <span class="cell-muted">{{ g.email }}</span>
+      <div class="lang-tags">
+        <span *ngFor="let l of g.languages.slice(0,2)" class="lang-tag">{{ l }}</span>
+        <span *ngIf="g.languages.length > 2" class="lang-tag">+{{ g.languages.length - 2 }}</span>
+      </div>
+      <span class="cell-muted">{{ g.phone }}</span>
+      <span style="display:flex;align-items:center;gap:3px;font-weight:700;color:#0d1526">
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+        {{ g.rating }}
+      </span>
+      <span>{{ g.tours }}</span>
+      <span><span class="status-badge" [ngClass]="'status-' + g.status.toLowerCase()">{{ g.status }}</span></span>
+      <div class="actions-cell">
+        <button class="btn-icon btn-edit" (click)="edit(g)">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+        </button>
+        <button class="btn-icon btn-delete" (click)="delete(g)">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pagination">
+    <button class="page-btn arrow">‹</button>
+    <button *ngFor="let p of totalPages" class="page-btn" [class.active]="p === currentPage" (click)="currentPage = p">
+      {{ p === 10 ? '...' : '' }}{{ p }}
+    </button>
+    <button class="page-btn arrow">›</button>
+  </div>
+</div>

@@ -1,0 +1,39 @@
+.mini-rating { display: flex; align-items: center; gap: 3px; }
+.hotels-grid {
+  grid-template-columns: 2.2fr 1.5fr 0.7fr 0.8fr 1fr 1fr 1.5fr;
+}
+
+.hotel-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.hotel-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.rating-cell {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 700;
+  color: #0d1526;
+}
+
+.stars-cell { display: flex; gap: 1px; }
+.star-dot   { color: #f5c518; font-size: 0.85rem; }
+
+.price-cell { font-weight: 600; color: #0d1526; }
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  background: #fff;
+  border-radius: 12px;
+}

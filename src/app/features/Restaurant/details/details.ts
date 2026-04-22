@@ -108,6 +108,12 @@ export class Details implements OnInit {
   }
 
   makeReservation(): void {
+    // ── Inactive check ──────────────────────────────────────
+    if ((this.restaurant as any).status === 'Inactive') {
+      this.resError = 'This restaurant is currently not available for reservations.';
+      return;
+    }
+
     if (!this.selectedDate) { this.resError = 'Please select a date.'; return; }
     if (!this.selectedTime) { this.resError = 'Please select a time.'; return; }
     if (!this.guestName.trim()) { this.resError = 'Please enter your name.'; return; }

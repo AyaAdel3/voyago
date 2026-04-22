@@ -1,0 +1,128 @@
+<div class="manage-page">
+  <h2 class="section-title">{{ isEdit ? 'Manage' : 'Add' }} <strong>Hotels</strong></h2>
+
+  <!-- ── Photos ── -->
+  <label class="form-label">Hotel Photos <span class="req">*</span></label>
+  <div class="photos-area">
+
+    <div class="photos-grid-inner" *ngIf="images.length">
+      <div *ngFor="let img of images; let i = index" class="photo-slot">
+        <img [src]="img" [alt]="'photo-' + i" />
+        <button class="photo-remove" (click)="removeImage(i)" type="button">✕</button>
+      </div>
+    </div>
+
+    <div class="upload-empty" *ngIf="!images.length" (click)="fileInput.click()">
+      <svg viewBox="0 0 24 24" width="36" height="36" fill="#7a9cbf">
+        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+      </svg>
+      <span>Click to upload images</span>
+      <span style="font-size:0.75rem">Or Drag &amp; drop</span>
+      <span style="font-size:0.72rem;color:#4a6a88">PNG, JPG up to 5MB (Max 15 images)</span>
+    </div>
+
+    <button
+      class="upload-circle-btn"
+      type="button"
+      (click)="fileInput.click()"
+      *ngIf="images.length"
+      title="Add more photos">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="white">
+        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+      </svg>
+    </button>
+
+    <input
+      #fileInput
+      type="file"
+      accept="image/*"
+      multiple
+      style="display:none"
+      (change)="onFileSelected($event)" />
+  </div>
+
+  <!-- ── Hotel Name ── -->
+  <div class="form-group">
+    <label class="form-label">Hotel Name <span class="req">*</span></label>
+    <input class="form-input" [(ngModel)]="hotel.name" placeholder="Enter Hotel Name" />
+  </div>
+
+  <!-- ── Location ── -->
+  <div class="form-group">
+    <label class="form-label">Location <span class="req">*</span></label>
+    <input class="form-input" [(ngModel)]="hotel.location" placeholder="e.g. Tunis Village, Fayoum, Egypt" />
+  </div>
+
+  <!-- ── Row: Price, Stars, Rating ── -->
+  <div class="form-row">
+    <div>
+      <label class="form-label">Price per Night (LE) <span class="req">*</span></label>
+      <input class="form-input" [(ngModel)]="hotel.pricePerNight" type="number" placeholder="LE 00.00" />
+    </div>
+    <div>
+      <label class="form-label">Stars (1–5) <span class="req">*</span></label>
+      <input class="form-input" [(ngModel)]="hotel.stars" type="number" min="1" max="5" placeholder="4" />
+    </div>
+    <div>
+      <label class="form-label">Rating <span class="req">*</span></label>
+      <input class="form-input" [(ngModel)]="hotel.rating" type="number" step="0.1" min="0" max="5" placeholder="4.5" />
+    </div>
+  </div>
+
+  <!-- ── Description ── -->
+  <div class="form-group">
+    <label class="form-label">Hotel Description <span class="req">*</span></label>
+    <textarea class="form-textarea" [(ngModel)]="hotel.description" placeholder="Enter detailed Hotel description..."></textarea>
+  </div>
+
+  <!-- ── Status ── -->
+  <div class="status-section">
+    <h4>Hotel Status <span class="req">*</span></h4>
+
+    <div class="inactive-notice" *ngIf="hotel.status === 'Inactive'">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="#fbbf24">
+        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+      </svg>
+      When set to Inactive, the hotel card on the site will show a "Not available" notice and won't allow bookings.
+    </div>
+
+    <div class="status-btns">
+      <button
+        class="btn-status btn-status-active"
+        [class.selected]="hotel.status === 'Active'"
+        (click)="setStatus('Active')"
+        type="button">
+        <span class="status-dot"></span>
+        Active
+      </button>
+      <button
+        class="btn-status btn-status-inactive"
+        [class.selected]="hotel.status === 'Inactive'"
+        (click)="setStatus('Inactive')"
+        type="button">
+        <span class="status-dot"></span>
+        Inactive
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Actions ── -->
+  <div class="form-actions">
+    <button class="btn-save" (click)="save()" type="button">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+        <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+      </svg>
+      Save Hotel
+    </button>
+    <button class="btn-clear" (click)="clear()" type="button">Clear</button>
+  </div>
+
+</div>
+
+<!-- ── Toast ── -->
+<div class="toast" *ngIf="toastVisible">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="#22c55e">
+    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+  </svg>
+  {{ toastMessage }}
+</div>

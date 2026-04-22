@@ -54,6 +54,17 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
+/* ── Inactive card ─────────────────────────────────────── */
+.card-inactive {
+  cursor: default;
+  opacity: 0.72;
+}
+.card-inactive:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Image wrap ────────────────────────────────────────── */
 .card-img-wrap {
   position: relative;
   flex-shrink: 0;
@@ -68,6 +79,22 @@
   object-fit: cover;
 }
 
+/* ── Inactive overlay ──────────────────────────────────── */
+.inactive-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(13, 21, 38, 0.82);
+  color: #fbbf24;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  text-align: center;
+  z-index: 3;
+}
+
+/* ── Fav button ────────────────────────────────────────── */
 .fav-btn {
   position: absolute;
   top: 12px;
@@ -83,10 +110,12 @@
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s, background 0.2s;
+  z-index: 4; /* فوق الـ inactive overlay عشان يشتغل */
 }
 .fav-btn:hover { transform: scale(1.15); background: rgba(0,0,0,0.5); }
 .fav-btn.active { background: rgba(255,222,112,0.2); }
 
+/* ── Card body ─────────────────────────────────────────── */
 .card-body {
   flex: 1;
   display: flex;
@@ -128,6 +157,7 @@
 }
 
 .card-footer { display: flex; justify-content: flex-end; }
+
 .btn-show {
   background: #ffde70;
   color: #0d1526;
@@ -139,7 +169,12 @@
   cursor: pointer;
   transition: background 0.2s, transform 0.15s;
 }
-.btn-show:hover { background: #f5c842; transform: scale(1.03); }
+.btn-show:hover:not(:disabled) { background: #f5c842; transform: scale(1.03); }
+.btn-show:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: #c8b96a;
+}
 
 @media (max-width: 600px) {
   .restaurant-card { flex-direction: column; width: 100%; height: auto; }

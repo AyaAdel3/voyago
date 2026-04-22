@@ -1,0 +1,2 @@
+.attr-grid{grid-template-columns: 2fr 1fr 0.8fr 0.8fr 1fr 1fr 1.5fr;}
+.mini-rating{display: flex; align-items: center; gap: 3px;}
