@@ -1,13 +1,33 @@
-.mini-rating { display: flex; align-items: center; gap: 3px; }
-.hotels-grid {
-  grid-template-columns: 2.2fr 1.5fr 0.7fr 0.8fr 1fr 1fr 1.5fr;
+/* ── Rating small ───────────────────────── */
+.mini-rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 
+/* ── Grid Layout ───────────────────────── */
+.hotels-grid {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 0.7fr 1.4fr 1fr 1fr 1.5fr;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ⭐ توسيط أعمدة معينة */
+.hotels-grid > *:nth-child(3), /* Rating */
+.hotels-grid > *:nth-child(4), /* Rooms */
+.hotels-grid > *:nth-child(5)  /* Price */ {
+  justify-self: center;
+  text-align: center;
+}
+
+/* ── Hotel name + thumbnail ───────────── */
 .hotel-name-cell {
   display: flex;
   align-items: center;
   gap: 0.6rem;
 }
+
 .hotel-thumb {
   width: 40px;
   height: 40px;
@@ -16,6 +36,7 @@
   flex-shrink: 0;
 }
 
+/* ── Rating ───────────────────────────── */
 .rating-cell {
   display: flex;
   align-items: center;
@@ -24,11 +45,57 @@
   color: #0d1526;
 }
 
-.stars-cell { display: flex; gap: 1px; }
-.star-dot   { color: #f5c518; font-size: 0.85rem; }
+/* ── Rooms cell ───────────────────────── */
+.rooms-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
 
-.price-cell { font-weight: 600; color: #0d1526; }
+.rooms-total {
+  font-weight: 700;
+  color: #0d1526;
+  font-size: 0.82rem;
+  text-align: center;
+}
 
+/* 2 × 2 layout */
+.rooms-breakdown {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 3px;
+  justify-content: center;
+}
+
+/* tags */
+.room-tag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  padding: 0 6px;
+  background: #e0f0ff;
+  color: #1a5f8a;
+  font-size: 0.65rem;
+  font-weight: 700;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.room-tag.suite {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* ── Price ───────────────────────────── */
+.price-cell {
+  font-weight: 600;
+  color: #0d1526;
+}
+
+/* ── Empty state ─────────────────────── */
 .empty-state {
   text-align: center;
   padding: 2rem;
@@ -36,4 +103,53 @@
   font-size: 0.9rem;
   background: #fff;
   border-radius: 12px;
+}
+
+/* ── Toast ───────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #0d1f33;
+  color: #c8dff0;
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  z-index: 9999;
+  animation: slideIn 0.3s ease;
+}
+
+.toast-delete {
+  border: 1px solid rgba(239,68,68,0.35);
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: #7a9cbf;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding-left: 0.5rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.toast-close:hover {
+  color: #ef4444;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

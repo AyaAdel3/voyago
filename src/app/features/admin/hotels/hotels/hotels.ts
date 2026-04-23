@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -19,17 +19,23 @@ export class AdminHotels implements OnInit {
 
   hotels: (Hotel & { status: string })[] = [];
 
+  deleteToastVisible = false;
+  deleteToastMessage = '';
+
   stats = [
-    { label: 'Total Hotels', value: 0, icon: '🏨', type: 'total' },
-    { label: 'Active',       value: 0, icon: '✓',  type: 'active' },
+    { label: 'Total Hotels', value: 0, icon: '🏨', type: 'total'    },
+    { label: 'Active',       value: 0, icon: '✓',  type: 'active'   },
     { label: 'Inactive',     value: 0, icon: '⊘',  type: 'inactive' },
-    { label: 'Blocked',      value: 0, icon: '⚠',  type: 'blocked' },
+    { label: 'Blocked',      value: 0, icon: '⚠',  type: 'blocked'  },
   ];
 
-  constructor(private router: Router, private hotelService: HotelService) {}
+  constructor(
+    private router: Router,
+    private hotelService: HotelService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnInit(): void {
-    // subscribe على الـ BehaviorSubject — بيتحدث تلقائي مع أي تغيير
     this.hotelService.getHotels().subscribe(hotels => {
       this.hotels = hotels.map(h => ({
         ...h,
@@ -53,6 +59,15 @@ export class AdminHotels implements OnInit {
     );
   }
 
+  showDeleteToast(msg: string) {
+    this.deleteToastMessage = msg;
+    this.deleteToastVisible = true;
+    setTimeout(() => {
+      this.deleteToastVisible = false;
+      this.cdr.detectChanges();
+    }, 6000);
+  }
+
   viewOnSite(hotel: Hotel) {
     window.open(`/hotels/details/${hotel.id}`, '_blank');
   }
@@ -62,10 +77,7 @@ export class AdminHotels implements OnInit {
   }
 
   delete(hotel: Hotel) {
-    if (confirm(`Delete "${hotel.name}"?\nThis will remove the hotel from the site immediately.`)) {
-      // deleteHotel بيعمل emit للـ BehaviorSubject
-      // فالـ hotel card في السايت هيختفي تلقائي
-      this.hotelService.deleteHotel(hotel.id);
-    }
+    this.hotelService.deleteHotel(hotel.id);
+    this.showDeleteToast(`"${hotel.name}" deleted successfully.`);
   }
 }

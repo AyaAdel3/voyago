@@ -2,6 +2,14 @@
 // hotel.model.ts
 // ============================================================
 
+export interface HotelRooms {
+  total:  number;
+  single: number;
+  double: number;
+  triple: number;
+  suite:  number;
+}
+
 export interface Hotel {
   id: number;
   name: string;
@@ -14,7 +22,8 @@ export interface Hotel {
   isFavorite?: boolean;
   amenities: string[];
   stars: number;
-  status?: 'Active' | 'Inactive' | 'Blocked'; // ← مضافة
+  status?: 'Active' | 'Inactive' | 'Blocked';
+  rooms?: HotelRooms;
 }
 
 export interface Review {
@@ -74,6 +83,7 @@ export const MOCK_HOTELS: Hotel[] = [
       'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800',
     ],
     amenities: ['WiFi', 'Pool', 'Restaurant'],
+    rooms: { total: 20, single: 8, double: 6, triple: 4, suite: 2 },
   },
   {
     id: 2,
@@ -93,6 +103,7 @@ export const MOCK_HOTELS: Hotel[] = [
       'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800',
     ],
     amenities: ['WiFi', 'private pool', 'Restaurant'],
+    rooms: { total: 15, single: 5, double: 6, triple: 3, suite: 1 },
   },
   {
     id: 3,
@@ -109,6 +120,7 @@ export const MOCK_HOTELS: Hotel[] = [
       'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
     ],
     amenities: ['WiFi', 'Spa', 'Restaurant', 'Pool'],
+    rooms: { total: 30, single: 10, double: 10, triple: 5, suite: 5 },
   },
 ];
 

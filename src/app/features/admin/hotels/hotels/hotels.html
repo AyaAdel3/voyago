@@ -31,7 +31,7 @@
       <span>Hotel Name</span>
       <span>Location</span>
       <span>Rating</span>
-      <span>Stars</span>
+      <span>Rooms</span>
       <span>Price/Night</span>
       <span>Status</span>
       <span>Actions</span>
@@ -39,7 +39,7 @@
 
     <div *ngFor="let h of filtered" class="table-row hotels-grid">
 
-      <!-- Name -->
+      <!-- Name + thumbnail -->
       <div class="hotel-name-cell">
         <img [src]="h.images[0]" [alt]="h.name" class="hotel-thumb" />
         <span class="cell-name">{{ h.name }}</span>
@@ -56,10 +56,19 @@
         {{ h.rating }}
       </span>
 
-      <!-- Stars -->
-      <span class="stars-cell">
-        <span *ngFor="let s of [].constructor(h.stars)" class="star-dot">★</span>
-      </span>
+      <!-- Rooms -->
+      <div class="rooms-cell" *ngIf="h.rooms; else noRooms">
+        <span class="rooms-total">{{ h.rooms.total }} rooms</span>
+        <div class="rooms-breakdown">
+          <span class="room-tag">S: {{ h.rooms.single }}</span>
+          <span class="room-tag">D: {{ h.rooms.double }}</span>
+          <span class="room-tag">T: {{ h.rooms.triple }}</span>
+          <span class="room-tag suite">Su: {{ h.rooms.suite }}</span>
+        </div>
+      </div>
+      <ng-template #noRooms>
+        <span class="cell-muted">—</span>
+      </ng-template>
 
       <!-- Price/Night -->
       <span class="price-cell">{{ h.pricePerNight | number }}LE</span>
@@ -110,4 +119,13 @@
     </button>
     <button class="page-btn arrow">›</button>
   </div>
+</div>
+
+<!-- ── Delete Toast ── -->
+<div class="toast toast-delete" *ngIf="deleteToastVisible">
+  <svg viewBox="0 0 24 24" width="18" height="18" fill="#ef4444">
+    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+  </svg>
+  <span style="flex:1">{{ deleteToastMessage }}</span>
+  <button class="toast-close" (click)="deleteToastVisible = false">✕</button>
 </div>

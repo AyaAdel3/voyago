@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +19,9 @@ export class AdminRestaurants implements OnInit {
 
   restaurants: (Restaurant & { status: string })[] = [];
 
+  deleteToastVisible = false;
+  deleteToastMessage = '';
+
   stats = [
     { label: 'Total Restaurants', value: 0, icon: '🍽', type: 'total'    },
     { label: 'Active',            value: 0, icon: '✓',  type: 'active'   },
@@ -29,6 +32,7 @@ export class AdminRestaurants implements OnInit {
   constructor(
     private router: Router,
     private restaurantService: RestaurantService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -55,6 +59,15 @@ export class AdminRestaurants implements OnInit {
     );
   }
 
+  showDeleteToast(msg: string) {
+    this.deleteToastMessage = msg;
+    this.deleteToastVisible = true;
+    setTimeout(() => {
+      this.deleteToastVisible = false;
+      this.cdr.detectChanges();
+    }, 3000);
+  }
+
   viewOnSite(r: Restaurant) {
     window.open(`/restaurant/details/${r.id}`, '_blank');
   }
@@ -64,8 +77,7 @@ export class AdminRestaurants implements OnInit {
   }
 
   delete(r: Restaurant) {
-    if (confirm(`Delete "${r.name}"?\nThis will remove the restaurant from the site immediately.`)) {
-      this.restaurantService.deleteRestaurant(r.id);
-    }
+    this.restaurantService.deleteRestaurant(r.id);
+    this.showDeleteToast(`"${r.name}" deleted successfully.`);
   }
 }

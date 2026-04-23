@@ -1,4 +1,6 @@
 .mini-rating{ display: flex; align-items: center; gap: 3px;}
+.mini-rating { display: flex; align-items: center; gap: 3px; }
+
 .rest-grid {
   grid-template-columns: 2fr 1fr 0.7fr 1fr 1fr 0.8fr 1.5fr;
 }
@@ -28,4 +30,53 @@
 .price-cell {
   font-weight: 600;
   color: #1e6ab0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  background: #fff;
+  border-radius: 12px;
+}
+
+/* ── Toast ───────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #0d1f33;
+  color: #c8dff0;
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  z-index: 9999;
+  animation: slideIn 0.3s ease;
+}
+
+.toast-delete {
+  border: 1px solid rgba(239,68,68,0.35);
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  color: #7a9cbf;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0 0 0 0.5rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.toast-close:hover { color: #ef4444; }
+
+@keyframes slideIn {
+  from { transform: translateY(1rem); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
