@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HotelService } from '../../../../core/services/hotel.service';
-import { Hotel } from '../../../../core/model/hotel.model';
+import { Hotel, HotelRooms } from '../../../../core/model/hotel.model';
 
 @Component({
   selector: 'app-manage-hotel',
@@ -23,11 +23,18 @@ export class ManageHotel implements OnInit {
   hotel = {
     name:          '',
     pricePerNight: '',
-    stars:         '',
     rating:        '',
     description:   '',
     location:      '',
     status:        'Active' as 'Active' | 'Inactive' | 'Blocked',
+  };
+
+  rooms: HotelRooms = {
+    total:  0,
+    single: 0,
+    double: 0,
+    triple: 0,
+    suite:  0,
   };
 
   constructor(
@@ -53,13 +60,20 @@ export class ManageHotel implements OnInit {
       this.hotel  = {
         name:          h.name,
         pricePerNight: h.pricePerNight.toString(),
-        stars:         h.stars.toString(),
         rating:        h.rating.toString(),
         description:   h.description,
         location:      h.location,
         status:        (h as any).status ?? 'Active',
       };
+      if (h.rooms) {
+        this.rooms = { ...h.rooms };
+      }
     });
+  }
+
+  // حساب التوتال تلقائي من باقي الأنواع
+  calcTotal() {
+    this.rooms.total = this.rooms.single + this.rooms.double + this.rooms.triple + this.rooms.suite;
   }
 
   setStatus(s: 'Active' | 'Inactive' | 'Blocked') {
@@ -104,12 +118,12 @@ export class ManageHotel implements OnInit {
           ...existing,
           name:          this.hotel.name,
           pricePerNight: +this.hotel.pricePerNight,
-          stars:         +this.hotel.stars,
           rating:        +this.hotel.rating,
           description:   this.hotel.description,
           location:      this.hotel.location,
           images:        [...this.images],
           status:        this.hotel.status,
+          rooms:         { ...this.rooms },
         } as Hotel;
 
         this.hotelService.updateHotel(updated);
@@ -121,13 +135,14 @@ export class ManageHotel implements OnInit {
         id:            Date.now(),
         name:          this.hotel.name,
         pricePerNight: +this.hotel.pricePerNight,
-        stars:         +this.hotel.stars,
+        stars:         0,
         rating:        +this.hotel.rating,
         description:   this.hotel.description,
         location:      this.hotel.location,
         images:        [...this.images],
         amenities:     [],
         status:        this.hotel.status,
+        rooms:         { ...this.rooms },
       } as unknown as Hotel;
 
       this.hotelService.addHotel(newHotel);
@@ -136,10 +151,11 @@ export class ManageHotel implements OnInit {
   }
 
   clear() {
-    this.hotel  = {
-      name: '', pricePerNight: '', stars: '',
-      rating: '', description: '', location: '', status: 'Active',
+    this.hotel = {
+      name: '', pricePerNight: '', rating: '',
+      description: '', location: '', status: 'Active',
     };
+    this.rooms  = { total: 0, single: 0, double: 0, triple: 0, suite: 0 };
     this.images = [];
   }
 }

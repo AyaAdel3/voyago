@@ -53,19 +53,71 @@
     <input class="form-input" [(ngModel)]="hotel.location" placeholder="e.g. Tunis Village, Fayoum, Egypt" />
   </div>
 
-  <!-- ── Row: Price, Stars, Rating ── -->
-  <div class="form-row">
+  <!-- ── Row: Price, Rating ── -->
+  <div class="form-row-2">
     <div>
       <label class="form-label">Price per Night (LE) <span class="req">*</span></label>
       <input class="form-input" [(ngModel)]="hotel.pricePerNight" type="number" placeholder="LE 00.00" />
     </div>
     <div>
-      <label class="form-label">Stars (1–5) <span class="req">*</span></label>
-      <input class="form-input" [(ngModel)]="hotel.stars" type="number" min="1" max="5" placeholder="4" />
-    </div>
-    <div>
       <label class="form-label">Rating <span class="req">*</span></label>
       <input class="form-input" [(ngModel)]="hotel.rating" type="number" step="0.1" min="0" max="5" placeholder="4.5" />
+    </div>
+  </div>
+
+  <!-- ── Rooms ── -->
+  <div class="form-group">
+    <label class="form-label">Rooms <span class="req">*</span></label>
+    <div class="rooms-form-grid">
+
+      <div class="room-input-wrap">
+        <label class="room-input-label">Single</label>
+        <input
+          class="form-input room-input"
+          [(ngModel)]="rooms.single"
+          type="number" min="0"
+          placeholder="0"
+          (ngModelChange)="calcTotal()" />
+      </div>
+
+      <div class="room-input-wrap">
+        <label class="room-input-label">Double</label>
+        <input
+          class="form-input room-input"
+          [(ngModel)]="rooms.double"
+          type="number" min="0"
+          placeholder="0"
+          (ngModelChange)="calcTotal()" />
+      </div>
+
+      <div class="room-input-wrap">
+        <label class="room-input-label">Triple</label>
+        <input
+          class="form-input room-input"
+          [(ngModel)]="rooms.triple"
+          type="number" min="0"
+          placeholder="0"
+          (ngModelChange)="calcTotal()" />
+      </div>
+
+      <div class="room-input-wrap">
+        <label class="room-input-label">Suite</label>
+        <input
+          class="form-input room-input"
+          [(ngModel)]="rooms.suite"
+          type="number" min="0"
+          placeholder="0"
+          (ngModelChange)="calcTotal()" />
+      </div>
+
+    </div>
+
+    <!-- Total badge -->
+    <div class="rooms-total-badge">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+        <path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/>
+      </svg>
+      Total Rooms: <strong>{{ rooms.total }}</strong>
     </div>
   </div>
 

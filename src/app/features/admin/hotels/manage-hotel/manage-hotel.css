@@ -50,6 +50,52 @@
 }
 .upload-circle-btn:hover { background: #1558a0; }
 
+/* ── Rooms form ──────────────────────────────────────────── */
+.rooms-form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+
+.room-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.room-input-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #7a9cbf;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.room-input {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* Total badge */
+.rooms-total-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(163,196,235,0.1);
+  border: 1px solid rgba(163,196,235,0.2);
+  border-radius: 8px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.82rem;
+  color: #7a9cbf;
+  margin-top: 0.25rem;
+}
+.rooms-total-badge strong {
+  color: #c8dff0;
+  font-size: 0.95rem;
+}
+
 /* ── Inactive notice ─────────────────────────────────────── */
 .inactive-notice {
   display: flex;
