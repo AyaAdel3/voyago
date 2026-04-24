@@ -3,74 +3,47 @@
   position: relative;
   margin-bottom: 1.5rem;
 }
-
 .photos-grid-inner {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
 }
-
 .photo-slot {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
   aspect-ratio: 4/3;
 }
-
-.photo-slot img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
+.photo-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .photo-remove {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 22px;
-  height: 22px;
-  background: rgba(0, 0, 0, 0.65);
-  border: none;
-  border-radius: 50%;
-  color: #fff;
-  font-size: 0.72rem;
+  top: 6px; right: 6px;
+  width: 22px; height: 22px;
+  background: rgba(0,0,0,0.65);
+  border: none; border-radius: 50%;
+  color: #fff; font-size: 0.72rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   transition: background 0.2s;
 }
-
-.photo-remove:hover {
-  background: rgba(239, 68, 68, 0.85);
-}
+.photo-remove:hover { background: rgba(239,68,68,0.85); }
 
 /* ── Upload button ───────────────────────────────────────── */
 .upload-circle-btn {
   position: absolute;
-  right: -12px;
-  top: 50%;
+  right: -12px; top: 50%;
   transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
+  width: 36px; height: 36px;
   background: #1e6ab0;
-  border: none;
-  border-radius: 50%;
+  border: none; border-radius: 50%;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
   transition: background 0.2s;
   z-index: 2;
 }
+.upload-circle-btn:hover { background: #1558a0; }
 
-.upload-circle-btn:hover {
-  background: #1558a0;
-}
-
-/* ── Upload empty state ──────────────────────────────────── */
 .upload-empty {
   border: 2px dashed #2a4a6a;
   border-radius: 12px;
@@ -84,19 +57,55 @@
   font-size: 0.88rem;
   transition: border-color 0.2s, background 0.2s;
 }
+.upload-empty:hover { border-color: #1e6ab0; background: rgba(30,106,176,0.04); }
 
-.upload-empty:hover {
-  border-color: #1e6ab0;
-  background: rgba(30, 106, 176, 0.04);
+/* ── Tables form ─────────────────────────────────────────── */
+.rooms-form-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
 }
+.room-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.room-input-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #7a9cbf;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.room-input {
+  text-align: center;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* Total badge */
+.rooms-total-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(163,196,235,0.1);
+  border: 1px solid rgba(163,196,235,0.2);
+  border-radius: 8px;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.82rem;
+  color: #7a9cbf;
+  margin-top: 0.25rem;
+}
+.rooms-total-badge strong { color: #c8dff0; font-size: 0.95rem; }
 
 /* ── Inactive notice ─────────────────────────────────────── */
 .inactive-notice {
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
-  background: rgba(251, 191, 36, 0.1);
-  border: 1px solid rgba(251, 191, 36, 0.3);
+  background: rgba(251,191,36,0.1);
+  border: 1px solid rgba(251,191,36,0.3);
   border-radius: 10px;
   padding: 0.65rem 1rem;
   font-size: 0.82rem;
@@ -110,8 +119,7 @@
 
 /* ── Status dot ──────────────────────────────────────────── */
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 8px; height: 8px;
   border-radius: 50%;
   background: currentColor;
   display: inline-block;
@@ -125,7 +133,7 @@
   right: 2rem;
   background: #0d1f33;
   color: #c8dff0;
-  border: 1px solid rgba(34, 197, 94, 0.35);
+  border: 1px solid rgba(34,197,94,0.35);
   border-radius: 12px;
   padding: 0.75rem 1.25rem;
   display: flex;
@@ -133,11 +141,10 @@
   gap: 0.5rem;
   font-size: 0.88rem;
   font-weight: 600;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   z-index: 9999;
   animation: slideIn 0.3s ease;
 }
-
 @keyframes slideIn {
   from { transform: translateY(1rem); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }

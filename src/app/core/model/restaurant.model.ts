@@ -1,3 +1,10 @@
+export interface RestaurantTables {
+  total:    number;
+  for2:     number;  // طاولة لشخصين
+  for4:     number;  // طاولة لأربعة
+  for6:     number;  // طاولة لستة
+}
+
 export interface Restaurant {
   id:          number;
   name:        string;
@@ -14,6 +21,7 @@ export interface Restaurant {
   closeTime:   string;
   isFavorite?: boolean;
   status?:     'Active' | 'Inactive' | 'Blocked';
+  tables?:     RestaurantTables;
 }
 
 export interface RestaurantReview {
@@ -54,10 +62,10 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
     stars:       4,
     cuisine:     'Fine Dining',
     priceRange:  '150-500LE',
-    address:     'Four Seasons Hotel At The First Residence, Giza Governate, Giza Governate',
+    address:     'Four Seasons Hotel At The First Residence, Giza Governate',
     location:    'Giza Governate',
     status:      'Active',
-    description: 'Aura, Located At The Four Seasons Hotel, Is A Traditional Lebanese Restaurant. Though The Poolside Views Of The City And The Smell Of Fresh Bread Baking In The Brick Oven Are Enticing, The Real Star Of Aura Is The Modern Shami Cuisine, A Delightful Mix Of Lebanese And Syrian Flavours, Best Enjoyed At Night, When The Lights Reflect Off The Water And Cast A Beautiful Glow.',
+    description: 'Aura, Located At The Four Seasons Hotel, Is A Traditional Lebanese Restaurant. Though The Poolside Views Of The City And The Smell Of Fresh Bread Baking In The Brick Oven Are Enticing, The Real Star Of Aura Is The Modern Shami Cuisine.',
     images: [
       'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800',
       'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400',
@@ -68,6 +76,7 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
     amenities: ['Valet parking is available.', 'Smoking is allowed'],
     openTime:  '12:00',
     closeTime: '23:00',
+    tables: { total: 20, for2: 8, for4: 8, for6: 4 },
   },
   {
     id:          2,
@@ -79,7 +88,7 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
     address:     'Tunis Village, Fayoum, Egypt',
     location:    'Fayoum',
     status:      'Active',
-    description: 'Lorem Ipsum Dolor Sit Amet Consectetur. Vitae Aliquam Parturient Non Integer Sed Euismod. Aliquam Et Magna Cras Donec. Enim Euismod Diam Pellentesque Dictum Aenean Massa Lectus Id Nibh. Cras Orci Fames Velit Tincidunt. Ultrices Iaculis Lobortis Accumsan Semper Non Lectus Bibendum Porta Urna.',
+    description: 'Traditional Egyptian cuisine in the heart of Tunis village with stunning lake views.',
     images: [
       'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800',
       'https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=400',
@@ -88,10 +97,11 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
     amenities: ['Free Parking', 'Outdoor Seating'],
     openTime:  '09:00',
     closeTime: '22:00',
+    tables: { total: 15, for2: 6, for4: 6, for6: 3 },
   },
   {
     id:          3,
-    name:        'House in Tunis Village',
+    name:        'Mediterranean Garden',
     rating:      4.8,
     stars:       4,
     cuisine:     'Mediterranean',
@@ -99,7 +109,7 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
     address:     'Tunis Village, Fayoum, Egypt',
     location:    'Fayoum',
     status:      'Active',
-    description: 'Lorem Ipsum Dolor Sit Amet Consectetur. Vitae Aliquam Parturient Non Integer Sed Euismod. Aliquam Et Magna Cras Donec. Enim Euismod Diam Pellentesque Dictum Aenean Massa Lectus Id Nibh. Cras Orci Fames Velit Tincidunt. Ultrices Iaculis Lobortis Accumsan Semper Non Lectus Bibendum Porta Urna.',
+    description: 'Fresh Mediterranean dishes with garden seating and lake views.',
     images: [
       'https://images.unsplash.com/photo-1544148103-0773bf10d330?w=800',
       'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400',
@@ -107,16 +117,17 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
     amenities: ['WiFi', 'Live Music'],
     openTime:  '13:00',
     closeTime: '00:00',
+    tables: { total: 12, for2: 4, for4: 6, for6: 2 },
   },
 ];
 
 export const MOCK_RESTAURANT_REVIEWS: RestaurantReview[] = [
-  { id:1, restaurantId:1, userName:'Yara Morad',    userCountry:'Egypt',  rating:5, comment:'I had an amazing stay! The room was spotless, the staff were incredibly kind, and the breakfast buffet was top-notch', date:'2025-01-10' },
-  { id:2, restaurantId:1, userName:'Amad Dialo',    userCountry:'Garaa',  rating:4, comment:'I had an amazing stay! The room was spotless, the staff were incredibly kind, and the breakfast buffet was top-notch', date:'2025-01-12' },
-  { id:3, restaurantId:1, userName:'Chae-min',      userCountry:'Korean', rating:4, comment:'I had an amazing stay! The room was spotless, the staff were incredibly kind, and the breakfast buffet was top-notch', date:'2025-01-15' },
-  { id:4, restaurantId:1, userName:'Mark Alec',     userCountry:'Italy',  rating:4, comment:'I had an amazing stay! The room was spotless, the staff were incredibly kind, and the breakfast buffet was top-notch', date:'2025-01-18' },
-  { id:5, restaurantId:1, userName:'malak mohamed', userCountry:'Egypt',  rating:5, comment:'I had an amazing stay! The room was spotless, the staff were incredibly kind, and the breakfast buffet was top-notch', date:'2025-01-20' },
-  { id:6, restaurantId:1, userName:'David Silva',   userCountry:'Kenya',  rating:4, comment:'I had an amazing stay! The room was spotless, the staff were incredibly kind, and the breakfast buffet was top-notch', date:'2025-01-22' },
+  { id:1, restaurantId:1, userName:'Yara Morad',    userCountry:'Egypt',  rating:5, comment:'Amazing food and atmosphere!', date:'2025-01-10' },
+  { id:2, restaurantId:1, userName:'Amad Dialo',    userCountry:'Garaa',  rating:4, comment:'Great experience overall.',     date:'2025-01-12' },
+  { id:3, restaurantId:1, userName:'Chae-min',      userCountry:'Korean', rating:4, comment:'Loved the Lebanese cuisine.',   date:'2025-01-15' },
+  { id:4, restaurantId:1, userName:'Mark Alec',     userCountry:'Italy',  rating:4, comment:'Will definitely come back.',   date:'2025-01-18' },
+  { id:5, restaurantId:1, userName:'Malak Mohamed', userCountry:'Egypt',  rating:5, comment:'Best restaurant in Cairo.',    date:'2025-01-20' },
+  { id:6, restaurantId:1, userName:'David Silva',   userCountry:'Kenya',  rating:4, comment:'Fantastic views and food.',    date:'2025-01-22' },
 ];
 
 export const DEFAULT_TABLES: TableType[] = [

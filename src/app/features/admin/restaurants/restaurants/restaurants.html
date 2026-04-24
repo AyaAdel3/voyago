@@ -31,7 +31,7 @@
       <span>Restaurant Name</span>
       <span>Cuisine</span>
       <span>Rating</span>
-      <span>Location</span>
+      <span>Tables</span>
       <span>Price Range</span>
       <span>Status</span>
       <span>Actions</span>
@@ -56,8 +56,18 @@
         {{ r.rating }}
       </span>
 
-      <!-- Location -->
-      <span class="cell-muted">{{ r.location }}</span>
+      <!-- Tables -->
+      <div class="rooms-cell" *ngIf="r.tables; else noTables">
+        <span class="rooms-total">{{ r.tables.total }} tables</span>
+        <div class="rooms-breakdown">
+          <span class="room-tag">×2: {{ r.tables.for2 }}</span>
+          <span class="room-tag">×4: {{ r.tables.for4 }}</span>
+          <span class="room-tag suite">×6: {{ r.tables.for6 }}</span>
+        </div>
+      </div>
+      <ng-template #noTables>
+        <span class="cell-muted">—</span>
+      </ng-template>
 
       <!-- Price Range -->
       <span class="price-cell">{{ r.priceRange }}</span>

@@ -65,7 +65,7 @@ export class AdminRestaurants implements OnInit {
     setTimeout(() => {
       this.deleteToastVisible = false;
       this.cdr.detectChanges();
-    }, 3000);
+    }, 6000);
   }
 
   viewOnSite(r: Restaurant) {

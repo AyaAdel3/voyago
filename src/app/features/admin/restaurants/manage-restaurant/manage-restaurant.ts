@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { RestaurantService } from '../../../../core/services/resturant.service';
-import { Restaurant } from '../../../../core/model/restaurant.model';
+import { Restaurant, RestaurantTables } from '../../../../core/model/restaurant.model';
 
 @Component({
   selector: 'app-manage-restaurant',
@@ -25,7 +25,6 @@ export class ManageRestaurant implements OnInit {
     priceRange:  '',
     cuisine:     '',
     rating:      '',
-    stars:       '',
     description: '',
     location:    '',
     address:     '',
@@ -34,10 +33,17 @@ export class ManageRestaurant implements OnInit {
     status:      'Active' as 'Active' | 'Inactive' | 'Blocked',
   };
 
+  tables: RestaurantTables = {
+    total: 0,
+    for2:  0,
+    for4:  0,
+    for6:  0,
+  };
+
   constructor(
-    private router:   Router,
-    private route:    ActivatedRoute,
-    private service:  RestaurantService,
+    private router:  Router,
+    private route:   ActivatedRoute,
+    private service: RestaurantService,
   ) {}
 
   ngOnInit() {
@@ -59,7 +65,6 @@ export class ManageRestaurant implements OnInit {
         priceRange:  r.priceRange,
         cuisine:     r.cuisine,
         rating:      r.rating.toString(),
-        stars:       r.stars.toString(),
         description: r.description,
         location:    r.location,
         address:     r.address,
@@ -67,7 +72,14 @@ export class ManageRestaurant implements OnInit {
         closeTime:   r.closeTime,
         status:      (r as any).status ?? 'Active',
       };
+      if (r.tables) {
+        this.tables = { ...r.tables };
+      }
     });
+  }
+
+  calcTotal() {
+    this.tables.total = this.tables.for2 + this.tables.for4 + this.tables.for6;
   }
 
   setStatus(s: 'Active' | 'Inactive' | 'Blocked') {
@@ -86,9 +98,7 @@ export class ManageRestaurant implements OnInit {
     });
   }
 
-  removeImage(i: number) {
-    this.images.splice(i, 1);
-  }
+  removeImage(i: number) { this.images.splice(i, 1); }
 
   showToast(msg: string, navigate = true) {
     this.toastMessage = msg;
@@ -114,7 +124,6 @@ export class ManageRestaurant implements OnInit {
           priceRange:  this.restaurant.priceRange,
           cuisine:     this.restaurant.cuisine,
           rating:      +this.restaurant.rating,
-          stars:       +this.restaurant.stars,
           description: this.restaurant.description,
           location:    this.restaurant.location,
           address:     this.restaurant.address,
@@ -122,6 +131,7 @@ export class ManageRestaurant implements OnInit {
           closeTime:   this.restaurant.closeTime,
           images:      [...this.images],
           status:      this.restaurant.status,
+          tables:      { ...this.tables },
         };
         this.service.updateRestaurant(updated);
         this.showToast('Restaurant updated successfully!');
@@ -134,7 +144,7 @@ export class ManageRestaurant implements OnInit {
         priceRange:  this.restaurant.priceRange,
         cuisine:     this.restaurant.cuisine,
         rating:      +this.restaurant.rating,
-        stars:       +this.restaurant.stars,
+        stars:       0,
         description: this.restaurant.description,
         location:    this.restaurant.location,
         address:     this.restaurant.address,
@@ -143,6 +153,7 @@ export class ManageRestaurant implements OnInit {
         images:      [...this.images],
         amenities:   [],
         status:      this.restaurant.status,
+        tables:      { ...this.tables },
       };
       this.service.addRestaurant(newRestaurant);
       this.showToast('Restaurant added successfully!');
@@ -152,9 +163,10 @@ export class ManageRestaurant implements OnInit {
   clear() {
     this.restaurant = {
       name: '', priceRange: '', cuisine: '', rating: '',
-      stars: '', description: '', location: '', address: '',
+      description: '', location: '', address: '',
       openTime: '', closeTime: '', status: 'Active',
     };
-    this.images = [];
+    this.tables  = { total: 0, for2: 0, for4: 0, for6: 0 };
+    this.images  = [];
   }
 }
