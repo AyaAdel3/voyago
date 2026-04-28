@@ -9,15 +9,11 @@ import {
 @Injectable({ providedIn: 'root' })
 export class RestaurantService {
 
-  // ── Reactive store ───────────────────────────────────────
   private restaurantsSubject = new BehaviorSubject<Restaurant[]>([...MOCK_RESTAURANTS]);
   restaurants$ = this.restaurantsSubject.asObservable();
 
-  // ── Signals ──────────────────────────────────────────────
   private favIds             = signal<Set<number>>(new Set());
   private currentReservation = signal<ReservationData | null>(null);
-
-  // ── READ ─────────────────────────────────────────────────
 
   getRestaurants(): Observable<Restaurant[]> {
     return this.restaurants$;
@@ -26,6 +22,16 @@ export class RestaurantService {
   getRestaurantById(id: number): Observable<Restaurant | undefined> {
     return this.restaurants$.pipe(
       map(list => list.find(r => r.id === id))
+    );
+  }
+
+  /** cuisine و priceRange يُسحبان من الـ restaurant object مباشرة */
+  getRestaurantMeta(id: number): Observable<{ cuisine: string; priceRange: string } | undefined> {
+    return this.restaurants$.pipe(
+      map(list => {
+        const r = list.find(r => r.id === id);
+        return r ? { cuisine: r.cuisine, priceRange: r.priceRange } : undefined;
+      })
     );
   }
 
@@ -48,8 +54,6 @@ export class RestaurantService {
     return new BehaviorSubject(newReview).asObservable();
   }
 
-  // ── WRITE ────────────────────────────────────────────────
-
   addRestaurant(restaurant: Restaurant): void {
     const current = this.restaurantsSubject.getValue();
     this.restaurantsSubject.next([...current, restaurant]);
@@ -69,11 +73,7 @@ export class RestaurantService {
     this.restaurantsSubject.next(current.filter(r => r.id !== id));
   }
 
-  // ── Favorites ────────────────────────────────────────────
-
-  isFavorite(id: number): boolean {
-    return this.favIds().has(id);
-  }
+  isFavorite(id: number): boolean   { return this.favIds().has(id); }
 
   toggleFavorite(id: number): void {
     const current = new Set(this.favIds());
@@ -81,19 +81,10 @@ export class RestaurantService {
     this.favIds.set(current);
   }
 
-  // ── Reservation ──────────────────────────────────────────
+  setReservation(data: ReservationData): void { this.currentReservation.set(data); }
+  getReservation(): ReservationData | null     { return this.currentReservation(); }
 
-  setReservation(data: ReservationData): void {
-    this.currentReservation.set(data);
-  }
-
-  getReservation(): ReservationData | null {
-    return this.currentReservation();
-  }
-
-  getDefaultTables(): TableType[] {
-    return DEFAULT_TABLES.map(t => ({ ...t }));
-  }
+  getDefaultTables(): TableType[] { return DEFAULT_TABLES.map(t => ({ ...t })); }
 
   confirmReservation(): Observable<string> {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

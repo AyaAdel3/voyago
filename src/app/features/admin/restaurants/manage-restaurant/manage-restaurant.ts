@@ -28,8 +28,6 @@ export class ManageRestaurant implements OnInit {
     description: '',
     location:    '',
     address:     '',
-    openTime:    '',
-    closeTime:   '',
     status:      'Active' as 'Active' | 'Inactive' | 'Blocked',
   };
 
@@ -68,8 +66,6 @@ export class ManageRestaurant implements OnInit {
         description: r.description,
         location:    r.location,
         address:     r.address,
-        openTime:    r.openTime,
-        closeTime:   r.closeTime,
         status:      (r as any).status ?? 'Active',
       };
       if (r.tables) {
@@ -127,8 +123,6 @@ export class ManageRestaurant implements OnInit {
           description: this.restaurant.description,
           location:    this.restaurant.location,
           address:     this.restaurant.address,
-          openTime:    this.restaurant.openTime,
-          closeTime:   this.restaurant.closeTime,
           images:      [...this.images],
           status:      this.restaurant.status,
           tables:      { ...this.tables },
@@ -148,8 +142,8 @@ export class ManageRestaurant implements OnInit {
         description: this.restaurant.description,
         location:    this.restaurant.location,
         address:     this.restaurant.address,
-        openTime:    this.restaurant.openTime,
-        closeTime:   this.restaurant.closeTime,
+        openTime:    '',
+        closeTime:   '',
         images:      [...this.images],
         amenities:   [],
         status:      this.restaurant.status,
@@ -163,10 +157,9 @@ export class ManageRestaurant implements OnInit {
   clear() {
     this.restaurant = {
       name: '', priceRange: '', cuisine: '', rating: '',
-      description: '', location: '', address: '',
-      openTime: '', closeTime: '', status: 'Active',
+      description: '', location: '', address: '', status: 'Active',
     };
-    this.tables  = { total: 0, for2: 0, for4: 0, for6: 0 };
-    this.images  = [];
+    this.tables = { total: 0, for2: 0, for4: 0, for6: 0 };
+    this.images = [];
   }
 }

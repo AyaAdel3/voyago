@@ -21,13 +21,14 @@ export class Details implements OnInit {
   loading = true;
   error   = false;
 
-  selectedDate  = '';
-  selectedTime  = '';
-  guestCount    = 1;
+  selectedDate    = '';
   selectedTables: TableType[] = [];
-  guestName     = '';
-  phone         = '';
-  resError      = '';
+  guestName       = '';
+  phone           = '';
+  resError        = '';
+
+  /** أقل تاريخ مسموح بيه = النهارده */
+  todayStr = new Date().toISOString().split('T')[0];
 
   availableTimes = AVAILABLE_TIMES;
 
@@ -83,11 +84,6 @@ export class Details implements OnInit {
   lbPrev(): void { if (this.lbIndex > 0) this.lbIndex--; }
   lbNext(): void { if (this.lbIndex < this.restaurant.images.length - 1) this.lbIndex++; }
 
-  changeGuests(delta: number): void {
-    this.guestCount = Math.max(1, this.guestCount + delta);
-    if (this.resError) this.tryCleanError();
-  }
-
   changeTable(i: number, delta: number): void {
     this.selectedTables[i].quantity = Math.max(0, this.selectedTables[i].quantity + delta);
     if (this.resError) this.tryCleanError();
@@ -96,7 +92,6 @@ export class Details implements OnInit {
   private tryCleanError(): void {
     if (
       this.selectedDate &&
-      this.selectedTime &&
       this.guestName.trim() &&
       this.phone.trim()
     ) this.resError = '';
@@ -108,19 +103,17 @@ export class Details implements OnInit {
   }
 
   makeReservation(): void {
-    // ── Inactive check ──────────────────────────────────────
     if ((this.restaurant as any).status === 'Inactive') {
       this.resError = 'This restaurant is currently not available for reservations.';
       return;
     }
 
-    if (!this.selectedDate) { this.resError = 'Please select a date.'; return; }
-    if (!this.selectedTime) { this.resError = 'Please select a time.'; return; }
+    if (!this.selectedDate)     { this.resError = 'Please select a date.'; return; }
     if (!this.guestName.trim()) { this.resError = 'Please enter your name.'; return; }
-    if (!this.phone.trim()) { this.resError = 'Please enter your phone number.'; return; }
+    if (!this.phone.trim())     { this.resError = 'Please enter your phone number.'; return; }
 
     const validPrefixes = ['010', '011', '012', '015'];
-    const cleanPhone = this.phone.replace(/\D/g, '');
+    const cleanPhone    = this.phone.replace(/\D/g, '');
     if (cleanPhone.length !== 11 || !validPrefixes.some(p => cleanPhone.startsWith(p))) {
       this.resError = 'Please enter a valid Egyptian number (010, 011, 012, 015).';
       return;
@@ -129,15 +122,16 @@ export class Details implements OnInit {
     this.resError = '';
 
     const data: ReservationData = {
-      restaurantId:   this.restaurant.id,
-      restaurantName: this.restaurant.name,
-      date:           this.selectedDate,
-      time:           this.selectedTime,
-      guestCount:     this.guestCount,
-      tables:         this.selectedTables.filter(t => t.quantity > 0),
-      guestName:      this.guestName,
-      phone:          cleanPhone,
-      totalAmount:    0,
+      restaurantId:      this.restaurant.id,
+      restaurantName:    this.restaurant.name,
+      restaurantAddress: this.restaurant.address,
+      date:              this.selectedDate,
+      time:              '',
+      guestCount:        0,
+      tables:            this.selectedTables.filter(t => t.quantity > 0),
+      guestName:         this.guestName,
+      phone:             cleanPhone,
+      totalAmount:       0,
     };
 
     this.restaurantService.setReservation(data);

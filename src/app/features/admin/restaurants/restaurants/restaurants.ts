@@ -26,7 +26,6 @@ export class AdminRestaurants implements OnInit {
     { label: 'Total Restaurants', value: 0, icon: '🍽', type: 'total'    },
     { label: 'Active',            value: 0, icon: '✓',  type: 'active'   },
     { label: 'Inactive',          value: 0, icon: '⊘',  type: 'inactive' },
-    { label: 'Blocked',           value: 0, icon: '⚠',  type: 'blocked'  },
   ];
 
   constructor(
@@ -49,7 +48,6 @@ export class AdminRestaurants implements OnInit {
     this.stats[0].value = this.restaurants.length;
     this.stats[1].value = this.restaurants.filter(r => r.status === 'Active').length;
     this.stats[2].value = this.restaurants.filter(r => r.status === 'Inactive').length;
-    this.stats[3].value = this.restaurants.filter(r => r.status === 'Blocked').length;
   }
 
   get filtered() {

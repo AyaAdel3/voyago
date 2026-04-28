@@ -1,8 +1,8 @@
 export interface RestaurantTables {
-  total:    number;
-  for2:     number;  // طاولة لشخصين
-  for4:     number;  // طاولة لأربعة
-  for6:     number;  // طاولة لستة
+  total: number;
+  for2:  number;
+  for4:  number;
+  for6:  number;
 }
 
 export interface Restaurant {
@@ -43,15 +43,16 @@ export interface TableType {
 }
 
 export interface ReservationData {
-  restaurantId:   number;
-  restaurantName: string;
-  date:           string;
-  time:           string;
-  guestCount:     number;
-  tables:         TableType[];
-  guestName:      string;
-  phone:          string;
-  totalAmount:    number;
+  restaurantId:      number;
+  restaurantName:    string;
+  restaurantAddress: string;   // ← جديد
+  date:              string;
+  time:              string;
+  guestCount:        number;
+  tables:            TableType[];
+  guestName:         string;
+  phone:             string;
+  totalAmount:       number;
 }
 
 export const MOCK_RESTAURANTS: Restaurant[] = [

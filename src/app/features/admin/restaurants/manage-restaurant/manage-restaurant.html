@@ -56,19 +56,8 @@
     </div>
     <div>
       <label class="form-label">Rating <span class="req">*</span></label>
-      <input class="form-input" [(ngModel)]="restaurant.rating" type="number" step="0.1" min="0" max="5" placeholder="4.5" />
-    </div>
-  </div>
-
-  <!-- ── Row: Open / Close Time ── -->
-  <div class="form-row-2">
-    <div>
-      <label class="form-label">Open Time</label>
-      <input class="form-input" [(ngModel)]="restaurant.openTime" type="time" />
-    </div>
-    <div>
-      <label class="form-label">Close Time</label>
-      <input class="form-input" [(ngModel)]="restaurant.closeTime" type="time" />
+      <input class="form-input" [(ngModel)]="restaurant.rating"
+             type="number" step="0.1" min="0" max="5" placeholder="4.5" />
     </div>
   </div>
 
@@ -76,28 +65,24 @@
   <div class="form-group">
     <label class="form-label">Tables <span class="req">*</span></label>
     <div class="rooms-form-grid">
-
       <div class="room-input-wrap">
         <label class="room-input-label">For 2</label>
         <input class="form-input room-input" [(ngModel)]="tables.for2"
                type="number" min="0" placeholder="0"
                (ngModelChange)="calcTotal()" />
       </div>
-
       <div class="room-input-wrap">
         <label class="room-input-label">For 4</label>
         <input class="form-input room-input" [(ngModel)]="tables.for4"
                type="number" min="0" placeholder="0"
                (ngModelChange)="calcTotal()" />
       </div>
-
       <div class="room-input-wrap">
         <label class="room-input-label">For 6</label>
         <input class="form-input room-input" [(ngModel)]="tables.for6"
                type="number" min="0" placeholder="0"
                (ngModelChange)="calcTotal()" />
       </div>
-
     </div>
     <div class="rooms-total-badge">
       <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
@@ -110,7 +95,8 @@
   <!-- ── Description ── -->
   <div class="form-group">
     <label class="form-label">Restaurant Description <span class="req">*</span></label>
-    <textarea class="form-textarea" [(ngModel)]="restaurant.description" placeholder="Enter detailed restaurant description..."></textarea>
+    <textarea class="form-textarea" [(ngModel)]="restaurant.description"
+              placeholder="Enter detailed restaurant description..."></textarea>
   </div>
 
   <!-- ── Status ── -->
@@ -123,10 +109,14 @@
       When set to Inactive, the restaurant card on the site will show a "Not available" notice and won't allow reservations.
     </div>
     <div class="status-btns">
-      <button class="btn-status btn-status-active" [class.selected]="restaurant.status === 'Active'" (click)="setStatus('Active')" type="button">
+      <button class="btn-status btn-status-active"
+              [class.selected]="restaurant.status === 'Active'"
+              (click)="setStatus('Active')" type="button">
         <span class="status-dot"></span> Active
       </button>
-      <button class="btn-status btn-status-inactive" [class.selected]="restaurant.status === 'Inactive'" (click)="setStatus('Inactive')" type="button">
+      <button class="btn-status btn-status-inactive"
+              [class.selected]="restaurant.status === 'Inactive'"
+              (click)="setStatus('Inactive')" type="button">
         <span class="status-dot"></span> Inactive
       </button>
     </div>
