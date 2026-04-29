@@ -138,7 +138,7 @@
   padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 17px;
+  gap: 14px;
   align-self: flex-start;
 }
 
@@ -166,11 +166,12 @@
   border-radius: 20px;
   color: #f6faff;
   font-size: 0.75rem;
-  padding: 3px 5px;
+  padding: 3px 9px;
   /* padding-left: 20px; */
   outline: none;
-  width: 90%;
+  width: 55%;
   box-sizing: border-box;
+  text-align: center;
 }
 
 .trip-label {

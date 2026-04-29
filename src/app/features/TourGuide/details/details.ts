@@ -17,7 +17,6 @@ export class Details {
   @Output() closeDetails = new EventEmitter<void>();
 
   selectedDate: string = '';
-  selectedTime: string = '18:00-19:00';
   days: number = 1;
   paymentMethod: 'arrival' | 'online' | '' = '';
   errorMessage = '';
@@ -43,10 +42,10 @@ export class Details {
       this.errorMessage = 'Please select a date.';
       return;
     }
-    if (!this.selectedTime) {
-      this.errorMessage = 'Please select a time.';
-      return;
-    }
+    // if (!this.selectedTime) {
+    //   this.errorMessage = 'Please select a time.';
+    //   return;
+    // }
     if (this.days < 1) {
       this.errorMessage = 'Duration must be at least 1 day.';
       return;
@@ -60,7 +59,7 @@ export class Details {
       guideName:  this.guide.name,
       guideImage: this.guide.image,
       date:       this.selectedDate,
-      time:       this.selectedTime,
+
       days:       this.days,
       totalPrice: this.totalPrice,
     };

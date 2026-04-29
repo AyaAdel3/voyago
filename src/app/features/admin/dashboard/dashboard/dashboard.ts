@@ -5,7 +5,7 @@ import { HotelService } from '../../../../core/services/hotel.service';
 import { RestaurantService } from '../../../../core/services/resturant.service';
 
 // Mock data مباشرة عشان نجيب العدد
-const TOUR_GUIDES_COUNT = 5;   // نفس عدد الـ guides في card.ts
+const TOUR_GUIDES_COUNT = 3;   // نفس عدد الـ guides في card.ts
 const ATTRACTIONS_COUNT = 3;   // نفس عدد الـ attractions في card.ts
 
 @Component({

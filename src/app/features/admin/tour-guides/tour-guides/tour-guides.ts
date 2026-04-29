@@ -1,39 +1,51 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-
-// 👇 نفس عدد الجايدز اللي مستخدماهم في المشروع
-const TOUR_GUIDES_COUNT = 5;
+import { TourGuideService, TourGuide } from '../../../../core/services/tour-guide.service';
+import { Details } from '../../../../features/TourGuide/details/details';
 
 @Component({
   selector: 'app-admin-tour-guides',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, Details],
   templateUrl: './tour-guides.html',
-  styleUrls: ['../../admin-shared.css','./tour-guides.css'],
+  styleUrls: ['../../admin-shared.css', './tour-guides.css'],
 })
-export class AdminTourGuides {
+export class AdminTourGuides implements OnInit {
   searchQuery = '';
   currentPage = 1;
   totalPages = [1, 2, 3, 4, 10];
+  guides: TourGuide[] = [];
+  selectedGuide: TourGuide | null = null;
 
-  guides = [
-    { id: 1, name: 'Sarah Malik', email: 'sarah@rv.com', languages: ['English', 'Spanish'], phone: '+20100128346', rating: 4.6, tours: 189, status: 'Active' },
-    { id: 2, name: 'Omar Hassan', email: 'omar@rv.com', languages: ['English', 'French'], phone: '+20110128346', rating: 5.0, tours: 245, status: 'Inactive' },
-    { id: 3, name: 'Ahmed Nabil', email: 'ahmed@rv.com', languages: ['English', 'Chinese'], phone: '+20120128346', rating: 4.5, tours: 120, status: 'Active' },
-    { id: 4, name: 'Youssef Kamal', email: 'youssef@rv.com', languages: ['English', 'Russian'], phone: '+20150128346', rating: 4.3, tours: 210, status: 'Inactive' },
-    { id: 5, name: 'Maya Adel', email: 'maya@rv.com', languages: ['English', 'Thai'], phone: '+20102128346', rating: 4.0, tours: 150, status: 'Blocked' },
-  ];
+  deleteToastVisible = false;
+  deleteToastMessage = '';
 
   stats = [
-    { label: 'Total Tour Guides', value: TOUR_GUIDES_COUNT, icon: '🧭', type: 'total' },
-    { label: 'Active', value: this.guides.filter(g => g.status === 'Active').length, icon: '✓', type: 'active' },
-    { label: 'Inactive', value: this.guides.filter(g => g.status === 'Inactive').length, icon: '⊘', type: 'inactive' },
-    { label: 'Blocked', value: this.guides.filter(g => g.status === 'Blocked').length, icon: '⚠', type: 'blocked' },
+    { label: 'Total Tour Guides', value: 0, icon: '🧭', type: 'total' },
+    { label: 'Active',            value: 0, icon: '✓',  type: 'active' },
+    { label: 'Inactive',          value: 0, icon: '⊘',  type: 'inactive' },
   ];
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private tourGuideService: TourGuideService,
+    private cdr: ChangeDetectorRef,
+  ) {}
+
+  ngOnInit(): void { this.loadGuides(); }
+
+  loadGuides(): void {
+    this.guides = this.tourGuideService.getAll();
+    this.updateStats();
+  }
+
+  updateStats(): void {
+    this.stats[0].value = this.guides.length;
+    this.stats[1].value = this.guides.filter(g => g.status === 'Active').length;
+    this.stats[2].value = this.guides.filter(g => g.status === 'Inactive').length;
+  }
 
   get filtered() {
     if (!this.searchQuery) return this.guides;
@@ -42,21 +54,25 @@ export class AdminTourGuides {
     );
   }
 
-  edit(g: any) {
-    this.router.navigate(['/admin/tour-guides/manage'], {
-      queryParams: { id: g.id },
-    });
+  showDeleteToast(msg: string) {
+    this.deleteToastMessage = msg;
+    this.deleteToastVisible = true;
+    setTimeout(() => {
+      this.deleteToastVisible = false;
+      this.cdr.detectChanges();
+    }, 6000);
   }
 
-  delete(g: any) {
-    if (confirm(`Delete guide "${g.name}"?`)) {
-      this.guides = this.guides.filter(x => x.id !== g.id);
+  view(g: TourGuide) { this.selectedGuide = g; }
+  closeDetails() { this.selectedGuide = null; }
 
-      // 👇 تحديث الستات بعد الحذف
-      this.stats[0].value = this.guides.length;
-      this.stats[1].value = this.guides.filter(g => g.status === 'Active').length;
-      this.stats[2].value = this.guides.filter(g => g.status === 'Inactive').length;
-      this.stats[3].value = this.guides.filter(g => g.status === 'Blocked').length;
-    }
+  edit(g: TourGuide) {
+    this.router.navigate(['/admin/tour-guides/manage'], { queryParams: { id: g.id } });
   }
+
+  delete(g: TourGuide) {
+  this.tourGuideService.delete(g.id);
+  this.loadGuides();
+  this.showDeleteToast(`"${g.name}" deleted successfully.`);
+}
 }

@@ -17,6 +17,8 @@ import { Reservation } from './features/Restaurant/reservation/reservation';
 
 // TourGuide
 import { Card } from './features/TourGuide/card/card';
+import { Booking as TourGuideBooking } from './features/TourGuide/booking/booking';
+import { BookingConfirmed as TourGuideBookingConfirmed } from './features/TourGuide/booking-confirmed/booking-confirmed';
 
 // TouristAttraction
 import { TouristAttractionCard } from './features/TouristAttraction/card/card';
@@ -78,6 +80,8 @@ export const routes: Routes = [
 
       // TourGuide Routes
       { path: 'tour-guide', component: Card, title: 'Tour Guides' },
+      { path: 'tour-guide/booking', component: TourGuideBooking, title: 'Tour Guide Booking' },
+      { path: 'tour-guide/booking-confirmed', component: TourGuideBookingConfirmed, title: 'Tour Guide Booking Confirmed' },
 
       // TouristAttraction Routes
       { path: 'Attractions', component: TouristAttractionCard, title: 'Tourist Attractions' },
@@ -125,6 +129,6 @@ export const routes: Routes = [
     ],
   },
 
-  // Not Found - يجي في الآخر دايمًا
+  // Not Found
   { path: '**', component: NotFound, title: 'Page Not Found' },
 ];

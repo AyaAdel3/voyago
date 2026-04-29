@@ -1,17 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { AdminTourGuides } from './tour-guides';
 
-import { TourGuides } from './tour-guides';
-
-describe('TourGuides', () => {
-  let component: TourGuides;
-  let fixture: ComponentFixture<TourGuides>;
+describe('AdminTourGuides', () => {
+  let component: AdminTourGuides;
+  let fixture: ComponentFixture<AdminTourGuides>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TourGuides],
+      imports: [AdminTourGuides],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TourGuides);
+    fixture = TestBed.createComponent(AdminTourGuides);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });
