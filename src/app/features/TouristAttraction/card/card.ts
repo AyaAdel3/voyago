@@ -25,21 +25,22 @@ export class TouristAttractionCard {
   }
 
   isFavorite(name: string): boolean {
-    return this.favoritesService.getFavorites().some(f => f.title === name);
+    return this.favoritesService.isFavorite(name);
   }
 
   toggleFavorite(event: Event, attraction: Attraction) {
     event.stopPropagation();
+
     if (this.isFavorite(attraction.name)) {
-      const favs = this.favoritesService.getFavorites();
-      const index = favs.findIndex(f => f.title === attraction.name);
-      this.favoritesService.removeFavorite(index);
+      // ✅ بنبعت الـ name مش الـ index
+      this.favoritesService.removeFavorite(attraction.name);
     } else {
       this.favoritesService.addToFavorites({
         title: attraction.name,
         image: attraction.images[0],
         price: attraction.ticketPrice + ' le / Ticket',
-        rating: attraction.rating
+        rating: attraction.rating,
+        type: 'attraction'  // ✅ ده اللي كان ناقص
       });
     }
   }

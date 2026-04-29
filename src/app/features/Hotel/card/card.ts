@@ -5,7 +5,6 @@ import { Hotel } from '../../../core/model/hotel.model';
 import { HotelService } from '../../../core/services/hotel.service';
 import { FavoritesService } from '../../../core/services/favorites.service';
 
-
 @Component({
   selector: 'app-hotel-card',
   standalone: true,
@@ -19,7 +18,7 @@ export class Card implements OnInit {
 
   constructor(
     public hotelService: HotelService,
-    private favoritesService: FavoritesService, // إضافة السيرفس هنا
+    private favoritesService: FavoritesService,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
@@ -38,34 +37,26 @@ export class Card implements OnInit {
     });
   }
 
-  // فنكشن التأكد إذا كان الفندق في المفضلة (عشان لون القلب)
   isHotelInFav(hotelName: string): boolean {
-    const favs = this.favoritesService.getFavorites();
-    return favs.some(f => f.title === hotelName);
+    return this.favoritesService.isFavorite(hotelName);
   }
 
   goToDetails(id: number): void {
     this.router.navigate(['/hotels/details', id]);
   }
 
-  // تعديل فنكشن الـ Toggle لتتعامل مع السيرفس العامة
   toggleFav(event: MouseEvent, hotel: any): void {
     event.stopPropagation();
-    
+
     if (this.isHotelInFav(hotel.name)) {
-      // لو موجود، نمسحه (بنبحث بالعنوان)
-      const favs = this.favoritesService.getFavorites();
-      const index = favs.findIndex(f => f.title === hotel.name);
-      if (index !== -1) {
-        this.favoritesService.removeFavorite(index);
-      }
+      this.favoritesService.removeFavorite(hotel.name);
     } else {
-      // لو مش موجود، نضيفه بكل بياناته عشان تظهر في صفحة الفيفورت
       this.favoritesService.addToFavorites({
         title: hotel.name,
-        image: hotel.images[0], // بناخد أول صورة
+        image: hotel.images[0],
         price: hotel.pricePerNight + 'le for 1 night',
-        rating: hotel.rating
+        rating: hotel.rating,
+        type: 'hotel'
       });
     }
   }

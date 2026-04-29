@@ -5,7 +5,6 @@ import { Restaurant } from '../../../core/model/restaurant.model';
 import { RestaurantService } from '../../../core/services/resturant.service';
 import { FavoritesService } from '../../../core/services/favorites.service';
 
-
 @Component({
   selector: 'app-restaurant-card',
   standalone: true,
@@ -19,7 +18,7 @@ export class Card implements OnInit {
 
   constructor(
     public restaurantService: RestaurantService,
-    private favoritesService: FavoritesService, 
+    private favoritesService: FavoritesService,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
@@ -28,7 +27,7 @@ export class Card implements OnInit {
     this.restaurantService.getRestaurants().subscribe({
       next: data => {
         this.restaurants = data;
-        this.loading     = false;
+        this.loading = false;
         this.cdr.detectChanges();
       },
       error: () => {
@@ -38,38 +37,29 @@ export class Card implements OnInit {
     });
   }
 
-  /** فنكشن تلوين القلب بناءً على الاسم المتسيف في السيرفس **/
   isRestaurantInFav(name: string): boolean {
-    const favs = this.favoritesService.getFavorites();
-    return favs.some(f => f.title === name);
+    return this.favoritesService.isFavorite(name);
   }
 
-  /** الانتقال لصفحة التفاصيل - تم تعديل المسار لـ restaurants (بالجمع) ليطابق الـ Routes **/
-goToDetails(id: number): void {
-  this.router.navigate(['restaurant/details', id]);
-}
+  goToDetails(id: number): void {
+    this.router.navigate(['restaurant/details', id]);
+  }
 
-  /** الـ toggle عشان يضيف أو يمسح من المفضلة العامة **/
   toggleFav(event: MouseEvent, r: any): void {
-    event.stopPropagation(); // منع فتح صفحة التفاصيل عند الضغط على القلب
-    
-    // سطر الـ toggle القديم بتاعك (اختياري لو السيرفس بتاعتك بتعمل حاجة تانية)
+    event.stopPropagation();
+
     this.restaurantService.toggleFavorite(r.id);
 
     if (this.isRestaurantInFav(r.name)) {
-      // لو موجود نمسحه
-      const favs = this.favoritesService.getFavorites();
-      const index = favs.findIndex(f => f.title === r.name);
-      if (index !== -1) {
-        this.favoritesService.removeFavorite(index);
-      }
+      // ✅ بنبعت الـ title مش الـ index
+      this.favoritesService.removeFavorite(r.name);
     } else {
-      // لو مش موجود نضيفه بالبيانات الموحدة (Title, Image, Price, Rating)
       this.favoritesService.addToFavorites({
         title: r.name,
         image: r.images[0],
         price: r.cuisine + ' • ' + r.priceRange,
-        rating: r.rating
+        rating: r.rating,
+        type: 'restaurant'  // ✅ ده اللي كان ناقص
       });
     }
   }

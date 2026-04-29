@@ -1,6 +1,6 @@
 :host {
   display: block;
-  font-family: 'Poppins', sans-serif; /* توحيد الخط */
+  font-family: 'Poppins', sans-serif;
 }
 
 .profile-layout {
@@ -10,7 +10,7 @@
   color: white;
 }
 
-/* Sidebar - مطابق لكود البيرسونال اللي بعته */
+/* Sidebar */
 .sidebar {
   width: 300px;
   border-right: 1px solid #1e2e40;
@@ -22,25 +22,36 @@
 
 .image-container {
   position: relative;
-  width: 120px;
-  height: 120px;
-  margin: 0 auto 50px;
+  width: 100px; /* نفس الحجم اللي إنت عامله للدايرة */
+  height: 100px;
+  margin: 0 auto 20px;
+  background-color: #1a222b; /* لون غامق يتناسب مع التصميم */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #333;
+  overflow: visible;
+}
+.profile-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* لو حبيت تحط صورة فعلاً مستقبلاً وتغطي الأيقونة */
 .image-container img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 2px solid #ccc;
   object-fit: cover;
 }
 
-/* زر الكاميرا اللي سألت عليه */
 .camera-btn {
   position: absolute;
   bottom: 5px;
   right: 5px;
-  background: #1e2e40; /* نفس الرمادي الغامق في الصورة */
+  background: #1e2e40;
   border: none;
   border-radius: 50%;
   width: 30px;
@@ -76,10 +87,9 @@
   padding-bottom: 5px;
 }
 
-/* Main Content - المسافات المسطرة */
 .content {
   flex: 1;
-  padding: 60px 100px; /* نفس مسافات البيرسونال بالضبط */
+  padding: 60px 100px;
 }
 
 .info-header h1 {
@@ -88,7 +98,59 @@
   margin-bottom: 50px;
 }
 
-/* الكروت وتنسيقها */
+/* ===== Sections ===== */
+.fav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  margin-bottom: 3rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.section-header h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  flex: 1;
+  margin: 0;
+}
+
+.section-count {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+}
+
+/* ===== Empty State ===== */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem;
+  border: 1.5px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 2rem;
+  opacity: 0.4;
+}
+
+/* ===== Cards Grid ===== */
 .plan-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -98,7 +160,7 @@
 .card-image-wrapper {
   position: relative;
   aspect-ratio: 4/3;
-  border-radius: 35px; /* الدوران الكبير اللي في صورتك */
+  border-radius: 35px;
   overflow: hidden;
   margin-bottom: 15px;
 }
@@ -110,13 +172,13 @@
 }
 
 .card-info h3 {
-  font-size: 20px; /* فونت العناوين */
+  font-size: 20px;
   font-weight: 600;
   margin-bottom: 5px;
 }
 
 .item-meta {
-  color: #7a9cc6; /* نفس لون نصوص البيرسونال */
+  color: #7a9cc6;
   font-size: 16px;
   display: flex;
   align-items: center;
@@ -133,7 +195,7 @@
   top: 15px;
   left: 15px;
   background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   width: 32px;
   height: 32px;

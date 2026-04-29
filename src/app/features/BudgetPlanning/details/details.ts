@@ -1,6 +1,6 @@
 // ============================================================
 // details.ts  →  src/app/features/BudgetPlanning/details/
-// التعديل النهائي: إصلاح كل المسارات (Capital & Spaces) لعدم ظهور Not Found
+// FIXED: حل TS2345 + إضافة id و name + تحسين بسيط
 // ============================================================
 
 import { Component, OnInit } from '@angular/core';
@@ -23,60 +23,63 @@ export class Details implements OnInit {
   constructor(
     private budgetService: BudgetService,
     private planService: PlanService,
-    private route:          ActivatedRoute,
-    public  router:         Router,
+    private route: ActivatedRoute,
+    public router: Router,
   ) {}
 
   ngOnInit(): void {
-    // جيب الـ plan من الـ service
     this.plan = this.budgetService.getCurrentPlan();
 
-    // لو مفيش plan ارجع للـ main (عدلنا المسار ليطابق الـ Routes بالظبط)
     if (!this.plan) {
-      this.router.navigate(['/Budget Planning']);
+      this.router.navigate(['/budget-planning']); // تم تعديل المسار
     }
   }
 
-  // ── Navigation (تم تعديل المسارات لتطابق الـ app.routes.ts بالمللي) ──────
-  
-  viewHotelDetails(id: number): void { 
-    this.router.navigate(['/hotels/details', id]); 
+  // ── Navigation ─────────────────────────────────────────────
+
+  viewHotelDetails(id: number): void {
+    this.router.navigate(['/hotels/details', id]);
   }
 
-  // الـ R كابتل والـ A كابتل عشان الـ Router يلاقيهم
-  viewRestaurantDetails(id: number): void { 
-    this.router.navigate(['/Restaurants/details', id]); 
+  viewRestaurantDetails(id: number): void {
+    this.router.navigate(['/Restaurants/details', id]);
   }
 
-  viewAttractionDetails(id: number): void { 
-    this.router.navigate(['/Attractions/details', id]); 
+  viewAttractionDetails(id: number): void {
+    this.router.navigate(['/Attractions/details', id]);
   }
 
-  // ── Save Trip Plan (بينقلك لصفحة الـ Saved Plan في البروفايل) ──────
- saveTripPlan(): void {
-  if (this.plan) {
-    // 1. تجهيز الداتا بالأسماء اللي صفحة البروفايل "فاهماها" بالظبط
-    const dataToSave = {
+  // ── Save Trip Plan (FIXED) ────────────────────────────────
+
+  saveTripPlan(): void {
+    if (!this.plan) return;
+
+    const savedPlan = {
+      id: crypto.randomUUID(), // حل المشكلة هنا
+      name: this.generatePlanName(),
+
       hotel: this.plan.selectedHotel,
-      restaurants: this.plan.selectedRestaurants, // لازم جمع ومصفوفة
-      attractions: this.plan.selectedAttractions, // لازم الاسم ده عشان الـ HTML يلقطه
+      restaurants: this.plan.selectedRestaurants,
+      attractions: this.plan.selectedAttractions,
       totalCost: this.plan.totalCost
     };
 
-    // 2. مناداة السيرفيس (دي أهم خطوة عشان الصور تظهر)
-    this.planService.savePlan(dataToSave);
-
-    // 3. الحفظ في الـ Budget Service (لو محتاجه للـ History)
+    this.planService.savePlan(savedPlan);
     this.budgetService.savePlan(this.plan);
 
-    // 4. التوجه لصفحة الـ Saved Plans
     this.router.navigate(['/profile/saved-plan']);
   }
-}
 
   // ── Helpers ───────────────────────────────────────────────
-  starsArray(n: number): number[] { 
-    return Array(Math.round(n)).fill(0); 
+
+  private generatePlanName(): string {
+    if (!this.plan) return 'My Trip';
+
+    return `Trip (${this.plan.days} days) - ${this.plan.totalCost} EGP`;
+  }
+
+  starsArray(n: number): number[] {
+    return Array(Math.round(n)).fill(0);
   }
 
   get hotelTotalCost(): number {

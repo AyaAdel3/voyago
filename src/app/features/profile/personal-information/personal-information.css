@@ -21,16 +21,28 @@
 
 .image-container {
   position: relative;
-  width: 120px;
-  height: 120px;
-  margin: 0 auto 50px;
+  width: 100px; /* نفس الحجم اللي إنت عامله للدايرة */
+  height: 100px;
+  margin: 0 auto 20px;
+  background-color: #1a222b; /* لون غامق يتناسب مع التصميم */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #333;
+  overflow: visible;
+}
+
+.profile-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .image-container img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 2px solid #ccc;
   object-fit: cover;
 }
 

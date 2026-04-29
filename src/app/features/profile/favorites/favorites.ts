@@ -1,17 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
-import { RouterModule } from '@angular/router'; // ضروري جداً لعمل اللينكات
-import { FavoritesService } from '../../../core/services/favorites.service';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FavoritesService, FavoriteItem } from '../../../core/services/favorites.service';
 
 @Component({
   selector: 'app-favorites',
   standalone: true,
-  imports: [CommonModule, RouterModule], // لازم يكونوا موجودين هنا
+  imports: [CommonModule, RouterModule],
   templateUrl: './favorites.html',
   styleUrl: './favorites.css'
 })
 export class FavoritesComponent implements OnInit {
-  myFavorites: any[] = [];
+  hotels: FavoriteItem[] = [];
+  restaurants: FavoriteItem[] = [];
+  tourGuides: FavoriteItem[] = [];
+  touristAttractions: FavoriteItem[] = [];
 
   constructor(private favoritesService: FavoritesService) {}
 
@@ -20,13 +23,15 @@ export class FavoritesComponent implements OnInit {
   }
 
   loadFavorites() {
-    // بيسحب الداتا اللي إنت عملت لها "قلب" من الهوتيلز والمطاعم
-    this.myFavorites = this.favoritesService.getFavorites();
+    const all = this.favoritesService.getFavorites();
+    this.hotels             = all.filter(f => f.type === 'hotel');
+    this.restaurants        = all.filter(f => f.type === 'restaurant');
+    this.tourGuides         = all.filter(f => f.type === 'tourGuide');
+    this.touristAttractions = all.filter(f => f.type === 'attraction');
   }
 
-  deleteFav(index: number) {
-    // بيمسح العنصر من المفضلة
-    this.favoritesService.removeFavorite(index);
-    this.loadFavorites(); // بيحدث الشكل فوراً
+  deleteFav(item: FavoriteItem) {
+    this.favoritesService.removeFavorite(item.title);
+    this.loadFavorites();
   }
 }

@@ -1,51 +1,160 @@
-<main class="main-content">
-  <h1 class="page-title">Your Plan</h1>
-
-  <section class="plan-section">
-    <h2 class="gold-label">Hotel</h2>
-    <div class="hotel-display">
-      <div *ngIf="myPlan?.hotel; else emptyHotel" class="card actual-card hotel-card">
-        <img [src]="getImage(myPlan.hotel, 'hotel')" class="card-img" alt="Hotel">
-        <div class="card-body">
-          <h3>{{myPlan.hotel.name}}</h3>
-          <button class="view-btn" (click)="goToDetails('hotels', myPlan.hotel.id)">View Details</button>
-        </div>
-      </div>
-      <ng-template #emptyHotel>
-        <div class="empty-slot wide"><span class="plus">+</span><p>Empty Hotel Slot</p></div>
-      </ng-template>
+<div class="profile-layout">
+  <aside class="sidebar">
+   <div class="image-container">
+    <div class="profile-placeholder">
+      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
     </div>
-  </section>
+    
+    <button class="camera-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+        stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+        <circle cx="12" cy="13" r="4"></circle>
+      </svg>
+    </button>
+  </div>
+    <nav class="nav-links">
+      <a routerLink="/profile/personal-information" routerLinkActive="active-link">
+        <span>👤</span> Personal Information
+      </a>
+      <a routerLink="/profile/favorites" routerLinkActive="active-link">
+        <span>❤️</span> Favorites
+      </a>
+      <a routerLink="/profile/saved-plan" routerLinkActive="active-link">
+        <span>🔖</span> Saved Plan
+      </a>
+    </nav>
+    <button class="logout-btn"><span>↪</span> Log Out</button>
+  </aside>
 
-  <section class="plan-section">
-    <h2 class="gold-label">Restaurants</h2>
-    <div class="cards-grid">
-      <div *ngFor="let rest of myPlan?.restaurants" class="card actual-card">
-        <img [src]="getImage(rest, 'rest')" class="card-img" alt="Restaurant">
-        <div class="card-body">
-          <h3>{{rest.name}}</h3>
-          <button class="view-btn" (click)="goToDetails('restaurant', rest.id)">View Details</button>
-        </div>
-      </div>
-      <div *ngFor="let i of getFillers(myPlan?.restaurants)" class="empty-slot">
-        <span class="plus">+</span><p>Empty Restaurant</p>
-      </div>
-    </div>
-  </section>
+  <main class="content">
+    <div class="info-header" style="display: flex; justify-content: space-between; align-items: center;">
+      <h1>Your Plans</h1>
 
-  <section class="plan-section">
-    <h2 class="gold-label">Tourist Attractions</h2>
-    <div class="cards-grid">
-      <div *ngFor="let attr of myPlan?.attractions" class="card actual-card">
-        <img [src]="getImage(attr, 'attr')" class="card-img" alt="Attraction">
-        <div class="card-body">
-          <h3>{{attr.name}}</h3>
-          <button class="view-btn" (click)="goToDetails('tourist-attraction', attr.id)">View Details</button>
+      @if (plans.length > PLANS_VISIBLE) {
+        <div class="main-slider-controls">
+          <button class="arrow-btn" (click)="prevPlans()" [disabled]="planOffset === 0">❮</button>
+          <button class="arrow-btn" (click)="nextPlans()" [disabled]="planOffset + PLANS_VISIBLE >= plans.length">❯</button>
         </div>
-      </div>
-      <div *ngFor="let i of getFillers(myPlan?.attractions)" class="empty-slot">
-        <span class="plus">+</span><p>Empty Attraction</p>
-      </div>
+      }
     </div>
-  </section>
-</main>
+
+    @if (plans.length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon">🗺️</span>
+        <p>No saved plans yet</p>
+      </div>
+    }
+
+    @if (plans.length > 0) {
+      <div class="plans-row">
+        @for (plan of visiblePlans; track plan.id) {
+          <div class="plan-column">
+
+            <div class="plan-header">
+              <h2 class="plan-title">{{ plan.name || 'Plan ' + (planOffset + $index + 1) }}</h2>
+              <button class="delete-plan-btn" (click)="deletePlan(plan.id)">🗑</button>
+            </div>
+
+            <section class="fav-section">
+              <div class="section-header">
+                <span>🏨</span>
+                <h3>Hotel</h3>
+              </div>
+              @if (plan.hotel) {
+                <div class="actual-card">
+                  <img [src]="getImage(plan.hotel, 'hotel')" class="card-img" alt="Hotel" />
+                  <div class="card-body">
+                    <h3>{{ plan.hotel.name }}</h3>
+                    <button class="view-btn" (click)="goToDetails('hotels', plan.hotel.id)">
+                      View Details
+                    </button>
+                  </div>
+                </div>
+              } @else {
+                <div class="empty-state-small">
+                  <span>🏨</span>
+                  <p>No hotel selected</p>
+                </div>
+              }
+            </section>
+
+            <section class="fav-section">
+              <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span>🍽️</span>
+                  <h3>Restaurants</h3>
+                </div>
+                @if (plan.restaurants && plan.restaurants.length > 1) {
+                  <div class="inner-slider-controls">
+                    <button class="small-arrow" (click)="slidePrev(plan.id, 'restaurants')" [disabled]="!canSlidePrev(plan.id, 'restaurants')">❮</button>
+                    <button class="small-arrow" (click)="slideNext(plan.id, 'restaurants', plan.restaurants.length)" [disabled]="!canSlideNext(plan.id, 'restaurants', plan.restaurants.length)">❯</button>
+                  </div>
+                }
+              </div>
+              @if (plan.restaurants && plan.restaurants.length > 0) {
+                <div class="actual-card">
+                  @for (item of getVisible(plan.restaurants, plan.id, 'restaurants'); track item.id) {
+                    <div class="inner-item">
+                      <img [src]="getImage(item, 'rest')" class="card-img" alt="Restaurant" />
+                      <div class="card-body">
+                        <h3>{{ item.name }}</h3>
+                        <button class="view-btn" (click)="goToDetails('restaurant', item.id)">
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="empty-state-small">
+                  <span>🍽️</span>
+                  <p>No restaurants selected</p>
+                </div>
+              }
+            </section>
+
+            <section class="fav-section">
+              <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span>🗺️</span>
+                  <h3>Attractions</h3>
+                </div>
+                @if (plan.attractions && plan.attractions.length > 1) {
+                  <div class="inner-slider-controls">
+                    <button class="small-arrow" (click)="slidePrev(plan.id, 'attractions')" [disabled]="!canSlidePrev(plan.id, 'attractions')">❮</button>
+                    <button class="small-arrow" (click)="slideNext(plan.id, 'attractions', plan.attractions.length)" [disabled]="!canSlideNext(plan.id, 'attractions', plan.attractions.length)">❯</button>
+                  </div>
+                }
+              </div>
+              @if (plan.attractions && plan.attractions.length > 0) {
+                <div class="actual-card">
+                  @for (item of getVisible(plan.attractions, plan.id, 'attractions'); track item.id) {
+                    <div class="inner-item">
+                      <img [src]="getImage(item, 'attr')" class="card-img" alt="Attraction" />
+                      <div class="card-body">
+                        <h3>{{ item.name }}</h3>
+                        <button class="view-btn" (click)="goToDetails('tourist-attraction', item.id)">
+                          View Details
+                        </button>
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="empty-state-small">
+                  <span>🗺️</span>
+                  <p>No attractions selected</p>
+                </div>
+              }
+            </section>
+
+          </div>
+        }
+      </div>
+    }
+  </main>
+</div>

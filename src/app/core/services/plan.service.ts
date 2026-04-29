@@ -1,20 +1,45 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
+export interface SavedPlan {
+  id: string;
+  name: string;
+  hotel?: any;
+  restaurants?: any[];
+  tourGuides?: any[];
+  attractions?: any[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class PlanService {
-  public plans: any[] = []; 
-  private savedPlanSubject = new BehaviorSubject<any>(null);
-  public savedPlan$ = this.savedPlanSubject.asObservable();
+  private storageKey = 'voyago_plans';
+  private plansSubject = new BehaviorSubject<SavedPlan[]>([]);
+  public plans$ = this.plansSubject.asObservable();
 
   constructor() {
-    const active = localStorage.getItem('user_plan');
-    if (active) this.savedPlanSubject.next(JSON.parse(active));
+    const saved = localStorage.getItem(this.storageKey);
+    if (saved) this.plansSubject.next(JSON.parse(saved));
   }
 
-  savePlan(planData: any) {
-    console.log('Saving Plan...', planData); // عشان نتأكد إنها اتنادت
-    localStorage.setItem('user_plan', JSON.stringify(planData));
-    this.savedPlanSubject.next(planData);
+  getPlans(): SavedPlan[] {
+    return this.plansSubject.getValue();
+  }
+
+  savePlan(planData: SavedPlan) {
+    const plans = this.getPlans();
+    const existingIndex = plans.findIndex(p => p.id === planData.id);
+    if (existingIndex !== -1) {
+      plans[existingIndex] = planData;
+    } else {
+      plans.push(planData);
+    }
+    localStorage.setItem(this.storageKey, JSON.stringify(plans));
+    this.plansSubject.next(plans);
+  }
+
+  deletePlan(planId: string) {
+    const plans = this.getPlans().filter(p => p.id !== planId);
+    localStorage.setItem(this.storageKey, JSON.stringify(plans));
+    this.plansSubject.next(plans);
   }
 }

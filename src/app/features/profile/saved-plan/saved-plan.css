@@ -1,35 +1,331 @@
 :host {
-  --bg-dark: #05080d; --side-bg: #0a0d14; --gold: #fbc02d; --card-bg: #10141d;
+  display: block;
+  font-family: 'Poppins', sans-serif;
 }
-.voyago-container { display: flex; min-height: 100vh; background: var(--bg-dark); color: white; font-family: 'Inter', sans-serif; }
 
-/* Sidebar & Avatar */
-.sidebar { width: 280px; background: var(--side-bg); padding: 40px 20px; border-right: 1px solid #1e293b; }
-.avatar-img { 
-  width: 100px; height: 100px; border-radius: 50%; /* تدوير 100% */
-  object-fit: cover; border: 2px solid var(--gold); display: block; margin: 0 auto;
+.profile-layout {
+  display: flex;
+  background-color: #0A1128;
+  min-height: 100vh;
+  color: white;
 }
-.avatar-frame { position: relative; width: 100px; margin: 0 auto 40px; }
-.cam-icon { position: absolute; bottom: 0; right: 0; background: #1e293b; border-radius: 50%; padding: 5px; font-size: 12px; }
 
-.nav-link { display: flex; align-items: center; padding: 15px; color: white; text-decoration: none; margin-bottom: 5px; border-radius: 8px; }
-.nav-link.active { color: var(--gold); border-bottom: 3px solid var(--gold); border-radius: 0; }
-
-/* Main Content */
-.main-content { flex: 1; padding: 50px 80px; }
-.page-title { font-size: 32px; margin-bottom: 40px; }
-.gold-header { color: var(--gold); font-size: 18px; margin-bottom: 25px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; }
-
-/* Cards & Slots */
-.cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
-.empty-slot { 
-  background: var(--card-bg); border: 2px dashed #1e293b; border-radius: 20px; 
-  height: 220px; display: flex; align-items: center; justify-content: center; color: #475569; 
+/* ─── Sidebar ─────────────────────────────────────── */
+.sidebar {
+  width: 300px;
+  border-right: 1px solid #1e2e40;
+  padding: 50px 30px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
 }
-.wide { width: 350px; }
-.plus { font-size: 40px; display: block; margin-bottom: 10px; color: #1e293b; }
 
-.actual-card { background: var(--card-bg); border-radius: 20px; overflow: hidden; border: 1px solid #1e293b; }
-.card-img { width: 100%; height: 150px; object-fit: cover; }
-.card-body { padding: 15px; text-align: center; }
-.view-btn { background: var(--gold); border: none; padding: 10px; width: 100%; border-radius: 20px; font-weight: bold; cursor: pointer; color: black; }
+.image-container {
+  position: relative;
+  width: 100px; /* نفس الحجم اللي إنت عامله للدايرة */
+  height: 100px;
+  margin: 0 auto 20px;
+  background-color: #1a222b; /* لون غامق يتناسب مع التصميم */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #333;
+  overflow: visible;
+}
+.profile-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.camera-btn {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: #1e2e40;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.nav-links a {
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  opacity: 0.8;
+}
+
+.active-link {
+  color: #FFE194 !important;
+  opacity: 1 !important;
+  border-bottom: 2px solid #FFE194;
+  width: fit-content;
+  padding-bottom: 5px;
+}
+
+.logout-btn {
+  margin-top: auto;
+  background: none;
+  border: none;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* ─── Main Content ────────────────────────────────── */
+.content {
+  flex: 1;
+  padding: 60px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  overflow: hidden;
+}
+
+.info-header h1 {
+  font-size: 32px;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* ─── Plans Row (أفقي مع scroll) ─────────────────── */
+.plans-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1.5rem;
+  align-items: flex-start;
+  /* scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: #1e2e40 transparent;
+}
+
+.plans-row::-webkit-scrollbar {
+  height: 6px;
+}
+
+.plans-row::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.plans-row::-webkit-scrollbar-thumb {
+  background: #1e2e40;
+  border-radius: 3px;
+}
+
+/* ─── Plan Column ─────────────────────────────────── */
+.plan-column {
+  min-width: 340px;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #1e2e40;
+  border-radius: 20px;
+  padding: 1.5rem;
+  flex-shrink: 0;
+}
+
+/* ─── Plan Header ─────────────────────────────────── */
+.plan-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.plan-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #FFE194;
+  margin: 0;
+}
+
+.delete-plan-btn {
+  background: rgba(255, 80, 80, 0.15);
+  border: 1px solid rgba(255, 80, 80, 0.3);
+  color: #ff6b6b;
+  padding: 0.3rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.delete-plan-btn:hover {
+  background: rgba(255, 80, 80, 0.3);
+}
+
+/* ─── Section ─────────────────────────────────────── */
+.fav-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.section-header h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  flex: 1;
+  margin: 0;
+}
+
+/* ─── Slider Controls ─────────────────────────────── */
+.slider-controls {
+  display: flex;
+  gap: 0.3rem;
+  margin-left: auto;
+}
+
+.slider-controls button {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  line-height: 1;
+}
+
+.slider-controls button:hover:not(:disabled) {
+  background: rgba(255, 225, 148, 0.3);
+  color: #FFE194;
+}
+
+.slider-controls button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ─── Card ────────────────────────────────────────── */
+.actual-card {
+  background: #0f1b2d;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #1e2e40;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.actual-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.card-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.card-body {
+  padding: 0.8rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card-body h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: white;
+  margin: 0;
+  text-align: center;
+}
+
+.view-btn {
+  background: #FFE194;
+  border: none;
+  padding: 0.4rem 1rem;
+  width: 100%;
+  border-radius: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #0A1128;
+  font-size: 0.82rem;
+  transition: opacity 0.2s;
+}
+
+.view-btn:hover {
+  opacity: 0.85;
+}
+
+/* ─── Empty States ────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 5rem 4rem;
+  border: 1.5px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 1rem;
+  text-align: center;
+}
+
+.empty-state .empty-icon {
+  font-size: 3rem;
+  opacity: 0.4;
+}
+
+.empty-state-small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.2rem;
+  border: 1.5px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.85rem;
+}
+
+.empty-state-small p {
+  margin: 0;
+}
