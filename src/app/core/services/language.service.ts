@@ -17,7 +17,8 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
 
     // Register
     'register.title':        "Let's Get Started!",
-    'register.fullName':     'Enter your full name',
+    'register.firstName':    'First name',
+    'register.lastName':     'Last name',
     'register.email':        'Enter your E-Mail',
     'register.phone':        'Enter phone number',
     'register.password':     'Enter password',
@@ -27,7 +28,8 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'register.signIn':       'sign in',
     'register.orWith':       'Or Register with',
     // Register errors
-    'err.nameRequired':      'Full name is required.',
+    'err.firstNameRequired':  'First name is required.',
+    'err.lastNameRequired':   'Last name is required.',
     'err.nameMin':           'Minimum 3 characters.',
     'err.nameMax':           'Maximum 30 characters.',
     'err.nameAlpha':         'Letters only — no numbers or symbols.',
@@ -45,14 +47,15 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
 
     // Login
     'login.title':           'Welcome Back!',
-    'login.identifier':      'Enter your mail or phone number',
+    'login.identifier':      'Enter your email',
     'login.password':        'Enter password',
     'login.btn':             'Sign in',
     'login.forgotPass':      'Forgot Password?',
     'login.noAccount':       "Don't have an account?",
     'login.signUp':          'sign up',
     'login.orWith':          'Or Login with',
-    'err.identifierRequired':'Email or phone is required.',
+    'err.identifierRequired':'Email is required.',
+    'err.identifierInvalid': 'Enter a valid email address.',
 
     // Forgot Password
     'forgot.title':          'Reset Your Password',
@@ -98,7 +101,8 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
 
     // Register
     'register.title':        'ابدأ رحلتك!',
-    'register.fullName':     'أدخل اسمك الكامل',
+    'register.firstName':    'الاسم الأول',
+    'register.lastName':     'اسم العائلة',
     'register.email':        'أدخل البريد الإلكتروني',
     'register.phone':        'أدخل رقم الهاتف',
     'register.password':     'أدخل كلمة المرور',
@@ -108,7 +112,8 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
     'register.signIn':       'سجل دخولك',
     'register.orWith':       'أو سجل باستخدام',
     // Register errors
-    'err.nameRequired':      'الاسم الكامل مطلوب.',
+    'err.firstNameRequired':  'الاسم الأول مطلوب.',
+    'err.lastNameRequired':   'اسم العائلة مطلوب.',
     'err.nameMin':           'الحد الأدنى 3 أحرف.',
     'err.nameMax':           'الحد الأقصى 30 حرفاً.',
     'err.nameAlpha':         'أحرف فقط — بدون أرقام أو رموز.',
@@ -126,14 +131,15 @@ export const TRANSLATIONS: Record<Lang, Record<string, string>> = {
 
     // Login
     'login.title':           'مرحباً بعودتك!',
-    'login.identifier':      'أدخل البريد أو رقم الهاتف',
+    'login.identifier':      'أدخل بريدك الإلكتروني',
     'login.password':        'أدخل كلمة المرور',
     'login.btn':             'تسجيل الدخول',
     'login.forgotPass':      'نسيت كلمة المرور؟',
     'login.noAccount':       'ليس لديك حساب؟',
     'login.signUp':          'سجل الآن',
     'login.orWith':          'أو سجل الدخول باستخدام',
-    'err.identifierRequired':'البريد أو رقم الهاتف مطلوب.',
+    'err.identifierRequired':'البريد الإلكتروني مطلوب.',
+    'err.identifierInvalid': 'أدخل بريداً إلكترونياً صحيحاً.',
 
     // Forgot Password
     'forgot.title':          'إعادة تعيين كلمة المرور',
@@ -190,4 +196,3 @@ export class LanguageService {
     return TRANSLATIONS[this.currentLang()][key] ?? key;
   }
 }
-

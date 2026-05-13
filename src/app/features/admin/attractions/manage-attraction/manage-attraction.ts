@@ -29,10 +29,6 @@ export class ManageAttraction implements OnInit {
     ticketPrice: 0,
     place: '',
     dateOfInscription: 0,
-    criteria: '',
-    property: '',
-    bufferZone: '',
-    dossier: 0,
   };
 
   constructor(
@@ -66,10 +62,6 @@ export class ManageAttraction implements OnInit {
       ticketPrice: found.ticketPrice,
       place: found.place,
       dateOfInscription: found.dateOfInscription,
-      criteria: found.criteria,
-      property: found.property,
-      bufferZone: found.bufferZone,
-      dossier: found.dossier,
     };
   }
 
@@ -119,7 +111,6 @@ export class ManageAttraction implements OnInit {
       name: '', fee: 0, category: '', rating: 0,
       description: '', status: 'Active', location: '',
       ticketPrice: 0, place: '', dateOfInscription: 0,
-      criteria: '', property: '', bufferZone: '', dossier: 0,
     };
     this.images = [];
   }

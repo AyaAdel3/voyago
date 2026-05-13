@@ -1,10 +1,11 @@
 import { Injectable, signal } from '@angular/core';
 
 export interface User {
-  fullName: string;
-  email: string;
-  phone: string;
-  password: string;
+  firstName: string;
+  lastName:  string;
+  email:     string;
+  phone:     string;
+  password:  string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -16,7 +17,6 @@ export class AuthService {
   register(user: User): { success: boolean; message: string } {
     const users = this.getAllUsers();
 
-    // تأكد مفيش أكونت بنفس الإيميل أو التليفون
     const exists = users.find(
       u => u.email === user.email || u.phone === user.phone
     );
@@ -38,16 +38,13 @@ export class AuthService {
     const users = this.getAllUsers();
 
     const user = users.find(
-      u =>
-        (u.email === identifier || u.phone === identifier) &&
-        u.password === password
+      u => u.email === identifier && u.password === password
     );
 
     if (!user) {
-      return { success: false, message: 'Invalid email/phone or password.' };
+      return { success: false, message: 'Invalid email or password.' };
     }
 
-    // احفظ الـ logged in user
     localStorage.setItem('voyago_current_user', JSON.stringify(user));
     this.currentUser.set(user);
     return { success: true, message: 'Welcome back!' };
@@ -72,5 +69,10 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     return this.currentUser() !== null;
+  }
+
+  getFullName(): string {
+    const user = this.currentUser();
+    return user ? `${user.firstName} ${user.lastName}` : '';
   }
 }

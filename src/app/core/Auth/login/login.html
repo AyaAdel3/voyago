@@ -8,16 +8,19 @@
     <div class="api-error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-      <!-- Email or Phone -->
+      <!-- Email -->
       <div class="field-group">
         <input
-          type="text"
+          type="email"
           formControlName="identifier"
           [placeholder]="lang.t('login.identifier')"
           [class.error-input]="isInvalid(identifier)"
         />
         <span class="error-msg" *ngIf="isInvalid(identifier) && identifier.errors?.['required']">
           {{ lang.t('err.identifierRequired') }}
+        </span>
+        <span class="error-msg" *ngIf="isInvalid(identifier) && identifier.errors?.['email']">
+          {{ lang.t('err.identifierInvalid') }}
         </span>
       </div>
 

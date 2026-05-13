@@ -9,10 +9,6 @@ export interface Attraction {
   description: string;
   place: string;
   dateOfInscription: number;
-  criteria: string;
-  property: string;
-  bufferZone: string;
-  dossier: number;
   ticketPrice: number;
   category: string;
   status: string;
@@ -31,8 +27,7 @@ export class AttractionService {
         'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&h=500&fit=crop',
       ],
       description: 'Wadi El Hitan, Whale Valley, is a paleontological site in the Faiyum desert of Egypt. It contains fossils of the earliest, and now extinct, suborder of whales. Wadi El Hitan at Night. The Pathway of Female Pharaohs: Wadi El Hitan is one of the most famous natural reserves in Egypt.',
-      place: 'Fayoum, Egypt', dateOfInscription: 2005, criteria: 'VIII',
-      property: '20,015 Ha', bufferZone: '3,805 Ha', dossier: 1186,
+      place: 'Fayoum, Egypt', dateOfInscription: 2005,
       ticketPrice: 100, fee: 100, category: 'Historical', status: 'Active'
     },
     {
@@ -44,8 +39,7 @@ export class AttractionService {
         'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&h=500&fit=crop',
       ],
       description: 'Wadi El Rayan is a protected area featuring the only natural waterfalls in Egypt. The area includes two lakes connected by a waterfall and is home to diverse wildlife.',
-      place: 'Fayoum, Egypt', dateOfInscription: 2003, criteria: 'VII',
-      property: '18,000 Ha', bufferZone: '2,500 Ha', dossier: 1050,
+      place: 'Fayoum, Egypt', dateOfInscription: 2003, 
       ticketPrice: 80, fee: 80, category: 'Nature', status: 'Active'
     },
     {
@@ -57,8 +51,7 @@ export class AttractionService {
         'https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=800&h=500&fit=crop',
       ],
       description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area. It is a haven for migratory birds and offers stunning views of the surrounding desert landscape.',
-      place: 'Fayoum, Egypt', dateOfInscription: 1989, criteria: 'IX',
-      property: '25,000 Ha', bufferZone: '4,200 Ha', dossier: 980,
+      place: 'Fayoum, Egypt', dateOfInscription: 1989,
       ticketPrice: 50, fee: 50, category: 'Nature', status: 'Active'
     }
   ];

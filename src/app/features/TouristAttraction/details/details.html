@@ -6,7 +6,6 @@
       <div class="details-left">
         <!-- GALLERY -->
         <div class="gallery">
-          <!-- صورة كبيرة -->
           <div class="gallery-main" (click)="openLightbox(activeImage)">
             <img [src]="attraction.images[activeImage]" [alt]="attraction.name" />
             <div class="main-overlay">
@@ -17,8 +16,6 @@
               </svg>
             </div>
           </div>
-
-          <!-- صور صغيرة -->
           <div class="gallery-thumbs">
             <div
               *ngFor="let img of attraction.images.slice(0, 3); let i = index"
@@ -38,21 +35,16 @@
           </div>
         </div>
 
-        <!-- Title & Stars -->
+        <!-- Title & Rating Badge -->
         <div class="details-rating">
           <h1 class="details-title">{{ attraction.name }}</h1>
-          <div class="stars-row">
-            <svg
-              *ngFor="let s of getStars(attraction.rating)"
-              viewBox="0 0 24 24"
-              width="20"
-              height="20"
-              fill="#FFDE70"
-            >
+          <div class="rating-badge-new">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="#FFDE70">
               <path
                 d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
               />
             </svg>
+            <span>{{ attraction.rating }}</span>
           </div>
         </div>
 
@@ -66,22 +58,64 @@
       <!-- Info Card -->
       <div class="details-right">
         <div class="info-card">
-          <div class="info-item"><span class="label">Place:</span> {{ attraction.place }}</div>
-          <div class="info-item">
-            <span class="label">Date Of Inscription:</span> {{ attraction.dateOfInscription }}
+          <!-- Header -->
+          <div class="card-header">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="#FFDE70">
+              <path
+                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+              />
+            </svg>
+            <span>Site Details</span>
           </div>
-          <div class="info-item">
-            <span class="label">Criteria (VII):</span> {{ attraction.criteria }}
+
+          <!-- Status + Category badges -->
+          <div class="badges-row">
+            <span class="badge badge-category">{{ attraction.category }}</span>
           </div>
+
+          <!-- Place -->
           <div class="info-item">
-            <span class="label">Property:</span> {{ attraction.property }}
+            <div class="info-icon">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="#a3c4eb">
+                <path
+                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                />
+              </svg>
+            </div>
+            <div class="info-text">
+              <span class="label">Place</span>
+              <span class="info-value">{{ attraction.place }}</span>
+            </div>
           </div>
+
+          <!-- Date of Inscription -->
           <div class="info-item">
-            <span class="label">Buffer Zone:</span> {{ attraction.bufferZone }}
+            <div class="info-icon">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="#a3c4eb">
+                <path
+                  d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"
+                />
+              </svg>
+            </div>
+            <div class="info-text">
+              <span class="label">Date of Inscription</span>
+              <span class="info-value">{{ attraction.dateOfInscription }}</span>
+            </div>
           </div>
-          <div class="info-item"><span class="label">Dossier:</span> {{ attraction.dossier }}</div>
-          <div class="info-item">
-            <span class="label">Ticket Price:</span> {{ attraction.ticketPrice }} LE
+          <!-- Divider -->
+          <div class="card-divider"></div>
+
+          <!-- Ticket Price - highlighted -->
+          <div class="ticket-row">
+            <div class="ticket-left">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="#FFDE70">
+                <path
+                  d="M20 12c0-1.1.9-2 2-2V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v4c1.1 0 2 .9 2 2s-.9 2-2 2v4c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-4c-1.1 0-2-.9-2-2z"
+                />
+              </svg>
+              <span class="ticket-label">Ticket Price</span>
+            </div>
+            <span class="ticket-price">{{ attraction.ticketPrice }} LE</span>
           </div>
         </div>
       </div>

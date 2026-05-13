@@ -6,28 +6,53 @@
     <div class="api-error" *ngIf="errorMessage">{{ errorMessage }}</div>
 
     <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-      <!-- Full Name -->
-      <div class="field-group">
-        <input
-          type="text"
-          formControlName="fullName"
-          [placeholder]="lang.t('register.fullName')"
-          [class.error-input]="isInvalid(fullName)"
-        />
-        <ng-container *ngIf="isInvalid(fullName)">
-          <span class="error-msg" *ngIf="fullName.errors?.['required']">{{
-            lang.t('err.nameRequired')
-          }}</span>
-          <span class="error-msg" *ngIf="fullName.errors?.['minlength']">{{
-            lang.t('err.nameMin')
-          }}</span>
-          <span class="error-msg" *ngIf="fullName.errors?.['maxlength']">{{
-            lang.t('err.nameMax')
-          }}</span>
-          <span class="error-msg" *ngIf="fullName.errors?.['alphabeticOnly']">{{
-            lang.t('err.nameAlpha')
-          }}</span>
-        </ng-container>
+      <!-- First Name & Last Name -->
+      <div class="name-row">
+        <div class="field-group">
+          <input
+            type="text"
+            formControlName="firstName"
+            [placeholder]="lang.t('register.firstName')"
+            [class.error-input]="isInvalid(firstName)"
+          />
+          <ng-container *ngIf="isInvalid(firstName)">
+            <span class="error-msg" *ngIf="firstName.errors?.['required']">{{
+              lang.t('err.firstNameRequired')
+            }}</span>
+            <span class="error-msg" *ngIf="firstName.errors?.['minlength']">{{
+              lang.t('err.nameMin')
+            }}</span>
+            <span class="error-msg" *ngIf="firstName.errors?.['maxlength']">{{
+              lang.t('err.nameMax')
+            }}</span>
+            <span class="error-msg" *ngIf="firstName.errors?.['alphabeticOnly']">{{
+              lang.t('err.nameAlpha')
+            }}</span>
+          </ng-container>
+        </div>
+
+        <div class="field-group">
+          <input
+            type="text"
+            formControlName="lastName"
+            [placeholder]="lang.t('register.lastName')"
+            [class.error-input]="isInvalid(lastName)"
+          />
+          <ng-container *ngIf="isInvalid(lastName)">
+            <span class="error-msg" *ngIf="lastName.errors?.['required']">{{
+              lang.t('err.lastNameRequired')
+            }}</span>
+            <span class="error-msg" *ngIf="lastName.errors?.['minlength']">{{
+              lang.t('err.nameMin')
+            }}</span>
+            <span class="error-msg" *ngIf="lastName.errors?.['maxlength']">{{
+              lang.t('err.nameMax')
+            }}</span>
+            <span class="error-msg" *ngIf="lastName.errors?.['alphabeticOnly']">{{
+              lang.t('err.nameAlpha')
+            }}</span>
+          </ng-container>
+        </div>
       </div>
 
       <!-- Email -->

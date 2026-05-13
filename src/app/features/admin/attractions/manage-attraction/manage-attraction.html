@@ -53,8 +53,12 @@
   <!-- Row -->
   <div class="form-row">
     <div>
-      <label class="form-label">Entry Fee (LE) <span class="req">*</span></label>
+      <label class="form-label">Ticket Price (LE) <span class="req">*</span></label>
       <input class="form-input" [(ngModel)]="attraction.fee" type="number" placeholder="100" />
+    </div>
+    <div>
+      <label class="form-label">Date of Inscription <span class="req">*</span></label>
+      <input class="form-input" [(ngModel)]="attraction.dateOfInscription" type="number" />
     </div>
     <div>
       <label class="form-label">Category <span class="req">*</span></label>

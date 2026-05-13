@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -10,32 +10,30 @@ import { filter } from 'rxjs/operators';
   templateUrl: './admin-layout.html',
   styleUrl: './admin-layout.css',
 })
-export class AdminLayout {
+export class AdminLayout implements OnInit {
   currentTitle = 'Dashboard';
   currentSubtitle = "Welcome back! Here's an overview of your tourism management system";
 
   navItems = [
     { label: 'Dashboard', icon: 'dashboard', path: '/admin/dashboard' },
-    { label: 'Hotels', icon: 'hotel', path: '/admin/hotels' },
-    { label: 'Restaurants', icon: 'restaurant', path: '/admin/restaurants' },
-    { label: 'Attractions', icon: 'attractions', path: '/admin/attractions' },
-    { label: 'Tour Guide', icon: 'tour', path: '/admin/tour-guides' },
-    { label: 'Users', icon: 'users', path: '/admin/users' },
-    { label: 'Settings', icon: 'settings', path: '/admin/settings' },
+    { label: 'Hotels',     icon: 'hotel',      path: '/admin/hotels' },
+    { label: 'Restaurants',icon: 'restaurant', path: '/admin/restaurants' },
+    { label: 'Attractions',icon: 'attractions',path: '/admin/attractions' },
+    { label: 'Tour Guide', icon: 'tour',        path: '/admin/tour-guides' },
+    { label: 'Users',      icon: 'users',       path: '/admin/users' },
   ];
 
   titleMap: Record<string, { title: string; subtitle: string }> = {
-    '/admin/dashboard': { title: 'Dashboard', subtitle: "Welcome back! Here's an overview of your tourism management system" },
-    '/admin/hotels': { title: 'Hotels', subtitle: 'Manage hotel listings and information' },
-    '/admin/hotels/manage': { title: 'Manage Hotels', subtitle: 'Add or edit hotel information' },
-    '/admin/restaurants': { title: 'Restaurants', subtitle: 'Manage restaurant listings and details' },
+    '/admin/dashboard':          { title: 'Dashboard',         subtitle: "Welcome back! Here's an overview of your tourism management system" },
+    '/admin/hotels':             { title: 'Hotels',            subtitle: 'Manage hotel listings and information' },
+    '/admin/hotels/manage':      { title: 'Manage Hotels',     subtitle: 'Add or edit hotel information' },
+    '/admin/restaurants':        { title: 'Restaurants',       subtitle: 'Manage restaurant listings and details' },
     '/admin/restaurants/manage': { title: 'Manage Restaurant', subtitle: 'Add or edit restaurant information' },
-    '/admin/attractions': { title: 'Attractions', subtitle: 'Manage tourist attractions and landmarks' },
-    '/admin/attractions/manage': { title: 'Manage Attractions', subtitle: 'Add or edit attraction information' },
-    '/admin/tour-guides': { title: 'Tour Guides', subtitle: 'Manage hotel listings and information' },
+    '/admin/attractions':        { title: 'Attractions',       subtitle: 'Manage tourist attractions and landmarks' },
+    '/admin/attractions/manage': { title: 'Manage Attractions',subtitle: 'Add or edit attraction information' },
+    '/admin/tour-guides':        { title: 'Tour Guides',       subtitle: 'Manage hotel listings and information' },
     '/admin/tour-guides/manage': { title: 'Manage Tour Guide', subtitle: 'Add or edit tour guide information' },
-    '/admin/users': { title: 'Users', subtitle: 'Manage system users and access permissions' },
-    '/admin/settings': { title: 'Settings', subtitle: 'System configuration and preferences' },
+    '/admin/users':              { title: 'Users',             subtitle: 'Manage system users and access permissions' },
   };
 
   constructor(private router: Router) {
@@ -48,6 +46,16 @@ export class AdminLayout {
         this.currentSubtitle = info.subtitle;
       }
     });
+  }
+
+  ngOnInit(): void {
+    // مزامنة الـ dark mode مع الـ navbar
+    const savedMode = localStorage.getItem('darkMode');
+    if (savedMode === 'true') {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
   }
 
   isActive(path: string): boolean {

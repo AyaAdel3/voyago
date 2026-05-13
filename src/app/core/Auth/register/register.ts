@@ -46,7 +46,8 @@ export class Register implements OnDestroy {
   ) {
     document.body.classList.add('modal-open');
     this.form = this.fb.group({
-      fullName:        ['', [Validators.required, Validators.minLength(3), Validators.maxLength(30), alphabeticOnly]],
+      firstName:       ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30), alphabeticOnly]],
+      lastName:        ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30), alphabeticOnly]],
       email:           ['', [Validators.required, Validators.email]],
       phone:           ['', [Validators.required, Validators.pattern(/^01[0125][0-9]{8}$/)]],
       password:        ['', [Validators.required, Validators.minLength(8), strongPassword]],
@@ -58,7 +59,8 @@ export class Register implements OnDestroy {
     document.body.classList.remove('modal-open');
   }
 
-  get fullName()        { return this.form.get('fullName')!; }
+  get firstName()       { return this.form.get('firstName')!; }
+  get lastName()        { return this.form.get('lastName')!; }
   get email()           { return this.form.get('email')!; }
   get phone()           { return this.form.get('phone')!; }
   get password()        { return this.form.get('password')!; }
@@ -81,10 +83,11 @@ export class Register implements OnDestroy {
     this.isLoading = true;
 
     const result = this.auth.register({
-      fullName: this.fullName.value,
-      email:    this.email.value,
-      phone:    this.phone.value,
-      password: this.password.value
+      firstName: this.firstName.value,
+      lastName:  this.lastName.value,
+      email:     this.email.value,
+      phone:     this.phone.value,
+      password:  this.password.value
     });
 
     this.isLoading = false;

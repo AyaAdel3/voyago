@@ -32,7 +32,7 @@ export class Login implements OnDestroy {
   ) {
     document.body.classList.add('modal-open');
     this.form = this.fb.group({
-      identifier: ['', Validators.required],
+      identifier: ['', [Validators.required, Validators.email]],
       password:   ['', Validators.required]
     });
   }
