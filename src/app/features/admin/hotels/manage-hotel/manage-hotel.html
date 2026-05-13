@@ -4,14 +4,12 @@
   <!-- ── Photos ── -->
   <label class="form-label">Hotel Photos <span class="req">*</span></label>
   <div class="photos-area">
-
     <div class="photos-grid-inner" *ngIf="images.length">
       <div *ngFor="let img of images; let i = index" class="photo-slot">
         <img [src]="img" [alt]="'photo-' + i" />
         <button class="photo-remove" (click)="removeImage(i)" type="button">✕</button>
       </div>
     </div>
-
     <div class="upload-empty" *ngIf="!images.length" (click)="fileInput.click()">
       <svg viewBox="0 0 24 24" width="36" height="36" fill="#7a9cbf">
         <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
@@ -20,25 +18,14 @@
       <span style="font-size:0.75rem">Or Drag &amp; drop</span>
       <span style="font-size:0.72rem;color:#4a6a88">PNG, JPG up to 5MB (Max 15 images)</span>
     </div>
-
-    <button
-      class="upload-circle-btn"
-      type="button"
-      (click)="fileInput.click()"
-      *ngIf="images.length"
-      title="Add more photos">
+    <button class="upload-circle-btn" type="button" (click)="fileInput.click()"
+            *ngIf="images.length" title="Add more photos">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="white">
         <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
       </svg>
     </button>
-
-    <input
-      #fileInput
-      type="file"
-      accept="image/*"
-      multiple
-      style="display:none"
-      (change)="onFileSelected($event)" />
+    <input #fileInput type="file" accept="image/*" multiple style="display:none"
+           (change)="onFileSelected($event)" />
   </div>
 
   <!-- ── Hotel Name ── -->
@@ -69,50 +56,27 @@
   <div class="form-group">
     <label class="form-label">Rooms <span class="req">*</span></label>
     <div class="rooms-form-grid">
-
       <div class="room-input-wrap">
         <label class="room-input-label">Single</label>
-        <input
-          class="form-input room-input"
-          [(ngModel)]="rooms.single"
-          type="number" min="0"
-          placeholder="0"
-          (ngModelChange)="calcTotal()" />
+        <input class="form-input room-input" [(ngModel)]="rooms.single"
+               type="number" min="0" placeholder="0" (ngModelChange)="calcTotal()" />
       </div>
-
       <div class="room-input-wrap">
         <label class="room-input-label">Double</label>
-        <input
-          class="form-input room-input"
-          [(ngModel)]="rooms.double"
-          type="number" min="0"
-          placeholder="0"
-          (ngModelChange)="calcTotal()" />
+        <input class="form-input room-input" [(ngModel)]="rooms.double"
+               type="number" min="0" placeholder="0" (ngModelChange)="calcTotal()" />
       </div>
-
       <div class="room-input-wrap">
         <label class="room-input-label">Triple</label>
-        <input
-          class="form-input room-input"
-          [(ngModel)]="rooms.triple"
-          type="number" min="0"
-          placeholder="0"
-          (ngModelChange)="calcTotal()" />
+        <input class="form-input room-input" [(ngModel)]="rooms.triple"
+               type="number" min="0" placeholder="0" (ngModelChange)="calcTotal()" />
       </div>
-
       <div class="room-input-wrap">
         <label class="room-input-label">Suite</label>
-        <input
-          class="form-input room-input"
-          [(ngModel)]="rooms.suite"
-          type="number" min="0"
-          placeholder="0"
-          (ngModelChange)="calcTotal()" />
+        <input class="form-input room-input" [(ngModel)]="rooms.suite"
+               type="number" min="0" placeholder="0" (ngModelChange)="calcTotal()" />
       </div>
-
     </div>
-
-    <!-- Total badge -->
     <div class="rooms-total-badge">
       <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
         <path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/>
@@ -124,11 +88,109 @@
   <!-- ── Description ── -->
   <div class="form-group">
     <label class="form-label">Hotel Description <span class="req">*</span></label>
-    <textarea class="form-textarea" [(ngModel)]="hotel.description" placeholder="Enter detailed Hotel description..."></textarea>
+    <textarea class="form-textarea" [(ngModel)]="hotel.description"
+              placeholder="Enter detailed Hotel description..."></textarea>
   </div>
 
-  <!-- ── Status ── -->
-  <div class="status-section">
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- ── Great for your stay Features (Display) ── -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="form-group">
+    <label class="form-label">Great for your stay <span class="hint">(Display Features)</span></label>
+
+    <!-- Selected tags -->
+    <div class="features-tags" *ngIf="selectedDisplayFeatureIds.length">
+      <span *ngFor="let id of selectedDisplayFeatureIds" class="feature-tag">
+        {{ getDisplayFeatureLabel(id) }}
+        <button type="button" class="feature-tag-remove" (click)="toggleDisplayFeature(id)">✕</button>
+      </span>
+    </div>
+
+    <!-- Dropdown trigger -->
+    <div class="features-dropdown-wrap">
+      <button type="button" class="features-trigger"
+              (click)="displayDropdownOpen = !displayDropdownOpen">
+        <span>{{ selectedDisplayFeatureIds.length ? 'Add more features...' : 'Select features to display...' }}</span>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"
+             [style.transform]="displayDropdownOpen ? 'rotate(180deg)' : 'rotate(0)'">
+          <path d="M7 10l5 5 5-5z"/>
+        </svg>
+      </button>
+
+      <div class="features-dropdown" *ngIf="displayDropdownOpen">
+        <div *ngFor="let f of availableDisplayFeatures"
+             class="feature-option"
+             [class.selected]="isDisplayFeatureSelected(f.id)"
+             (click)="toggleDisplayFeature(f.id)">
+          <span class="feature-icon">{{ f.icon }}</span>
+          <span class="feature-name">{{ f.name }}</span>
+          <svg *ngIf="isDisplayFeatureSelected(f.id)" viewBox="0 0 24 24" width="16" height="16"
+               fill="#22c55e" style="margin-left:auto">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+          </svg>
+        </div>
+        <div *ngIf="availableDisplayFeatures.length === 0"
+             class="feature-option" style="color:#4a6a88;cursor:default">
+          Loading features...
+        </div>
+        <button type="button" class="features-done-btn" (click)="closeDisplayDropdown()">Done</button>
+      </div>
+    </div>
+  </div>
+
+ 
+  <!-- ══════════════════════════════════════════════════════ -->
+<!-- ── Booking Features ── -->
+<!-- ══════════════════════════════════════════════════════ -->
+<div class="form-group">
+  <label class="form-label">Booking Features</label>
+
+  <div class="booking-features-list">
+
+    <!-- Fixed features: موجودين دايما، السعر editable -->
+    <div *ngFor="let f of fixedBookingFeatures" class="booking-feature-item booking-feature-fixed">
+      <span class="bf-name">{{ f.name }}</span>
+      <input
+        class="form-input bf-inline-price"
+        [(ngModel)]="f.price"
+        type="number"
+        min="0"
+        placeholder="Price (LE)"
+      />
+      <span class="bf-price-label">LE / person</span>
+      <span class="bf-fixed-badge">Fixed</span>
+    </div>
+
+    <!-- Extra features (removable) -->
+    <div *ngFor="let f of extraBookingFeatures; let i = index"
+         class="booking-feature-item">
+      <span class="bf-name">{{ f.name }}</span>
+      <span class="bf-price">{{ f.price }} LE / person</span>
+      <button type="button" class="bf-remove" (click)="removeExtraBookingFeature(i)">✕</button>
+    </div>
+
+  </div>
+
+  <!-- Add new feature row -->
+  <div class="bf-add-row">
+    <input class="form-input bf-input-name"
+           [(ngModel)]="newFeatureName"
+           placeholder="Feature name (e.g. Spa)" />
+    <input class="form-input bf-input-price"
+           [(ngModel)]="newFeaturePrice"
+           type="number" min="0"
+           placeholder="Price (LE)" />
+    <button type="button" class="bf-add-btn" (click)="addBookingFeature()">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+      </svg>
+      Add
+    </button>
+  </div>
+</div>
+
+  <!-- ── Status (Edit only) ── -->
+  <div class="status-section" *ngIf="isEdit">
     <h4>Hotel Status <span class="req">*</span></h4>
 
     <div class="inactive-notice" *ngIf="hotel.status === 'Inactive'">
@@ -139,19 +201,15 @@
     </div>
 
     <div class="status-btns">
-      <button
-        class="btn-status btn-status-active"
-        [class.selected]="hotel.status === 'Active'"
-        (click)="setStatus('Active')"
-        type="button">
+      <button class="btn-status btn-status-active"
+              [class.selected]="hotel.status === 'Active'"
+              (click)="setStatus('Active')" type="button">
         <span class="status-dot"></span>
         Active
       </button>
-      <button
-        class="btn-status btn-status-inactive"
-        [class.selected]="hotel.status === 'Inactive'"
-        (click)="setStatus('Inactive')"
-        type="button">
+      <button class="btn-status btn-status-inactive"
+              [class.selected]="hotel.status === 'Inactive'"
+              (click)="setStatus('Inactive')" type="button">
         <span class="status-dot"></span>
         Inactive
       </button>

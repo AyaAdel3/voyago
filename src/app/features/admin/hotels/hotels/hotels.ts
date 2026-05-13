@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HotelService } from '../../../../core/services/hotel.service';
-import { Hotel } from '../../../../core/model/hotel.model';
+import { Hotel, Review } from '../../../../core/model/hotel.model';
 
 @Component({
   selector: 'app-admin-hotels',
@@ -15,12 +15,18 @@ import { Hotel } from '../../../../core/model/hotel.model';
 export class AdminHotels implements OnInit {
   searchQuery = '';
   currentPage = 1;
-  totalPages  = [1, 2, 3, 4, 10];
+  readonly pageSize = 4;
 
   hotels: (Hotel & { status: string })[] = [];
 
   deleteToastVisible = false;
   deleteToastMessage = '';
+
+  // ── Reviews Modal ──────────────────────────
+  reviewsModalVisible = false;
+  selectedHotelName   = '';
+  selectedHotelReviews: Review[] = [];
+  selectedHotelId: number | null = null;
 
   stats = [
     { label: 'Total Hotels', value: 0, icon: '🏨', type: 'total'    },
@@ -41,7 +47,9 @@ export class AdminHotels implements OnInit {
         ...h,
         status: (h as any).status ?? 'Active',
       }));
+      this.currentPage = 1;
       this.updateStats();
+      this.cdr.detectChanges();
     });
   }
 
@@ -52,11 +60,30 @@ export class AdminHotels implements OnInit {
     this.stats[3].value = this.hotels.filter(h => h.status === 'Blocked').length;
   }
 
-  get filtered() {
-    if (!this.searchQuery) return this.hotels;
+  // ── كل البيانات المفلترة (بدون pagination) ──
+  get filteredAll() {
+    if (!this.searchQuery.trim()) return this.hotels;
     return this.hotels.filter(h =>
       h.name.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
+  }
+
+  // ── الصفحة الحالية فقط ──
+  get filtered() {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredAll.slice(start, start + this.pageSize);
+  }
+
+  // ── عدد الصفحات ──
+  get totalPages(): number[] {
+    return Array.from(
+      { length: Math.ceil(this.filteredAll.length / this.pageSize) },
+      (_, i) => i + 1
+    );
+  }
+
+  onSearch(): void {
+    this.currentPage = 1;
   }
 
   showDeleteToast(msg: string) {
@@ -79,5 +106,29 @@ export class AdminHotels implements OnInit {
   delete(hotel: Hotel) {
     this.hotelService.deleteHotel(hotel.id);
     this.showDeleteToast(`"${hotel.name}" deleted successfully.`);
+  }
+
+  // ── Reviews Modal ──────────────────────────────────────
+
+  openReviews(hotel: Hotel) {
+    this.selectedHotelId   = hotel.id;
+    this.selectedHotelName = hotel.name;
+    this.hotelService.getReviews(hotel.id).subscribe(reviews => {
+      this.selectedHotelReviews = reviews;
+      this.cdr.detectChanges();
+    });
+    this.reviewsModalVisible = true;
+  }
+
+  closeReviewsModal() {
+    this.reviewsModalVisible  = false;
+    this.selectedHotelId      = null;
+    this.selectedHotelReviews = [];
+  }
+
+  deleteReview(review: Review) {
+    this.hotelService.deleteReview(review.id);
+    this.selectedHotelReviews = this.selectedHotelReviews.filter(r => r.id !== review.id);
+    this.showDeleteToast(`Review by "${review.userName}" removed.`);
   }
 }

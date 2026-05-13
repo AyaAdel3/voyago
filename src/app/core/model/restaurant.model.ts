@@ -139,6 +139,7 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
     closeTime:  '00:00',
     tables: { total: 12, for2: 4, for4: 6, for6: 2 },
   },
+  
 ];
 
 export const MOCK_RESTAURANT_REVIEWS: RestaurantReview[] = [

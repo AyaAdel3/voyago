@@ -3,7 +3,8 @@ import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
   Hotel, Review, RoomType, HotelFeature, HotelFeatureDef, BookingData,
-  MOCK_HOTELS, MOCK_REVIEWS, MOCK_HOTEL_FEATURES,
+  BookingFeatureDef, FIXED_BOOKING_FEATURES,
+  MOCK_HOTELS, MOCK_REVIEWS, MOCK_HOTEL_FEATURES, MOCK_DISPLAY_FEATURES,
   buildDefaultRooms,
 } from '../model/hotel.model';
 
@@ -12,6 +13,10 @@ export class HotelService {
 
   private hotelsSubject  = new BehaviorSubject<Hotel[]>([...MOCK_HOTELS]);
   hotels$                = this.hotelsSubject.asObservable();
+
+  // ✅ reviewsSubject بدل الـ static array
+  private reviewsSubject = new BehaviorSubject<Review[]>([...MOCK_REVIEWS]);
+  reviews$               = this.reviewsSubject.asObservable();
 
   private favIds         = signal<Set<number>>(new Set());
   private currentBooking = signal<BookingData | null>(null);
@@ -24,18 +29,21 @@ export class HotelService {
     return this.hotels$.pipe(map(hotels => hotels.find(h => h.id === id)));
   }
 
+  // ✅ reactive — بيرجع الريفيوز من الـ BehaviorSubject
   getReviews(hotelId: number): Observable<Review[]> {
-    return new BehaviorSubject<Review[]>(
-      MOCK_REVIEWS.filter(r => r.hotelId === hotelId)
-    ).asObservable();
+    return this.reviews$.pipe(
+      map(reviews => reviews.filter(r => r.hotelId === hotelId))
+    );
   }
 
-  /**
-   * Get all available bookable features.
-   * TODO: replace of(MOCK_HOTEL_FEATURES) with http.get<HotelFeatureDef[]>('/api/hotel-features')
-   */
+  /** Booking features (بأسعار) - للـ booking widget */
   getFeatures(): Observable<HotelFeatureDef[]> {
     return of(MOCK_HOTEL_FEATURES);
+  }
+
+  /** Display features (بدون أسعار) - لـ Great for your stay */
+  getDisplayFeatures(): Observable<HotelFeatureDef[]> {
+    return of(MOCK_DISPLAY_FEATURES);
   }
 
   // ── WRITE ────────────────────────────────────────────────
@@ -72,14 +80,21 @@ export class HotelService {
       comment,
       date:        new Date().toISOString().split('T')[0],
     };
+    // ✅ بيضيف الريفيو الجديد للـ BehaviorSubject
+    const current = this.reviewsSubject.getValue();
+    this.reviewsSubject.next([...current, newReview]);
     return new BehaviorSubject(newReview).asObservable();
+  }
+
+  // ✅ الـ method الجديدة — بتمسح ريفيو بالـ id
+  deleteReview(reviewId: number): void {
+    const current = this.reviewsSubject.getValue();
+    this.reviewsSubject.next(current.filter(r => r.id !== reviewId));
   }
 
   // ── Favorites ────────────────────────────────────────────
 
-  isFavorite(id: number): boolean {
-    return this.favIds().has(id);
-  }
+  isFavorite(id: number): boolean { return this.favIds().has(id); }
 
   toggleFavorite(id: number): void {
     const current = new Set(this.favIds());
@@ -92,20 +107,30 @@ export class HotelService {
   setBooking(data: BookingData): void  { this.currentBooking.set(data); }
   getBooking(): BookingData | null     { return this.currentBooking(); }
 
-  /** Rooms priced relative to the hotel's Standard room (pricePerNight) */
   getDefaultRooms(hotel: Hotel): RoomType[] {
     return buildDefaultRooms(hotel.pricePerNight);
   }
 
   /**
-   * Build the widget's feature list for a specific hotel:
-   * filter all features by the hotel's featureIds, return with quantity=0
+   * Build widget feature list من bookingFeatures الخاصة بالهوتيل
+   * لو مفيش، يرجع FIXED_BOOKING_FEATURES كـ fallback
    */
+  getHotelBookingFeatures(hotel: Hotel): HotelFeature[] {
+    const features: BookingFeatureDef[] = hotel.bookingFeatures?.length
+      ? hotel.bookingFeatures
+      : [...FIXED_BOOKING_FEATURES];
+
+    return features.map(f => ({
+      name:     f.name,
+      price:    f.price,
+      selected: false,
+      quantity: 0,
+    }));
+  }
+
+  /** Legacy — kept for backward compatibility */
   getHotelFeatures(hotel: Hotel, allFeatures: HotelFeatureDef[]): HotelFeature[] {
-    if (!hotel.featureIds?.length) return [];
-    return allFeatures
-      .filter(f => hotel.featureIds!.includes(f.id))
-      .map(f => ({ name: f.name, price: f.price, selected: false, quantity: 0 }));
+    return this.getHotelBookingFeatures(hotel);
   }
 
   confirmBooking(booking: BookingData, method: string): Observable<{ bookingId: string }> {

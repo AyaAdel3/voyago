@@ -15,7 +15,11 @@
       <svg viewBox="0 0 24 24" width="16" height="16" fill="#4a6a88">
         <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
       </svg>
-      <input type="text" placeholder="Search Hotels..." [(ngModel)]="searchQuery" />
+      <input
+        type="text"
+        placeholder="Search Hotels..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()" />
     </div>
     <a class="btn-add" [routerLink]="'/admin/hotels/manage'">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -59,12 +63,6 @@
       <!-- Rooms -->
       <div class="rooms-cell" *ngIf="h.rooms; else noRooms">
         <span class="rooms-total">{{ h.rooms.total }} rooms</span>
-        <div class="rooms-breakdown">
-          <span class="room-tag">S: {{ h.rooms.single }}</span>
-          <span class="room-tag">D: {{ h.rooms.double }}</span>
-          <span class="room-tag">T: {{ h.rooms.triple }}</span>
-          <span class="room-tag suite">Su: {{ h.rooms.suite }}</span>
-        </div>
       </div>
       <ng-template #noRooms>
         <span class="cell-muted">—</span>
@@ -88,6 +86,12 @@
           </svg>
           View
         </button>
+        <button class="btn-reviews" (click)="openReviews(h)" title="Manage Reviews">
+          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+          </svg>
+          Reviews
+        </button>
         <button class="btn-icon btn-edit" (click)="edit(h)">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
@@ -108,16 +112,75 @@
   </div>
 
   <!-- Pagination -->
-  <div class="pagination">
-    <button class="page-btn arrow">‹</button>
+  <div class="pagination" *ngIf="totalPages.length > 1">
+    <button
+      class="page-btn arrow"
+      [disabled]="currentPage === 1"
+      (click)="currentPage = currentPage - 1">‹</button>
+
     <button
       *ngFor="let p of totalPages"
       class="page-btn"
       [class.active]="p === currentPage"
       (click)="currentPage = p">
-      {{ p === 10 ? '...' : '' }}{{ p }}
+      {{ p }}
     </button>
-    <button class="page-btn arrow">›</button>
+
+    <button
+      class="page-btn arrow"
+      [disabled]="currentPage === totalPages.length"
+      (click)="currentPage = currentPage + 1">›</button>
+  </div>
+</div>
+
+<!-- ── Reviews Modal ── -->
+<div class="modal-overlay" *ngIf="reviewsModalVisible" (click)="closeReviewsModal()">
+  <div class="reviews-modal" (click)="$event.stopPropagation()">
+
+    <div class="reviews-modal-header">
+      <div>
+        <h3 class="reviews-modal-title">Reviews</h3>
+        <p class="reviews-modal-sub">{{ selectedHotelName }}</p>
+      </div>
+      <button class="modal-close-btn" (click)="closeReviewsModal()">✕</button>
+    </div>
+
+    <div class="reviews-modal-body">
+
+      <!-- Empty -->
+      <div *ngIf="selectedHotelReviews.length === 0" class="reviews-empty">
+        <svg viewBox="0 0 24 24" width="36" height="36" fill="#4a6a88">
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+        </svg>
+        <p>No reviews for this hotel yet.</p>
+      </div>
+
+      <!-- Review cards -->
+      <div *ngFor="let r of selectedHotelReviews" class="review-card">
+        <div class="review-card-top">
+          <div class="review-avatar">{{ r.userName.charAt(0) }}</div>
+          <div class="review-meta">
+            <span class="review-username">{{ r.userName }}</span>
+            <span class="review-country">{{ r.userCountry }}</span>
+          </div>
+          <div class="review-stars">
+            <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24"
+                 width="13" height="13"
+                 [attr.fill]="s <= r.rating ? '#f5c518' : '#2a4a6a'">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <span class="review-date">{{ r.date }}</span>
+          <button class="review-delete-btn" (click)="deleteReview(r)" title="Remove review">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+          </button>
+        </div>
+        <p class="review-comment">{{ r.comment }}</p>
+      </div>
+
+    </div>
   </div>
 </div>
 

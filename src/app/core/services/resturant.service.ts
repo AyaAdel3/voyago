@@ -12,6 +12,9 @@ export class RestaurantService {
   private restaurantsSubject = new BehaviorSubject<Restaurant[]>([...MOCK_RESTAURANTS]);
   restaurants$ = this.restaurantsSubject.asObservable();
 
+  private reviewsSubject = new BehaviorSubject<RestaurantReview[]>([...MOCK_RESTAURANT_REVIEWS]);
+  reviews$ = this.reviewsSubject.asObservable();
+
   private favIds             = signal<Set<number>>(new Set());
   private currentReservation = signal<ReservationData | null>(null);
 
@@ -37,18 +40,12 @@ export class RestaurantService {
   }
 
   getReviews(restaurantId: number): Observable<RestaurantReview[]> {
-    return new BehaviorSubject<RestaurantReview[]>(
-      MOCK_RESTAURANT_REVIEWS.filter(r => r.restaurantId === restaurantId)
-    ).asObservable();
+    return this.reviews$.pipe(
+      map(reviews => reviews.filter(r => r.restaurantId === restaurantId))
+    );
   }
 
-  /**
-   * جيب كل الـ features المتاحة من الـ API
-   * endpoint: GET /api/features
-   * لما الـ API يجهز استبدلي الـ of(MOCK_FEATURES) بـ http.get<Feature[]>('/api/features')
-   */
   getFeatures(): Observable<Feature[]> {
-    // TODO: استبدلي بـ this.http.get<Feature[]>('/api/features')
     return of(MOCK_FEATURES);
   }
 
@@ -62,7 +59,14 @@ export class RestaurantService {
       comment,
       date:         new Date().toISOString().split('T')[0],
     };
+    const current = this.reviewsSubject.getValue();
+    this.reviewsSubject.next([...current, newReview]);
     return new BehaviorSubject(newReview).asObservable();
+  }
+
+  deleteReview(reviewId: number): void {
+    const current = this.reviewsSubject.getValue();
+    this.reviewsSubject.next(current.filter(r => r.id !== reviewId));
   }
 
   // ── WRITE ────────────────────────────────────────────────

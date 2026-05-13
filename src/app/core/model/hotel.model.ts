@@ -1,7 +1,3 @@
-// ============================================================
-// hotel.model.ts
-// ============================================================
-
 export interface HotelRooms {
   total:  number;
   single: number;
@@ -10,10 +6,14 @@ export interface HotelRooms {
   suite:  number;
 }
 
-// Display-only feature (Great for your stay section)
 export interface HotelDisplayFeature {
   icon: string;
   name: string;
+}
+
+export interface BookingFeatureDef {
+  name:  string;
+  price: number;
 }
 
 export interface Hotel {
@@ -30,8 +30,9 @@ export interface Hotel {
   stars: number;
   status?: 'Active' | 'Inactive' | 'Blocked';
   rooms?: HotelRooms;
-  displayFeatures?: HotelDisplayFeature[];  // ✅ للعرض فقط — Great for your stay
-  featureIds?: number[];                    // للـ booking widget فقط
+  displayFeatures?: HotelDisplayFeature[];
+  displayFeatureIds?: number[];
+  bookingFeatures?: BookingFeatureDef[];
 }
 
 export interface Review {
@@ -51,7 +52,6 @@ export interface RoomType {
   quantity: number;
 }
 
-// Bookable feature definition (from service/API)
 export interface HotelFeatureDef {
   id:    number;
   name:  string;
@@ -59,7 +59,6 @@ export interface HotelFeatureDef {
   price: number;
 }
 
-// Feature with selection state used in the widget
 export interface HotelFeature {
   name: string;
   price: number;
@@ -82,15 +81,34 @@ export interface BookingData {
 
 export const BOARD_FEATURE_NAMES = ['Full Board', 'Half Board'];
 
-// ============================================================
-// MOCK DATA
-// ============================================================
+// أسماء الـ features اللي دايما موجودة ومش ممكن تتحذف
+export const FIXED_BOOKING_FEATURE_NAMES: string[] = ['Full Board', 'Half Board'];
 
+// fallback لو هوتيل جديد (price = 0 الأدمن بيدخله)
+export const FIXED_BOOKING_FEATURES: BookingFeatureDef[] = [
+  { name: 'Full Board', price: 0 },
+  { name: 'Half Board', price: 0 },
+];
+
+// للـ Booking Widget - بأسعار
 export const MOCK_HOTEL_FEATURES: HotelFeatureDef[] = [
   { id: 1, name: 'Full Board',       icon: '🍽️', price: 150 },
   { id: 2, name: 'Half Board',       icon: '🥗',  price: 75  },
   { id: 3, name: 'Spa',              icon: '💆',  price: 50  },
   { id: 5, name: 'Airport Transfer', icon: '✈️',  price: 120 },
+];
+
+// للـ Display فقط (Great for your stay) - بدون أسعار
+export const MOCK_DISPLAY_FEATURES: HotelFeatureDef[] = [
+  { id: 1, name: 'WiFi',             icon: '📶', price: 0 },
+  { id: 2, name: 'Pool',             icon: '🏊', price: 0 },
+  { id: 3, name: 'Restaurant',       icon: '🍴', price: 0 },
+  { id: 4, name: 'Spa',              icon: '💆', price: 0 },
+  { id: 5, name: 'Airport Transfer', icon: '✈️', price: 0 },
+  { id: 6, name: 'Garden',           icon: '🌿', price: 0 },
+  { id: 7, name: 'Sun Terrace',      icon: '☀️', price: 0 },
+  { id: 8, name: 'Lake View',        icon: '🌊', price: 0 },
+  { id: 9, name: 'Private Pool',     icon: '🏊', price: 0 },
 ];
 
 export const MOCK_HOTELS: Hotel[] = [
@@ -110,12 +128,16 @@ export const MOCK_HOTELS: Hotel[] = [
       'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800',
     ],
     amenities: ['WiFi', 'Pool', 'Restaurant'],
+    displayFeatureIds: [1, 2, 3],
     displayFeatures: [
       { icon: '📶', name: 'WiFi'       },
       { icon: '🏊', name: 'Pool'       },
       { icon: '🍴', name: 'Restaurant' },
     ],
-    featureIds: [1, 2, 4],
+    bookingFeatures: [
+      { name: 'Full Board', price: 150 },
+      { name: 'Half Board', price: 75  },
+    ],
     rooms: { total: 20, single: 8, double: 6, triple: 4, suite: 2 },
   },
   {
@@ -136,13 +158,18 @@ export const MOCK_HOTELS: Hotel[] = [
       'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800',
     ],
     amenities: ['WiFi', 'private pool', 'Restaurant'],
+    displayFeatureIds: [1, 9, 6, 7],
     displayFeatures: [
       { icon: '📶', name: 'WiFi'         },
       { icon: '🏊', name: 'Private Pool' },
       { icon: '🌿', name: 'Garden'       },
       { icon: '☀️', name: 'Sun Terrace'  },
     ],
-    featureIds: [1, 2, 3],
+    bookingFeatures: [
+      { name: 'Full Board', price: 150 },
+      { name: 'Half Board', price: 75  },
+      { name: 'Spa',        price: 50  },
+    ],
     rooms: { total: 15, single: 5, double: 6, triple: 3, suite: 1 },
   },
   {
@@ -160,6 +187,7 @@ export const MOCK_HOTELS: Hotel[] = [
       'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
     ],
     amenities: ['WiFi', 'Spa', 'Restaurant', 'Pool'],
+    displayFeatureIds: [1, 4, 3, 2, 8],
     displayFeatures: [
       { icon: '📶', name: 'WiFi'       },
       { icon: '💆', name: 'Spa'        },
@@ -167,7 +195,11 @@ export const MOCK_HOTELS: Hotel[] = [
       { icon: '🏊', name: 'Pool'       },
       { icon: '🌊', name: 'Lake View'  },
     ],
-    featureIds: [1, 2, 3, 5],
+    bookingFeatures: [
+      { name: 'Full Board',       price: 150 },
+      { name: 'Half Board',       price: 75  },
+      { name: 'Airport Transfer', price: 120 },
+    ],
     rooms: { total: 30, single: 10, double: 10, triple: 5, suite: 5 },
   },
 ];
