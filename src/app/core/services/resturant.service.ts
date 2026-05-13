@@ -30,11 +30,11 @@ export class RestaurantService {
     );
   }
 
-  getRestaurantMeta(id: number): Observable<{ cuisine: string; priceRange: string } | undefined> {
+  getRestaurantMeta(id: number): Observable<{ cuisine: string; minPrice: number; maxPrice: number } | undefined> {
     return this.restaurants$.pipe(
       map(list => {
         const r = list.find(r => r.id === id);
-        return r ? { cuisine: r.cuisine, priceRange: r.priceRange } : undefined;
+        return r ? { cuisine: r.cuisine, minPrice: r.minPrice, maxPrice: r.maxPrice } : undefined;
       })
     );
   }

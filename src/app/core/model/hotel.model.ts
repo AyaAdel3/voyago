@@ -95,6 +95,7 @@ export const MOCK_HOTEL_FEATURES: HotelFeatureDef[] = [
   { id: 1, name: 'Full Board',       icon: '🍽️', price: 150 },
   { id: 2, name: 'Half Board',       icon: '🥗',  price: 75  },
   { id: 3, name: 'Spa',              icon: '💆',  price: 50  },
+  { id: 3, name: 'gym',              icon: '💆',  price: 100  },
   { id: 5, name: 'Airport Transfer', icon: '✈️',  price: 120 },
 ];
 
@@ -137,6 +138,8 @@ export const MOCK_HOTELS: Hotel[] = [
     bookingFeatures: [
       { name: 'Full Board', price: 150 },
       { name: 'Half Board', price: 75  },
+      { name: 'spa', price: 50  },
+      { name: 'gym', price: 100  },
     ],
     rooms: { total: 20, single: 8, double: 6, triple: 4, suite: 2 },
   },
@@ -171,6 +174,36 @@ export const MOCK_HOTELS: Hotel[] = [
       { name: 'Spa',        price: 50  },
     ],
     rooms: { total: 15, single: 5, double: 6, triple: 3, suite: 1 },
+  },
+  {
+    id: 3,
+    name: 'Desert Rose Resort',
+    location: 'Qarun Lake, Fayoum, Egypt',
+    pricePerNight: 150,
+    rating: 4.5,
+    stars: 5,
+    status: 'Active',
+    description:
+      'Luxury desert retreat overlooking the enchanting Qarun Lake.',
+    images: [
+      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800',
+      'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
+    ],
+    amenities: ['WiFi', 'Spa', 'Restaurant', 'Pool'],
+    displayFeatureIds: [1, 4, 3, 2, 8],
+    displayFeatures: [
+      { icon: '📶', name: 'WiFi'       },
+      { icon: '💆', name: 'Spa'        },
+      { icon: '🍴', name: 'Restaurant' },
+      { icon: '🏊', name: 'Pool'       },
+      { icon: '🌊', name: 'Lake View'  },
+    ],
+    bookingFeatures: [
+      { name: 'Full Board',       price: 150 },
+      { name: 'Half Board',       price: 75  },
+      { name: 'Airport Transfer', price: 120 },
+    ],
+    rooms: { total: 30, single: 10, double: 10, triple: 5, suite: 5 },
   },
   {
     id: 3,

@@ -39,7 +39,7 @@ import { NotFound } from './features/not-found/not-found';
 
 // Admin
 import { AdminLayout } from './features/admin/admin-layout/admin-layout';
-import { AdminDashboard } from './features/admin/dashboard/dashboard/dashboard';
+import { Dashboard } from './features/admin/dashboard/dashboard/dashboard';
 import { AdminHotels } from './features/admin/hotels/hotels/hotels';
 import { ManageHotel } from './features/admin/hotels/manage-hotel/manage-hotel';
 import { AdminRestaurants } from './features/admin/restaurants/restaurants/restaurants';
@@ -106,7 +106,7 @@ export const routes: Routes = [
     component: AdminLayout,
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: 'dashboard', component: AdminDashboard, title: 'Admin Dashboard' },
+      { path: 'dashboard', component: Dashboard, title: 'Admin Dashboard' },
 
       // Hotels
       { path: 'hotels', component: AdminHotels, title: 'Manage Hotels' },

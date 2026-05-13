@@ -17,8 +17,8 @@ export interface Restaurant {
   rating:      number;
   stars:       number;
   cuisine:     string;
-  priceRange:  string;
-  address:     string;
+  minPrice:    number;
+  maxPrice:    number;
   location:    string;
   description: string;
   images:      string[];
@@ -28,7 +28,7 @@ export interface Restaurant {
   isFavorite?: boolean;
   status?:     'Active' | 'Inactive' | 'Blocked';
   tables?:     RestaurantTables;
-  featureIds?: number[];   // الـ IDs اللي بتتبعت للـ API
+  featureIds?: number[];
 }
 
 export interface RestaurantReview {
@@ -62,13 +62,12 @@ export interface ReservationData {
   totalAmount:       number;
 }
 
-// ── Mock Features (سيتعوضوا بـ API call) ─────────────────
 export const MOCK_FEATURES: Feature[] = [
-  { id: 1, name: 'Parking',          icon: '🅿️' },
-  { id: 2, name: 'WiFi',             icon: '📶' },
-  { id: 3, name: 'Smoking Allowed',  icon: '🚬' },
-  { id: 4, name: 'Outdoor Seating',  icon: '🪑' },
-  { id: 5, name: 'Lake View',        icon: '🌊' },
+  { id: 1, name: 'Parking',         icon: '🅿️' },
+  { id: 2, name: 'WiFi',            icon: '📶' },
+  { id: 3, name: 'Smoking Allowed', icon: '🚬' },
+  { id: 4, name: 'Outdoor Seating', icon: '🪑' },
+  { id: 5, name: 'Lake View',       icon: '🌊' },
 ];
 
 export const MOCK_RESTAURANTS: Restaurant[] = [
@@ -78,9 +77,9 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
     rating:      4.8,
     stars:       4,
     cuisine:     'Fine Dining',
-    priceRange:  '150-500LE',
-    address:     'Four Seasons Hotel At The First Residence, Giza Governate',
-    location:    'Giza Governate',
+    minPrice:    150,
+    maxPrice:    500,
+    location:    'Four Seasons Hotel At The First Residence, Giza Governate',
     status:      'Active',
     description: 'Aura, Located At The Four Seasons Hotel, Is A Traditional Lebanese Restaurant. Though The Poolside Views Of The City And The Smell Of Fresh Bread Baking In The Brick Oven Are Enticing, The Real Star Of Aura Is The Modern Shami Cuisine.',
     images: [
@@ -102,9 +101,9 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
     rating:      4.8,
     stars:       5,
     cuisine:     'Egyptian',
-    priceRange:  '100-300LE',
-    address:     'Tunis Village, Fayoum, Egypt',
-    location:    'Fayoum',
+    minPrice:    100,
+    maxPrice:    300,
+    location:    'Tunis Village, Fayoum, Egypt',
     status:      'Active',
     description: 'Traditional Egyptian cuisine in the heart of Tunis village with stunning lake views.',
     images: [
@@ -124,9 +123,9 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
     rating:      4.8,
     stars:       4,
     cuisine:     'Mediterranean',
-    priceRange:  '200-600LE',
-    address:     'Tunis Village, Fayoum, Egypt',
-    location:    'Fayoum',
+    minPrice:    200,
+    maxPrice:    600,
+    location:    'Tunis Village, Fayoum, Egypt',
     status:      'Active',
     description: 'Fresh Mediterranean dishes with garden seating and lake views.',
     images: [
@@ -139,7 +138,6 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
     closeTime:  '00:00',
     tables: { total: 12, for2: 4, for4: 6, for6: 2 },
   },
-  
 ];
 
 export const MOCK_RESTAURANT_REVIEWS: RestaurantReview[] = [

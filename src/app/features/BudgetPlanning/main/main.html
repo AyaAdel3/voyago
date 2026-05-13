@@ -151,8 +151,7 @@
                 {{ r.rating }}
               </span>
             </div>
-            <p class="card-price">{{ r.cuisine }} • {{ r.priceRange }}</p>
-            <p class="card-desc">{{ r.description | slice:0:100 }}...</p>
+<p class="card-price">{{ r.cuisine }} • {{ r.minPrice }}-{{ r.maxPrice }} LE</p>            <p class="card-desc">{{ r.description | slice:0:100 }}...</p>
             <div class="card-btns">
               <button class="btn-view"  (click)="viewRestaurantDetails(r.id)">View Details</button>
               <button class="btn-add"   (click)="addRestaurantToPlan(r)"

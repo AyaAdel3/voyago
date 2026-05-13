@@ -9,7 +9,12 @@
 .stats-row-3 {
   grid-template-columns: repeat(3, 1fr);
 }
-
+.section-title,
+h2.section-title {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+}
 /* ── Grid Layout ───────────────────────── */
 .rest-grid {
   display: grid;

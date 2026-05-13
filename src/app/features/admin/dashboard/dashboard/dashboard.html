@@ -8,32 +8,21 @@
       <div class="ov-label">{{ s.label }}</div>
       <a class="ov-link">View all</a>
       <div class="ov-icon-wrap">
-        <svg *ngIf="s.icon === 'hotel'" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-          <path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/>
-        </svg>
-        <svg *ngIf="s.icon === 'restaurant'" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-          <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
-        </svg>
-        <svg *ngIf="s.icon === 'tour'" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-          <path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/>
-        </svg>
-        <svg *ngIf="s.icon === 'attraction'" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-          <path d="M14 6l-1-2H5v17h2v-7h5l1 2h7V6h-6zm4 8h-4l-1-2H7V6h5l1 2h5v6z"/>
-        </svg>
-        <svg *ngIf="s.icon === 'users'" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-        </svg>
+        <svg *ngIf="s.icon === 'hotel'"      viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/></svg>
+        <svg *ngIf="s.icon === 'restaurant'" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>
+        <svg *ngIf="s.icon === 'tour'"       viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/></svg>
+        <svg *ngIf="s.icon === 'attraction'" viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M14 6l-1-2H5v17h2v-7h5l1 2h7V6h-6zm4 8h-4l-1-2H7V6h5l1 2h5v6z"/></svg>
+        <svg *ngIf="s.icon === 'users'"      viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
       </div>
     </div>
   </div>
 
-  <!-- Recent tables row -->
+  <!-- Row 1: Hotels + Restaurants -->
   <div class="recent-row">
 
-    <!-- Recent Hotels -->
     <div class="recent-block">
       <div class="recent-header">
-        <h3>Recent Hotels</h3>
+        <h3>Top Hotels</h3>
         <a [routerLink]="'/admin/hotels'" class="view-all-btn">View All →</a>
       </div>
       <div class="mini-table">
@@ -49,7 +38,7 @@
           </span>
           <div class="mini-actions">
             <span class="status-badge" [ngClass]="'status-' + h.status.toLowerCase()">{{ h.status }}</span>
-            <button class="btn-view-site" (click)="viewOnSite('hotel', h.name)">
+            <button class="btn-view-site" (click)="viewOnSite('hotel')">
               <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
               View
             </button>
@@ -58,10 +47,9 @@
       </div>
     </div>
 
-    <!-- Recent Restaurants -->
     <div class="recent-block">
       <div class="recent-header">
-        <h3>Recent Restaurants</h3>
+        <h3>Top Restaurants</h3>
         <a [routerLink]="'/admin/restaurants'" class="view-all-btn">View All →</a>
       </div>
       <div class="mini-table">
@@ -77,7 +65,7 @@
           </span>
           <div class="mini-actions">
             <span class="status-badge" [ngClass]="'status-' + r.status.toLowerCase()">{{ r.status }}</span>
-            <button class="btn-view-site" (click)="viewOnSite('restaurant', r.name)">
+            <button class="btn-view-site" (click)="viewOnSite('restaurant')">
               <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
               View
             </button>
@@ -85,26 +73,70 @@
         </div>
       </div>
     </div>
+
   </div>
 
-  <!-- Top Tour Guides -->
+  <!-- Row 2: Attractions + Tour Guides -->
+  <div class="recent-row">
+
+    <div class="recent-block">
+      <div class="recent-header">
+        <h3>Top Attractions</h3>
+        <a [routerLink]="'/admin/attractions'" class="view-all-btn">View All →</a>
+      </div>
+      <div class="mini-table">
+        <div class="mini-header attract-header">
+          <span>Attraction</span><span>Category</span><span>Rating</span><span>Entry Fee</span>
+        </div>
+        <div *ngFor="let a of topAttractions" class="mini-row attract-row">
+          <span class="mini-name">{{ a.name }}</span>
+          <span class="mini-muted">{{ a.category }}</span>
+          <span class="mini-rating">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+            {{ a.rating }}
+          </span>
+          <span class="mini-muted">{{ a.entryFee === 0 ? 'Free' : a.entryFee + ' LE' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="recent-block">
+      <div class="recent-header">
+        <h3>Top Tour Guides</h3>
+        <a [routerLink]="'/admin/tour-guides'" class="view-all-btn">View All →</a>
+      </div>
+      <div class="mini-table">
+        <div class="mini-header guides-header">
+          <span>Guide Name</span><span>Rating</span><span>Tours</span><span>Status</span>
+        </div>
+        <div *ngFor="let g of topGuides" class="mini-row guides-row">
+          <span class="mini-name">{{ g.name }}</span>
+          <span class="mini-rating">
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+            {{ g.rating }}
+          </span>
+          <span class="mini-muted">{{ g.tours }}</span>
+          <span class="status-badge" [ngClass]="'status-' + g.status.toLowerCase()">{{ g.status }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Row 3: Recent Users -->
   <div class="recent-block full-width">
     <div class="recent-header">
-      <h3>Top Tour Guides</h3>
-      <a [routerLink]="'/admin/tour-guides'" class="view-all-btn">View All →</a>
+      <h3>Recent Users</h3>
+      <a [routerLink]="'/admin/users'" class="view-all-btn">View All →</a>
     </div>
     <div class="mini-table">
-      <div class="mini-header guides-header">
-        <span>Guide Name</span><span>Rating</span><span>Tours</span><span>Status</span>
+      <div class="mini-header users-header">
+        <span>Name</span><span>Email</span><span>Status</span>
       </div>
-      <div *ngFor="let g of topGuides" class="mini-row guides-row">
-        <span class="mini-name">{{ g.name }}</span>
-        <span class="mini-rating">
-          <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
-          {{ g.rating }}
-        </span>
-        <span>{{ g.tours }}</span>
-        <span class="status-badge" [ngClass]="'status-' + g.status.toLowerCase()">{{ g.status }}</span>
+      <div *ngFor="let u of recentUsers" class="mini-row users-row">
+        <span class="mini-name">{{ u.name }}</span>
+        <span class="mini-muted">{{ u.email }}</span>
+        <span class="status-badge" [ngClass]="'status-' + u.status.toLowerCase()">{{ u.status }}</span>
       </div>
     </div>
   </div>

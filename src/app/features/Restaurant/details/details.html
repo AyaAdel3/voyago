@@ -52,6 +52,7 @@
 
         <!-- اسم الريستورانت + نجوم -->
        <!-- إلى: -->
+<!-- اسم الريستورانت + نجوم -->
 <div class="rest-header">
   <div class="flex items-center gap-3">
     <h1 class="rest-name">{{ restaurant.name }}</h1>
@@ -62,10 +63,9 @@
       <span>{{ restaurant.rating }}</span>
     </div>
   </div>
-  <p class="rest-address">{{ restaurant.address }}</p>
-  <p class="rest-meta">{{ restaurant.cuisine }} • {{ restaurant.priceRange }}</p>
+  <p class="rest-address">{{ restaurant.location }}</p>
+  <p class="rest-meta">{{ restaurant.cuisine }} • {{ getPriceRange() }}</p>
 </div>
-
         <!-- About -->
         <div class="section-block">
           <h2 class="section-title">About</h2>

@@ -69,8 +69,7 @@
       </ng-template>
 
       <!-- Price Range -->
-      <span class="price-cell">{{ r.priceRange }}</span>
-
+<span class="price-cell">{{ r.minPrice }}-{{ r.maxPrice }} LE</span>
       <!-- Status -->
       <span>
         <span class="status-badge" [ngClass]="'status-' + r.status.toLowerCase()">

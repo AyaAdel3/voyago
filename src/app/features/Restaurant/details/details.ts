@@ -87,6 +87,11 @@ export class Details implements OnInit {
     return this.availableFeatures.find(f => f.id === id) ?? null;
   }
 
+  /** يعرض السعر بالشكل: 150-500 LE */
+  getPriceRange(): string {
+    return `${this.restaurant.minPrice}-${this.restaurant.maxPrice} LE`;
+  }
+
   setActiveImage(i: number): void  { this.activeImage = i; }
   openLightbox(i: number): void    { this.lbIndex = i; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; }
   closeLightbox(): void            { this.lightboxOpen = false; document.body.style.overflow = ''; }
@@ -133,7 +138,7 @@ export class Details implements OnInit {
     const data: ReservationData = {
       restaurantId:      this.restaurant.id,
       restaurantName:    this.restaurant.name,
-      restaurantAddress: this.restaurant.address,
+      restaurantAddress: this.restaurant.location,
       date:              this.selectedDate,
       time:              '',
       guestCount:        0,
@@ -161,7 +166,6 @@ export class Details implements OnInit {
 
   starsArray(n: number): number[] { return Array(n).fill(0); }
 
-  /** تنسيق تاريخ الحجز في الـ widget — مثال: Jan 5th, 2025 */
   formatDate(dateStr: string): string {
     if (!dateStr) return '';
     const d      = new Date(dateStr);
@@ -171,7 +175,6 @@ export class Details implements OnInit {
     return `${months[d.getMonth()]} ${day}${suffix}, ${d.getFullYear()}`;
   }
 
-  /** ✅ تنسيق تاريخ الكومنت — مثال: Jan 10, 2025 */
   formatReviewDate(dateStr: string): string {
     if (!dateStr) return '';
     const d      = new Date(dateStr);

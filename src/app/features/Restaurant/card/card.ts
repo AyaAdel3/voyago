@@ -37,6 +37,10 @@ export class Card implements OnInit {
     });
   }
 
+  getPriceRange(r: Restaurant): string {
+    return `${r.minPrice}-${r.maxPrice} LE`;
+  }
+
   isRestaurantInFav(name: string): boolean {
     return this.favoritesService.isFavorite(name);
   }
@@ -47,19 +51,16 @@ export class Card implements OnInit {
 
   toggleFav(event: MouseEvent, r: any): void {
     event.stopPropagation();
-
     this.restaurantService.toggleFavorite(r.id);
-
     if (this.isRestaurantInFav(r.name)) {
-      // ✅ بنبعت الـ title مش الـ index
       this.favoritesService.removeFavorite(r.name);
     } else {
       this.favoritesService.addToFavorites({
-        title: r.name,
-        image: r.images[0],
-        price: r.cuisine + ' • ' + r.priceRange,
+        title:  r.name,
+        image:  r.images[0],
+        price:  r.cuisine + ' • ' + this.getPriceRange(r),
         rating: r.rating,
-        type: 'restaurant'  // ✅ ده اللي كان ناقص
+        type:   'restaurant'
       });
     }
   }

@@ -38,17 +38,17 @@
     <input class="form-input" [(ngModel)]="restaurant.location" placeholder="e.g. Fayoum, Egypt" />
   </div>
 
-  <!-- ── Address ── -->
-  <div class="form-group">
-    <label class="form-label">Address</label>
-    <input class="form-input" [(ngModel)]="restaurant.address" placeholder="Full address..." />
-  </div>
-
-  <!-- ── Row: Price, Cuisine, Rating ── -->
+  <!-- ── Row: Min Price, Max Price, Cuisine, Rating ── -->
   <div class="form-row">
     <div>
-      <label class="form-label">Price Range (LE) <span class="req">*</span></label>
-      <input class="form-input" [(ngModel)]="restaurant.priceRange" placeholder="150-500LE" />
+      <label class="form-label">Min Price (LE) <span class="req">*</span></label>
+      <input class="form-input" [(ngModel)]="restaurant.minPrice"
+             type="number" min="0" placeholder="150" />
+    </div>
+    <div>
+      <label class="form-label">Max Price (LE) <span class="req">*</span></label>
+      <input class="form-input" [(ngModel)]="restaurant.maxPrice"
+             type="number" min="0" placeholder="500" />
     </div>
     <div>
       <label class="form-label">Cuisine Type <span class="req">*</span></label>
@@ -64,16 +64,12 @@
   <!-- ── Features multi-select ── -->
   <div class="form-group">
     <label class="form-label">Features</label>
-
-    <!-- Selected tags -->
     <div class="features-tags" *ngIf="selectedFeatureIds.length">
       <span *ngFor="let id of selectedFeatureIds" class="feature-tag">
         {{ getFeatureLabel(id) }}
         <button type="button" class="feature-tag-remove" (click)="toggleFeature(id)">✕</button>
       </span>
     </div>
-
-    <!-- Dropdown trigger -->
     <div class="features-dropdown-wrap">
       <button type="button" class="features-trigger" (click)="featuresDropdownOpen = !featuresDropdownOpen">
         <span>{{ selectedFeatureIds.length ? 'Add more features...' : 'Select features...' }}</span>
@@ -82,8 +78,6 @@
           <path d="M7 10l5 5 5-5z"/>
         </svg>
       </button>
-
-      <!-- Dropdown list -->
       <div class="features-dropdown" *ngIf="featuresDropdownOpen">
         <div *ngFor="let f of availableFeatures"
              class="feature-option"

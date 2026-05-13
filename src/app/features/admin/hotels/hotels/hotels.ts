@@ -28,12 +28,11 @@ export class AdminHotels implements OnInit {
   selectedHotelReviews: Review[] = [];
   selectedHotelId: number | null = null;
 
-  stats = [
-    { label: 'Total Hotels', value: 0, icon: '🏨', type: 'total'    },
-    { label: 'Active',       value: 0, icon: '✓',  type: 'active'   },
-    { label: 'Inactive',     value: 0, icon: '⊘',  type: 'inactive' },
-    { label: 'Blocked',      value: 0, icon: '⚠',  type: 'blocked'  },
-  ];
+stats = [
+  { label: 'Total Hotels', value: 0, icon: '🏨', type: 'total'    },
+  { label: 'Active',       value: 0, icon: '✓',  type: 'active'   },
+  { label: 'Inactive',     value: 0, icon: '⊘',  type: 'inactive' },
+];
 
   constructor(
     private router: Router,
@@ -53,12 +52,11 @@ export class AdminHotels implements OnInit {
     });
   }
 
-  updateStats(): void {
-    this.stats[0].value = this.hotels.length;
-    this.stats[1].value = this.hotels.filter(h => h.status === 'Active').length;
-    this.stats[2].value = this.hotels.filter(h => h.status === 'Inactive').length;
-    this.stats[3].value = this.hotels.filter(h => h.status === 'Blocked').length;
-  }
+updateStats(): void {
+  this.stats[0].value = this.hotels.length;
+  this.stats[1].value = this.hotels.filter(h => h.status === 'Active').length;
+  this.stats[2].value = this.hotels.filter(h => h.status === 'Inactive').length;
+}
 
   // ── كل البيانات المفلترة (بدون pagination) ──
   get filteredAll() {

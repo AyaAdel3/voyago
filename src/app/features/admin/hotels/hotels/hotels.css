@@ -14,9 +14,9 @@
 }
 
 /* ⭐ توسيط أعمدة معينة */
-.hotels-grid > *:nth-child(3), /* Rating */
-.hotels-grid > *:nth-child(4), /* Rooms */
-.hotels-grid > *:nth-child(5)  /* Price */ {
+.hotels-grid > *:nth-child(3),
+.hotels-grid > *:nth-child(4),
+.hotels-grid > *:nth-child(5) {
   justify-self: center;
   text-align: center;
 }
@@ -42,7 +42,7 @@
   align-items: center;
   gap: 3px;
   font-weight: 700;
-  color: #0d1526;
+  color: #ffffff;
 }
 
 /* ── Rooms cell ───────────────────────── */
@@ -56,12 +56,10 @@
 
 .rooms-total {
   font-weight: 700;
-  color: #0d1526;
+  color: #ffffff;
   font-size: 0.82rem;
   text-align: center;
 }
-
-
 
 /* tags */
 .room-tag {
@@ -86,7 +84,7 @@
 /* ── Price ───────────────────────────── */
 .price-cell {
   font-weight: 600;
-  color: #0d1526;
+  color: #c8dff0;
 }
 
 /* ── Empty state ─────────────────────── */
@@ -95,7 +93,7 @@
   padding: 2rem;
   color: #64748b;
   font-size: 0.9rem;
-  background: #fff;
+  background: #162a40;
   border-radius: 12px;
 }
 
@@ -138,15 +136,10 @@
 }
 
 @keyframes slideIn {
-  from {
-    transform: translateY(1rem);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(1rem); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
+
 /* ── Reviews Button ──────────────────────────────────────── */
 .btn-reviews {
   display: inline-flex;
@@ -346,4 +339,11 @@
   margin: 0;
   line-height: 1.5;
   padding-right: 0.25rem;
+}
+
+.section-title,
+h2.section-title {
+  color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }

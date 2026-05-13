@@ -12,14 +12,8 @@
       [class.card-inactive]="r.status === 'Inactive'"
       (click)="r.status !== 'Inactive' && goToDetails(r.id)"
     >
-
       <div class="card-img-wrap">
-        <img
-          [src]="r.images[0]"
-          [alt]="r.name"
-          class="card-img"
-          loading="lazy"
-        />
+        <img [src]="r.images[0]" [alt]="r.name" class="card-img" loading="lazy" />
 
         <button
           class="fav-btn"
@@ -39,7 +33,6 @@
           </svg>
         </button>
 
-        <!-- Inactive overlay -->
         <div class="inactive-overlay" *ngIf="r.status === 'Inactive'">
           🚫 Not available right now
         </div>
@@ -49,7 +42,7 @@
         <div class="card-header">
           <div>
             <h3 class="restaurant-name">{{ r.name }}</h3>
-            <p class="restaurant-cuisine">{{ r.cuisine }} • {{ r.priceRange }}</p>
+            <p class="restaurant-cuisine">{{ r.cuisine }} • {{ getPriceRange(r) }}</p>
           </div>
 
           <div class="rating-badge">

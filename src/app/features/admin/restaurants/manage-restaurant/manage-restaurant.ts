@@ -26,12 +26,12 @@ export class ManageRestaurant implements OnInit {
 
   restaurant = {
     name:        '',
-    priceRange:  '',
+    minPrice:    0,
+    maxPrice:    0,
     cuisine:     '',
     rating:      '',
     description: '',
     location:    '',
-    address:     '',
     status:      'Active' as 'Active' | 'Inactive' | 'Blocked',
   };
 
@@ -68,12 +68,12 @@ export class ManageRestaurant implements OnInit {
       this.images = [...r.images];
       this.restaurant = {
         name:        r.name,
-        priceRange:  r.priceRange,
+        minPrice:    r.minPrice,
+        maxPrice:    r.maxPrice,
         cuisine:     r.cuisine,
         rating:      r.rating.toString(),
         description: r.description,
         location:    r.location,
-        address:     r.address,
         status:      (r as any).status ?? 'Active',
       };
       if (r.tables)     this.tables             = { ...r.tables };
@@ -155,7 +155,7 @@ export class ManageRestaurant implements OnInit {
   // ── Save ──────────────────────────────────────────────────
 
   save() {
-    if (!this.restaurant.name || !this.restaurant.priceRange) {
+    if (!this.restaurant.name || !this.restaurant.minPrice || !this.restaurant.maxPrice) {
       this.showToast('Please fill all required fields.', false);
       return;
     }
@@ -168,12 +168,12 @@ export class ManageRestaurant implements OnInit {
         const updated: Restaurant = {
           ...existing,
           name:        this.restaurant.name,
-          priceRange:  this.restaurant.priceRange,
+          minPrice:    +this.restaurant.minPrice,
+          maxPrice:    +this.restaurant.maxPrice,
           cuisine:     this.restaurant.cuisine,
           rating:      +this.restaurant.rating,
           description: this.restaurant.description,
           location:    this.restaurant.location,
-          address:     this.restaurant.address,
           images:      [...this.images],
           status:      this.restaurant.status,
           tables:      { ...this.tables },
@@ -187,13 +187,13 @@ export class ManageRestaurant implements OnInit {
       const newRestaurant: Restaurant = {
         id:          Date.now(),
         name:        this.restaurant.name,
-        priceRange:  this.restaurant.priceRange,
+        minPrice:    +this.restaurant.minPrice,
+        maxPrice:    +this.restaurant.maxPrice,
         cuisine:     this.restaurant.cuisine,
         rating:      +this.restaurant.rating,
         stars:       0,
         description: this.restaurant.description,
         location:    this.restaurant.location,
-        address:     this.restaurant.address,
         openTime:    '',
         closeTime:   '',
         images:      [...this.images],
@@ -209,8 +209,8 @@ export class ManageRestaurant implements OnInit {
 
   clear() {
     this.restaurant = {
-      name: '', priceRange: '', cuisine: '', rating: '',
-      description: '', location: '', address: '', status: 'Active',
+      name: '', minPrice: 0, maxPrice: 0, cuisine: '', rating: '',
+      description: '', location: '', status: 'Active',
     };
     this.tables             = { total: 0, for2: 0, for4: 0, for6: 0 };
     this.selectedFeatureIds = [];

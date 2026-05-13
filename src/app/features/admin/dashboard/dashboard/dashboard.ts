@@ -3,10 +3,8 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HotelService } from '../../../../core/services/hotel.service';
 import { RestaurantService } from '../../../../core/services/resturant.service';
-
-// Mock data مباشرة عشان نجيب العدد
-const TOUR_GUIDES_COUNT = 3;   // نفس عدد الـ guides في card.ts
-const ATTRACTIONS_COUNT = 3;   // نفس عدد الـ attractions في card.ts
+import { TourGuideService, TourGuide } from '../../../../core/services/tour-guide.service';
+import { AttractionService, Attraction } from '../../../../core/services/attraction.service';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -15,61 +13,91 @@ const ATTRACTIONS_COUNT = 3;   // نفس عدد الـ attractions في card.ts
   templateUrl: './dashboard.html',
   styleUrls: ['../../admin-shared.css', './dashboard.css'],
 })
-export class AdminDashboard implements OnInit {
+export class Dashboard implements OnInit {
 
   stats = [
-    { label: 'Total Hotels', value: 0, icon: 'hotel', link: '/admin/hotels' },
+    { label: 'Total Hotels',      value: 0, icon: 'hotel',      link: '/admin/hotels'      },
     { label: 'Total Restaurants', value: 0, icon: 'restaurant', link: '/admin/restaurants' },
-    { label: 'Total Guides', value: TOUR_GUIDES_COUNT, icon: 'tour', link: '/admin/tour-guides' },
-    { label: 'Total Attractions', value: ATTRACTIONS_COUNT, icon: 'attraction', link: '/admin/attractions' },
-    { label: 'Total Users', value: 0, icon: 'users', link: '/admin/users' },
+    { label: 'Total Guides',      value: 0, icon: 'tour',       link: '/admin/tour-guides' },
+    { label: 'Total Attractions', value: 0, icon: 'attraction', link: '/admin/attractions' },
+    { label: 'Total Users',       value: 0, icon: 'users',      link: '/admin/users'       },
   ];
 
-  recentHotels: any[] = [];
+  recentHotels:      any[] = [];
   recentRestaurants: any[] = [];
-
-  topGuides = [
-    { name: 'Araya Smith', rating: 4.8, tours: 156, status: 'Active' },
-    { name: 'Nattaya Wong', rating: 4.5, tours: 96, status: 'Active' },
-    { name: 'Somchai Prasert', rating: 4.3, tours: 83, status: 'Active' },
-  ];
+  topGuides:         any[] = [];
+  topAttractions:    any[] = [];
+  recentUsers:       any[] = [];
 
   constructor(
-    private hotelService: HotelService,
+    private hotelService:      HotelService,
     private restaurantService: RestaurantService,
+    private tourGuideService:  TourGuideService,
+    private attractionService: AttractionService,
   ) {}
 
   ngOnInit(): void {
     // Hotels
     this.hotelService.getHotels().subscribe(hotels => {
       this.stats[0].value = hotels.length;
-      this.recentHotels = hotels.slice(0, 3).map(h => ({
-        name: h.name,
+      this.recentHotels   = hotels.slice(0, 3).map(h => ({
+        name:     h.name,
         location: h.location,
-        rating: h.rating,
-        status: 'Active',
+        rating:   h.rating,
+        status:   (h as any).status ?? 'Active',
       }));
     });
 
     // Restaurants
     this.restaurantService.getRestaurants().subscribe(restaurants => {
-      this.stats[1].value = restaurants.length;
+      this.stats[1].value    = restaurants.length;
       this.recentRestaurants = restaurants.slice(0, 3).map(r => ({
-        name: r.name,
-        cuisine: (r as any).cuisine ?? 'Various',
-        rating: r.rating,
-        status: 'Active',
+        name:    r.name,
+        cuisine: r.cuisine,
+        rating:  r.rating,
+        status:  (r as any).status ?? 'Active',
       }));
     });
 
-    // Users من الـ localStorage
-    const users = JSON.parse(localStorage.getItem('voyago_users') || '[]');
+    // Tour Guides
+    const guides         = this.tourGuideService.getAll();
+    this.stats[2].value  = guides.length;
+    this.topGuides       = guides.slice(0, 3).map((g: TourGuide) => ({
+      name:   g.name,
+      rating: g.rating,
+      tours:  g.tours,
+      status: g.status,
+    }));
+
+    // Attractions
+    const attractions    = this.attractionService.getAll();
+    this.stats[3].value  = attractions.length;
+    this.topAttractions  = attractions.slice(0, 3).map((a: Attraction) => ({
+      name:     a.name,
+      category: a.category,
+      rating:   a.rating,
+      fee:      a.fee,
+    }));
+
+    // Users
+    const users         = JSON.parse(localStorage.getItem('voyago_users') || '[]');
     this.stats[4].value = users.length;
+    this.recentUsers    = users.length > 0
+      ? users.slice(0, 3).map((u: any) => ({
+          name:   u.name ?? u.username ?? 'User',
+          email:  u.email ?? '—',
+          status: 'Active',
+        }))
+      : [
+          { name: 'Ahmed Mohamed', email: 'ahmed@gmail.com', status: 'Active' },
+          { name: 'Sara Ali',      email: 'sara@gmail.com',  status: 'Active' },
+          { name: 'Omar Hassan',   email: 'omar@gmail.com',  status: 'Active' },
+        ];
   }
 
-  viewOnSite(type: string, name: string) {
+  viewOnSite(type: string) {
     const routes: Record<string, string> = {
-      hotel: '/hotels',
+      hotel:      '/hotels',
       restaurant: '/Restaurants',
     };
     window.open(routes[type] || '/', '_blank');
