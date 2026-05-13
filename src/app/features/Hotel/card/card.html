@@ -4,10 +4,10 @@
     <p>Finding the best hotels for you…</p>
   </div>
 
-  <div *ngIf="!loading" class="hotels-page ">
+  <div *ngIf="!loading" class="hotels-page">
     <div
       *ngFor="let hotel of hotels"
-      class="hotel-card "
+      class="hotel-card"
       (click)="goToDetails(hotel.id)"
     >
       <div class="card-img-wrap">
@@ -17,7 +17,6 @@
           class="card-img"
           loading="lazy"
         />
-
         <button
           class="fav-btn"
           [class.active]="isHotelInFav(hotel.name)"
@@ -37,13 +36,17 @@
           </svg>
         </button>
       </div>
-      
+
       <div class="card-body font-[Nunito Sans]">
         <div class="card-header translate-y-4 gap-[3px]">
           <div>
-            <h3 class="hotel-name color-[#173B64] ">{{ hotel.name }}</h3>
-            <p class="hotel-price color-[#021526] font-medium ">{{ hotel.pricePerNight | number }}le for 1 night</p>
+            <h3 class="hotel-name color-[#173B64]">{{ hotel.name }}</h3>
+            <!-- Price = Standard room price per night -->
+            <p class="hotel-price color-[#021526] font-medium">
+              {{ hotel.pricePerNight | number }}LE / night
+            </p>
           </div>
+          <!-- Rating badge -->
           <div class="rating-badge me-2">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="#021526">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>

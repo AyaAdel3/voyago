@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   Restaurant, RestaurantReview, TableType, ReservationData,
-  AVAILABLE_TIMES,
+  AVAILABLE_TIMES, Feature,
 } from '../../../core/model/restaurant.model';
 import { RestaurantService } from '../../../core/services/resturant.service';
 
@@ -21,13 +21,14 @@ export class Details implements OnInit {
   loading = true;
   error   = false;
 
+  availableFeatures: Feature[] = [];
+
   selectedDate    = '';
   selectedTables: TableType[] = [];
   guestName       = '';
   phone           = '';
   resError        = '';
 
-  /** أقل تاريخ مسموح بيه = النهارده */
   todayStr = new Date().toISOString().split('T')[0];
 
   availableTimes = AVAILABLE_TIMES;
@@ -47,6 +48,10 @@ export class Details implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.restaurantService.getFeatures().subscribe(features => {
+      this.availableFeatures = features;
+    });
+
     this.route.params.subscribe(params => {
       const id = +params['id'];
       if (!id || isNaN(id)) { this.router.navigate(['/Restaurants']); return; }
@@ -76,6 +81,10 @@ export class Details implements OnInit {
     this.restaurantService.getReviews(id).subscribe({
       next: (reviews: RestaurantReview[]) => { this.reviews = reviews; this.cdr.detectChanges(); }
     });
+  }
+
+  getFeatureLabel(id: number): Feature | null {
+    return this.availableFeatures.find(f => f.id === id) ?? null;
   }
 
   setActiveImage(i: number): void  { this.activeImage = i; }
@@ -152,12 +161,21 @@ export class Details implements OnInit {
 
   starsArray(n: number): number[] { return Array(n).fill(0); }
 
+  /** تنسيق تاريخ الحجز في الـ widget — مثال: Jan 5th, 2025 */
   formatDate(dateStr: string): string {
     if (!dateStr) return '';
     const d      = new Date(dateStr);
     const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
     const day    = d.getDate();
     const suffix = day===1||day===21||day===31 ? 'st' : day===2||day===22 ? 'nd' : day===3||day===23 ? 'rd' : 'th';
-    return `${months[d.getMonth()]} ${day}${suffix},${d.getFullYear()}`;
+    return `${months[d.getMonth()]} ${day}${suffix}, ${d.getFullYear()}`;
+  }
+
+  /** ✅ تنسيق تاريخ الكومنت — مثال: Jan 10, 2025 */
+  formatReviewDate(dateStr: string): string {
+    if (!dateStr) return '';
+    const d      = new Date(dateStr);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
   }
 }

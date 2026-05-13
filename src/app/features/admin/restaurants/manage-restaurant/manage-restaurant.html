@@ -61,6 +61,48 @@
     </div>
   </div>
 
+  <!-- ── Features multi-select ── -->
+  <div class="form-group">
+    <label class="form-label">Features</label>
+
+    <!-- Selected tags -->
+    <div class="features-tags" *ngIf="selectedFeatureIds.length">
+      <span *ngFor="let id of selectedFeatureIds" class="feature-tag">
+        {{ getFeatureLabel(id) }}
+        <button type="button" class="feature-tag-remove" (click)="toggleFeature(id)">✕</button>
+      </span>
+    </div>
+
+    <!-- Dropdown trigger -->
+    <div class="features-dropdown-wrap">
+      <button type="button" class="features-trigger" (click)="featuresDropdownOpen = !featuresDropdownOpen">
+        <span>{{ selectedFeatureIds.length ? 'Add more features...' : 'Select features...' }}</span>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"
+             [style.transform]="featuresDropdownOpen ? 'rotate(180deg)' : 'rotate(0)'">
+          <path d="M7 10l5 5 5-5z"/>
+        </svg>
+      </button>
+
+      <!-- Dropdown list -->
+      <div class="features-dropdown" *ngIf="featuresDropdownOpen">
+        <div *ngFor="let f of availableFeatures"
+             class="feature-option"
+             [class.selected]="isFeatureSelected(f.id)"
+             (click)="toggleFeature(f.id)">
+          <span class="feature-icon">{{ f.icon }}</span>
+          <span class="feature-name">{{ f.name }}</span>
+          <svg *ngIf="isFeatureSelected(f.id)" viewBox="0 0 24 24" width="16" height="16" fill="#22c55e" style="margin-left:auto">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+          </svg>
+        </div>
+        <div *ngIf="availableFeatures.length === 0" class="feature-option" style="color:#4a6a88;cursor:default">
+          Loading features...
+        </div>
+        <button type="button" class="features-done-btn" (click)="closeDropdown()">Done</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ── Tables ── -->
   <div class="form-group">
     <label class="form-label">Tables <span class="req">*</span></label>
@@ -99,14 +141,14 @@
               placeholder="Enter detailed restaurant description..."></textarea>
   </div>
 
-  <!-- ── Status ── -->
-  <div class="status-section">
+  <!-- ── Status (Edit only) ── -->
+  <div class="status-section" *ngIf="isEdit">
     <h4>Restaurant Status <span class="req">*</span></h4>
     <div class="inactive-notice" *ngIf="restaurant.status === 'Inactive'">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="#fbbf24">
         <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
       </svg>
-      When set to Inactive, the restaurant card on the site will show a "Not available" notice and won't allow reservations.
+      When set to Inactive, the restaurant card on the site will show a "Not available" notice.
     </div>
     <div class="status-btns">
       <button class="btn-status btn-status-active"

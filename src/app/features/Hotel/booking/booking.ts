@@ -14,26 +14,16 @@ import { HotelService } from '../../../core/services/hotel.service';
 })
 export class Booking implements OnInit {
   booking: BookingData | null = null;
-  selectedMethod: 'credit' | 'cash' | 'vodafone' = 'credit';
+  selectedMethod: 'credit' | 'cash' = 'credit';
   isProcessing = false;
 
   cardNumber = '';
   expiryDate = '';
   cvv        = '';
 
-  vodafoneNumber        = '';
-  vodafoneOtp           = '';
-  otpSent               = false;
-  otpSending            = false;
-  private otpSentForNumber = '';
-
-  depositMethod: 'credit' | 'vodafone' = 'credit';
-
-  cardError     = '';
-  expiryError   = '';
-  cvvError      = '';
-  vodafoneError = '';
-  otpError      = '';
+  cardError   = '';
+  expiryError = '';
+  cvvError    = '';
 
   get depositAmount(): number {
     return Math.round((this.booking?.totalAmount ?? 0) * 0.3);
@@ -49,30 +39,18 @@ export class Booking implements OnInit {
     if (!this.booking) { this.router.navigate(['/hotels']); }
   }
 
-  selectMethod(m: 'credit' | 'cash' | 'vodafone'): void {
+  selectMethod(m: 'credit' | 'cash'): void {
     this.selectedMethod = m;
     this.resetFields();
   }
 
-  selectDepositMethod(m: 'credit' | 'vodafone'): void {
-    this.depositMethod = m;
-    this.resetFields();
-  }
-
   private resetFields(): void {
-    this.cardNumber       = '';
-    this.expiryDate       = '';
-    this.cvv              = '';
-    this.vodafoneNumber   = '';
-    this.vodafoneOtp      = '';
-    this.otpSent          = false;
-    this.otpSending       = false;
-    this.otpSentForNumber = '';
-    this.cardError        = '';
-    this.expiryError      = '';
-    this.cvvError         = '';
-    this.vodafoneError    = '';
-    this.otpError         = '';
+    this.cardNumber = '';
+    this.expiryDate = '';
+    this.cvv        = '';
+    this.cardError  = '';
+    this.expiryError = '';
+    this.cvvError   = '';
   }
 
   formatCard(): void {
@@ -135,87 +113,16 @@ export class Booking implements OnInit {
     return sum % 10 === 0;
   }
 
-  validateVodafoneNumber(): void {
-    this.vodafoneError  = '';
-    this.vodafoneNumber = this.vodafoneNumber.replace(/\D/g, '');
-
-    if (this.otpSent && this.vodafoneNumber !== this.otpSentForNumber) {
-      this.otpSent          = false;
-      this.otpSending       = false;
-      this.vodafoneOtp      = '';
-      this.otpError         = '';
-      this.otpSentForNumber = '';
-    }
-  }
-
-  validateOtp(): void {
-    this.otpError = '';
-  }
-
-  isValidVodafoneNumber(): boolean {
-    return (
-      this.vodafoneNumber.length === 11 &&
-      (this.vodafoneNumber.startsWith('010') ||
-       this.vodafoneNumber.startsWith('011') ||
-       this.vodafoneNumber.startsWith('015'))
-    );
-  }
-
-  sendOtp(): void {
-    if (!this.isValidVodafoneNumber()) return;
-    this.otpSending = true;
-    setTimeout(() => {
-      this.otpSent          = true;
-      this.otpSending       = false;
-      this.otpSentForNumber = this.vodafoneNumber;
-    }, 1500);
-  }
-
   confirmBooking(): void {
     if (!this.booking) return;
 
-    this.cardError = this.expiryError = this.cvvError = this.vodafoneError = this.otpError = '';
+    this.cardError = this.expiryError = this.cvvError = '';
 
     let hasError = false;
 
-    if (this.selectedMethod === 'credit') {
-      if (!this.isValidCard())   { this.cardError   = 'Please enter a valid card number.';  hasError = true; }
-      if (!this.isValidExpiry()) { this.expiryError = 'Please enter a valid expiry date.';  hasError = true; }
-      if (!this.isValidCvv())    { this.cvvError    = 'Please enter a valid CVV.';           hasError = true; }
-    }
-
-    if (this.selectedMethod === 'vodafone') {
-      if (!this.isValidVodafoneNumber()) {
-        this.vodafoneError = 'Please enter a valid number starting with 010, 011, or 015.';
-        hasError = true;
-      } else if (!this.otpSent) {
-        this.vodafoneError = 'Please send and verify the OTP first.';
-        hasError = true;
-      } else if (this.vodafoneOtp.length < 4) {
-        this.otpError = 'Please enter the 4-digit OTP.';
-        hasError = true;
-      }
-    }
-
-    if (this.selectedMethod === 'cash') {
-      if (this.depositMethod === 'credit') {
-        if (!this.isValidCard())   { this.cardError   = 'Please enter a valid card number.'; hasError = true; }
-        if (!this.isValidExpiry()) { this.expiryError = 'Please enter a valid expiry date.'; hasError = true; }
-        if (!this.isValidCvv())    { this.cvvError    = 'Please enter a valid CVV.';          hasError = true; }
-      }
-      if (this.depositMethod === 'vodafone') {
-        if (!this.isValidVodafoneNumber()) {
-          this.vodafoneError = 'Please enter a valid number starting with 010, 011, or 015.';
-          hasError = true;
-        } else if (!this.otpSent) {
-          this.vodafoneError = 'Please send and verify the OTP first.';
-          hasError = true;
-        } else if (this.vodafoneOtp.length < 4) {
-          this.otpError = 'Please enter the 4-digit OTP.';
-          hasError = true;
-        }
-      }
-    }
+    if (!this.isValidCard())   { this.cardError   = 'Please enter a valid card number.'; hasError = true; }
+    if (!this.isValidExpiry()) { this.expiryError = 'Please enter a valid expiry date.'; hasError = true; }
+    if (!this.isValidCvv())    { this.cvvError    = 'Please enter a valid CVV.';          hasError = true; }
 
     if (hasError) return;
 

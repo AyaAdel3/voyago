@@ -5,6 +5,12 @@ export interface RestaurantTables {
   for6:  number;
 }
 
+export interface Feature {
+  id:   number;
+  name: string;
+  icon: string;
+}
+
 export interface Restaurant {
   id:          number;
   name:        string;
@@ -22,6 +28,7 @@ export interface Restaurant {
   isFavorite?: boolean;
   status?:     'Active' | 'Inactive' | 'Blocked';
   tables?:     RestaurantTables;
+  featureIds?: number[];   // الـ IDs اللي بتتبعت للـ API
 }
 
 export interface RestaurantReview {
@@ -45,7 +52,7 @@ export interface TableType {
 export interface ReservationData {
   restaurantId:      number;
   restaurantName:    string;
-  restaurantAddress: string;   // ← جديد
+  restaurantAddress: string;
   date:              string;
   time:              string;
   guestCount:        number;
@@ -54,6 +61,15 @@ export interface ReservationData {
   phone:             string;
   totalAmount:       number;
 }
+
+// ── Mock Features (سيتعوضوا بـ API call) ─────────────────
+export const MOCK_FEATURES: Feature[] = [
+  { id: 1, name: 'Parking',          icon: '🅿️' },
+  { id: 2, name: 'WiFi',             icon: '📶' },
+  { id: 3, name: 'Smoking Allowed',  icon: '🚬' },
+  { id: 4, name: 'Outdoor Seating',  icon: '🪑' },
+  { id: 5, name: 'Lake View',        icon: '🌊' },
+];
 
 export const MOCK_RESTAURANTS: Restaurant[] = [
   {
@@ -74,9 +90,10 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
       'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=400',
       'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400',
     ],
-    amenities: ['Valet parking is available.', 'Smoking is allowed'],
-    openTime:  '12:00',
-    closeTime: '23:00',
+    amenities:  ['Valet parking is available.', 'Smoking is allowed'],
+    featureIds: [1, 3],
+    openTime:   '12:00',
+    closeTime:  '23:00',
     tables: { total: 20, for2: 8, for4: 8, for6: 4 },
   },
   {
@@ -95,9 +112,10 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
       'https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=400',
       'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400',
     ],
-    amenities: ['Free Parking', 'Outdoor Seating'],
-    openTime:  '09:00',
-    closeTime: '22:00',
+    amenities:  ['Free Parking', 'Outdoor Seating'],
+    featureIds: [1, 4, 5],
+    openTime:   '09:00',
+    closeTime:  '22:00',
     tables: { total: 15, for2: 6, for4: 6, for6: 3 },
   },
   {
@@ -115,9 +133,10 @@ export const MOCK_RESTAURANTS: Restaurant[] = [
       'https://images.unsplash.com/photo-1544148103-0773bf10d330?w=800',
       'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400',
     ],
-    amenities: ['WiFi', 'Live Music'],
-    openTime:  '13:00',
-    closeTime: '00:00',
+    amenities:  ['WiFi', 'Live Music'],
+    featureIds: [2, 4],
+    openTime:   '13:00',
+    closeTime:  '00:00',
     tables: { total: 12, for2: 4, for4: 6, for6: 2 },
   },
 ];

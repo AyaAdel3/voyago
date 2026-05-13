@@ -51,14 +51,20 @@
 
       <!-- DETAILS -->
       <div class="details-section flex flex-col gap-2 text-[#F6FAFF]">
-        <h1 class="hotel-title flex items-center gap-2 text-[1.55rem] font-extrabold m-0">
-          {{ hotel.name }}
-          <span class="stars flex">
-            <svg *ngFor="let s of starsArray(hotel.stars)" viewBox="0 0 24 24" width="20" height="20" fill="#FFDE70" class="translate-1">
+
+        <!-- Title + Rating badge -->
+        <div class="flex items-start gap-3">
+          <h1 class="hotel-title flex items-center gap-2 text-[1.55rem] font-extrabold m-0">
+            {{ hotel.name }}
+          </h1>
+          <div class="rating-badge-new">
+            <svg viewBox="0 0 24 24" width="13" height="13" fill="#FFDE70">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
             </svg>
-          </span>
-        </h1>
+            <span>{{ hotel.rating }}</span>
+          </div>
+        </div>
+
         <p class="hotel-location font-normal">{{ hotel.location }}</p>
 
         <div class="section-block">
@@ -66,23 +72,13 @@
           <p class="about-text">{{ hotel.description }}</p>
         </div>
 
-        <div class="section-block">
+        <!-- Great for your stay -->
+        <div class="section-block" *ngIf="hotel.displayFeatures && hotel.displayFeatures.length">
           <h2 class="section-title font-bold">Great for your stay</h2>
           <div class="amenities-row">
-            <div *ngFor="let a of hotel.amenities" class="amenity-chip">
-              <svg *ngIf="a === 'WiFi'" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/>
-              </svg>
-              <svg *ngIf="a === 'Restaurant'" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
-              </svg>
-              <svg *ngIf="a === 'Pool' || a === 'private pool'" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M22 21c-1.11 0-1.73-.37-2.18-.64-.37-.22-.6-.36-1.15-.36-.56 0-.78.13-1.15.36-.46.27-1.07.64-2.19.64s-1.73-.37-2.18-.64c-.37-.22-.6-.36-1.15-.36-.56 0-.78.13-1.15.36-.46.27-1.08.64-2.19.64s-1.73-.37-2.19-.64c-.36-.22-.59-.36-1.14-.36s-.78.13-1.15.36c-.46.27-1.08.64-2.19.64v-2c.56 0 .78-.13 1.15-.36.46-.27 1.08-.64 2.19-.64s1.73.37 2.19.64c.36.22.59.36 1.14.36.56 0 .78-.13 1.15-.36.46-.27 1.08-.64 2.19-.64s1.73.37 2.18.64c.37.22.6.36 1.15.36.56 0 .78-.13 1.15-.36.46-.27 1.07-.64 2.18-.64v2z"/>
-              </svg>
-              <svg *ngIf="a === 'Spa'" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M8.1 13.34l2.83-2.83L3.91 3.5c-1.56 1.56-1.56 4.09 0 5.66l4.19 4.18zm6.78-1.81c1.53.71 3.68.21 5.27-1.38 1.91-1.91 2.28-4.65.81-6.12-1.46-1.46-4.2-1.1-6.12.81-1.59 1.59-2.09 3.74-1.38 5.27L3 19l1.41 1.41 4.8-4.8.7.7-4.8 4.8 1.41 1.41 4.8-4.8.7.7-4.8 4.8 1.41 1.41 7.29-7.29z"/>
-              </svg>
-              {{ a }}
+            <div *ngFor="let f of hotel.displayFeatures" class="amenity-chip">
+              <span>{{ f.icon }}</span>
+              {{ f.name }}
             </div>
           </div>
         </div>
@@ -123,12 +119,8 @@
 
     <!-- RIGHT: Booking Widget -->
     <div class="booking-widget font-[#173B64]">
-      <div class="price-row">
-        <span class="price-main font-bold">{{ hotel.pricePerNight | number }}LE</span>
-        <span class="per-night font-bold"> /Night</span>
-        <span *ngIf="hotel.originalPrice" class="price-original">{{ hotel.originalPrice }}$</span>
-      </div>
 
+      <!-- Dates -->
       <div class="dates-row">
         <div class="date-field">
           <label class="font-medium">Check in</label>
@@ -150,27 +142,13 @@
         </div>
       </div>
 
-      <div class="widget-section">
-        <h4 class="widget-label">Features</h4>
-        <div *ngFor="let f of selectedFeatures; let i = index" class="option-row">
-          <span class="option-name">{{ f.name }}</span>
-          <div class="option-right">
-            <span class="option-price">{{ f.price }}LE</span>
-            <div class="qty-ctrl">
-              <button (click)="toggleFeature(i, false)">-</button>
-              <input type="checkbox" [checked]="f.selected" (change)="toggleFeature(i, !f.selected)" class="bg-transparent border-[#173B64] border-[1px] rounded-[4px]" />
-              <button (click)="toggleFeature(i, true)">+</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <!-- ROOM section -->
       <div class="widget-section">
         <h4 class="widget-label">Room</h4>
         <div *ngFor="let r of selectedRooms; let i = index" class="option-row">
           <span class="option-name">{{ r.type }}</span>
           <div class="option-right">
-            <span class="option-price">{{ r.price }}LE</span>
+            <span class="option-price">{{ r.price | number }}LE</span>
             <div class="qty-ctrl">
               <button (click)="changeRoom(i, -1)">-</button>
               <span class="qty-val">{{ r.quantity }}</span>
@@ -180,15 +158,41 @@
         </div>
       </div>
 
+      <!-- FEATURES section -->
+      <div class="widget-section">
+        <h4 class="widget-label">Features</h4>
+        <p *ngIf="totalRoomsSelected === 0" class="features-hint">Select rooms first to add features</p>
+        <ng-container *ngIf="selectedFeatures.length === 0 && totalRoomsSelected > 0">
+          <p class="features-hint">No bookable features for this hotel</p>
+        </ng-container>
+        <div *ngFor="let f of selectedFeatures; let i = index" class="option-row">
+          <span class="option-name">{{ f.name }}</span>
+          <div class="option-right">
+            <span class="option-price">{{ f.price | number }}LE</span>
+            <div class="qty-ctrl">
+              <button (click)="changeFeature(i, -1)" [disabled]="f.quantity === 0">-</button>
+              <span class="qty-val">{{ f.quantity }}</span>
+              <button (click)="changeFeature(i, 1)" [disabled]="!canIncrement(f)">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRICE section -->
       <div class="widget-section">
         <h4 class="widget-label">Price</h4>
         <div class="price-summary">
-          <div class="s-row"><span>{{ nights }} Night{{ nights > 1 ? 's' : '' }}</span><span>{{ basePrice | number }}LE</span></div>
-          <div class="s-row s-discount"><span>20% Discount</span><span>-{{ discount | number }}LE</span></div>
+         <div class="s-row">
+  <span>{{ nights }} Night{{ nights !== 1 ? 's' : '' }}</span>
+  <span>{{ basePrice | number }}LE</span>
+</div>
           <ng-container *ngFor="let f of selectedFeatures">
-            <div *ngIf="f.selected" class="s-row"><span>{{ f.name }}</span><span>{{ f.price | number }}LE</span></div>
+            <div *ngIf="f.quantity > 0" class="s-row">
+              <span>{{ f.name }} × {{ f.quantity }}</span>
+              <span>{{ f.price * f.quantity | number }}LE</span>
+            </div>
           </ng-container>
-          <div class="s-row"><span>Service</span><span>{{ serviceCharge | number }}LE</span></div>
+          <div class="s-row"><span>Service (5%)</span><span>{{ serviceCharge | number }}LE</span></div>
           <div class="s-row s-total"><span>Total</span><span>{{ totalAmount | number }}LE</span></div>
         </div>
       </div>
@@ -207,18 +211,17 @@
         <div *ngFor="let review of reviews" class="review-card">
           <div class="reviewer-info">
             <div class="reviewer-avatar">{{ review.userName.charAt(0) }}</div>
-            <div>
+            <div class="reviewer-meta">
               <p class="reviewer-name">{{ review.userName }}</p>
-              <p class="reviewer-country">{{ review.userCountry }}</p>
               <div class="review-stars">
                 <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="11" height="11"
                   [style.fill]="s <= review.rating ? '#f5c518' : '#3a5070'">
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
                 </svg>
               </div>
+              <p class="review-date">{{ formatReviewDate(review.date) }}</p>
             </div>
           </div>
-          <p class="review-title">Amazing hotel</p>
           <p class="review-comment">{{ review.comment }}</p>
         </div>
       </div>

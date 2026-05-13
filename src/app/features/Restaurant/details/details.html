@@ -51,18 +51,20 @@
         </div>
 
         <!-- اسم الريستورانت + نجوم -->
-        <div class="rest-header">
-          <h1 class="rest-name">
-            {{ restaurant.name }}
-            <span class="stars translate-y-1">
-              <svg *ngFor="let s of starsArray(restaurant.stars)" viewBox="0 0 24 24" width="18" height="18" fill="#FFDE70">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
-              </svg>
-            </span>
-          </h1>
-          <p class="rest-address">{{ restaurant.address }}</p>
-          <p class="rest-meta">{{ restaurant.cuisine }} • {{ restaurant.priceRange }}</p>
-        </div>
+       <!-- إلى: -->
+<div class="rest-header">
+  <div class="flex items-center gap-3">
+    <h1 class="rest-name">{{ restaurant.name }}</h1>
+    <div class="rating-badge-new">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="#FFDE70">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+      </svg>
+      <span>{{ restaurant.rating }}</span>
+    </div>
+  </div>
+  <p class="rest-address">{{ restaurant.address }}</p>
+  <p class="rest-meta">{{ restaurant.cuisine }} • {{ restaurant.priceRange }}</p>
+</div>
 
         <!-- About -->
         <div class="section-block">
@@ -70,20 +72,15 @@
           <p class="about-text">{{ restaurant.description }}</p>
         </div>
 
-        <!-- Amenities -->
-        <div class="section-block">
+        <!-- Great for your stay -->
+        <div class="section-block" *ngIf="restaurant.featureIds && restaurant.featureIds.length">
           <h2 class="section-title">Great for your stay</h2>
           <div class="amenities-row">
-            <div *ngFor="let a of restaurant.amenities" class="amenity-chip">
-              <svg *ngIf="a.toLowerCase().includes('valet') || a.toLowerCase().includes('parking')"
-                viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5z"/>
-              </svg>
-              <svg *ngIf="a.toLowerCase().includes('smoking')"
-                viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                <path d="M2 16h15v3H2zm18.5 0H22v3h-1.5zM18 16h1.5v3H18zM18.85 4C17.23 4 16 5.26 16 6.9V8h-2V6.9C14 4.16 16.1 2 18.85 2 21.6 2 23 3.67 23 5.9c0 1.9-1.15 3.58-3 4.4V12h-2v-2.1c1.2-.7 1.85-1.85 1.85-2.9-.01-1.57-.8-3-1-3z"/>
-              </svg>
-              {{ a }}
+            <div *ngFor="let id of restaurant.featureIds" class="amenity-chip">
+              <ng-container *ngIf="getFeatureLabel(id) as f">
+                <span>{{ f.icon }}</span>
+                {{ f.name }}
+              </ng-container>
             </div>
           </div>
         </div>
@@ -121,20 +118,20 @@
       <div class="reservation-widget">
 
         <!-- Date pill with label inside -->
-       <div class="dt-row-single">
-  <div class="custom-date" [class.field-error]="resError && !selectedDate">
-    <label class="date-display" [class.placeholder]="!selectedDate">
-      <span class="date-label-inside">Date</span>
-      <span class="date-value">{{ selectedDate ? formatDate(selectedDate) : 'Select date' }}</span>
-      <input
-        type="date"
-        [(ngModel)]="selectedDate"
-        [min]="todayStr"
-        (change)="resError=''"
-        class="date-input-hidden" />
-    </label>
-  </div>
-</div>
+        <div class="dt-row-single">
+          <div class="custom-date" [class.field-error]="resError && !selectedDate">
+            <label class="date-display" [class.placeholder]="!selectedDate">
+              <span class="date-label-inside">Date</span>
+              <span class="date-value">{{ selectedDate ? formatDate(selectedDate) : 'Select date' }}</span>
+              <input
+                type="date"
+                [(ngModel)]="selectedDate"
+                [min]="todayStr"
+                (change)="resError=''"
+                class="date-input-hidden" />
+            </label>
+          </div>
+        </div>
 
         <!-- Table selection -->
         <div class="widget-section">
@@ -195,6 +192,8 @@
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
                   </svg>
                 </div>
+                <!-- ✅ التاريخ يظهر هنا تحت النجوم -->
+                <p class="review-date">{{ formatReviewDate(rv.date) }}</p>
               </div>
             </div>
             <p class="review-comment">{{ rv.comment }}</p>

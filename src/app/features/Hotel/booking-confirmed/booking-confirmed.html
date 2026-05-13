@@ -1,11 +1,8 @@
-<!-- ============================================================
-  booking-confirmed.html  →  src/app/features/Hotel/booking-confirmed/
-============================================================ -->
 <div class="confirmed-mainpage">
 <div class="confirmed-page">
 
   <!-- Globe Illustration -->
-  <div class="globe-wrap ">
+  <div class="globe-wrap">
     <img src="image/Traveling with planet Earth, airplane, location pin and map.png" alt="Earth, airplane, location">
   </div>
 
@@ -15,7 +12,7 @@
     Thank you for choosing Voyago.
   </p>
 
-  <div *ngIf="booking" class="booking-card ">
+  <div *ngIf="booking" class="booking-card">
 
     <!-- Booking ID -->
     <div class="id-row">
@@ -56,11 +53,34 @@
           </svg>
         </div>
         <div>
-          <p class="d-label1 ">Hotel</p>
+          <p class="d-label1">Hotel</p>
           <p class="d-val">{{ booking.hotelName }}</p>
           <p class="d-sub">{{ booking.totalNights }} Night(s)</p>
         </div>
       </div>
+    </div>
+
+    <!-- Rooms & Features Breakdown -->
+    <div class="card-body border-top-section">
+
+      <!-- Rooms -->
+      <div *ngIf="booking.rooms && booking.rooms.length > 0">
+        <p class="breakdown-label">Rooms</p>
+        <div *ngFor="let r of booking.rooms" class="breakdown-row">
+          <span class="breakdown-name">{{ r.type }} × {{ r.quantity }}</span>
+          <span class="breakdown-price">{{ r.price * r.quantity * booking.totalNights | number }}LE</span>
+        </div>
+      </div>
+
+      <!-- Features -->
+      <div *ngIf="activeFeatures.length > 0">
+        <p class="breakdown-label">Features</p>
+        <div *ngFor="let f of activeFeatures" class="breakdown-row">
+          <span class="breakdown-name">{{ f.name }} × {{ f.quantity }}</span>
+          <span class="breakdown-price">{{ f.price * f.quantity | number }}LE</span>
+        </div>
+      </div>
+
     </div>
 
     <!-- Divider -->
@@ -76,7 +96,6 @@
         </div>
         <div>
           <p class="d-label">Payment Status</p>
-          <!-- badge يتغير حسب طريقة الدفع -->
           <span class="status-badge" [class.pending]="paymentMethod === 'cash'">
             {{ paymentMethod === 'cash' ? 'Pending' : 'Paid' }}
           </span>
@@ -103,4 +122,3 @@
 
 </div>
 </div>
-

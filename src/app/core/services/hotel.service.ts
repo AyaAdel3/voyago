@@ -1,32 +1,27 @@
 import { Injectable, signal } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
-  Hotel, Review, RoomType, HotelFeature, BookingData,
-  MOCK_HOTELS, MOCK_REVIEWS, DEFAULT_ROOMS, DEFAULT_FEATURES,
+  Hotel, Review, RoomType, HotelFeature, HotelFeatureDef, BookingData,
+  MOCK_HOTELS, MOCK_REVIEWS, MOCK_HOTEL_FEATURES,
+  buildDefaultRooms,
 } from '../model/hotel.model';
 
 @Injectable({ providedIn: 'root' })
 export class HotelService {
 
-  // ── Reactive hotels store ────────────────────────────────
-  private hotelsSubject = new BehaviorSubject<Hotel[]>([...MOCK_HOTELS]);
-  hotels$ = this.hotelsSubject.asObservable();
+  private hotelsSubject  = new BehaviorSubject<Hotel[]>([...MOCK_HOTELS]);
+  hotels$                = this.hotelsSubject.asObservable();
 
-  // ── Signals ──────────────────────────────────────────────
   private favIds         = signal<Set<number>>(new Set());
   private currentBooking = signal<BookingData | null>(null);
 
   // ── READ ─────────────────────────────────────────────────
 
-  getHotels(): Observable<Hotel[]> {
-    return this.hotels$;
-  }
+  getHotels(): Observable<Hotel[]> { return this.hotels$; }
 
   getHotelById(id: number): Observable<Hotel | undefined> {
-    return this.hotels$.pipe(
-      map(hotels => hotels.find(h => h.id === id))
-    );
+    return this.hotels$.pipe(map(hotels => hotels.find(h => h.id === id)));
   }
 
   getReviews(hotelId: number): Observable<Review[]> {
@@ -35,15 +30,21 @@ export class HotelService {
     ).asObservable();
   }
 
+  /**
+   * Get all available bookable features.
+   * TODO: replace of(MOCK_HOTEL_FEATURES) with http.get<HotelFeatureDef[]>('/api/hotel-features')
+   */
+  getFeatures(): Observable<HotelFeatureDef[]> {
+    return of(MOCK_HOTEL_FEATURES);
+  }
+
   // ── WRITE ────────────────────────────────────────────────
 
-  /** إضافة هوتل جديد */
   addHotel(hotel: Hotel): void {
     const current = this.hotelsSubject.getValue();
     this.hotelsSubject.next([...current, hotel]);
   }
 
-  /** تحديث هوتل موجود */
   updateHotel(updated: Hotel): void {
     const current = this.hotelsSubject.getValue();
     const index   = current.findIndex(h => h.id === updated.id);
@@ -53,7 +54,6 @@ export class HotelService {
     this.hotelsSubject.next(newList);
   }
 
-  /** حذف هوتل */
   deleteHotel(id: number): void {
     const current = this.hotelsSubject.getValue();
     this.hotelsSubject.next(current.filter(h => h.id !== id));
@@ -89,20 +89,23 @@ export class HotelService {
 
   // ── Booking ──────────────────────────────────────────────
 
-  setBooking(data: BookingData): void {
-    this.currentBooking.set(data);
+  setBooking(data: BookingData): void  { this.currentBooking.set(data); }
+  getBooking(): BookingData | null     { return this.currentBooking(); }
+
+  /** Rooms priced relative to the hotel's Standard room (pricePerNight) */
+  getDefaultRooms(hotel: Hotel): RoomType[] {
+    return buildDefaultRooms(hotel.pricePerNight);
   }
 
-  getBooking(): BookingData | null {
-    return this.currentBooking();
-  }
-
-  getDefaultRooms(): RoomType[] {
-    return DEFAULT_ROOMS.map(r => ({ ...r }));
-  }
-
-  getDefaultFeatures(): HotelFeature[] {
-    return DEFAULT_FEATURES.map(f => ({ ...f }));
+  /**
+   * Build the widget's feature list for a specific hotel:
+   * filter all features by the hotel's featureIds, return with quantity=0
+   */
+  getHotelFeatures(hotel: Hotel, allFeatures: HotelFeatureDef[]): HotelFeature[] {
+    if (!hotel.featureIds?.length) return [];
+    return allFeatures
+      .filter(f => hotel.featureIds!.includes(f.id))
+      .map(f => ({ name: f.name, price: f.price, selected: false, quantity: 0 }));
   }
 
   confirmBooking(booking: BookingData, method: string): Observable<{ bookingId: string }> {

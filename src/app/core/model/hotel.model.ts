@@ -10,6 +10,12 @@ export interface HotelRooms {
   suite:  number;
 }
 
+// Display-only feature (Great for your stay section)
+export interface HotelDisplayFeature {
+  icon: string;
+  name: string;
+}
+
 export interface Hotel {
   id: number;
   name: string;
@@ -24,6 +30,8 @@ export interface Hotel {
   stars: number;
   status?: 'Active' | 'Inactive' | 'Blocked';
   rooms?: HotelRooms;
+  displayFeatures?: HotelDisplayFeature[];  // ✅ للعرض فقط — Great for your stay
+  featureIds?: number[];                    // للـ booking widget فقط
 }
 
 export interface Review {
@@ -43,10 +51,20 @@ export interface RoomType {
   quantity: number;
 }
 
+// Bookable feature definition (from service/API)
+export interface HotelFeatureDef {
+  id:    number;
+  name:  string;
+  icon:  string;
+  price: number;
+}
+
+// Feature with selection state used in the widget
 export interface HotelFeature {
   name: string;
   price: number;
   selected: boolean;
+  quantity: number;
 }
 
 export interface BookingData {
@@ -62,16 +80,25 @@ export interface BookingData {
   totalAmount: number;
 }
 
+export const BOARD_FEATURE_NAMES = ['Full Board', 'Half Board'];
+
 // ============================================================
 // MOCK DATA
 // ============================================================
+
+export const MOCK_HOTEL_FEATURES: HotelFeatureDef[] = [
+  { id: 1, name: 'Full Board',       icon: '🍽️', price: 150 },
+  { id: 2, name: 'Half Board',       icon: '🥗',  price: 75  },
+  { id: 3, name: 'Spa',              icon: '💆',  price: 50  },
+  { id: 5, name: 'Airport Transfer', icon: '✈️',  price: 120 },
+];
 
 export const MOCK_HOTELS: Hotel[] = [
   {
     id: 1,
     name: 'House in tunis village',
     location: 'Tunis Village, 29000 Fayoum, Egypt',
-    pricePerNight: 1425,
+    pricePerNight: 1500,
     rating: 4.8,
     stars: 4,
     status: 'Active',
@@ -83,13 +110,19 @@ export const MOCK_HOTELS: Hotel[] = [
       'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800',
     ],
     amenities: ['WiFi', 'Pool', 'Restaurant'],
+    displayFeatures: [
+      { icon: '📶', name: 'WiFi'       },
+      { icon: '🏊', name: 'Pool'       },
+      { icon: '🍴', name: 'Restaurant' },
+    ],
+    featureIds: [1, 2, 4],
     rooms: { total: 20, single: 8, double: 6, triple: 4, suite: 2 },
   },
   {
     id: 2,
     name: 'Tzila Lodge',
     location: 'Tunis Village, 29000 Fayoum, Egypt',
-    pricePerNight: 310,
+    pricePerNight: 150,
     originalPrice: 510,
     rating: 4.8,
     stars: 4,
@@ -103,13 +136,20 @@ export const MOCK_HOTELS: Hotel[] = [
       'https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800',
     ],
     amenities: ['WiFi', 'private pool', 'Restaurant'],
+    displayFeatures: [
+      { icon: '📶', name: 'WiFi'         },
+      { icon: '🏊', name: 'Private Pool' },
+      { icon: '🌿', name: 'Garden'       },
+      { icon: '☀️', name: 'Sun Terrace'  },
+    ],
+    featureIds: [1, 2, 3],
     rooms: { total: 15, single: 5, double: 6, triple: 3, suite: 1 },
   },
   {
     id: 3,
     name: 'Desert Rose Resort',
     location: 'Qarun Lake, Fayoum, Egypt',
-    pricePerNight: 850,
+    pricePerNight: 150,
     rating: 4.5,
     stars: 5,
     status: 'Active',
@@ -120,6 +160,14 @@ export const MOCK_HOTELS: Hotel[] = [
       'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
     ],
     amenities: ['WiFi', 'Spa', 'Restaurant', 'Pool'],
+    displayFeatures: [
+      { icon: '📶', name: 'WiFi'       },
+      { icon: '💆', name: 'Spa'        },
+      { icon: '🍴', name: 'Restaurant' },
+      { icon: '🏊', name: 'Pool'       },
+      { icon: '🌊', name: 'Lake View'  },
+    ],
+    featureIds: [1, 2, 3, 5],
     rooms: { total: 30, single: 10, double: 10, triple: 5, suite: 5 },
   },
 ];
@@ -133,15 +181,18 @@ export const MOCK_REVIEWS: Review[] = [
   { id: 6, hotelId: 2, userName: 'David Silva',   userAvatar: '', userCountry: 'Kenya',  rating: 4, comment: 'Amazing stay!', date: '2025-09-30' },
 ];
 
-export const DEFAULT_ROOMS: RoomType[] = [
-  { type: 'Standard', price: 150, quantity: 0 },
-  { type: 'Double',   price: 75,  quantity: 0 },
-  { type: 'Treble',   price: 50,  quantity: 0 },
-  { type: 'Suite',    price: 750, quantity: 0 },
-];
+export function buildDefaultRooms(standardPrice: number): RoomType[] {
+  return [
+    { type: 'Standard', price: standardPrice,                    quantity: 0 },
+    { type: 'Double',   price: Math.round(standardPrice * 1.5),  quantity: 0 },
+    { type: 'Treble',   price: Math.round(standardPrice * 1.8),  quantity: 0 },
+    { type: 'Suite',    price: standardPrice * 5,                quantity: 0 },
+  ];
+}
 
+export const DEFAULT_ROOMS: RoomType[] = buildDefaultRooms(150);
 export const DEFAULT_FEATURES: HotelFeature[] = [
-  { name: 'Full Board', price: 150, selected: false },
-  { name: 'Half Board', price: 75,  selected: false },
-  { name: 'Spa',        price: 50,  selected: false },
+  { name: 'Full Board', price: 150, selected: false, quantity: 0 },
+  { name: 'Half Board', price: 75,  selected: false, quantity: 0 },
+  { name: 'Spa',        price: 50,  selected: false, quantity: 0 },
 ];

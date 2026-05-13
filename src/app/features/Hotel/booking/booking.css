@@ -71,15 +71,14 @@
 .payment-option.selected {
   background: #021526;
   border-color: #F6FAFF;
-  border-width:  .2rem .2rem;
+  border-width: .2rem .2rem;
   border-style: solid;
-  
 }
 
 .payment-option.selected .option-title { color: #F6FAFF; }
 .payment-option.selected .option-sub   { color: #F6FAFF; }
 .payment-option.selected .cash-note    { color: #F6FAFF; }
-.payment-option.selected .brand        { background:#A3C4EB; color: #173B64; border-radius: 2rem;  }
+.payment-option.selected .brand        { background:#A3C4EB; color: #173B64; border-radius: 2rem; }
 
 .radio-dot {
   width: 18px;
@@ -174,31 +173,6 @@
   margin: 0;
 }
 
-/* ── Vodafone Cash ──────────────────────────────────────── */
-.vf-icon { background: #021526 !important; }
-
-.vf-input-row {
-  display: flex;
-  gap: .6rem;
-  align-items: center;
-  margin-bottom: .8rem;
-}
-
-.btn-otp {
-  background: #173B64;
-  color: white;
-  border: none;
-  padding: .65rem 1rem;
-  border-radius: 8px;
-  font-size: .82rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background .2s;
-}
-.btn-otp:hover:not(:disabled) { background: #2d4f7a; }
-.btn-otp:disabled { opacity: .5; cursor: not-allowed; }
-
 /* ── Deposit Section ────────────────────────────────────── */
 .deposit-section {
   background: #A3C4EB;
@@ -209,7 +183,6 @@
 
 .deposit-notice {
   background: #173B64;
- 
   border-radius: 1.7rem;
   padding: .75rem 1rem;
   margin-bottom: 1rem;
@@ -237,12 +210,9 @@
   flex: 1;
   padding: .55rem;
   border-radius: 10px;
-  background: #ced4db;
-  color: #000000;
   font-size: .82rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all .2s;
+  cursor: default;
 }
 .deposit-tab.active-tab {
   border-color: #1e3a5f;
@@ -255,7 +225,6 @@
 .summary-title { font-size: 1.1rem; font-weight: 800; color: #0d1526; margin: 0 0 1rem; }
 
 .summary-items {
-  
   padding: 1rem;
   margin-bottom: 1rem;
   display: flex;
@@ -321,6 +290,7 @@
 @media (max-width: 768px) {
   .booking-layout { grid-template-columns: 1fr; }
 }
+
 .field-error {
   color: #ef4444;
   font-size: .78rem;

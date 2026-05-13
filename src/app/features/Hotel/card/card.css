@@ -205,3 +205,27 @@
     height: 200px;
   }
 }
+
+/* ── أضف الـ classes دول في نهاية details.css ── */
+
+.features-hint {
+  font-size: 0.78rem;
+  color: #4a6a8a;
+  margin: 0 0 0.4rem;
+  font-style: italic;
+}
+
+/* Rating badge in details page — matches card style */
+.rating-badge-detail {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  color: #f6faff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}

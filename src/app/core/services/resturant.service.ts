@@ -1,9 +1,9 @@
 import { Injectable, signal } from '@angular/core';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
-  Restaurant, RestaurantReview, TableType, ReservationData,
-  MOCK_RESTAURANTS, MOCK_RESTAURANT_REVIEWS, DEFAULT_TABLES,
+  Restaurant, RestaurantReview, TableType, ReservationData, Feature,
+  MOCK_RESTAURANTS, MOCK_RESTAURANT_REVIEWS, DEFAULT_TABLES, MOCK_FEATURES,
 } from '../model/restaurant.model';
 
 @Injectable({ providedIn: 'root' })
@@ -15,6 +15,8 @@ export class RestaurantService {
   private favIds             = signal<Set<number>>(new Set());
   private currentReservation = signal<ReservationData | null>(null);
 
+  // ── READ ─────────────────────────────────────────────────
+
   getRestaurants(): Observable<Restaurant[]> {
     return this.restaurants$;
   }
@@ -25,7 +27,6 @@ export class RestaurantService {
     );
   }
 
-  /** cuisine و priceRange يُسحبان من الـ restaurant object مباشرة */
   getRestaurantMeta(id: number): Observable<{ cuisine: string; priceRange: string } | undefined> {
     return this.restaurants$.pipe(
       map(list => {
@@ -41,6 +42,16 @@ export class RestaurantService {
     ).asObservable();
   }
 
+  /**
+   * جيب كل الـ features المتاحة من الـ API
+   * endpoint: GET /api/features
+   * لما الـ API يجهز استبدلي الـ of(MOCK_FEATURES) بـ http.get<Feature[]>('/api/features')
+   */
+  getFeatures(): Observable<Feature[]> {
+    // TODO: استبدلي بـ this.http.get<Feature[]>('/api/features')
+    return of(MOCK_FEATURES);
+  }
+
   submitReview(restaurantId: number, comment: string, rating: number): Observable<RestaurantReview> {
     const newReview: RestaurantReview = {
       id:           Date.now(),
@@ -53,6 +64,8 @@ export class RestaurantService {
     };
     return new BehaviorSubject(newReview).asObservable();
   }
+
+  // ── WRITE ────────────────────────────────────────────────
 
   addRestaurant(restaurant: Restaurant): void {
     const current = this.restaurantsSubject.getValue();
@@ -73,13 +86,17 @@ export class RestaurantService {
     this.restaurantsSubject.next(current.filter(r => r.id !== id));
   }
 
-  isFavorite(id: number): boolean   { return this.favIds().has(id); }
+  // ── Favorites ────────────────────────────────────────────
+
+  isFavorite(id: number): boolean { return this.favIds().has(id); }
 
   toggleFavorite(id: number): void {
     const current = new Set(this.favIds());
     current.has(id) ? current.delete(id) : current.add(id);
     this.favIds.set(current);
   }
+
+  // ── Reservation ──────────────────────────────────────────
 
   setReservation(data: ReservationData): void { this.currentReservation.set(data); }
   getReservation(): ReservationData | null     { return this.currentReservation(); }

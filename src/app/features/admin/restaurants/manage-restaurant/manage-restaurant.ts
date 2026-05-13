@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { RestaurantService } from '../../../../core/services/resturant.service';
-import { Restaurant, RestaurantTables } from '../../../../core/model/restaurant.model';
+import { Restaurant, RestaurantTables, Feature } from '../../../../core/model/restaurant.model';
 
 @Component({
   selector: 'app-manage-restaurant',
@@ -19,6 +19,10 @@ export class ManageRestaurant implements OnInit {
 
   toastMessage = '';
   toastVisible = false;
+
+  availableFeatures: Feature[] = [];
+  selectedFeatureIds: number[] = [];
+  featuresDropdownOpen = false;
 
   restaurant = {
     name:        '',
@@ -45,6 +49,10 @@ export class ManageRestaurant implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.service.getFeatures().subscribe(features => {
+      this.availableFeatures = features;
+    });
+
     this.route.queryParams.subscribe(params => {
       if (params['id']) {
         this.restaurantId = +params['id'];
@@ -68,19 +76,56 @@ export class ManageRestaurant implements OnInit {
         address:     r.address,
         status:      (r as any).status ?? 'Active',
       };
-      if (r.tables) {
-        this.tables = { ...r.tables };
-      }
+      if (r.tables)     this.tables             = { ...r.tables };
+      if (r.featureIds) this.selectedFeatureIds = [...r.featureIds];
     });
   }
+
+  // ── Features helpers ──────────────────────────────────────
+
+  getFeatureLabel(id: number): string {
+    const found = this.availableFeatures.find(f => f.id === id);
+    return found ? `${found.icon} ${found.name}` : '';
+  }
+
+  toggleFeature(id: number) {
+    const idx = this.selectedFeatureIds.indexOf(id);
+    if (idx === -1) {
+      this.selectedFeatureIds = [...this.selectedFeatureIds, id];
+    } else {
+      this.selectedFeatureIds = this.selectedFeatureIds.filter(f => f !== id);
+    }
+  }
+
+  isFeatureSelected(id: number): boolean {
+    return this.selectedFeatureIds.includes(id);
+  }
+
+  getSelectedFeatureLabels(): string {
+    if (this.selectedFeatureIds.length === 0) return 'Select features...';
+    return this.availableFeatures
+      .filter(f => this.selectedFeatureIds.includes(f.id))
+      .map(f => `${f.icon} ${f.name}`)
+      .join(', ');
+  }
+
+  closeDropdown() {
+    this.featuresDropdownOpen = false;
+  }
+
+  // ── Tables ───────────────────────────────────────────────
 
   calcTotal() {
     this.tables.total = this.tables.for2 + this.tables.for4 + this.tables.for6;
   }
 
+  // ── Status ───────────────────────────────────────────────
+
   setStatus(s: 'Active' | 'Inactive' | 'Blocked') {
     this.restaurant.status = s;
   }
+
+  // ── Images ───────────────────────────────────────────────
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -96,6 +141,8 @@ export class ManageRestaurant implements OnInit {
 
   removeImage(i: number) { this.images.splice(i, 1); }
 
+  // ── Toast ─────────────────────────────────────────────────
+
   showToast(msg: string, navigate = true) {
     this.toastMessage = msg;
     this.toastVisible = true;
@@ -105,11 +152,15 @@ export class ManageRestaurant implements OnInit {
     }, 1800);
   }
 
+  // ── Save ──────────────────────────────────────────────────
+
   save() {
     if (!this.restaurant.name || !this.restaurant.priceRange) {
       this.showToast('Please fill all required fields.', false);
       return;
     }
+
+    const featureIds = [...this.selectedFeatureIds];
 
     if (this.isEdit && this.restaurantId !== null) {
       this.service.getRestaurantById(this.restaurantId).subscribe(existing => {
@@ -126,6 +177,7 @@ export class ManageRestaurant implements OnInit {
           images:      [...this.images],
           status:      this.restaurant.status,
           tables:      { ...this.tables },
+          featureIds,
         };
         this.service.updateRestaurant(updated);
         this.showToast('Restaurant updated successfully!');
@@ -148,6 +200,7 @@ export class ManageRestaurant implements OnInit {
         amenities:   [],
         status:      this.restaurant.status,
         tables:      { ...this.tables },
+        featureIds,
       };
       this.service.addRestaurant(newRestaurant);
       this.showToast('Restaurant added successfully!');
@@ -159,7 +212,8 @@ export class ManageRestaurant implements OnInit {
       name: '', priceRange: '', cuisine: '', rating: '',
       description: '', location: '', address: '', status: 'Active',
     };
-    this.tables = { total: 0, for2: 0, for4: 0, for6: 0 };
-    this.images = [];
+    this.tables             = { total: 0, for2: 0, for4: 0, for6: 0 };
+    this.selectedFeatureIds = [];
+    this.images             = [];
   }
 }
