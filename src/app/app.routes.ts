@@ -30,6 +30,7 @@ import { Plan } from './features/BudgetPlanning/plan/plan';
 import { Details as BudgetDetails } from './features/BudgetPlanning/details/details';
 
 // Profile
+import { ProfileLayout } from './features/profile/profile-layout/profile-layout';
 import { FavoritesComponent } from './features/profile/favorites/favorites';
 import { PersonalInformation } from './features/profile/personal-information/personal-information';
 import { SavedPlanComponent } from './features/profile/saved-plan/saved-plan';
@@ -91,12 +92,18 @@ export const routes: Routes = [
       { path: 'Budget Planning', component: BudgetMain, title: 'Budget Planning' },
       { path: 'budget-planning/plan', component: Plan, title: 'Create Plan' },
       { path: 'budget-planning/details/:id', component: BudgetDetails, title: 'Budget Details' },
+    ],
+  },
 
-      // Profile Routes
-      { path: 'profile', redirectTo: 'profile/personal-information', pathMatch: 'full' },
-      { path: 'profile/personal-information', component: PersonalInformation, title: 'Personal Information' },
-      { path: 'profile/favorites', component: FavoritesComponent, title: 'My Favorites' },
-      { path: 'profile/saved-plan', component: SavedPlanComponent, title: 'Saved Plans' },
+  // Profile — layout منفصل زي الـ admin
+  {
+    path: 'profile',
+    component: ProfileLayout,
+    children: [
+      { path: '', redirectTo: 'personal-information', pathMatch: 'full' },
+      { path: 'personal-information', component: PersonalInformation, title: 'Personal Information' },
+      { path: 'favorites', component: FavoritesComponent, title: 'My Favorites' },
+      { path: 'saved-plan', component: SavedPlanComponent, title: 'Saved Plans' },
     ],
   },
 

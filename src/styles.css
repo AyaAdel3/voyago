@@ -851,3 +851,139 @@ body:not(.dark-mode) .ticket-row span {
 body:not(.dark-mode) .restaurantpage {
   background-color: var(--bg-primary) !important;
 }
+
+/* ══════════════════════════════════════
+   PROFILE PAGES — Light Mode
+══════════════════════════════════════ */
+
+/* ── Layout ── */
+body:not(.dark-mode) .profile-layout {
+  background-color: #f0f4f8 !important;
+  color: #0d1b2a !important;
+}
+
+/* ── Sidebar ── */
+body:not(.dark-mode) .profile-layout .sidebar {
+  background-color: #173b64 !important;
+  border-right-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+body:not(.dark-mode) .profile-layout .nav-links a {
+  color: #ffffff !important;
+}
+
+body:not(.dark-mode) .profile-layout .active-link {
+  color: #ffe194 !important;
+  border-bottom-color: #ffe194 !important;
+}
+
+body:not(.dark-mode) .profile-layout .logout-btn {
+  color: #ffffff !important;
+}
+
+body:not(.dark-mode) .profile-layout .image-container {
+  background-color: #0d1f33 !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+body:not(.dark-mode) .profile-layout .camera-btn {
+  background: #0d1f33 !important;
+}
+
+/* ── Content area ── */
+body:not(.dark-mode) .profile-layout .content {
+  background-color: #f0f4f8 !important;
+}
+
+body:not(.dark-mode) .profile-layout .info-header h1 {
+  color: #0d1b2a !important;
+}
+
+/* ── Personal info ── */
+body:not(.dark-mode) .profile-layout .data-value {
+  color: #5a6a7a !important;
+}
+
+body:not(.dark-mode) .profile-layout .profile-input {
+  color: #0d1b2a !important;
+  border-bottom-color: #173b64 !important;
+}
+
+body:not(.dark-mode) .profile-layout .edit-btn,
+body:not(.dark-mode) .profile-layout .save-btn {
+  background-color: #ffe194 !important;
+  color: #0a1128 !important;
+}
+
+/* ── Plan columns ── */
+body:not(.dark-mode) .profile-layout .plan-column {
+  background: #ffffff !important;
+  border-color: #d0dce8 !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
+}
+
+body:not(.dark-mode) .profile-layout .plan-header {
+  border-bottom-color: #d0dce8 !important;
+}
+
+body:not(.dark-mode) .profile-layout .plan-title {
+  color: #173b64 !important;
+}
+
+/* ── Section headers ── */
+body:not(.dark-mode) .profile-layout .section-header {
+  border-bottom-color: #d0dce8 !important;
+}
+
+body:not(.dark-mode) .profile-layout .section-header h3 {
+  color: #0d1b2a !important;
+}
+
+body:not(.dark-mode) .profile-layout .section-count {
+  background: #e2eaf4 !important;
+  color: #5a6a7a !important;
+}
+
+/* ── Cards ── */
+body:not(.dark-mode) .profile-layout .actual-card {
+  background: #f8fafc !important;
+  border-color: #d0dce8 !important;
+}
+
+body:not(.dark-mode) .profile-layout .card-body h3 {
+  color: #1e6ab0 !important;
+}
+
+/* ── Slider controls ── */
+body:not(.dark-mode) .profile-layout .slider-controls button {
+  background: #e2eaf4 !important;
+  color: #0d1b2a !important;
+}
+
+body:not(.dark-mode) .profile-layout .slider-controls button:hover:not(:disabled) {
+  background: rgba(23, 59, 100, 0.15) !important;
+  color: #173b64 !important;
+}
+
+/* ── Empty states ── */
+body:not(.dark-mode) .profile-layout .empty-state {
+  border-color: #d0dce8 !important;
+  color: #8899bb !important;
+}
+
+body:not(.dark-mode) .profile-layout .empty-state-small {
+  border-color: #d0dce8 !important;
+  color: #8899bb !important;
+}
+
+/* ── Scrollbar ── */
+body:not(.dark-mode) .profile-layout .plans-row {
+  scrollbar-color: #a3c4eb transparent !important;
+}
+
+/* ── Delete plan button ── */
+body:not(.dark-mode) .profile-layout .delete-plan-btn {
+  background: rgba(239, 68, 68, 0.08) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+  color: #ef4444 !important;
+}

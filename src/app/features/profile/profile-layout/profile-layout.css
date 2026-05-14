@@ -1,0 +1,250 @@
+/* ── Shell ──────────────────────────────────────────────── */
+.profile-shell {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  font-family: 'Nunito Sans', sans-serif;
+  background: #f0f4f8;
+}
+
+/* ── Sidebar ────────────────────────────────────────────── */
+.profile-sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: #1a2f48;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 0.75rem;
+  gap: 0.5rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Logo */
+.profile-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.5rem 1rem;
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-text {
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 1rem;
+  font-family: 'Manrope', sans-serif;
+  letter-spacing: 0.03em;
+}
+
+/* Avatar */
+.profile-avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 0.5rem;
+}
+
+.image-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  background-color: #0d1f33;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  overflow: visible;
+  margin-bottom: 0.5rem;
+}
+
+.profile-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-btn {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: #1e3a5a;
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.profile-name {
+  color: #ffffff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin: 0;
+  text-align: center;
+}
+
+/* Nav */
+.profile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.profile-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+
+.profile-nav-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.profile-nav-item.active {
+  background: #0d1f33;
+  color: #ffe194;
+}
+
+/* Logout */
+.profile-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 10px;
+  color: #ff6b6b;
+  background: none;
+  border: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: auto;
+}
+
+.profile-logout-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* ── Main area ──────────────────────────────────────────── */
+.profile-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ── Topbar ─────────────────────────────────────────────── */
+.profile-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.75rem;
+  background: #1a2f48;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  gap: 1rem;
+}
+
+.profile-topbar-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-page-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff !important;
+  margin: 0;
+}
+
+.profile-topbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.profile-avatar {
+  width: 36px;
+  height: 36px;
+  background: #0d1f33;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a3c4eb;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* ── Content ─────────────────────────────────────────────── */
+.profile-content {
+  flex: 1;
+  padding: 1.5rem 1.75rem;
+  background: #f0f4f8;
+  overflow-y: auto;
+}
+
+/* ── Dark Mode ──────────────────────────────────────────── */
+.profile-shell.dark-profile {
+  background: #0b1929;
+}
+
+.profile-shell.dark-profile .profile-sidebar {
+  background: #0d1f33;
+}
+
+.profile-shell.dark-profile .profile-topbar {
+  background: #0d1f33;
+  border-bottom-color: rgba(163, 196, 235, 0.1);
+}
+
+.profile-shell.dark-profile .profile-content {
+  background: #0b1929;
+}
+
+.profile-shell.dark-profile .profile-nav-item:hover {
+  background: rgba(163, 196, 235, 0.08);
+}
+
+.profile-shell.dark-profile .profile-nav-item.active {
+  background: #1e3a5a;
+}
+
+.profile-shell.dark-profile .profile-avatar {
+  background: #1e3a5a;
+}

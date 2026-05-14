@@ -1,43 +1,21 @@
 <div class="profile-layout">
-  <aside class="sidebar">
-   <div class="image-container">
-    <div class="profile-placeholder">
-      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-        <circle cx="12" cy="7" r="4"></circle>
-      </svg>
-    </div>
-    
-    <button class="camera-btn">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-        stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-        <circle cx="12" cy="13" r="4"></circle>
-      </svg>
-    </button>
-  </div>
-    <nav class="nav-links">
-      <a routerLink="/profile/personal-information" routerLinkActive="active-link">
-        <span>👤</span> Personal Information
-      </a>
-      <a routerLink="/profile/favorites" routerLinkActive="active-link">
-        <span>❤️</span> Favorites
-      </a>
-      <a routerLink="/profile/saved-plan" routerLinkActive="active-link">
-        <span>🔖</span> Saved Plan
-      </a>
-    </nav>
-    <button class="logout-btn"><span>↪</span> Log Out</button>
-  </aside>
-
   <main class="content">
-    <div class="info-header" style="display: flex; justify-content: space-between; align-items: center;">
+    <div
+      class="info-header"
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
       <h1>Your Plans</h1>
 
       @if (plans.length > PLANS_VISIBLE) {
         <div class="main-slider-controls">
           <button class="arrow-btn" (click)="prevPlans()" [disabled]="planOffset === 0">❮</button>
-          <button class="arrow-btn" (click)="nextPlans()" [disabled]="planOffset + PLANS_VISIBLE >= plans.length">❯</button>
+          <button
+            class="arrow-btn"
+            (click)="nextPlans()"
+            [disabled]="planOffset + PLANS_VISIBLE >= plans.length"
+          >
+            ❯
+          </button>
         </div>
       }
     </div>
@@ -53,7 +31,6 @@
       <div class="plans-row">
         @for (plan of visiblePlans; track plan.id) {
           <div class="plan-column">
-
             <div class="plan-header">
               <h2 class="plan-title">{{ plan.name || 'Plan ' + (planOffset + $index + 1) }}</h2>
               <button class="delete-plan-btn" (click)="deletePlan(plan.id)">🗑</button>
@@ -83,21 +60,39 @@
             </section>
 
             <section class="fav-section">
-              <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 8px;">
+              <div
+                class="section-header"
+                style="display: flex; justify-content: space-between; align-items: center"
+              >
+                <div style="display: flex; align-items: center; gap: 8px">
                   <span>🍽️</span>
                   <h3>Restaurants</h3>
                 </div>
                 @if (plan.restaurants && plan.restaurants.length > 1) {
                   <div class="inner-slider-controls">
-                    <button class="small-arrow" (click)="slidePrev(plan.id, 'restaurants')" [disabled]="!canSlidePrev(plan.id, 'restaurants')">❮</button>
-                    <button class="small-arrow" (click)="slideNext(plan.id, 'restaurants', plan.restaurants.length)" [disabled]="!canSlideNext(plan.id, 'restaurants', plan.restaurants.length)">❯</button>
+                    <button
+                      class="small-arrow"
+                      (click)="slidePrev(plan.id, 'restaurants')"
+                      [disabled]="!canSlidePrev(plan.id, 'restaurants')"
+                    >
+                      ❮
+                    </button>
+                    <button
+                      class="small-arrow"
+                      (click)="slideNext(plan.id, 'restaurants', plan.restaurants.length)"
+                      [disabled]="!canSlideNext(plan.id, 'restaurants', plan.restaurants.length)"
+                    >
+                      ❯
+                    </button>
                   </div>
                 }
               </div>
               @if (plan.restaurants && plan.restaurants.length > 0) {
                 <div class="actual-card">
-                  @for (item of getVisible(plan.restaurants, plan.id, 'restaurants'); track item.id) {
+                  @for (
+                    item of getVisible(plan.restaurants, plan.id, 'restaurants');
+                    track item.id
+                  ) {
                     <div class="inner-item">
                       <img [src]="getImage(item, 'rest')" class="card-img" alt="Restaurant" />
                       <div class="card-body">
@@ -118,26 +113,47 @@
             </section>
 
             <section class="fav-section">
-              <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 8px;">
+              <div
+                class="section-header"
+                style="display: flex; justify-content: space-between; align-items: center"
+              >
+                <div style="display: flex; align-items: center; gap: 8px">
                   <span>🗺️</span>
                   <h3>Attractions</h3>
                 </div>
                 @if (plan.attractions && plan.attractions.length > 1) {
                   <div class="inner-slider-controls">
-                    <button class="small-arrow" (click)="slidePrev(plan.id, 'attractions')" [disabled]="!canSlidePrev(plan.id, 'attractions')">❮</button>
-                    <button class="small-arrow" (click)="slideNext(plan.id, 'attractions', plan.attractions.length)" [disabled]="!canSlideNext(plan.id, 'attractions', plan.attractions.length)">❯</button>
+                    <button
+                      class="small-arrow"
+                      (click)="slidePrev(plan.id, 'attractions')"
+                      [disabled]="!canSlidePrev(plan.id, 'attractions')"
+                    >
+                      ❮
+                    </button>
+                    <button
+                      class="small-arrow"
+                      (click)="slideNext(plan.id, 'attractions', plan.attractions.length)"
+                      [disabled]="!canSlideNext(plan.id, 'attractions', plan.attractions.length)"
+                    >
+                      ❯
+                    </button>
                   </div>
                 }
               </div>
               @if (plan.attractions && plan.attractions.length > 0) {
                 <div class="actual-card">
-                  @for (item of getVisible(plan.attractions, plan.id, 'attractions'); track item.id) {
+                  @for (
+                    item of getVisible(plan.attractions, plan.id, 'attractions');
+                    track item.id
+                  ) {
                     <div class="inner-item">
                       <img [src]="getImage(item, 'attr')" class="card-img" alt="Attraction" />
                       <div class="card-body">
                         <h3>{{ item.name }}</h3>
-                        <button class="view-btn" (click)="goToDetails('tourist-attraction', item.id)">
+                        <button
+                          class="view-btn"
+                          (click)="goToDetails('tourist-attraction', item.id)"
+                        >
                           View Details
                         </button>
                       </div>
@@ -151,7 +167,6 @@
                 </div>
               }
             </section>
-
           </div>
         }
       </div>
