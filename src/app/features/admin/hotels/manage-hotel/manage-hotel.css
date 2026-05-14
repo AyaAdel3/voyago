@@ -316,3 +316,18 @@
   from { transform: translateY(1rem); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
+/* ── Booking dropdown row ────────────────────────────────── */
+.bf-dropdown-row {
+  display: grid;
+  grid-template-columns: 1fr 140px auto;
+  gap: 0.6rem;
+  align-items: flex-start;
+}
+
+.bf-dropdown-row .features-dropdown-wrap {
+  width: 100%;
+}
+
+.bf-dropdown-row .features-trigger {
+  width: 100%;
+}

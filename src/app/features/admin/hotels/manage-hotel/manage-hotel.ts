@@ -6,7 +6,7 @@ import { HotelService } from '../../../../core/services/hotel.service';
 import {
   Hotel, HotelRooms, HotelDisplayFeature,
   BookingFeatureDef, FIXED_BOOKING_FEATURES, FIXED_BOOKING_FEATURE_NAMES,
-  HotelFeatureDef, MOCK_DISPLAY_FEATURES,
+  HotelFeatureDef, MOCK_DISPLAY_FEATURES, MOCK_HOTEL_FEATURES,
 } from '../../../../core/model/hotel.model';
 
 @Component({
@@ -41,12 +41,12 @@ export class ManageHotel implements OnInit {
   displayDropdownOpen = false;
 
   // ── Booking Features ──────────────────────────────────────
-  // Fixed: دايما موجودين، السعر بيدخله الأدمن
   fixedBookingFeatures: BookingFeatureDef[] = FIXED_BOOKING_FEATURE_NAMES.map(name => ({ name, price: 0 }));
   extraBookingFeatures: BookingFeatureDef[] = [];
 
   newFeatureName  = '';
   newFeaturePrice = '';
+  bookingDropdownOpen = false;
 
   constructor(
     private router:       Router,
@@ -84,14 +84,14 @@ export class ManageHotel implements OnInit {
         ? [...h.displayFeatureIds]
         : [];
 
-      // Fixed booking features: السعر من الهوتيل، لو مش موجود يبقى 0
+      // Fixed booking features
       const hotelBookingFeatures = h.bookingFeatures ?? [];
       this.fixedBookingFeatures = FIXED_BOOKING_FEATURE_NAMES.map(name => {
         const found = hotelBookingFeatures.find(f => f.name === name);
         return found ? { ...found } : { name, price: 0 };
       });
 
-      // Extra: كل حاجة غير الـ fixed names
+      // Extra
       this.extraBookingFeatures = hotelBookingFeatures
         .filter(f => !FIXED_BOOKING_FEATURE_NAMES.includes(f.name))
         .map(f => ({ ...f }));
@@ -136,6 +136,20 @@ export class ManageHotel implements OnInit {
 
   // ── Booking Features helpers ──────────────────────────────
 
+  // الـ features المتاحة للـ dropdown — بتشيل الـ fixed والمضافة خلاص
+  get availableBookingFeatures(): HotelFeatureDef[] {
+    const usedNames = [
+      ...FIXED_BOOKING_FEATURE_NAMES.map(n => n.toLowerCase()),
+      ...this.extraBookingFeatures.map(f => f.name.toLowerCase()),
+    ];
+    return MOCK_HOTEL_FEATURES.filter(f => !usedNames.includes(f.name.toLowerCase()));
+  }
+
+  selectBookingFeature(name: string) {
+    this.newFeatureName = name;
+    this.bookingDropdownOpen = false;
+  }
+
   addBookingFeature() {
     const name  = this.newFeatureName.trim();
     const price = parseFloat(this.newFeaturePrice);
@@ -148,8 +162,9 @@ export class ManageHotel implements OnInit {
     if (allNames.includes(name.toLowerCase())) return;
 
     this.extraBookingFeatures = [...this.extraBookingFeatures, { name, price }];
-    this.newFeatureName  = '';
-    this.newFeaturePrice = '';
+    this.newFeatureName       = '';
+    this.newFeaturePrice      = '';
+    this.bookingDropdownOpen  = false;
   }
 
   removeExtraBookingFeature(i: number) {
@@ -191,12 +206,10 @@ export class ManageHotel implements OnInit {
       return;
     }
 
-    // بني displayFeatures من الـ IDs المختارة
     const displayFeatures: HotelDisplayFeature[] = this.availableDisplayFeatures
       .filter(f => this.selectedDisplayFeatureIds.includes(f.id))
       .map(f => ({ icon: f.icon, name: f.name }));
 
-    // دمج fixed + extra booking features
     const bookingFeatures: BookingFeatureDef[] = [
       ...this.fixedBookingFeatures,
       ...this.extraBookingFeatures,
@@ -257,5 +270,6 @@ export class ManageHotel implements OnInit {
     this.extraBookingFeatures      = [];
     this.newFeatureName            = '';
     this.newFeaturePrice           = '';
+    this.bookingDropdownOpen       = false;
   }
 }

@@ -138,56 +138,91 @@
     </div>
   </div>
 
- 
   <!-- ══════════════════════════════════════════════════════ -->
-<!-- ── Booking Features ── -->
-<!-- ══════════════════════════════════════════════════════ -->
-<div class="form-group">
-  <label class="form-label">Booking Features</label>
+  <!-- ── Booking Features ── -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="form-group">
+    <label class="form-label">Booking Features</label>
 
-  <div class="booking-features-list">
+    <div class="booking-features-list">
 
-    <!-- Fixed features: موجودين دايما، السعر editable -->
-    <div *ngFor="let f of fixedBookingFeatures" class="booking-feature-item booking-feature-fixed">
-      <span class="bf-name">{{ f.name }}</span>
-      <input
-        class="form-input bf-inline-price"
-        [(ngModel)]="f.price"
-        type="number"
-        min="0"
-        placeholder="Price (LE)"
-      />
-      <span class="bf-price-label">LE / person</span>
-      <span class="bf-fixed-badge">Fixed</span>
+      <!-- Fixed features: Full Board & Half Board — السعر editable بس من غير "LE / person" -->
+      <div *ngFor="let f of fixedBookingFeatures" class="booking-feature-item booking-feature-fixed">
+        <span class="bf-name">{{ f.name }}</span>
+        <input
+          class="form-input bf-inline-price"
+          [(ngModel)]="f.price"
+          type="number"
+          min="0"
+          placeholder="Price (LE)"
+        />
+        <span class="bf-fixed-badge">Fixed</span>
+      </div>
+
+      <!-- Extra features (removable) — السعر editable كمان -->
+      <div *ngFor="let f of extraBookingFeatures; let i = index"
+           class="booking-feature-item">
+        <span class="bf-name">{{ f.name }}</span>
+        <input
+          class="form-input bf-inline-price"
+          [(ngModel)]="f.price"
+          type="number"
+          min="0"
+          placeholder="Price (LE)"
+        />
+        <button type="button" class="bf-remove" (click)="removeExtraBookingFeature(i)">✕</button>
+      </div>
+
     </div>
 
-    <!-- Extra features (removable) -->
-    <div *ngFor="let f of extraBookingFeatures; let i = index"
-         class="booking-feature-item">
-      <span class="bf-name">{{ f.name }}</span>
-      <span class="bf-price">{{ f.price }} LE / person</span>
-      <button type="button" class="bf-remove" (click)="removeExtraBookingFeature(i)">✕</button>
+    <!-- Add new feature — dropdown (enum) + price input -->
+    <div class="bf-dropdown-row">
+
+      <!-- Dropdown -->
+      <div class="features-dropdown-wrap">
+        <button type="button" class="features-trigger"
+                (click)="bookingDropdownOpen = !bookingDropdownOpen">
+          <span>{{ newFeatureName || 'Select feature...' }}</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"
+               [style.transform]="bookingDropdownOpen ? 'rotate(180deg)' : 'rotate(0)'">
+            <path d="M7 10l5 5 5-5z"/>
+          </svg>
+        </button>
+
+        <div class="features-dropdown" *ngIf="bookingDropdownOpen">
+          <div *ngFor="let f of availableBookingFeatures"
+               class="feature-option"
+               [class.selected]="newFeatureName === f.name"
+               (click)="selectBookingFeature(f.name)">
+            <span class="feature-icon">{{ f.icon }}</span>
+            <span class="feature-name">{{ f.name }}</span>
+            <svg *ngIf="newFeatureName === f.name" viewBox="0 0 24 24" width="16" height="16"
+                 fill="#22c55e" style="margin-left:auto">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+            </svg>
+          </div>
+          <div *ngIf="availableBookingFeatures.length === 0"
+               class="feature-option" style="color:#4a6a88;cursor:default">
+            No more features to add.
+          </div>
+        </div>
+      </div>
+
+      <!-- Price input -->
+      <input class="form-input bf-input-price"
+             [(ngModel)]="newFeaturePrice"
+             type="number" min="0"
+             placeholder="Price (LE)" />
+
+      <!-- Add button -->
+      <button type="button" class="bf-add-btn" (click)="addBookingFeature()">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </svg>
+        Add
+      </button>
     </div>
-
   </div>
-
-  <!-- Add new feature row -->
-  <div class="bf-add-row">
-    <input class="form-input bf-input-name"
-           [(ngModel)]="newFeatureName"
-           placeholder="Feature name (e.g. Spa)" />
-    <input class="form-input bf-input-price"
-           [(ngModel)]="newFeaturePrice"
-           type="number" min="0"
-           placeholder="Price (LE)" />
-    <button type="button" class="bf-add-btn" (click)="addBookingFeature()">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-      </svg>
-      Add
-    </button>
-  </div>
-</div>
 
   <!-- ── Status (Edit only) ── -->
   <div class="status-section" *ngIf="isEdit">

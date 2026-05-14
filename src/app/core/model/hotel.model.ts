@@ -97,6 +97,7 @@ export const MOCK_HOTEL_FEATURES: HotelFeatureDef[] = [
   { id: 3, name: 'Spa',              icon: '💆',  price: 50  },
   { id: 3, name: 'gym',              icon: '💆',  price: 100  },
   { id: 5, name: 'Airport Transfer', icon: '✈️',  price: 120 },
+  
 ];
 
 // للـ Display فقط (Great for your stay) - بدون أسعار
