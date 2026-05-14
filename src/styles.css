@@ -582,3 +582,245 @@ body:not(.dark-mode) .lang-pill {
 :root[dir='rtl'] .nf-sub {
   direction: rtl !important;
 }
+
+/* ══════════════════════════════════════
+   ADMIN DASHBOARD — Light Mode
+══════════════════════════════════════ */
+
+/* الـ admin shell background */
+body:not(.dark-mode) .admin-shell {
+  background: #f0f4f8 !important;
+}
+
+/* الـ sidebar والـ topbar فاضيين داكنين دايماً */
+body:not(.dark-mode) .admin-shell .sidebar,
+body:not(.dark-mode) .admin-shell .topbar {
+  background: #173b64 !important;
+}
+
+/* الـ page-title والـ page-subtitle داخل الـ admin */
+body:not(.dark-mode) .admin-shell .page-title {
+  color: #ffffff !important;
+}
+body:not(.dark-mode) .admin-shell .page-subtitle {
+  color: #a3c4eb !important;
+}
+
+body:not(.dark-mode) .admin-shell .recent-block {
+  background: #c8dff0 !important;
+}
+
+body:not(.dark-mode) .admin-shell h3,
+body:not(.dark-mode) .admin-shell .mini-header span {
+  color: #0d1f33 !important;
+}
+
+body:not(.dark-mode) .admin-shell a {
+  color: #1e6ab0 !important;
+}
+/* الـ nav items */
+body:not(.dark-mode) .admin-shell .nav-item {
+  color: #ffffff !important;
+}
+body:not(.dark-mode) .admin-shell .nav-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+body:not(.dark-mode) .admin-shell .nav-item.active {
+  background: #0d1f33 !important;
+  color: #ffffff !important;
+}
+
+/* الـ logo */
+body:not(.dark-mode) .admin-shell .logo-text {
+  color: #ffffff !important;
+}
+
+/* الـ avatar */
+body:not(.dark-mode) .admin-shell .avatar-wrap {
+  background: #a3c4eb !important;
+  color: #0d1f33 !important;
+}
+
+/* الـ main area */
+body:not(.dark-mode) .admin-shell .main-area {
+  background: #f0f4f8 !important;
+}
+
+/* الـ table rows */
+body:not(.dark-mode) .admin-shell .table-row {
+  background: #f0f4f8 !important;
+  color: #0d1b2a !important;
+}
+
+/* الـ table header */
+body:not(.dark-mode) .admin-shell .table-header {
+  background: #e2eaf4 !important;
+  color: #5a6a7a !important;
+}
+
+/* الـ toolbar */
+body:not(.dark-mode) .admin-shell .toolbar {
+  background: #ffffff !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+body:not(.dark-mode) .admin-shell .toolbar-search input {
+  color: #0d1b2a !important;
+}
+/* body:not(.dark-mode) .admin-shell .toolbar-search input::placeholder {
+  color: #8899bb !important;
+} */
+
+/* الـ section title داخل الـ admin */
+body:not(.dark-mode) .admin-shell .section-title {
+  color: #0d1b2a !important;
+}
+
+/* الـ add button */
+body:not(.dark-mode) .admin-shell .btn-add,
+body:not(.dark-mode) .admin-shell .btn-save {
+  background: #173b64 !important;
+  color: #ffffff !important;
+  border-color: #173b64 !important;
+}
+/* الـ pagination */
+body:not(.dark-mode) .admin-shell .page-btn {
+  background: #ffffff !important;
+  color: #5a6a7a !important;
+  border-color: #d0dce8 !important;
+}
+body:not(.dark-mode) .admin-shell .page-btn.active {
+  background: #173b64 !important;
+  color: #ffffff !important;
+  border-color: #173b64 !important;
+}
+body:not(.dark-mode) .admin-shell .status-section h4 {
+  color: #0d1b2a !important;
+}
+
+/* الـ form inputs */
+body:not(.dark-mode) .admin-shell .form-input,
+body:not(.dark-mode) .admin-shell .form-textarea,
+body:not(.dark-mode) .admin-shell .photos-area {
+  background: #ffffff !important;
+  border-color: #d0dce8 !important;
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .admin-shell .form-label {
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .admin-shell .rooms-cell span,
+body:not(.dark-mode) .admin-shell .price-cell,
+body:not(.dark-mode) .admin-shell .rating-cell {
+  color: #0d1b2a !important;
+}
+
+/* ══════════════════════════════════════
+   MANAGE HOTEL — Light Mode
+══════════════════════════════════════ */
+
+/* الـ fields الأساسية */
+body:not(.dark-mode) .admin-shell .booking-feature-item,
+body:not(.dark-mode) .admin-shell .booking-feature-fixed {
+  background: #ffffff !important;
+  border-color: #d0dce8 !important;
+}
+
+body:not(.dark-mode) .admin-shell .bf-name {
+  color: #0d1b2a !important;
+}
+
+body:not(.dark-mode) .admin-shell .bf-price,
+body:not(.dark-mode) .admin-shell .bf-price-label {
+  color: #5a6a7a !important;
+}
+
+body:not(.dark-mode) .admin-shell .bf-fixed-badge {
+  color: #5a6a7a !important;
+  background: #e2eaf4 !important;
+  border-color: #d0dce8 !important;
+}
+
+/* الـ add feature row */
+body:not(.dark-mode) .admin-shell .bf-add-btn {
+  background: #173b64 !important;
+  color: #ffffff !important;
+  border-color: #173b64 !important;
+}
+body:not(.dark-mode) .admin-shell .bf-add-btn:hover {
+  background: #0d2a4a !important;
+}
+
+/* الـ features trigger dropdown */
+body:not(.dark-mode) .admin-shell .features-trigger {
+  background: #ffffff !important;
+  border-color: #d0dce8 !important;
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .admin-shell .features-trigger:hover {
+  background: #f0f4f8 !important;
+  border-color: #a3c4eb !important;
+}
+
+body:not(.dark-mode) .admin-shell .features-dropdown {
+  background: #ffffff !important;
+  border-color: #d0dce8 !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
+}
+
+body:not(.dark-mode) .admin-shell .feature-option {
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .admin-shell .feature-option:hover {
+  background: #f0f4f8 !important;
+}
+body:not(.dark-mode) .admin-shell .feature-option.selected {
+  background: #e2eaf4 !important;
+  color: #173b64 !important;
+}
+
+/* الـ feature tags */
+body:not(.dark-mode) .admin-shell .feature-tag {
+  background: #e2eaf4 !important;
+  border-color: #a3c4eb !important;
+  color: #173b64 !important;
+}
+
+/* الـ upload empty */
+body:not(.dark-mode) .admin-shell .upload-empty {
+  border-color: #a3c4eb !important;
+  color: #5a6a7a !important;
+  background: #f0f4f8 !important;
+}
+
+/* الـ room inputs */
+body:not(.dark-mode) .admin-shell .room-input-label {
+  color: #5a6a7a !important;
+}
+
+body:not(.dark-mode) .admin-shell .rooms-total-badge {
+  background: #e2eaf4 !important;
+  border-color: #d0dce8 !important;
+  color: #5a6a7a !important;
+}
+body:not(.dark-mode) .admin-shell .rooms-total-badge strong {
+  color: #0d1b2a !important;
+}
+
+/* الـ hint text */
+body:not(.dark-mode) .admin-shell .hint {
+  color: #8899bb !important;
+}
+
+/* الـ upload circle button */
+body:not(.dark-mode) .admin-shell .upload-circle-btn {
+  background: #173b64 !important;
+  border-color: #173b64 !important;
+}
+
+/* الـ inline price input */
+body:not(.dark-mode) .admin-shell .bf-inline-price {
+  background: #ffffff !important;
+  border-color: #d0dce8 !important;
+  color: #0d1b2a !important;
+}

@@ -93,17 +93,32 @@
     <div *ngIf="filtered.length === 0" class="empty-state">No tour guides found.</div>
   </div>
 
-  <div class="pagination">
-    <button class="page-btn arrow">‹</button>
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages.length > 1">
+    <button
+      class="page-btn arrow"
+      [disabled]="currentPage === 1"
+      (click)="currentPage = currentPage - 1"
+    >
+      ‹
+    </button>
+
     <button
       *ngFor="let p of totalPages"
       class="page-btn"
       [class.active]="p === currentPage"
       (click)="currentPage = p"
     >
-      {{ p === 10 ? '...' : '' }}{{ p }}
+      {{ p }}
     </button>
-    <button class="page-btn arrow">›</button>
+
+    <button
+      class="page-btn arrow"
+      [disabled]="currentPage === totalPages.length"
+      (click)="currentPage = currentPage + 1"
+    >
+      ›
+    </button>
   </div>
 </div>
 
