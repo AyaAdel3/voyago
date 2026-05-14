@@ -1,8 +1,9 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { AuthModalService } from '../../services/auth-modal.service';
 import { LanguageService } from '../../services/language.service';
+import { AuthService } from '../../services/auth.service';
 
 function strongPassword(c: AbstractControl): ValidationErrors | null {
   const v = c.value || '';
@@ -30,7 +31,9 @@ export class ResetPassword {
   constructor(
     private fb: FormBuilder,
     public modal: AuthModalService,
-    public lang: LanguageService
+    public lang: LanguageService,
+    private auth: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     this.form = this.fb.group({
       password:        ['', [Validators.required, Validators.minLength(8), strongPassword]],
@@ -46,11 +49,29 @@ export class ResetPassword {
   toggleConfirmPassword() { this.showConfirmPassword = !this.showConfirmPassword; }
 
   onSubmit(): void {
+    this.errorMessage = '';
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+
     this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
-      this.modal.openLogin();
-    }, 1000);
+
+    this.auth.resetPassword(this.password.value, this.confirmPassword.value).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.modal.openLogin();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        if (err.status === 0) {
+          this.errorMessage = 'Connection error. Please try again later.';
+        } else if (err.status === 400) {
+          this.errorMessage = 'Invalid request. Please check your input.';
+        } else {
+          const msg: string = err?.error?.message ?? '';
+          this.errorMessage = msg || 'Something went wrong. Please try again.';
+        }
+        this.cdr.detectChanges();
+      }
+    });
   }
 }

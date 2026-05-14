@@ -72,8 +72,8 @@ export class Register implements OnDestroy {
 
   onSubmit(): void {
     this.errorMessage = '';
-    this.emailTaken = false;
-    this.phoneTaken = false;
+    this.emailTaken   = false;
+    this.phoneTaken   = false;
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -82,23 +82,33 @@ export class Register implements OnDestroy {
 
     this.isLoading = true;
 
-    const result = this.auth.register({
-      firstName: this.firstName.value,
-      lastName:  this.lastName.value,
-      email:     this.email.value,
-      phone:     this.phone.value,
-      password:  this.password.value
+    this.auth.register({
+      firstName:   this.firstName.value,
+      lastName:    this.lastName.value,
+      email:       this.email.value,
+      PhoneNumber: this.phone.value,
+      password:    this.password.value
+    }).subscribe({
+      next: (res) => {
+        console.log('✅ SUCCESS', res);
+        this.isLoading = false;
+        localStorage.setItem('voyago_token', res.token);
+        localStorage.setItem('voyago_refresh_token', res.refreshToken);
+        this.modal.openLogin();
+      },
+      error: (err) => {
+        console.log('❌ ERROR', err);
+        this.isLoading = false;
+        const msg: string = err?.error?.message ?? '';
+        if (msg.toLowerCase().includes('email')) {
+          this.emailTaken = true;
+        } else if (msg.toLowerCase().includes('phone')) {
+          this.phoneTaken = true;
+        } else {
+          this.errorMessage = msg || 'Something went wrong. Please try again.';
+        }
+      }
     });
-
-    this.isLoading = false;
-
-    if (result.success) {
-      this.modal.openLogin();
-    } else if (result.message.includes('email')) {
-      this.emailTaken = true;
-    } else if (result.message.includes('phone')) {
-      this.phoneTaken = true;
-    }
   }
 
   loginWithGoogle():   void { console.log('Google'); }

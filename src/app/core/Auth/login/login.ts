@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule, FormBuilder, FormGroup,
@@ -28,7 +28,8 @@ export class Login implements OnDestroy {
     public modal: AuthModalService,
     private auth: AuthService,
     private router: Router,
-    public lang: LanguageService
+    public lang: LanguageService,
+    private cdr: ChangeDetectorRef
   ) {
     document.body.classList.add('modal-open');
     this.form = this.fb.group({
@@ -57,19 +58,33 @@ export class Login implements OnDestroy {
 
     this.isLoading = true;
 
-    const result = this.auth.login(
+    this.auth.login(
       this.identifier.value,
       this.password.value
-    );
-
-    this.isLoading = false;
-
-    if (result.success) {
-      this.modal.close();
-      this.router.navigate(['/home']);
-    } else {
-      this.errorMessage = result.message;
-    }
+    ).subscribe({
+      next: (result) => {
+        this.isLoading = false;
+        if (result.success) {
+          this.modal.close();
+          this.router.navigate(['/home']);
+        } else {
+          this.errorMessage = result.message;
+          this.cdr.detectChanges();
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        if (err.status === 0) {
+          this.errorMessage = 'Connection error. Please try again later.';
+        } else if (err.status === 401 || err.status === 400) {
+          this.errorMessage = 'Invalid email or password.';
+        } else {
+          const msg: string = err?.error?.message ?? '';
+          this.errorMessage = msg || 'Something went wrong. Please try again.';
+        }
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   loginWithGoogle():   void { console.log('Google'); }

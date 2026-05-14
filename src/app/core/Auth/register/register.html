@@ -205,10 +205,11 @@
         </ng-container>
       </div>
 
-      <button type="submit" class="btn-submit" [disabled]="isLoading">
-        <span *ngIf="!isLoading">{{ lang.t('register.btn') }}</span>
-        <span *ngIf="isLoading" class="spinner"></span>
-      </button>
+      <button type="submit" class="btn-submit" [disabled]="isLoading"
+        (click)="$event.stopPropagation()">
+  <span *ngIf="!isLoading">{{ lang.t('register.btn') }}</span>
+  <span *ngIf="isLoading" class="spinner"></span>
+</button>
 
       <p class="switch-link">
         {{ lang.t('register.alreadyMember') }}

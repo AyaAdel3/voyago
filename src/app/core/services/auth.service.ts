@@ -1,65 +1,111 @@
 import { Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 
 export interface User {
   firstName: string;
   lastName:  string;
   email:     string;
   phone:     string;
-  password:  string;
 }
+
+export interface RegisterPayload {
+  firstName:   string;
+  lastName:    string;
+  email:       string;
+  PhoneNumber: string;
+  password:    string;
+}
+
+export interface LoginPayload {
+  email:    string;
+  password: string;
+}
+
+export interface AuthResponse {
+  id:                     string;
+  email:                  string;
+  firstName:              string;
+  lastName:               string;
+  token:                  string;
+  expiresIn:              number;
+  refreshToken:           string;
+  refreshTokenExpiration: string;
+  roles:                  string[];
+}
+
+const BASE_URL = 'http://voyagoo.runasp.net';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  currentUser = signal<User | null>(this.getLoggedInUser());
+  currentUser  = signal<User | null>(this.getLoggedInUser());
+  pendingEmail = '';
 
-  // ===== REGISTER =====
-  register(user: User): { success: boolean; message: string } {
-    const users = this.getAllUsers();
+  constructor(private http: HttpClient) {}
 
-    const exists = users.find(
-      u => u.email === user.email || u.phone === user.phone
-    );
-
-    if (exists) {
-      if (exists.email === user.email) {
-        return { success: false, message: 'This email is already registered.' };
-      }
-      return { success: false, message: 'This phone number is already registered.' };
-    }
-
-    users.push(user);
-    localStorage.setItem('voyago_users', JSON.stringify(users));
-    return { success: true, message: 'Account created successfully!' };
+  register(payload: RegisterPayload): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${BASE_URL}/auth/register`, payload);
   }
 
-  // ===== LOGIN =====
-  login(identifier: string, password: string): { success: boolean; message: string } {
-    const users = this.getAllUsers();
+  login(email: string, password: string): Observable<{ success: boolean; message: string }> {
+    return this.http.post<AuthResponse>(`${BASE_URL}/Auth`, { email, password }).pipe(
+      map(res => {
+        localStorage.setItem('voyago_token', res.token);
+        localStorage.setItem('voyago_refresh_token', res.refreshToken);
 
-    const user = users.find(
-      u => u.email === identifier && u.password === password
+        const user: User = {
+          firstName: res.firstName,
+          lastName:  res.lastName,
+          email:     res.email,
+          phone:     '',
+        };
+        localStorage.setItem('voyago_current_user', JSON.stringify(user));
+        this.currentUser.set(user);
+
+        return { success: true, message: 'Welcome back!' };
+      }),
+      catchError(err => throwError(() => err))
     );
-
-    if (!user) {
-      return { success: false, message: 'Invalid email or password.' };
-    }
-
-    localStorage.setItem('voyago_current_user', JSON.stringify(user));
-    this.currentUser.set(user);
-    return { success: true, message: 'Welcome back!' };
   }
 
-  // ===== LOGOUT =====
+  forgotPassword(email: string): Observable<any> {
+    this.pendingEmail = email;
+    return this.http.post(
+      `${BASE_URL}/auth/forget-password`,
+      { email },
+      { responseType: 'text' }
+    ).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  verifyOtp(code: string): Observable<any> {
+    return this.http.post(
+      `${BASE_URL}/Auth/verify-otp`,
+      { email: this.pendingEmail, code },
+      { responseType: 'text' }
+    ).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  resetPassword(newPassword: string, confirmNewPassword: string): Observable<any> {
+    return this.http.post(
+      `${BASE_URL}/auth/reset-password`,
+      { email: this.pendingEmail, newPassword, confirmNewPassword },
+      { responseType: 'text' }
+    ).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
   logout(): void {
     localStorage.removeItem('voyago_current_user');
+    localStorage.removeItem('voyago_token');
+    localStorage.removeItem('voyago_refresh_token');
     this.currentUser.set(null);
-  }
-
-  // ===== HELPERS =====
-  private getAllUsers(): User[] {
-    const data = localStorage.getItem('voyago_users');
-    return data ? JSON.parse(data) : [];
   }
 
   private getLoggedInUser(): User | null {
@@ -67,9 +113,7 @@ export class AuthService {
     return data ? JSON.parse(data) : null;
   }
 
-  isLoggedIn(): boolean {
-    return this.currentUser() !== null;
-  }
+  isLoggedIn(): boolean { return this.currentUser() !== null; }
 
   getFullName(): string {
     const user = this.currentUser();

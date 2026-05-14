@@ -1,8 +1,9 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { AuthModalService } from '../../services/auth-modal.service';
 import { LanguageService } from '../../services/language.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -14,10 +15,16 @@ import { LanguageService } from '../../services/language.service';
 })
 export class ForgotPassword {
   form: FormGroup;
-  isLoading = false;
+  isLoading    = false;
   errorMessage = '';
 
-  constructor(private fb: FormBuilder, public modal: AuthModalService , public lang: LanguageService) {
+  constructor(
+    private fb: FormBuilder,
+    public modal: AuthModalService,
+    public lang: LanguageService,
+    private auth: AuthService,
+    private cdr: ChangeDetectorRef
+  ) {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });
@@ -27,11 +34,29 @@ export class ForgotPassword {
   isInvalid(c: AbstractControl) { return c.invalid && (c.dirty || c.touched); }
 
   onSubmit(): void {
+    this.errorMessage = '';
     if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+
     this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
-      this.modal.openEnterCode();
-    }, 1000);
+
+    this.auth.forgotPassword(this.email.value).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.modal.openEnterCode();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        if (err.status === 0) {
+          this.errorMessage = 'Connection error. Please try again later.';
+        } else if (err.status === 404) {
+          this.errorMessage = 'Email not found.';
+        } else {
+          const msg: string = err?.error?.message ?? '';
+          this.errorMessage = msg || 'Something went wrong. Please try again.';
+        }
+        this.cdr.detectChanges();
+      }
+    });
   }
 }
