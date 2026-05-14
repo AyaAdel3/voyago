@@ -824,3 +824,26 @@ body:not(.dark-mode) .admin-shell .bf-inline-price {
   border-color: #d0dce8 !important;
   color: #0d1b2a !important;
 }
+
+/* ══════════════════════════════════════
+   touristAttraction panel— Light Mode
+══════════════════════════════════════ */
+
+body:not(.dark-mode) .info-card .card-header {
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .badges-row span {
+  background: #a3c4eb !important;
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .info-item span {
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .info-item .info-icon {
+  color: #173b64 !important;
+  background: #173b64 !important;
+}
+
+body:not(.dark-mode) .ticket-row span {
+  color: #173b64 !important;
+}

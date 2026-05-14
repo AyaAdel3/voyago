@@ -19,7 +19,12 @@
           d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
         />
       </svg>
-      <input type="text" placeholder="Search Attractions..." [(ngModel)]="searchQuery" />
+      <input
+        type="text"
+        placeholder="Search Attractions..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()"
+      />
     </div>
     <a class="btn-add" [routerLink]="'/admin/attractions/manage'">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
@@ -47,7 +52,7 @@
       </div>
       <span class="cell-muted">{{ a.location }}</span>
       <span>{{ a.category }}</span>
-      <span style="display: flex; align-items: center; gap: 3px; font-weight: 700; color: #0d1526">
+      <span class="rating-cell">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
           <path
             d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
@@ -55,7 +60,7 @@
         </svg>
         {{ a.rating }}
       </span>
-      <span>{{ a.fee }}LE</span>
+      <span class="price-cell">{{ a.fee }}LE</span>
       <span>
         <span class="status-badge" [ngClass]="'status-' + a.status.toLowerCase()">{{
           a.status
@@ -90,17 +95,32 @@
     <div *ngIf="filtered.length === 0" class="empty-state">No attractions found.</div>
   </div>
 
-  <div class="pagination">
-    <button class="page-btn arrow">‹</button>
+  <!-- Pagination-->
+  <div class="pagination" *ngIf="totalPages.length > 1">
+    <button
+      class="page-btn arrow"
+      [disabled]="currentPage === 1"
+      (click)="currentPage = currentPage - 1"
+    >
+      ‹
+    </button>
+
     <button
       *ngFor="let p of totalPages"
       class="page-btn"
       [class.active]="p === currentPage"
       (click)="currentPage = p"
     >
-      {{ p === 10 ? '...' : '' }}{{ p }}
+      {{ p }}
     </button>
-    <button class="page-btn arrow">›</button>
+
+    <button
+      class="page-btn arrow"
+      [disabled]="currentPage === totalPages.length"
+      (click)="currentPage = currentPage + 1"
+    >
+      ›
+    </button>
   </div>
 </div>
 
