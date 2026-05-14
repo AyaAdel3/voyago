@@ -1,52 +1,75 @@
-<div class="content">
-  <div class="info-header">
-    <h1>Personal Information</h1>
-    <button class="edit-btn" *ngIf="!isEditing" (click)="onEdit()">Edit</button>
-    <button class="save-btn" *ngIf="isEditing" (click)="onSave()">Save</button>
-  </div>
+<div class="profile-layout">
+  <aside class="sidebar">
+    <div class="image-container">
+      <div class="profile-placeholder">
+        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </div>
+      <button class="camera-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+          <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+      </button>
+    </div>
 
-  <div class="details-container">
-    <ng-container *ngIf="!isEditing">
-      <div class="info-row">
-        <p class="data-value">{{ user.name }}</p>
-      </div>
-      <div class="info-row">
-        <p class="data-value">{{ user.email }}</p>
-      </div>
-      <div class="info-row">
-        <p class="data-value">{{ user.phone }}</p>
-      </div>
-    </ng-container>
+    <nav class="nav-links">
+      <a routerLink="/profile/personal-information" routerLinkActive="active-link">
+        <span>👤</span> Personal Information
+      </a>
+      <a routerLink="/profile/favorites" routerLinkActive="active-link">
+        <span>❤️</span> Favorites
+      </a>
+      <a routerLink="/profile/saved-plan" routerLinkActive="active-link">
+        <span>🔖</span> Saved Plan
+      </a>
+    </nav>
+    <button class="logout-btn"><span>↪</span> Log Out</button>
+  </aside>
 
-    <ng-container *ngIf="isEditing">
-      <div class="edit-row">
-        <input
-          type="text"
-          [(ngModel)]="editData.name"
-          class="profile-input"
-          placeholder="Full Name"
-        />
-      </div>
-      <div class="edit-row">
-        <input
-          type="email"
-          [(ngModel)]="editData.email"
-          class="profile-input"
-          placeholder="Email"
-          (blur)="validateEmail()"
-        />
-        <span class="error-msg" *ngIf="emailError">{{ emailError }}</span>
-      </div>
-      <div class="edit-row">
-        <input
-          type="text"
-          [(ngModel)]="editData.phone"
-          class="profile-input"
-          placeholder="Phone"
-          (blur)="validatePhone()"
-        />
-        <span class="error-msg" *ngIf="phoneError">{{ phoneError }}</span>
-      </div>
-    </ng-container>
-  </div>
+  <main class="content">
+    <div class="info-header">
+      <h1>Personal Information</h1>
+      <button class="edit-btn" *ngIf="!isEditing" (click)="onEdit()">Edit</button>
+      <button class="save-btn" *ngIf="isEditing" (click)="onSave()">Save</button>
+    </div>
+
+    <div class="details-container">
+
+      <!-- View Mode -->
+      <ng-container *ngIf="!isEditing">
+        <div class="info-row">
+          <p class="data-value">{{ user.firstName }} {{ user.lastName }}</p>
+        </div>
+        <div class="info-row">
+          <p class="data-value">{{ user.email }}</p>
+        </div>
+        <div class="info-row">
+          <p class="data-value">{{ user.phone }}</p>
+        </div>
+      </ng-container>
+
+      <!-- Edit Mode -->
+      <ng-container *ngIf="isEditing">
+        <div class="edit-row">
+          <input type="text" [(ngModel)]="editData.firstName" class="profile-input" placeholder="First Name" />
+        </div>
+        <div class="edit-row">
+          <input type="text" [(ngModel)]="editData.lastName" class="profile-input" placeholder="Last Name" />
+        </div>
+        <!-- Email ثابت مش بيتعدل -->
+        <div class="edit-row">
+          <input type="email" [value]="user.email" class="profile-input disabled-input" placeholder="Email" disabled />
+        </div>
+        <div class="edit-row">
+          <input type="text" [(ngModel)]="editData.phone" class="profile-input" placeholder="Phone" (blur)="validatePhone()" />
+          <span class="error-msg" *ngIf="phoneError">{{ phoneError }}</span>
+        </div>
+      </ng-container>
+
+    </div>
+  </main>
 </div>

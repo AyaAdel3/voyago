@@ -13,6 +13,8 @@ import { FavoritesService } from '../../core/services/favorites.service';
 export class Home implements OnInit, OnDestroy {
 
   currentOfferIndex = 0;
+  recommendedIndex = 0;
+  availableIndex = 0;
   private autoSlideInterval: any;
 
   constructor(
@@ -47,18 +49,33 @@ export class Home implements OnInit, OnDestroy {
     { name: 'Qaroun lake hotel', price: '182le for 3 nights', rating: 4.8, image: 'https://picsum.photos/300/200?random=14', liked: false },
   ];
 
+  // ══ Offers — بيجيب 2 كروت في كل مرة ══
   get visibleOffers() {
+    const len = this.offers.length;
     return [
-      this.offers[this.currentOfferIndex % this.offers.length],
-      this.offers[(this.currentOfferIndex + 1) % this.offers.length],
+      this.offers[this.currentOfferIndex % len],
+      this.offers[(this.currentOfferIndex + 1) % len],
     ];
   }
 
+  // ══ Recommended — بيجيب 4 كروت بناءً على الـ index ══
+  get visibleRecommended() {
+    return this.recommended.slice(this.recommendedIndex, this.recommendedIndex + 4);
+  }
+
+  // ══ Available — بيجيب 4 كروت بناءً على الـ index ══
+  get visibleAvailable() {
+    return this.availableThisWeek.slice(this.availableIndex, this.availableIndex + 4);
+  }
+
   ngOnInit() {
+    // ✅ بيتحرك أوتوماتيك كل 3 ثواني
     this.autoSlideInterval = setInterval(() => {
-      this.nextOffer();
+      this.currentOfferIndex = (this.currentOfferIndex + 2) % this.offers.length;
+      this.cdr.markForCheck();
       this.cdr.detectChanges();
     }, 3000);
+
     this.syncFavorites();
   }
 
@@ -66,29 +83,44 @@ export class Home implements OnInit, OnDestroy {
     clearInterval(this.autoSlideInterval);
   }
 
+  // ══ Offers controls ══
   nextOffer() {
     this.currentOfferIndex = (this.currentOfferIndex + 2) % this.offers.length;
     this.cdr.detectChanges();
   }
-
   prevOffer() {
     this.currentOfferIndex = (this.currentOfferIndex - 2 + this.offers.length) % this.offers.length;
     this.cdr.detectChanges();
   }
 
+  // ══ Recommended controls ══
+  nextRecommended() {
+    if (this.recommendedIndex + 4 < this.recommended.length) this.recommendedIndex++;
+  }
+  prevRecommended() {
+    if (this.recommendedIndex > 0) this.recommendedIndex--;
+  }
+
+  // ══ Available controls ══
+  nextAvailable() {
+    if (this.availableIndex + 4 < this.availableThisWeek.length) this.availableIndex++;
+  }
+  prevAvailable() {
+    if (this.availableIndex > 0) this.availableIndex--;
+  }
+
+  // ══ Favorites ══
   toggleLike(item: any) {
     item.liked = !item.liked;
-
     if (item.liked) {
       this.favoritesService.addToFavorites({
         title: item.name,
         image: item.image,
         price: item.price,
         rating: item.rating,
-        type: 'hotel'  // ✅ ده اللي كان ناقص
+        type: 'hotel'
       });
     } else {
-      // ✅ بنبعت الـ title مش الـ index
       this.favoritesService.removeFavorite(item.name);
     }
   }

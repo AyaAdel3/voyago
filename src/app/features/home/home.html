@@ -1,20 +1,22 @@
 <div class="bg-[#021526] min-h-screen text-white px-4 py-6">
-  <section class="mb-8">
-    <div class="flex justify-between items-center mb-3">
+
+  <!-- ══ Offers ══ -->
+  <section class="mb-10">
+    <div class="flex justify-between items-center mb-4">
       <h2 class="text-lg font-semibold">Offers</h2>
-      <div class="flex gap-2 text-gray-400 text-sm">
-        <button (click)="prevOffer()" class="cursor-pointer hover:text-white">❮</button>
-        <button (click)="nextOffer()" class="cursor-pointer hover:text-white">❯</button>
+      <div class="flex gap-2">
+        <button (click)="prevOffer()" class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm">❮</button>
+        <button (click)="nextOffer()" class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm">❯</button>
       </div>
     </div>
-    
-    <div class="flex gap-3">
+
+    <div class="flex gap-4">
       @for (offer of visibleOffers; track $index) {
-        <div class="relative w-1/2 h-[160px] rounded-xl overflow-hidden flex-shrink-0">
+        <div class="relative flex-1 h-[200px] rounded-2xl overflow-hidden">
           <img [src]="offer.image" alt="offer" class="w-full h-full object-cover" />
-          <div class="absolute inset-0 bg-black/50 flex flex-col justify-end p-3">
-            <p class="text-white text-sm font-bold mb-2">{{ offer.title }}</p>
-            <button class="bg-yellow-400 text-black text-xs font-bold px-3 py-1 rounded-full w-fit">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex flex-col justify-end p-5">
+       <p class="text-white text-xl font-bold mb-3 max-w-[220px] leading-snug">{{ offer.title }}</p>
+            <button class="bg-yellow-400 text-black text-sm font-bold px-6 py-2 rounded-full w-fit">
               BOOK NOW
             </button>
           </div>
@@ -22,45 +24,49 @@
       }
     </div>
 
-    <div class="flex justify-center gap-1 mt-3">
+    <div class="flex justify-center gap-1.5 mt-3">
       @for (offer of offers; track $index; let i = $index) {
         @if (i % 2 === 0) {
           <span
             (click)="currentOfferIndex = i"
             class="h-2 rounded-full cursor-pointer transition-all duration-300"
-            [ngClass]="i === currentOfferIndex ? 'bg-yellow-400 w-4' : 'bg-white/50 w-2'"
+            [ngClass]="i === currentOfferIndex ? 'bg-yellow-400 w-5' : 'bg-white/30 w-2'"
           ></span>
         }
       }
     </div>
   </section>
 
+  <!-- ══ Recommended ══ -->
   <section class="mb-8">
     <div class="flex justify-between items-center mb-3">
       <h2 class="text-lg font-semibold">
         Recommended in fayoum
         <span class="text-red-500 text-xs ml-1">●</span>
       </h2>
-      <div class="flex gap-2 text-gray-400 text-sm cursor-pointer">❮ ❯</div>
+      <div class="flex gap-2 text-gray-400 text-sm">
+        <button (click)="prevRecommended()" class="cursor-pointer hover:text-white">❮</button>
+        <button (click)="nextRecommended()" class="cursor-pointer hover:text-white">❯</button>
+      </div>
     </div>
-    
-    <div class="flex flex-wrap gap-2">
-      @for (item of recommended; track item.name) {
-        <div class="bg-[#2a2f3e] rounded-xl overflow-hidden w-[220px]">
+
+    <div class="grid grid-cols-4 gap-4">
+      @for (item of visibleRecommended; track item.name) {
+        <div class="bg-[#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer">
           <div class="relative w-full">
-            <img [src]="item.image" alt="place" class="w-full h-[120px] object-cover" />
+            <img [src]="item.image" alt="place" class="w-full h-[180px] object-cover" />
             <button
-              (click)="toggleLike(item)"
-              class="absolute top-2 right-2 bg-white/80 rounded-full p-1 text-sm transition-transform active:scale-90"
+              (click)="toggleLike(item); $event.stopPropagation()"
+              class="absolute top-2 right-2 bg-white/80 rounded-full p-1.5 text-sm transition-transform active:scale-90"
             >
               {{ item.liked ? '❤️' : '🤍' }}
             </button>
           </div>
-          <div class="p-2">
-            <p class="text-white text-xs font-semibold">{{ item.name }}</p>
-            <div class="flex justify-between items-center mt-1">
-              <p class="text-gray-400 text-[10px]">{{ item.price }}</p>
-              <span class="text-yellow-400 text-[10px]">⭐ {{ item.rating }}</span>
+          <div class="p-3">
+         <p class="text-white text-lg font-semibold">{{ item.name }}</p>
+            <div class="flex justify-between items-center mt-1.5">
+              <p class="text-gray-400 text-base">{{ item.price }}</p>
+               <span class="text-yellow-400 text-base">⭐ {{ item.rating }}</span>
             </div>
           </div>
         </div>
@@ -68,29 +74,33 @@
     </div>
   </section>
 
+  <!-- ══ Available this week ══ -->
   <section class="mb-24">
     <div class="flex justify-between items-center mb-3">
       <h2 class="text-lg font-semibold">Available this week</h2>
-      <div class="flex gap-2 text-gray-400 text-sm cursor-pointer">❮ ❯</div>
+      <div class="flex gap-2 text-gray-400 text-sm">
+        <button (click)="prevAvailable()" class="cursor-pointer hover:text-white">❮</button>
+        <button (click)="nextAvailable()" class="cursor-pointer hover:text-white">❯</button>
+      </div>
     </div>
-    
-    <div class="flex flex-wrap gap-2">
-      @for (item of availableThisWeek; track item.name) {
-        <div class="bg-[#2a2f3e] rounded-xl overflow-hidden w-[220px]">
+
+    <div class="grid grid-cols-4 gap-4">
+      @for (item of visibleAvailable; track item.name) {
+        <div class="bg-[#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer">
           <div class="relative w-full">
-            <img [src]="item.image" alt="place" class="w-full h-[120px] object-cover" />
+            <img [src]="item.image" alt="place" class="w-full h-[180px] object-cover" />
             <button
-              (click)="toggleLike(item)"
-              class="absolute top-2 right-2 bg-white/80 rounded-full p-1 text-sm transition-transform active:scale-90"
+              (click)="toggleLike(item); $event.stopPropagation()"
+              class="absolute top-2 right-2 bg-white/80 rounded-full p-1.5 text-sm transition-transform active:scale-90"
             >
               {{ item.liked ? '❤️' : '🤍' }}
             </button>
           </div>
-          <div class="p-2">
-            <p class="text-white text-xs font-semibold">{{ item.name }}</p>
-            <div class="flex justify-between items-center mt-1">
-              <p class="text-gray-400 text-[10px]">{{ item.price }}</p>
-              <span class="text-yellow-400 text-[10px]">⭐ {{ item.rating }}</span>
+          <div class="p-3">
+            <p class="text-white text-base font-semibold">{{ item.name }}</p>
+            <div class="flex justify-between items-center mt-1.5">
+              <p class="text-gray-400 text-sm">{{ item.price }}</p>
+              <span class="text-yellow-400 text-sm">⭐ {{ item.rating }}</span>
             </div>
           </div>
         </div>
@@ -98,6 +108,7 @@
     </div>
   </section>
 
+  <!-- ══ Chatbot ══ -->
   <div class="fixed bottom-6 right-4 flex items-end z-10">
     <div
       *ngIf="!chatbotOpen"
@@ -109,4 +120,5 @@
     </div>
     <app-chatbot (openChange)="chatbotOpen = $event"></app-chatbot>
   </div>
+
 </div>

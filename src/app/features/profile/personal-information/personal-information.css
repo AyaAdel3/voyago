@@ -154,3 +154,7 @@
   display: block;
   margin-top: 5px;
 }
+.disabled-input {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

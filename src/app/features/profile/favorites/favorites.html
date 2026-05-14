@@ -1,4 +1,36 @@
 <div class="profile-layout">
+
+ <aside class="sidebar">
+   <div class="image-container">
+    <div class="profile-placeholder">
+      <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+    </div>
+    
+    <button class="camera-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+        stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+        <circle cx="12" cy="13" r="4"></circle>
+      </svg>
+    </button>
+  </div>
+    <nav class="nav-links">
+      <a routerLink="/profile/personal-information" routerLinkActive="active-link">
+        <span>👤</span> Personal Information
+      </a>
+      <a routerLink="/profile/favorites" routerLinkActive="active-link">
+        <span>❤️</span> Favorites
+      </a>
+      <a routerLink="/profile/saved-plan" routerLinkActive="active-link">
+        <span>🔖</span> Saved Plan
+      </a>
+    </nav>
+    <button class="logout-btn"><span>↪</span> Log Out</button>
+  </aside>
+>>>>>>> 9f3f117 (feat: implement profile saved plans with nested sliders and UI improvements)
   <main class="content">
     <div class="info-header">
       <h1>Favourites</h1>
