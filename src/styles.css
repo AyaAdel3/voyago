@@ -847,3 +847,7 @@ body:not(.dark-mode) .info-item .info-icon {
 body:not(.dark-mode) .ticket-row span {
   color: #173b64 !important;
 }
+
+body:not(.dark-mode) .restaurantpage {
+  background-color: var(--bg-primary) !important;
+}
