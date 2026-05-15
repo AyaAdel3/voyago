@@ -8,6 +8,7 @@ export interface User {
   lastName:  string;
   email:     string;
   phone:     string;
+   profileImage?: string;
 }
 
 export interface RegisterPayload {
@@ -37,6 +38,7 @@ export interface AuthResponse {
 
 const BASE_URL = 'http://voyagoo.runasp.net';
 
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
@@ -48,28 +50,36 @@ export class AuthService {
   register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${BASE_URL}/auth/register`, payload);
   }
+login(email: string, password: string): Observable<{ success: boolean; message: string }> {
+  return this.http.post<AuthResponse>(`${BASE_URL}/Auth`, { email, password }).pipe(
+    map(res => {
+      localStorage.setItem('voyago_token', res.token);
+      localStorage.setItem('voyago_refresh_token', res.refreshToken);
 
-  login(email: string, password: string): Observable<{ success: boolean; message: string }> {
-    return this.http.post<AuthResponse>(`${BASE_URL}/Auth`, { email, password }).pipe(
-      map(res => {
-        localStorage.setItem('voyago_token', res.token);
-        localStorage.setItem('voyago_refresh_token', res.refreshToken);
+      const user: User = {
+        firstName:    res.firstName,
+        lastName:     res.lastName,
+        email:        res.email,
+        phone:        '',
+        profileImage: '', // ✅
+      };
+      localStorage.setItem('voyago_current_user', JSON.stringify(user));
+      this.currentUser.set(user);
 
-        const user: User = {
-          firstName: res.firstName,
-          lastName:  res.lastName,
-          email:     res.email,
-          phone:     '',
-        };
-        localStorage.setItem('voyago_current_user', JSON.stringify(user));
-        this.currentUser.set(user);
+      return { success: true, message: 'Welcome back!' };
+    }),
+    catchError(err => throwError(() => err))
+  );
+}
 
-        return { success: true, message: 'Welcome back!' };
-      }),
-      catchError(err => throwError(() => err))
-    );
-  }
-
+// ✅ ضيف الـ function دي بعد الـ login
+updateProfileImage(imageBase64: string): void {
+  const user = this.currentUser();
+  if (!user) return;
+  const updated = { ...user, profileImage: imageBase64 };
+  localStorage.setItem('voyago_current_user', JSON.stringify(updated));
+  this.currentUser.set(updated);
+}
   forgotPassword(email: string): Observable<any> {
     this.pendingEmail = email;
     return this.http.post(
