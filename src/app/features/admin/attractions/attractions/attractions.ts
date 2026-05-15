@@ -96,4 +96,13 @@ export class AdminAttractions implements OnInit {
     this.loadAttractions();
     this.showDeleteToast(`"${a.name}" deleted successfully.`);
   }
+
+
+  getCategoryLabels(ids: number[] = []): string {
+  return ids
+    .map(id => this.attractionService.getCategories().find(c => c.id === id)?.name ?? '')
+    .filter(Boolean)
+    .join(', ');
+}
+
 }

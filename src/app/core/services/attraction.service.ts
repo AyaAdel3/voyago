@@ -1,5 +1,17 @@
 import { Injectable } from '@angular/core';
 
+export interface Feature {
+  id: number;
+  icon: string;
+  name: string;
+}
+
+export interface Category {
+  id: number;
+  icon: string;
+  name: string;
+}
+
 export interface Attraction {
   id: number;
   name: string;
@@ -10,13 +22,30 @@ export interface Attraction {
   place: string;
   dateOfInscription: number;
   ticketPrice: number;
-  category: string;
+  categoryIds: number[];
   status: string;
   fee: number;
+  featureIds?: number[];
 }
 
 @Injectable({ providedIn: 'root' })
 export class AttractionService {
+  private features: Feature[] = [
+    { id: 1, icon: '🅿️', name: 'Parking' },
+    { id: 2, icon: '♿', name: 'Wheelchair Access' },
+    { id: 3, icon: '🚻', name: 'Restrooms' },
+    { id: 4, icon: '🍽️', name: 'Restaurant' },
+    { id: 5, icon: '🎒', name: 'Guided Tours' },
+    { id: 6, icon: '📸', name: 'Photography Allowed' },
+    { id: 7, icon: '🏕️', name: 'Camping' },
+    { id: 8, icon: '🛒', name: 'Gift Shop' },
+  ];
+
+  private categories: Category[] = [
+    { id: 1, icon: '🏛️', name: 'Historical' },
+    { id: 2, icon: '🌿', name: 'Nature' },
+  ];
+
   private attractions: Attraction[] = [
     {
       id: 1, name: 'Wadi El Hitan Protected Area', location: 'Fayoum, Egypt',
@@ -26,9 +55,9 @@ export class AttractionService {
         'https://images.unsplash.com/photo-1553913861-c0fddf2619ee?w=800&h=500&fit=crop',
         'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&h=500&fit=crop',
       ],
-      description: 'Wadi El Hitan, Whale Valley, is a paleontological site in the Faiyum desert of Egypt. It contains fossils of the earliest, and now extinct, suborder of whales. Wadi El Hitan at Night. The Pathway of Female Pharaohs: Wadi El Hitan is one of the most famous natural reserves in Egypt.',
+      description: 'Wadi El Hitan, Whale Valley, is a paleontological site in the Faiyum desert of Egypt. It contains fossils of the earliest, and now extinct, suborder of whales.',
       place: 'Fayoum, Egypt', dateOfInscription: 2005,
-      ticketPrice: 100, fee: 100, category: 'Historical', status: 'Active'
+      ticketPrice: 100, fee: 100, categoryIds: [1], featureIds: [], status: 'Active'
     },
     {
       id: 2, name: 'Wadi El Rayan Waterfalls', location: 'Fayoum, Egypt',
@@ -39,8 +68,8 @@ export class AttractionService {
         'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&h=500&fit=crop',
       ],
       description: 'Wadi El Rayan is a protected area featuring the only natural waterfalls in Egypt. The area includes two lakes connected by a waterfall and is home to diverse wildlife.',
-      place: 'Fayoum, Egypt', dateOfInscription: 2003, 
-      ticketPrice: 80, fee: 80, category: 'Nature', status: 'Active'
+      place: 'Fayoum, Egypt', dateOfInscription: 2003,
+      ticketPrice: 80, fee: 80, categoryIds: [2], featureIds: [], status: 'Active'
     },
     {
       id: 3, name: 'Lake Qarun', location: 'Fayoum, Egypt',
@@ -52,12 +81,17 @@ export class AttractionService {
       ],
       description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area. It is a haven for migratory birds and offers stunning views of the surrounding desert landscape.',
       place: 'Fayoum, Egypt', dateOfInscription: 1989,
-      ticketPrice: 50, fee: 50, category: 'Nature', status: 'Active'
+      ticketPrice: 50, fee: 50, categoryIds: [2], featureIds: [], status: 'Active'
     }
   ];
 
-  getAll(): Attraction[] { return this.attractions; }
-  getById(id: number): Attraction | undefined { return this.attractions.find(a => a.id === id); }
+  getFeatures(): Feature[]   { return this.features; }
+  getCategories(): Category[] { return this.categories; }
+  getAll(): Attraction[]     { return this.attractions; }
+
+  getById(id: number): Attraction | undefined {
+    return this.attractions.find(a => a.id === id);
+  }
 
   add(a: Omit<Attraction, 'id'>): void {
     const newId = Math.max(...this.attractions.map(x => x.id)) + 1;

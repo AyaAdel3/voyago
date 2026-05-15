@@ -27,6 +27,10 @@ export class TouristAttractionDetails implements OnInit {
     this.attraction = this.attractionService.getById(id);
   }
 
+  getCategoryLabel(id: number): string {
+  return this.attractionService.getCategories().find(c => c.id === id)?.name ?? '';
+}
+
   goBack() { this.router.navigate(['/Attractions']); }
 
   getStars(rating: number): number[] { return Array(rating).fill(0); }

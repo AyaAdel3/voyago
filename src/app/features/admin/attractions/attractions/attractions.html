@@ -51,7 +51,7 @@
         <span class="cell-name">{{ a.name }}</span>
       </div>
       <span class="cell-muted">{{ a.location }}</span>
-      <span>{{ a.category }}</span>
+      <span>{{ getCategoryLabels(a.categoryIds) }}</span>
       <span class="rating-cell">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
           <path
@@ -95,7 +95,7 @@
     <div *ngIf="filtered.length === 0" class="empty-state">No attractions found.</div>
   </div>
 
-  <!-- Pagination-->
+  <!-- Pagination -->
   <div class="pagination" *ngIf="totalPages.length > 1">
     <button
       class="page-btn arrow"
@@ -104,7 +104,6 @@
     >
       ‹
     </button>
-
     <button
       *ngFor="let p of totalPages"
       class="page-btn"
@@ -113,7 +112,6 @@
     >
       {{ p }}
     </button>
-
     <button
       class="page-btn arrow"
       [disabled]="currentPage === totalPages.length"

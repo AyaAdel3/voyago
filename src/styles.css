@@ -824,7 +824,9 @@ body:not(.dark-mode) .admin-shell .bf-inline-price {
   border-color: #d0dce8 !important;
   color: #0d1b2a !important;
 }
-
+body:not(.dark-mode) .admin-shell .overview-title {
+  color: #0d1b2a !important;
+}
 /* ══════════════════════════════════════
    touristAttraction panel— Light Mode
 ══════════════════════════════════════ */
@@ -861,13 +863,16 @@ body:not(.dark-mode) .profile-layout {
   background-color: #f0f4f8 !important;
   color: #0d1b2a !important;
 }
-
+body:not(.dark-mode) .profile-topbar {
+  background-color: #173b64 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
+}
 /* ── Sidebar ── */
-body:not(.dark-mode) .profile-layout .sidebar {
+body:not(.dark-mode) .profile-sidebar {
   background-color: #173b64 !important;
   border-right-color: rgba(255, 255, 255, 0.1) !important;
 }
-
 body:not(.dark-mode) .profile-layout .nav-links a {
   color: #ffffff !important;
 }

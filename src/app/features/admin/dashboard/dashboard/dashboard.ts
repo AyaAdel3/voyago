@@ -70,11 +70,15 @@ export class Dashboard implements OnInit {
     }));
 
     // Attractions
+    const categories     = this.attractionService.getCategories();
     const attractions    = this.attractionService.getAll();
     this.stats[3].value  = attractions.length;
     this.topAttractions  = attractions.slice(0, 3).map((a: Attraction) => ({
       name:     a.name,
-      category: a.category,
+      category: (a.categoryIds ?? [])
+        .map(id => categories.find(c => c.id === id)?.name ?? '')
+        .filter(Boolean)
+        .join(', '),
       rating:   a.rating,
       fee:      a.fee,
     }));

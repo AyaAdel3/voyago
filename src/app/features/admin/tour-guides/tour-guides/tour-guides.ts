@@ -15,7 +15,8 @@ import { Details } from '../../../../features/TourGuide/details/details';
 export class AdminTourGuides implements OnInit {
   searchQuery = '';
   currentPage = 1;
-  totalPages = [1, 2, 3, 4, 10];
+  readonly pageSize = 4;
+
   guides: TourGuide[] = [];
   selectedGuide: TourGuide | null = null;
 
@@ -23,8 +24,8 @@ export class AdminTourGuides implements OnInit {
   deleteToastMessage = '';
 
   stats = [
-    { label: 'Total Tour Guides', value: 0, icon: '🧭', type: 'total' },
-    { label: 'Active',            value: 0, icon: '✓',  type: 'active' },
+    { label: 'Total Tour Guides', value: 0, icon: '🧭', type: 'total'    },
+    { label: 'Active',            value: 0, icon: '✓',  type: 'active'   },
     { label: 'Inactive',          value: 0, icon: '⊘',  type: 'inactive' },
   ];
 
@@ -47,11 +48,27 @@ export class AdminTourGuides implements OnInit {
     this.stats[2].value = this.guides.filter(g => g.status === 'Inactive').length;
   }
 
-  get filtered() {
-    if (!this.searchQuery) return this.guides;
+  get filteredAll(): TourGuide[] {
+    if (!this.searchQuery.trim()) return this.guides;
     return this.guides.filter(g =>
       g.name.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
+  }
+
+  get filtered(): TourGuide[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredAll.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number[] {
+    return Array.from(
+      { length: Math.ceil(this.filteredAll.length / this.pageSize) },
+      (_, i) => i + 1
+    );
+  }
+
+  onSearch(): void {
+    this.currentPage = 1;
   }
 
   showDeleteToast(msg: string) {
@@ -71,8 +88,8 @@ export class AdminTourGuides implements OnInit {
   }
 
   delete(g: TourGuide) {
-  this.tourGuideService.delete(g.id);
-  this.loadGuides();
-  this.showDeleteToast(`"${g.name}" deleted successfully.`);
-}
+    this.tourGuideService.delete(g.id);
+    this.loadGuides();
+    this.showDeleteToast(`"${g.name}" deleted successfully.`);
+  }
 }

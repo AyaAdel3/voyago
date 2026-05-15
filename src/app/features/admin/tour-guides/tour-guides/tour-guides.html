@@ -19,13 +19,18 @@
           d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
         />
       </svg>
-      <input type="text" placeholder="Search Tour Guides..." [(ngModel)]="searchQuery" />
+      <input
+        type="text"
+        placeholder="Search Tour Guides..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearch()"
+      />
     </div>
     <a class="btn-add" [routerLink]="'/admin/tour-guides/manage'">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
       </svg>
-      Add Tour Guides
+      Add Tour Guide
     </a>
   </div>
 
@@ -51,7 +56,7 @@
         <span *ngIf="g.languages.length > 2" class="lang-tag">+{{ g.languages.length - 2 }}</span>
       </div>
       <span class="cell-muted">{{ g.phone }}</span>
-      <span style="display: flex; align-items: center; gap: 3px; font-weight: 700; color: #0d1526">
+      <span class="rating-cell">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
           <path
             d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
@@ -60,9 +65,9 @@
         {{ g.rating }}
       </span>
       <span>
-        <span class="status-badge" [ngClass]="'status-' + g.status.toLowerCase()">
-          {{ g.status }}
-        </span>
+        <span class="status-badge" [ngClass]="'status-' + g.status.toLowerCase()">{{
+          g.status
+        }}</span>
       </span>
       <div class="actions-cell">
         <button class="btn-view-site" (click)="view(g)">

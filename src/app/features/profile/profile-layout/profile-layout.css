@@ -1,15 +1,15 @@
 /* ── Shell ──────────────────────────────────────────────── */
 .profile-shell {
   display: flex;
-  min-height: 100vh;
+  /* min-height: 100vh; */
   width: 100%;
   font-family: 'Nunito Sans', sans-serif;
-  background: #f0f4f8;
+  /* background: #f0f4f8; */
 }
 
 /* ── Sidebar ────────────────────────────────────────────── */
 .profile-sidebar {
-  width: 220px;
+  width: 290px;
   flex-shrink: 0;
   background: #1a2f48;
   display: flex;

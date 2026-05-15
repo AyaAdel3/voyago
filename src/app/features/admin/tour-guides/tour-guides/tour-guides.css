@@ -22,6 +22,13 @@
   border: 2px solid #e2e8f0;
 }
 
+.rating-cell {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 700;
+  color: #0d1b2a;
+}
 /* ── Toast ───────────────────────────── */
 .toast {
   position: fixed;
