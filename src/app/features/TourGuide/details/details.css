@@ -24,7 +24,7 @@
   border-radius: 20px;
   padding: 32px;
   width: 100%;
-  max-width: 550px;
+  max-width: 620px;
   position: relative;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
   animation: slideUp 0.25s ease;
@@ -61,9 +61,18 @@
   margin: 0 0 24px;
 }
 
+/* الـ body بيتقسم لجزئين: top و bottom */
 .popup-body {
   display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* الجزء العلوي: صورة + بيانات + booking card */
+.popup-top {
+  display: flex;
   gap: 24px;
+  align-items: flex-start;
 }
 
 /* Left */
@@ -122,6 +131,11 @@
   margin-bottom: 2px;
 }
 
+/* الـ about section تحت الكل بعرض كامل */
+.about-section-full {
+  width: 100%;
+}
+
 .about-text {
   color: #a3c4eb;
   font-size: 0.82rem;
@@ -167,7 +181,6 @@
   color: #f6faff;
   font-size: 0.75rem;
   padding: 3px 9px;
-  /* padding-left: 20px; */
   outline: none;
   width: 55%;
   box-sizing: border-box;
@@ -180,7 +193,6 @@
   font-weight: 700;
 }
 
-/* ── Days Counter ── */
 .days-counter {
   display: flex;
   align-items: center;
@@ -291,7 +303,7 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
-/* Login Prompt */
+
 .login-prompt {
   display: flex;
   flex-direction: column;
@@ -306,14 +318,12 @@
 .login-prompt-icon {
   font-size: 2.5rem;
 }
-
 .login-prompt-title {
   font-size: 1.1rem;
   font-weight: 700;
   color: #1a1a2e;
   margin: 0;
 }
-
 .login-prompt-text {
   font-size: 0.88rem;
   color: #666;
@@ -321,38 +331,38 @@
 }
 
 .btn-go-login {
-  width: 100%;
-  padding: 12px;
-  background: #c8a96e;
-  color: #fff;
+  width: 80%;
+  padding: 4px;
+  background: #ffde70;
+  color: #1b2d45;
+  transition: background 0.2s;
   border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
-  font-weight: 600;
+  /* padding: 5px; */
+  font-weight: 700;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.2s;
+}
+.btn-go-login:hover {
+  background: #d4a900;
 }
 
-.btn-go-login:hover { background: #b8975a; }
-
 .btn-dismiss {
-  width: 100%;
-  padding: 10px;
+  width: 80%;
+  padding: 4px;
   background: transparent;
-  color: #999;
-  border: 1px solid #ddd;
+  color: #1b2d45;
+  border: 1px solid #1b2d45;
   border-radius: 8px;
   font-size: 0.88rem;
   cursor: pointer;
   transition: all 0.2s;
 }
-
-.btn-dismiss:hover { border-color: #999; color: #666; }
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+.btn-dismiss:hover {
+  border-color: #999;
+  color: #666;
 }
+
 .spinner {
   width: 16px;
   height: 16px;
@@ -368,7 +378,7 @@
 }
 
 @media (max-width: 600px) {
-  .popup-body {
+  .popup-top {
     flex-direction: column;
   }
   .booking-panel {

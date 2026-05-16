@@ -6,6 +6,7 @@ import { AuthModalService } from './core/services/auth-modal.service';
 import { Login } from './core/Auth/login/login';
 import { Register } from './core/Auth/register/register';
 import { AttractionService } from './core/services/attraction.service';
+import { TourGuideService } from './core/services/tour-guide.service';
 
 @Component({
   selector: 'app-root',
@@ -18,11 +19,12 @@ export class App implements OnInit {
 
   constructor(
     public modal: AuthModalService,
-    private attractionService: AttractionService
+    private attractionService: AttractionService,
+    private tourGuideService: TourGuideService
   ) {}
 
   ngOnInit() {
-    // preload عشان الـ data تكون cached لما المستخدم يروح Attractions
     this.attractionService.getAll().subscribe();
+    this.tourGuideService.getAll().subscribe();
   }
 }

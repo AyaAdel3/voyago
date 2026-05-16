@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 
 export type TourGuide = {
@@ -26,16 +26,19 @@ const BASE_URL = 'http://voyagoo.runasp.net';
 export class TourGuideService {
 
   private _guides: TourGuide[] = [];
+  private _cache: TourGuide[] | null = null;
 
   constructor(private http: HttpClient) {}
 
   // ── Public: GET all ───────────────────────────────────────
   getAll(): Observable<TourGuide[]> {
+    if (this._cache) return of(this._cache);
     return this.http.get<TourGuide[]>(`${BASE_URL}/TourGuides`).pipe(
-      tap(data => {
-        this._guides = data.map(g => ({ ...g, image: g.profilePictureUrl }));
-      }),
       map(data => data.map(g => ({ ...g, image: g.profilePictureUrl }))),
+      tap(data => {
+        this._guides = data;
+        this._cache = data;
+      }),
       catchError(err => throwError(() => err))
     );
   }
@@ -52,7 +55,6 @@ export class TourGuideService {
   adminGetAll(): Observable<TourGuide[]> {
     return this.http.get<any>(`${BASE_URL}/admin/tour-guides/GetAllTourGuides`).pipe(
       map(res => {
-        // ✅ API بيرجع { totalTourGuides, activeTourGuides, tourGuides: [...] }
         const data: TourGuide[] = res?.tourGuides ?? res;
         this._guides = data.map((g: TourGuide) => ({ ...g, image: g.profilePictureUrl }));
         return this._guides;
@@ -93,6 +95,7 @@ export class TourGuideService {
 
   // ── Admin: DELETE ─────────────────────────────────────────
   adminDelete(id: number): Observable<any> {
+    this._cache = null;
     return this.http.delete(`${BASE_URL}/admin/tour-guides/${id}`, { responseType: 'text' }).pipe(
       catchError(err => throwError(() => err))
     );
