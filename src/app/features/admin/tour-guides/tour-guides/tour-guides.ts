@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TourGuideService, TourGuide } from '../../../../core/services/tour-guide.service';
+import { Details } from '../../../TourGuide/details/details';
 
 @Component({
   selector: 'app-admin-tour-guides',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, Details],
   templateUrl: './tour-guides.html',
   styleUrls: ['../../admin-shared.css', './tour-guides.css'],
 })
