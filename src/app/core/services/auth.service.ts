@@ -4,11 +4,12 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 export interface User {
-  firstName: string;
-  lastName:  string;
-  email:     string;
-  phone:     string;
-   profileImage?: string;
+  firstName:    string;
+  lastName:     string;
+  email:        string;
+  phone:        string;
+  profileImage?: string;
+  roles:        string[];
 }
 
 export interface RegisterPayload {
@@ -50,45 +51,59 @@ export class AuthService {
   register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${BASE_URL}/auth/register`, payload);
   }
-login(email: string, password: string): Observable<{ success: boolean; message: string }> {
-  return this.http.post<AuthResponse>(`${BASE_URL}/Auth`, { email, password }).pipe(
-    map(res => {
-      localStorage.setItem('voyago_token', res.token);
-      localStorage.setItem('voyago_refresh_token', res.refreshToken);
 
-      const user: User = {
-        firstName:    res.firstName,
-        lastName:     res.lastName,
-        email:        res.email,
-        phone:        '',
-        profileImage: '', // ✅
-      };
-      localStorage.setItem('voyago_current_user', JSON.stringify(user));
-      this.currentUser.set(user);
+  login(email: string, password: string): Observable<{ success: boolean; message: string }> {
+    return this.http.post<AuthResponse>(`${BASE_URL}/Auth`, { email, password }).pipe(
+      map(res => {
+        localStorage.setItem('voyago_token', res.token);
+        localStorage.setItem('voyago_refresh_token', res.refreshToken);
 
-      return { success: true, message: 'Welcome back!' };
-    }),
-    catchError(err => throwError(() => err))
-  );
-}
+        const user: User = {
+          firstName:    res.firstName,
+          lastName:     res.lastName,
+          email:        res.email,
+          phone:        '',
+          profileImage: '',
+          roles:        res.roles ?? [],
+        };
+        localStorage.setItem('voyago_current_user', JSON.stringify(user));
+        this.currentUser.set(user);
 
-// ✅ ضيف الـ function دي بعد الـ login
-updateProfileImage(imageBase64: string): void {
-  const user = this.currentUser();
-  if (!user) return;
-  const updated = { ...user, profileImage: imageBase64 };
-  localStorage.setItem('voyago_current_user', JSON.stringify(updated));
-  this.currentUser.set(updated);
-}
+        return { success: true, message: 'Welcome back!' };
+      }),
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  updateProfileImage(imageBase64: string): void {
+    const user = this.currentUser();
+    if (!user) return;
+    const updated = { ...user, profileImage: imageBase64 };
+    localStorage.setItem('voyago_current_user', JSON.stringify(updated));
+    this.currentUser.set(updated);
+  }
+
+  refreshToken(): Observable<AuthResponse> {
+    const token        = localStorage.getItem('voyago_token');
+    const refreshToken = localStorage.getItem('voyago_refresh_token');
+
+    return this.http.post<AuthResponse>(`${BASE_URL}/Auth/refresh-token`, { token, refreshToken }).pipe(
+      map(res => {
+        localStorage.setItem('voyago_token', res.token);
+        localStorage.setItem('voyago_refresh_token', res.refreshToken);
+        return res;
+      }),
+      catchError(err => throwError(() => err))
+    );
+  }
+
   forgotPassword(email: string): Observable<any> {
     this.pendingEmail = email;
     return this.http.post(
       `${BASE_URL}/auth/forget-password`,
       { email },
       { responseType: 'text' }
-    ).pipe(
-      catchError(err => throwError(() => err))
-    );
+    ).pipe(catchError(err => throwError(() => err)));
   }
 
   verifyOtp(code: string): Observable<any> {
@@ -96,9 +111,7 @@ updateProfileImage(imageBase64: string): void {
       `${BASE_URL}/Auth/verify-otp`,
       { email: this.pendingEmail, code },
       { responseType: 'text' }
-    ).pipe(
-      catchError(err => throwError(() => err))
-    );
+    ).pipe(catchError(err => throwError(() => err)));
   }
 
   resetPassword(newPassword: string, confirmNewPassword: string): Observable<any> {
@@ -106,9 +119,7 @@ updateProfileImage(imageBase64: string): void {
       `${BASE_URL}/auth/reset-password`,
       { email: this.pendingEmail, newPassword, confirmNewPassword },
       { responseType: 'text' }
-    ).pipe(
-      catchError(err => throwError(() => err))
-    );
+    ).pipe(catchError(err => throwError(() => err)));
   }
 
   logout(): void {
@@ -124,6 +135,15 @@ updateProfileImage(imageBase64: string): void {
   }
 
   isLoggedIn(): boolean { return this.currentUser() !== null; }
+
+  isAdmin(): boolean {
+    return this.currentUser()?.roles?.some((r: string) => r.toLowerCase() === 'admin') ?? false;
+  }
+
+  isUser(): boolean {
+    const roles = this.currentUser()?.roles ?? [];
+    return roles.some((r: string) => r.toLowerCase() === 'user') || (!this.isAdmin() && this.isLoggedIn());
+  }
 
   getFullName(): string {
     const user = this.currentUser();

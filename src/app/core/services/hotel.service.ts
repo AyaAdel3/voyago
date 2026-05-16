@@ -5,7 +5,7 @@ import {
   Hotel, Review, RoomType, HotelFeature, HotelFeatureDef, BookingData,
   BookingFeatureDef, FIXED_BOOKING_FEATURES,
   MOCK_HOTELS, MOCK_REVIEWS, MOCK_HOTEL_FEATURES, MOCK_DISPLAY_FEATURES,
-  buildDefaultRooms,
+  buildDefaultRooms, DEFAULT_ROOM_PRICES, HotelRoomPrices,
 } from '../model/hotel.model';
 
 @Injectable({ providedIn: 'root' })
@@ -14,7 +14,6 @@ export class HotelService {
   private hotelsSubject  = new BehaviorSubject<Hotel[]>([...MOCK_HOTELS]);
   hotels$                = this.hotelsSubject.asObservable();
 
-  // ✅ reviewsSubject بدل الـ static array
   private reviewsSubject = new BehaviorSubject<Review[]>([...MOCK_REVIEWS]);
   reviews$               = this.reviewsSubject.asObservable();
 
@@ -29,19 +28,16 @@ export class HotelService {
     return this.hotels$.pipe(map(hotels => hotels.find(h => h.id === id)));
   }
 
-  // ✅ reactive — بيرجع الريفيوز من الـ BehaviorSubject
   getReviews(hotelId: number): Observable<Review[]> {
     return this.reviews$.pipe(
       map(reviews => reviews.filter(r => r.hotelId === hotelId))
     );
   }
 
-  /** Booking features (بأسعار) - للـ booking widget */
   getFeatures(): Observable<HotelFeatureDef[]> {
     return of(MOCK_HOTEL_FEATURES);
   }
 
-  /** Display features (بدون أسعار) - لـ Great for your stay */
   getDisplayFeatures(): Observable<HotelFeatureDef[]> {
     return of(MOCK_DISPLAY_FEATURES);
   }
@@ -80,13 +76,11 @@ export class HotelService {
       comment,
       date:        new Date().toISOString().split('T')[0],
     };
-    // ✅ بيضيف الريفيو الجديد للـ BehaviorSubject
     const current = this.reviewsSubject.getValue();
     this.reviewsSubject.next([...current, newReview]);
     return new BehaviorSubject(newReview).asObservable();
   }
 
-  // ✅ الـ method الجديدة — بتمسح ريفيو بالـ id
   deleteReview(reviewId: number): void {
     const current = this.reviewsSubject.getValue();
     this.reviewsSubject.next(current.filter(r => r.id !== reviewId));
@@ -107,14 +101,20 @@ export class HotelService {
   setBooking(data: BookingData): void  { this.currentBooking.set(data); }
   getBooking(): BookingData | null     { return this.currentBooking(); }
 
+  /**
+   * ✅ بيبني الـ RoomType[] من roomPrices الخاصة بالهوتيل
+   * لو مفيش roomPrices يستخدم DEFAULT_ROOM_PRICES كـ fallback
+   */
   getDefaultRooms(hotel: Hotel): RoomType[] {
-    return buildDefaultRooms(hotel.pricePerNight);
+    const prices: HotelRoomPrices = hotel.roomPrices ?? {
+      standard: hotel.pricePerNight,
+      double:   Math.round(hotel.pricePerNight * 1.5),
+      triple:   Math.round(hotel.pricePerNight * 1.8),
+      suite:    hotel.pricePerNight * 5,
+    };
+    return buildDefaultRooms(prices);
   }
 
-  /**
-   * Build widget feature list من bookingFeatures الخاصة بالهوتيل
-   * لو مفيش، يرجع FIXED_BOOKING_FEATURES كـ fallback
-   */
   getHotelBookingFeatures(hotel: Hotel): HotelFeature[] {
     const features: BookingFeatureDef[] = hotel.bookingFeatures?.length
       ? hotel.bookingFeatures

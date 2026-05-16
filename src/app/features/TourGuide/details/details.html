@@ -1,110 +1,101 @@
-<!-- ============================================================
-  details.html  →  src/app/features/TourGuide/details/
-============================================================ -->
-
 <div class="popup-overlay" (click)="onClose()">
   <div class="popup-card" (click)="$event.stopPropagation()">
     <button class="close-btn" (click)="onClose()">✕</button>
     <h2 class="popup-title">Tour Guide Information</h2>
 
-    <div class="popup-body">
+    <div *ngIf="loadingDetails" class="details-loading">
+      <div class="spinner"></div>
+    </div>
+
+    <div class="popup-body" *ngIf="!loadingDetails && fullGuide">
+
       <!-- Left: Guide Info -->
       <div class="guide-details">
-        <img [src]="guide.image" [alt]="guide.name" class="popup-avatar" />
-        <p class="detail-name">{{ guide.name }}</p>
+        <img [src]="fullGuide.image" [alt]="fullGuide.name" class="popup-avatar" />
+        <p class="detail-name">{{ fullGuide.name }}</p>
+
         <p class="detail-item">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-            <polyline points="22,6 12,12 2,6" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,12 2,6"/>
           </svg>
-          {{ guide.email }}
+          {{ fullGuide.email }}
         </p>
+
         <p class="detail-item">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2.76h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 5.69 5.69l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"
-            />
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13.5a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.62 2.76h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 10.4a16 16 0 0 0 5.69 5.69l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
           </svg>
-          {{ guide.phone }}
+          {{ fullGuide.phoneNumber }}
         </p>
 
         <div class="languages-section">
           <p class="section-label">Languages Spoken</p>
           <ul class="languages-list">
-            <li *ngFor="let lang of guide.languages">{{ lang }}</li>
+            <li *ngFor="let lang of fullGuide.languages">{{ lang }}</li>
           </ul>
         </div>
 
         <div class="about-section">
           <p class="section-label">About Me</p>
-          <p class="about-text">{{ guide.description }}</p>
+          <p class="about-text">{{ fullGuide.description }}</p>
         </div>
       </div>
 
-      <!-- Right: Booking -->
+      <!-- Right: Booking Panel -->
       <div class="booking-panel">
-        <div class="booking-row">
-          <div class="booking-field">
-            <label>Date</label>
-            <!-- لما اليوزر يسيلكت تاريخ → امسح الـ error -->
-            <input
-              type="date"
-              [(ngModel)]="selectedDate"
-              [min]="minDate"
-              class="booking-input"
-              (change)="errorMessage = ''"
-            />
+
+        <!-- ✅ Login Prompt -->
+        <div class="login-prompt" *ngIf="showLoginPrompt">
+          <div class="login-prompt-icon">🔒</div>
+          <p class="login-prompt-title">Sign in required</p>
+          <p class="login-prompt-text">You need to be logged in to book a tour guide.</p>
+          <button class="btn-go-login" (click)="goToLogin()">Go to Login</button>
+          <button class="btn-dismiss"  (click)="showLoginPrompt = false">Cancel</button>
+        </div>
+
+        <!-- ✅ Booking Form -->
+        <ng-container *ngIf="!showLoginPrompt">
+          <div class="booking-row">
+            <div class="booking-field">
+              <label>Date</label>
+              <input
+                type="date"
+                [(ngModel)]="selectedDate"
+                [min]="minDate"
+                class="booking-input"
+                (change)="errorMessage = ''"
+              />
+            </div>
           </div>
-          <!-- <div class="booking-field">
-            <label>Time</label>
-            <input
-              type="text"
-              [(ngModel)]="selectedTime"
-              class="booking-input"
-              (input)="errorMessage = ''"
-            />
-          </div> -->
-        </div>
 
-        <div class="trip-type-row">
-          <span class="trip-label">Number of Days</span>
-          <div class="days-counter">
-            <span class="price-per-day">day &nbsp; {{ guide.pricePerDay }}LE</span>
-            <!-- لما اليوزر يغير عدد الأيام → امسح الـ error -->
-            <button class="counter-btn" (click)="decrementDays(); errorMessage = ''">−</button>
-            <span class="days-value">{{ days }}</span>
-            <button class="counter-btn" (click)="incrementDays(); errorMessage = ''">+</button>
+          <div class="trip-type-row">
+            <span class="trip-label">Number of Days</span>
+            <div class="days-counter">
+              <span class="price-per-day">day &nbsp; {{ fullGuide.pricePerDay }}LE</span>
+              <button class="counter-btn" (click)="decrementDays(); errorMessage = ''">−</button>
+              <span class="days-value">{{ days }}</span>
+              <button class="counter-btn" (click)="incrementDays(); errorMessage = ''">+</button>
+            </div>
           </div>
-        </div>
 
-        <div class="total-row">
-          <span class="total-label">Total Payment</span>
-          <span class="total-value">{{ totalPrice }}LE</span>
-        </div>
+          <div class="total-row">
+            <span class="total-label">Total Payment</span>
+            <span class="total-value">{{ totalPrice }}LE</span>
+          </div>
 
-        <div class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</div>
+          <div class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</div>
 
-        <button class="btn-book" (click)="onBookNow()" [disabled]="isLoading">
-          <span *ngIf="!isLoading">Book now</span>
-          <span *ngIf="isLoading" class="spinner"></span>
-        </button>
+          <button class="btn-book" (click)="onBookNow()" [disabled]="isLoading">
+            <span *ngIf="!isLoading">Book now</span>
+            <span *ngIf="isLoading" class="spinner"></span>
+          </button>
+        </ng-container>
+
       </div>
     </div>
+
   </div>
 </div>

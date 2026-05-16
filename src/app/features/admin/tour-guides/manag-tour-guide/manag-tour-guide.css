@@ -105,6 +105,42 @@
   z-index: 9999;
   animation: slideIn 0.3s ease;
 }
+/* Languages checkboxes */
+.lang-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.lang-checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1.5px solid rgba(163, 196, 235, 0.3);
+  color: #a3c4eb;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.lang-checkbox-item:hover {
+  border-color: #a3c4eb;
+}
+
+.lang-checkbox-item.selected {
+  background: #1e6ab0;
+  border-color: #1e6ab0;
+  color: #fff;
+}
+
+.lang-check-icon {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
 
 @keyframes slideIn {
   from {

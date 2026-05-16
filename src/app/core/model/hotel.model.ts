@@ -6,6 +6,13 @@ export interface HotelRooms {
   suite:  number;
 }
 
+export interface HotelRoomPrices {
+  standard: number;
+  double:   number;
+  triple:   number;
+  suite:    number;
+}
+
 export interface HotelDisplayFeature {
   icon: string;
   name: string;
@@ -30,6 +37,7 @@ export interface Hotel {
   stars: number;
   status?: 'Active' | 'Inactive' | 'Blocked';
   rooms?: HotelRooms;
+  roomPrices?: HotelRoomPrices;          // ✅ الجديد — أسعار كل نوع غرفة
   displayFeatures?: HotelDisplayFeature[];
   displayFeatureIds?: number[];
   bookingFeatures?: BookingFeatureDef[];
@@ -81,26 +89,21 @@ export interface BookingData {
 
 export const BOARD_FEATURE_NAMES = ['Full Board', 'Half Board'];
 
-// أسماء الـ features اللي دايما موجودة ومش ممكن تتحذف
 export const FIXED_BOOKING_FEATURE_NAMES: string[] = ['Full Board', 'Half Board'];
 
-// fallback لو هوتيل جديد (price = 0 الأدمن بيدخله)
 export const FIXED_BOOKING_FEATURES: BookingFeatureDef[] = [
   { name: 'Full Board', price: 0 },
   { name: 'Half Board', price: 0 },
 ];
 
-// للـ Booking Widget - بأسعار
 export const MOCK_HOTEL_FEATURES: HotelFeatureDef[] = [
   { id: 1, name: 'Full Board',       icon: '🍽️', price: 150 },
   { id: 2, name: 'Half Board',       icon: '🥗',  price: 75  },
   { id: 3, name: 'Spa',              icon: '💆',  price: 50  },
-  { id: 3, name: 'gym',              icon: '💆',  price: 100  },
+  { id: 4, name: 'gym',              icon: '💪',  price: 100 },
   { id: 5, name: 'Airport Transfer', icon: '✈️',  price: 120 },
-  
 ];
 
-// للـ Display فقط (Great for your stay) - بدون أسعار
 export const MOCK_DISPLAY_FEATURES: HotelFeatureDef[] = [
   { id: 1, name: 'WiFi',             icon: '📶', price: 0 },
   { id: 2, name: 'Pool',             icon: '🏊', price: 0 },
@@ -111,6 +114,32 @@ export const MOCK_DISPLAY_FEATURES: HotelFeatureDef[] = [
   { id: 7, name: 'Sun Terrace',      icon: '☀️', price: 0 },
   { id: 8, name: 'Lake View',        icon: '🌊', price: 0 },
   { id: 9, name: 'Private Pool',     icon: '🏊', price: 0 },
+];
+
+// ✅ بيبني الـ RoomType[] من الأسعار المحددة يدوياً
+export function buildDefaultRooms(roomPrices: HotelRoomPrices): RoomType[] {
+  return [
+    { type: 'Standard', price: roomPrices.standard, quantity: 0 },
+    { type: 'Double',   price: roomPrices.double,   quantity: 0 },
+    { type: 'Triple',   price: roomPrices.triple,   quantity: 0 },
+    { type: 'Suite',    price: roomPrices.suite,    quantity: 0 },
+  ];
+}
+
+// ✅ Default fallback prices
+export const DEFAULT_ROOM_PRICES: HotelRoomPrices = {
+  standard: 150,
+  double:   225,
+  triple:   270,
+  suite:    750,
+};
+
+export const DEFAULT_ROOMS: RoomType[] = buildDefaultRooms(DEFAULT_ROOM_PRICES);
+
+export const DEFAULT_FEATURES: HotelFeature[] = [
+  { name: 'Full Board', price: 150, selected: false, quantity: 0 },
+  { name: 'Half Board', price: 75,  selected: false, quantity: 0 },
+  { name: 'Spa',        price: 50,  selected: false, quantity: 0 },
 ];
 
 export const MOCK_HOTELS: Hotel[] = [
@@ -139,9 +168,10 @@ export const MOCK_HOTELS: Hotel[] = [
     bookingFeatures: [
       { name: 'Full Board', price: 150 },
       { name: 'Half Board', price: 75  },
-      { name: 'spa', price: 50  },
-      { name: 'gym', price: 100  },
+      { name: 'spa',        price: 50  },
+      { name: 'gym',        price: 100 },
     ],
+    roomPrices: { standard: 1500, double: 2000, triple: 2500, suite: 5000 },
     rooms: { total: 20, single: 8, double: 6, triple: 4, suite: 2 },
   },
   {
@@ -174,6 +204,7 @@ export const MOCK_HOTELS: Hotel[] = [
       { name: 'Half Board', price: 75  },
       { name: 'Spa',        price: 50  },
     ],
+    roomPrices: { standard: 150, double: 225, triple: 270, suite: 750 },
     rooms: { total: 15, single: 5, double: 6, triple: 3, suite: 1 },
   },
   {
@@ -204,36 +235,7 @@ export const MOCK_HOTELS: Hotel[] = [
       { name: 'Half Board',       price: 75  },
       { name: 'Airport Transfer', price: 120 },
     ],
-    rooms: { total: 30, single: 10, double: 10, triple: 5, suite: 5 },
-  },
-  {
-    id: 3,
-    name: 'Desert Rose Resort',
-    location: 'Qarun Lake, Fayoum, Egypt',
-    pricePerNight: 150,
-    rating: 4.5,
-    stars: 5,
-    status: 'Active',
-    description:
-      'Luxury desert retreat overlooking the enchanting Qarun Lake.',
-    images: [
-      'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800',
-      'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
-    ],
-    amenities: ['WiFi', 'Spa', 'Restaurant', 'Pool'],
-    displayFeatureIds: [1, 4, 3, 2, 8],
-    displayFeatures: [
-      { icon: '📶', name: 'WiFi'       },
-      { icon: '💆', name: 'Spa'        },
-      { icon: '🍴', name: 'Restaurant' },
-      { icon: '🏊', name: 'Pool'       },
-      { icon: '🌊', name: 'Lake View'  },
-    ],
-    bookingFeatures: [
-      { name: 'Full Board',       price: 150 },
-      { name: 'Half Board',       price: 75  },
-      { name: 'Airport Transfer', price: 120 },
-    ],
+    roomPrices: { standard: 150, double: 225, triple: 270, suite: 750 },
     rooms: { total: 30, single: 10, double: 10, triple: 5, suite: 5 },
   },
 ];
@@ -245,20 +247,4 @@ export const MOCK_REVIEWS: Review[] = [
   { id: 4, hotelId: 2, userName: 'Mark Alec',     userAvatar: '', userCountry: 'Italy',  rating: 4, comment: 'Amazing stay!', date: '2025-10-10' },
   { id: 5, hotelId: 2, userName: 'Malak Mohamed', userAvatar: '', userCountry: 'Egypt',  rating: 4, comment: 'Amazing stay!', date: '2025-10-05' },
   { id: 6, hotelId: 2, userName: 'David Silva',   userAvatar: '', userCountry: 'Kenya',  rating: 4, comment: 'Amazing stay!', date: '2025-09-30' },
-];
-
-export function buildDefaultRooms(standardPrice: number): RoomType[] {
-  return [
-    { type: 'Standard', price: standardPrice,                    quantity: 0 },
-    { type: 'Double',   price: Math.round(standardPrice * 1.5),  quantity: 0 },
-    { type: 'Treble',   price: Math.round(standardPrice * 1.8),  quantity: 0 },
-    { type: 'Suite',    price: standardPrice * 5,                quantity: 0 },
-  ];
-}
-
-export const DEFAULT_ROOMS: RoomType[] = buildDefaultRooms(150);
-export const DEFAULT_FEATURES: HotelFeature[] = [
-  { name: 'Full Board', price: 150, selected: false, quantity: 0 },
-  { name: 'Half Board', price: 75,  selected: false, quantity: 0 },
-  { name: 'Spa',        price: 50,  selected: false, quantity: 0 },
 ];

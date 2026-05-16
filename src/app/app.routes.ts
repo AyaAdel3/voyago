@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './core/layouts/main-layout/main-layout';
 
+// Guards
+import { adminGuard, userGuard, authGuard, rootGuard } from './core/services/auth.guards';
+
 // Home
 import { Home } from './features/home/home';
 
@@ -57,10 +60,10 @@ export const routes: Routes = [
     path: '',
     component: MainLayout,
     children: [
-      // Default
-      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      // ✅ root — الأدمن يتوجه للـ dashboard، غيره يشوف الـ home
+      { path: '', component: Home, canActivate: [rootGuard], title: 'Home' },
 
-      // Home
+      // ✅ متاح للكل
       { path: 'home', component: Home, title: 'Home' },
 
       // Hotel Routes
@@ -69,20 +72,20 @@ export const routes: Routes = [
         children: [
           { path: '', component: HotelCard, title: 'Hotels' },
           { path: 'details/:id', component: HotelDetails, title: 'Hotel Details', runGuardsAndResolvers: 'paramsChange' },
-          { path: 'booking', component: HotelBooking, title: 'Hotel Booking' },
-          { path: 'booking-confirmed', component: HotelBookingConfirmed, title: 'Booking Confirmed' },
+          { path: 'booking', component: HotelBooking, title: 'Hotel Booking', canActivate: [userGuard] },
+          { path: 'booking-confirmed', component: HotelBookingConfirmed, title: 'Booking Confirmed', canActivate: [userGuard] },
         ]
       },
 
       // Restaurant Routes
       { path: 'Restaurants', component: RestaurantCard, title: 'Restaurants' },
       { path: 'restaurant/details/:id', component: RestaurantDetails, title: 'Restaurant Details' },
-      { path: 'restaurant/reservation/:id', component: Reservation, title: 'Restaurant Reservation' },
+      { path: 'restaurant/reservation/:id', component: Reservation, title: 'Restaurant Reservation', canActivate: [userGuard] },
 
       // TourGuide Routes
       { path: 'tour-guide', component: Card, title: 'Tour Guides' },
-      { path: 'tour-guide/booking', component: TourGuideBooking, title: 'Tour Guide Booking' },
-      { path: 'tour-guide/booking-confirmed', component: TourGuideBookingConfirmed, title: 'Tour Guide Booking Confirmed' },
+      { path: 'tour-guide/booking', component: TourGuideBooking, title: 'Tour Guide Booking', canActivate: [userGuard] },
+      { path: 'tour-guide/booking-confirmed', component: TourGuideBookingConfirmed, title: 'Tour Guide Booking Confirmed', canActivate: [userGuard] },
 
       // TouristAttraction Routes
       { path: 'Attractions', component: TouristAttractionCard, title: 'Tourist Attractions' },
@@ -90,15 +93,16 @@ export const routes: Routes = [
 
       // BudgetPlanning Routes
       { path: 'Budget Planning', component: BudgetMain, title: 'Budget Planning' },
-      { path: 'budget-planning/plan', component: Plan, title: 'Create Plan' },
-      { path: 'budget-planning/details/:id', component: BudgetDetails, title: 'Budget Details' },
+      { path: 'budget-planning/plan', component: Plan, title: 'Create Plan', canActivate: [userGuard] },
+      { path: 'budget-planning/details/:id', component: BudgetDetails, title: 'Budget Details', canActivate: [userGuard] },
     ],
   },
 
-  // Profile — layout منفصل زي الـ admin
+  // Profile — محتاج login
   {
     path: 'profile',
     component: ProfileLayout,
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'personal-information', pathMatch: 'full' },
       { path: 'personal-information', component: PersonalInformation, title: 'Personal Information' },
@@ -107,35 +111,30 @@ export const routes: Routes = [
     ],
   },
 
-  // Admin
+  // Admin — فقط Admin
   {
     path: 'admin',
     component: AdminLayout,
+    canActivate: [adminGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: Dashboard, title: 'Admin Dashboard' },
 
-      // Hotels
       { path: 'hotels', component: AdminHotels, title: 'Manage Hotels' },
       { path: 'hotels/manage', component: ManageHotel, title: 'Hotel Form' },
 
-      // Restaurants
       { path: 'restaurants', component: AdminRestaurants, title: 'Manage Restaurants' },
       { path: 'restaurants/manage', component: ManageRestaurant, title: 'Restaurant Form' },
 
-      // Attractions
       { path: 'attractions', component: AdminAttractions, title: 'Manage Attractions' },
       { path: 'attractions/manage', component: ManageAttraction, title: 'Attraction Form' },
 
-      // Tour Guides
       { path: 'tour-guides', component: AdminTourGuides, title: 'Manage Tour Guides' },
       { path: 'tour-guides/manage', component: ManageTourGuide, title: 'Tour Guide Form' },
 
-      // Users
       { path: 'users', component: AdminUsers, title: 'Manage Users' },
     ],
   },
 
-  // Not Found
   { path: '**', component: NotFound, title: 'Page Not Found' },
 ];

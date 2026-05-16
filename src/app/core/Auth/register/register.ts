@@ -90,14 +90,25 @@ export class Register implements OnDestroy {
       password:    this.password.value
     }).subscribe({
       next: (res) => {
-        console.log('✅ SUCCESS', res);
         this.isLoading = false;
+
         localStorage.setItem('voyago_token', res.token);
         localStorage.setItem('voyago_refresh_token', res.refreshToken);
+
+        // ✅ FIX: أضفنا roles
+        const user = {
+          firstName: res.firstName,
+          lastName:  res.lastName,
+          email:     res.email,
+          phone:     this.phone.value,
+          roles:     res.roles ?? []
+        };
+        localStorage.setItem('voyago_current_user', JSON.stringify(user));
+        this.auth.currentUser.set(user);
+
         this.modal.openLogin();
       },
       error: (err) => {
-        console.log('❌ ERROR', err);
         this.isLoading = false;
         const msg: string = err?.error?.message ?? '';
         if (msg.toLowerCase().includes('email')) {

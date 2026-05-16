@@ -3,12 +3,11 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TourGuideService, TourGuide } from '../../../../core/services/tour-guide.service';
-import { Details } from '../../../../features/TourGuide/details/details';
 
 @Component({
   selector: 'app-admin-tour-guides',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, Details],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './tour-guides.html',
   styleUrls: ['../../admin-shared.css', './tour-guides.css'],
 })
@@ -19,9 +18,12 @@ export class AdminTourGuides implements OnInit {
 
   guides: TourGuide[] = [];
   selectedGuide: TourGuide | null = null;
+  isLoading = false;
 
   deleteToastVisible = false;
   deleteToastMessage = '';
+
+  availableStatuses: { id: number; name: string }[] = [];
 
   stats = [
     { label: 'Total Tour Guides', value: 0, icon: '🧭', type: 'total'    },
@@ -35,17 +37,35 @@ export class AdminTourGuides implements OnInit {
     private cdr: ChangeDetectorRef,
   ) {}
 
-  ngOnInit(): void { this.loadGuides(); }
+  ngOnInit(): void {
+    this.loadGuides();
+    this.loadStatuses();
+  }
 
   loadGuides(): void {
-    this.guides = this.tourGuideService.getAll();
-    this.updateStats();
+    this.isLoading = true;
+    this.tourGuideService.adminGetAll().subscribe({
+      next: (data) => {
+        this.guides    = data;
+        this.isLoading = false;
+        this.updateStats();
+        this.cdr.detectChanges();
+      },
+      error: () => { this.isLoading = false; }
+    });
+  }
+
+  loadStatuses(): void {
+    this.tourGuideService.adminGetStatuses().subscribe({
+      next: s => { this.availableStatuses = s; },
+      error: () => {}
+    });
   }
 
   updateStats(): void {
     this.stats[0].value = this.guides.length;
-    this.stats[1].value = this.guides.filter(g => g.status === 'Active').length;
-    this.stats[2].value = this.guides.filter(g => g.status === 'Inactive').length;
+    this.stats[1].value = this.guides.filter(g => g.status?.toLowerCase() === 'active').length;
+    this.stats[2].value = this.guides.filter(g => g.status?.toLowerCase() === 'inactive').length;
   }
 
   get filteredAll(): TourGuide[] {
@@ -67,6 +87,13 @@ export class AdminTourGuides implements OnInit {
     );
   }
 
+  changeStatus(g: TourGuide, statusId: number): void {
+    this.tourGuideService.adminUpdateStatus(g.id, statusId).subscribe({
+      next: () => { this.loadGuides(); },
+      error: () => {}
+    });
+  }
+
   onSearch(): void {
     this.currentPage = 1;
   }
@@ -77,19 +104,26 @@ export class AdminTourGuides implements OnInit {
     setTimeout(() => {
       this.deleteToastVisible = false;
       this.cdr.detectChanges();
-    }, 6000);
+    }, 3000);
   }
 
-  view(g: TourGuide) { this.selectedGuide = g; }
-  closeDetails() { this.selectedGuide = null; }
+  view(g: TourGuide)  { this.selectedGuide = g; }
+  closeDetails()      { this.selectedGuide = null; }
+  edit(g: TourGuide)  { this.router.navigate(['/admin/tour-guides/manage'], { queryParams: { id: g.id } }); }
 
-  edit(g: TourGuide) {
-    this.router.navigate(['/admin/tour-guides/manage'], { queryParams: { id: g.id } });
-  }
-
-  delete(g: TourGuide) {
-    this.tourGuideService.delete(g.id);
-    this.loadGuides();
-    this.showDeleteToast(`"${g.name}" deleted successfully.`);
+  delete(g: TourGuide): void {
+    this.tourGuideService.adminDelete(g.id).subscribe({
+      next: () => {
+        this.loadGuides();
+        this.showDeleteToast(`"${g.name}" deleted successfully.`);
+      },
+      error: (err) => {
+        const errors = err?.error?.errors;
+        const msg = Array.isArray(errors)
+          ? errors.join(' ')
+          : (err?.error?.message ?? 'Failed to delete.');
+        this.showDeleteToast(msg);
+      }
+    });
   }
 }

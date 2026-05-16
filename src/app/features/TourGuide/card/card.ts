@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Details } from '../details/details';
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { TourGuideService, TourGuide } from '../../../core/services/tour-guide.service';
+import { Subscription, timeout } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 
 export type { TourGuide };
 
@@ -13,10 +15,13 @@ export type { TourGuide };
   templateUrl: './card.html',
   styleUrl: './card.css'
 })
-export class Card implements OnInit {
+export class Card implements OnInit, OnDestroy {
   guides: TourGuide[] = [];
-  loading = true;
+  loading = false;   // ✅ شيلنا الـ loading من الأول
+  error   = '';
   selectedGuide: TourGuide | null = null;
+
+  private sub!: Subscription;
 
   constructor(
     private favoritesService: FavoritesService,
@@ -24,8 +29,41 @@ export class Card implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.guides = this.tourGuideService.getActive();
-    this.loading = false;
+    this.sub = this.tourGuideService.getAll().pipe(
+      timeout(8000),
+      finalize(() => {
+        this.loading = false;
+      })
+    ).subscribe({
+      next: (data) => {
+        this.guides = data;
+      },
+      error: (err) => {
+        if (err?.name === 'TimeoutError') {
+          this.error = 'Request timed out. Please check your connection and try again.';
+        } else {
+          this.error = 'Failed to load tour guides. Please try again.';
+        }
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  onImgError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.onerror = null;
+    img.src = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='260' viewBox='0 0 400 260'><rect width='400' height='260' fill='%23a3c4eb'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='48' fill='%23021526'>👤</text></svg>`;
+  }
+
+  trackById(index: number, guide: TourGuide): any {
+    return guide.id ?? index;
+  }
+
+  getShortDescription(desc: string): string {
+    return desc?.length > 100 ? desc.substring(0, 100) + '...' : desc;
   }
 
   isGuideInFav(name: string): boolean {
@@ -34,21 +72,19 @@ export class Card implements OnInit {
 
   toggleFav(event: MouseEvent, guide: TourGuide): void {
     event.stopPropagation();
-
     if (this.isGuideInFav(guide.name)) {
-      // ✅ بنبعت الـ name مش الـ index
       this.favoritesService.removeFavorite(guide.name);
     } else {
       this.favoritesService.addToFavorites({
-        title: guide.name,
-        image: guide.image,
-        price: guide.pricePerDay + ' LE / day',
+        title:  guide.name,
+        image:  guide.image,
+        price:  guide.pricePerDay + ' LE / day',
         rating: guide.rating,
-        type: 'tourGuide'  // ✅ ده اللي كان ناقص
+        type:   'tourGuide'
       });
     }
   }
 
-  openDetails(guide: TourGuide): void { this.selectedGuide = guide; }
-  closeDetails(): void { this.selectedGuide = null; }
+  openDetails(guide: TourGuide): void  { this.selectedGuide = guide; }
+  closeDetails(): void                 { this.selectedGuide = null; }
 }

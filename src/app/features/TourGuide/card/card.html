@@ -1,13 +1,19 @@
 <div class="guidepage bg-[#021526]">
-  <div *ngIf="loading" class="loading-wrap">
-    <div class="spinner"></div>
-    <p>Finding the best tour guides for you…</p>
+
+  <div *ngIf="error" class="error-wrap">
+    <p>{{ error }}</p>
   </div>
 
-  <div *ngIf="!loading" class="guides-page">
-    <div *ngFor="let guide of guides" class="guide-card" (click)="openDetails(guide)">
+  <div *ngIf="!error" class="guides-page">
+    <div *ngFor="let guide of guides; trackBy: trackById" class="guide-card" (click)="openDetails(guide)">
       <div class="card-img-wrap">
-        <img [src]="guide.image" [alt]="guide.name" class="card-img" loading="lazy" />
+        <img
+          [src]="guide.image"
+          [alt]="guide.name"
+          class="card-img"
+          loading="lazy"
+          (error)="onImgError($event)"
+        />
         <button
           class="fav-btn"
           [class.active]="isGuideInFav(guide.name)"
@@ -42,7 +48,9 @@
           </div>
         </div>
 
-        <p class="guide-desc font-normal translate-y-4 line-clamp-2">{{ guide.description }}</p>
+        <p class="guide-desc font-normal translate-y-4 line-clamp-2">
+          {{ getShortDescription(guide.description) }}
+        </p>
 
         <div class="card-footer">
           <button

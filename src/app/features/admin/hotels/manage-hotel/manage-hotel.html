@@ -40,21 +40,76 @@
     <input class="form-input" [(ngModel)]="hotel.location" placeholder="e.g. Tunis Village, Fayoum, Egypt" />
   </div>
 
-  <!-- ── Row: Price, Rating ── -->
-  <div class="form-row-2">
-    <div>
-      <label class="form-label">Price per Night (LE) <span class="req">*</span></label>
-      <input class="form-input" [(ngModel)]="hotel.pricePerNight" type="number" placeholder="LE 00.00" />
+  <!-- ── Rating ── -->
+  <div class="form-group">
+    <label class="form-label">Rating <span class="req">*</span></label>
+    <input class="form-input" [(ngModel)]="hotel.rating" type="number" step="0.1" min="0" max="5" placeholder="4.5" />
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- ── Room Prices ── -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="form-group">
+    <label class="form-label">
+      Room Prices (LE / Night) <span class="req">*</span>
+      <span class="hint" style="font-size:0.75rem;color:#4a6a88;margin-left:6px;">
+        — Price per Night = Standard Room Price
+      </span>
+    </label>
+
+    <div class="rooms-form-grid">
+      <div class="room-input-wrap">
+        <label class="room-input-label">
+          Standard
+          <span class="price-badge-label">= Price/Night</span>
+        </label>
+        <input
+          class="form-input room-input"
+          [(ngModel)]="roomPrices.standard"
+          type="number" min="0"
+          placeholder="LE 0" />
+      </div>
+
+      <div class="room-input-wrap">
+        <label class="room-input-label">Double</label>
+        <input
+          class="form-input room-input"
+          [(ngModel)]="roomPrices.double"
+          type="number" min="0"
+          placeholder="LE 0" />
+      </div>
+
+      <div class="room-input-wrap">
+        <label class="room-input-label">Triple</label>
+        <input
+          class="form-input room-input"
+          [(ngModel)]="roomPrices.triple"
+          type="number" min="0"
+          placeholder="LE 0" />
+      </div>
+
+      <div class="room-input-wrap">
+        <label class="room-input-label">Suite</label>
+        <input
+          class="form-input room-input"
+          [(ngModel)]="roomPrices.suite"
+          type="number" min="0"
+          placeholder="LE 0" />
+      </div>
     </div>
-    <div>
-      <label class="form-label">Rating <span class="req">*</span></label>
-      <input class="form-input" [(ngModel)]="hotel.rating" type="number" step="0.1" min="0" max="5" placeholder="4.5" />
+
+    <!-- Preview badge -->
+    <div class="rooms-total-badge" *ngIf="roomPrices.standard > 0">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+        <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+      </svg>
+      Price per Night will be set to: <strong>{{ roomPrices.standard | number }}LE</strong>
     </div>
   </div>
 
-  <!-- ── Rooms ── -->
+  <!-- ── Rooms Count ── -->
   <div class="form-group">
-    <label class="form-label">Rooms <span class="req">*</span></label>
+    <label class="form-label">Rooms Count <span class="req">*</span></label>
     <div class="rooms-form-grid">
       <div class="room-input-wrap">
         <label class="room-input-label">Single</label>
@@ -146,7 +201,7 @@
 
     <div class="booking-features-list">
 
-      <!-- Fixed features: Full Board & Half Board — السعر editable بس من غير "LE / person" -->
+      <!-- Fixed features -->
       <div *ngFor="let f of fixedBookingFeatures" class="booking-feature-item booking-feature-fixed">
         <span class="bf-name">{{ f.name }}</span>
         <input
@@ -159,7 +214,7 @@
         <span class="bf-fixed-badge">Fixed</span>
       </div>
 
-      <!-- Extra features (removable) — السعر editable كمان -->
+      <!-- Extra features (removable) -->
       <div *ngFor="let f of extraBookingFeatures; let i = index"
            class="booking-feature-item">
         <span class="bf-name">{{ f.name }}</span>
@@ -175,7 +230,7 @@
 
     </div>
 
-    <!-- Add new feature — dropdown (enum) + price input -->
+    <!-- Add new feature -->
     <div class="bf-dropdown-row">
 
       <!-- Dropdown -->

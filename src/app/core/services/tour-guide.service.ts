@@ -1,59 +1,144 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { tap, catchError, map } from 'rxjs/operators';
 
 export type TourGuide = {
   id: number;
   name: string;
   image: string;
+  profilePictureUrl: string;
   rating: number;
-  languages: string[];
-  email: string;
-  phone: string;
   pricePerDay: number;
   description: string;
-  liked: boolean;
-  tours: number;
-  status: string;
+  email?: string;
+  phoneNumber?: string;
+  phone?: string;
+  languages?: string[];
+  tours?: number;
+  status?: string;
+  liked?: boolean;
 }
+
+const BASE_URL = 'http://voyagoo.runasp.net';
 
 @Injectable({ providedIn: 'root' })
 export class TourGuideService {
 
-  private guides: TourGuide[] = [
-    { id: 1, name: 'Araya Smith', image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=400&fit=crop', rating: 4.8, languages: ['English', 'Arabic'], email: 'araya.smith@gmail.com', phone: '+20 1012345678', pricePerDay: 150, description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh.', liked: false, tours: 189, status: 'Active' },
-    { id: 2, name: 'Nattaya Wong', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&h=400&fit=crop', rating: 4.5, languages: ['English', 'French'], email: 'nattaya.wong@gmail.com', phone: '+20 1098765432', pricePerDay: 120, description: 'Lorem ipsum dolor sit amet consectetur. Aliquam et magna cras donec. Enim euismod diam pellentesque dictum aenean massa lectus id nibh.', liked: false, tours: 245, status: 'Active' },
-    { id: 3, name: 'Somchai Prasert', image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&h=400&fit=crop', rating: 4.1, languages: ['English', 'Arabic', 'French'], email: 'somchai.p@gmail.com', phone: '+20 1123456789', pricePerDay: 100, description: 'Lorem ipsum dolor sit amet consectetur. Vitae aliquam parturient non integer sed euismod. Aliquam et magna cras donec.', liked: false, tours: 120, status: 'Active' },
-  ];
+  private _guides: TourGuide[] = [];
 
-  getAll(): TourGuide[] {
-    return this.guides;
+  constructor(private http: HttpClient) {}
+
+  // ── Public: GET all ───────────────────────────────────────
+  getAll(): Observable<TourGuide[]> {
+    return this.http.get<TourGuide[]>(`${BASE_URL}/TourGuides`).pipe(
+      tap(data => {
+        this._guides = data.map(g => ({ ...g, image: g.profilePictureUrl }));
+      }),
+      map(data => data.map(g => ({ ...g, image: g.profilePictureUrl }))),
+      catchError(err => throwError(() => err))
+    );
   }
 
-  getActive(): TourGuide[] {
-    return this.guides.filter(g => g.status === 'Active');
+  // ── Public: GET single ────────────────────────────────────
+  getById_API(id: number): Observable<TourGuide> {
+    return this.http.get<TourGuide>(`${BASE_URL}/TourGuides/${id}`).pipe(
+      map(g => ({ ...g, image: g.profilePictureUrl })),
+      catchError(err => throwError(() => err))
+    );
   }
 
-  getById(id: number): TourGuide | undefined {
-    return this.guides.find(g => g.id === id);
+  // ── Admin: GET all ────────────────────────────────────────
+  adminGetAll(): Observable<TourGuide[]> {
+    return this.http.get<any>(`${BASE_URL}/admin/tour-guides/GetAllTourGuides`).pipe(
+      map(res => {
+        // ✅ API بيرجع { totalTourGuides, activeTourGuides, tourGuides: [...] }
+        const data: TourGuide[] = res?.tourGuides ?? res;
+        this._guides = data.map((g: TourGuide) => ({ ...g, image: g.profilePictureUrl }));
+        return this._guides;
+      }),
+      catchError(err => throwError(() => err))
+    );
   }
 
-  add(guide: Omit<TourGuide, 'id'>): void {
-    const newId = Math.max(...this.guides.map(g => g.id)) + 1;
-    this.guides.push({ ...guide, id: newId });
+  // ── Admin: POST add ───────────────────────────────────────
+  adminAdd(payload: {
+    name: string;
+    email: string;
+    phoneNumber: string;
+    description: string;
+    rating: number;
+    pricePerDay: number;
+    languages: number[];
+  }): Observable<any> {
+    return this.http.post(`${BASE_URL}/admin/tour-guides`, payload).pipe(
+      catchError(err => throwError(() => err))
+    );
   }
 
-  update(id: number, data: Partial<TourGuide>): void {
-    const index = this.guides.findIndex(g => g.id === id);
-    if (index !== -1) {
-      this.guides[index] = { ...this.guides[index], ...data };
-    }
+  // ── Admin: PUT update ─────────────────────────────────────
+  adminUpdate(id: number, payload: {
+    name: string;
+    email: string;
+    phoneNumber: string;
+    description: string;
+    rating: number;
+    pricePerDay: number;
+    languages: number[];
+  }): Observable<any> {
+    return this.http.put(`${BASE_URL}/admin/tour-guides/${id}`, payload).pipe(
+      catchError(err => throwError(() => err))
+    );
   }
 
-  delete(id: number): void {
-    this.guides = this.guides.filter(g => g.id !== id);
+  // ── Admin: DELETE ─────────────────────────────────────────
+  adminDelete(id: number): Observable<any> {
+    return this.http.delete(`${BASE_URL}/admin/tour-guides/${id}`, { responseType: 'text' }).pipe(
+      catchError(err => throwError(() => err))
+    );
   }
 
-  toggleLike(id: number): void {
-    const guide = this.guides.find(g => g.id === id);
-    if (guide) guide.liked = !guide.liked;
+  // ── Admin: POST image upload ──────────────────────────────
+  adminUploadImage(id: number, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.http.post(`${BASE_URL}/admin/tour-guides/${id}/image`, formData).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  // ── Admin: PATCH status ───────────────────────────────────
+  adminUpdateStatus(id: number, statusId: number): Observable<any> {
+    return this.http.patch(`${BASE_URL}/admin/tour-guides/${id}/status`, statusId).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  // ── Admin: GET languages ──────────────────────────────────
+  adminGetLanguages(): Observable<{ id: number; name: string }[]> {
+    return this.http.get<{ id: number; name: string }[]>(`${BASE_URL}/admin/tour-guides/languages`).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  // ── Admin: GET statuses ───────────────────────────────────
+  adminGetStatuses(): Observable<{ id: number; name: string }[]> {
+    return this.http.get<{ id: number; name: string }[]>(`${BASE_URL}/admin/tour-guides/statuses`).pipe(
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  // ── Local cache helpers ───────────────────────────────────
+  getCached(): TourGuide[]                   { return this._guides; }
+  getById(id: number): TourGuide | undefined { return this._guides.find(g => g.id === id); }
+
+  // ── Public: book ──────────────────────────────────────────
+  bookGuide(guideId: number, bookingDate: string, numberOfDays: number): Observable<any> {
+    return this.http.post(
+      `${BASE_URL}/tour-guides/${guideId}/bookings`,
+      { bookingDate, numberOfDays }
+    ).pipe(
+      catchError(err => throwError(() => err))
+    );
   }
 }

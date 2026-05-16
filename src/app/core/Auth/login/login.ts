@@ -66,7 +66,12 @@ export class Login implements OnDestroy {
         this.isLoading = false;
         if (result.success) {
           this.modal.close();
-          this.router.navigate(['/home']);
+          // ✅ الأدمن يروح dashboard، غيره يروح home
+          if (this.auth.isAdmin()) {
+            this.router.navigate(['/admin/dashboard']);
+          } else {
+            this.router.navigate(['/home']);
+          }
         } else {
           this.errorMessage = result.message;
           this.cdr.detectChanges();

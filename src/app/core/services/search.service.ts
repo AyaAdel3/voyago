@@ -1,48 +1,42 @@
-// ============================================================
-// search.service.ts  →  src/app/core/services/
-// بيسرش في كل حاجة في السايت: هوتيلات، ريستورانتات، attractions
-// ============================================================
-
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { map, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { HotelService } from './hotel.service';
 import { RestaurantService } from './resturant.service';
+import { TourGuideService } from './tour-guide.service';
 
 export interface SearchResult {
   id:       number;
   name:     string;
-  subtitle: string;   // location أو cuisine أو category
+  subtitle: string;
   image:    string;
-  type:     'hotel' | 'restaurant' | 'attraction';
-  route:    string;   // الـ route اللي هيروح عليها
+  type:     'hotel' | 'restaurant' | 'attraction' | 'tourGuide';
+  route:    string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class SearchService {
 
-  // ── الـ query اللي اليوزر بيكتبه ─────────────────────────
   private querySubject = new BehaviorSubject<string>('');
   query$ = this.querySubject.asObservable();
 
-  // ── النتايج ───────────────────────────────────────────────
   results$: Observable<SearchResult[]>;
 
-  // ── هل الـ dropdown مفتوح ─────────────────────────────────
   private openSubject = new BehaviorSubject<boolean>(false);
   isOpen$ = this.openSubject.asObservable();
 
   constructor(
     private hotelService:      HotelService,
     private restaurantService: RestaurantService,
+    private tourGuideService:  TourGuideService,       // ✅ أضفناه
   ) {
-    // جمع كل البيانات في observable واحد
     this.results$ = combineLatest([
       this.query$.pipe(debounceTime(200), distinctUntilChanged()),
       this.hotelService.getHotels(),
       this.restaurantService.getRestaurants(),
+      this.tourGuideService.getAll(),                  // ✅ أضفناه
     ]).pipe(
-      map(([query, hotels, restaurants]) => {
+      map(([query, hotels, restaurants, guides]) => {
         const q = query.trim().toLowerCase();
         if (!q || q.length < 1) return [];
 
@@ -83,30 +77,41 @@ export class SearchService {
             route:    `/restaurant/details/${r.id}`,
           }));
 
+        // ── Tour Guides ───────────────────────────────────  ✅
+        guides
+          .filter(g =>
+            g.name.toLowerCase().includes(q) ||
+            g.description.toLowerCase().includes(q)
+          )
+          .slice(0, 3)
+          .forEach(g => results.push({
+            id:       g.id,
+            name:     g.name,
+            subtitle: `${g.pricePerDay} LE / day`,
+            image:    g.profilePictureUrl,
+            type:     'tourGuide',
+            route:    `/tour-guide`,                   // ✅ بيروح لصفحة التور جايد
+          }));
+
         return results;
       })
     );
   }
 
-  // ── Update query ──────────────────────────────────────────
   setQuery(query: string): void {
     this.querySubject.next(query);
     this.openSubject.next(query.trim().length > 0);
   }
 
-  // ── Close dropdown ────────────────────────────────────────
-  close(): void {
-    this.openSubject.next(false);
-  }
+  close(): void  { this.openSubject.next(false); }
+  clear(): void  { this.querySubject.next(''); this.openSubject.next(false); }
 
-  // ── Clear ─────────────────────────────────────────────────
-  clear(): void {
-    this.querySubject.next('');
-    this.openSubject.next(false);
-  }
-
-  // ── Type label للعرض ──────────────────────────────────────
   typeLabel(type: SearchResult['type']): string {
-    return { hotel: '🏨 Hotel', restaurant: '🍽 Restaurant', attraction: '🏛 Attraction' }[type];
+    return {
+      hotel:       '🏨 Hotel',
+      restaurant:  '🍽 Restaurant',
+      attraction:  '🏛 Attraction',
+      tourGuide:   '🧭 Tour Guide',                    // ✅
+    }[type];
   }
 }

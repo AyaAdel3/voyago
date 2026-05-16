@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HotelService } from '../../../../core/services/hotel.service';
 import {
-  Hotel, HotelRooms, HotelDisplayFeature,
+  Hotel, HotelRooms, HotelDisplayFeature, HotelRoomPrices,
   BookingFeatureDef, FIXED_BOOKING_FEATURES, FIXED_BOOKING_FEATURE_NAMES,
   HotelFeatureDef, MOCK_DISPLAY_FEATURES, MOCK_HOTEL_FEATURES,
 } from '../../../../core/model/hotel.model';
@@ -26,12 +26,19 @@ export class ManageHotel implements OnInit {
 
   hotel = {
     name:          '',
-    pricePerNight: '',
     rating:        '',
     description:   '',
     location:      '',
     status:        'Active' as 'Active' | 'Inactive' | 'Blocked',
   };
+
+  // ✅ أسعار الغرف — الأدمن بيدخلهم يدوياً
+roomPrices: HotelRoomPrices = {
+  standard: 0,
+  double:   0,
+  triple:   0,
+  suite:    0,
+};
 
   rooms: HotelRooms = { total: 0, single: 0, double: 0, triple: 0, suite: 0 };
 
@@ -71,13 +78,25 @@ export class ManageHotel implements OnInit {
       this.images = [...h.images];
       this.hotel  = {
         name:          h.name,
-        pricePerNight: h.pricePerNight.toString(),
         rating:        h.rating.toString(),
         description:   h.description,
         location:      h.location,
         status:        (h as any).status ?? 'Active',
       };
       if (h.rooms) this.rooms = { ...h.rooms };
+
+      // ✅ تحميل أسعار الغرف — لو موجودة في الهوتيل
+      if (h.roomPrices) {
+        this.roomPrices = { ...h.roomPrices };
+      } else {
+        // fallback من pricePerNight القديم
+        this.roomPrices = {
+          standard: h.pricePerNight,
+          double:   Math.round(h.pricePerNight * 1.5),
+          triple:   Math.round(h.pricePerNight * 1.8),
+          suite:    h.pricePerNight * 5,
+        };
+      }
 
       // Display feature IDs
       this.selectedDisplayFeatureIds = h.displayFeatureIds
@@ -136,7 +155,6 @@ export class ManageHotel implements OnInit {
 
   // ── Booking Features helpers ──────────────────────────────
 
-  // الـ features المتاحة للـ dropdown — بتشيل الـ fixed والمضافة خلاص
   get availableBookingFeatures(): HotelFeatureDef[] {
     const usedNames = [
       ...FIXED_BOOKING_FEATURE_NAMES.map(n => n.toLowerCase()),
@@ -201,7 +219,7 @@ export class ManageHotel implements OnInit {
   // ── Save ──────────────────────────────────────────────────
 
   save() {
-    if (!this.hotel.name || !this.hotel.pricePerNight) {
+    if (!this.hotel.name || !this.roomPrices.standard) {
       this.showToast('Please fill all required fields.', false);
       return;
     }
@@ -215,13 +233,17 @@ export class ManageHotel implements OnInit {
       ...this.extraBookingFeatures,
     ];
 
+    // ✅ pricePerNight دايما = سعر الـ Standard
+    const pricePerNight = this.roomPrices.standard;
+
     if (this.isEdit && this.hotelId !== null) {
       this.hotelService.getHotelById(this.hotelId).subscribe(existing => {
         if (!existing) return;
         const updated: Hotel = {
           ...existing,
           name:               this.hotel.name,
-          pricePerNight:      +this.hotel.pricePerNight,
+          pricePerNight,                          // ✅ = standard price
+          roomPrices:         { ...this.roomPrices },
           rating:             +this.hotel.rating,
           description:        this.hotel.description,
           location:           this.hotel.location,
@@ -240,7 +262,8 @@ export class ManageHotel implements OnInit {
       const newHotel: Hotel = {
         id:                Date.now(),
         name:              this.hotel.name,
-        pricePerNight:     +this.hotel.pricePerNight,
+        pricePerNight,                            // ✅ = standard price
+        roomPrices:        { ...this.roomPrices },
         stars:             0,
         rating:            +this.hotel.rating,
         description:       this.hotel.description,
@@ -260,9 +283,10 @@ export class ManageHotel implements OnInit {
 
   clear() {
     this.hotel = {
-      name: '', pricePerNight: '', rating: '',
+      name: '', rating: '',
       description: '', location: '', status: 'Active',
     };
+    this.roomPrices                = { standard: 0, double: 0, triple: 0, suite: 0 };
     this.rooms                     = { total: 0, single: 0, double: 0, triple: 0, suite: 0 };
     this.images                    = [];
     this.selectedDisplayFeatureIds = [];

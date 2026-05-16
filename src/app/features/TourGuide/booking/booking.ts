@@ -1,14 +1,8 @@
-// ============================================================
-// booking.ts  →  src/app/features/TourGuide/booking/
-// صفحة الدفع بتاعة التور جايد — نفس ستايل هوتيل بوكينج
-// ============================================================
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-// بيانات الحجز اللي بتيجي من الـ details عبر sessionStorage
 export interface TourGuideBookingData {
   guideId:    number;
   guideName:  string;
@@ -32,29 +26,24 @@ export class Booking implements OnInit {
   selectedMethod: 'credit' | 'cash' | 'vodafone' = 'credit';
   isProcessing = false;
 
-  // Credit card fields
   cardNumber  = '';
   expiryDate  = '';
   cvv         = '';
 
-  // Vodafone cash fields
   vodafoneNumber        = '';
   vodafoneOtp           = '';
   otpSent               = false;
   otpSending            = false;
   private otpSentForNumber = '';
 
-  // Cash on arrival deposit method
   depositMethod: 'credit' | 'vodafone' = 'credit';
 
-  // Errors
   cardError     = '';
   expiryError   = '';
   cvvError      = '';
   vodafoneError = '';
   otpError      = '';
 
-  // الـ deposit = 30% من الـ total
   get depositAmount(): number {
     return Math.round((this.booking?.totalPrice ?? 0) * 0.3);
   }
@@ -62,7 +51,29 @@ export class Booking implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // جيب البيانات من الـ sessionStorage
+    // ✅ 1. جرب router state الأول (لما بييجي من details مباشرة)
+    const state = history.state;
+
+    if (state?.bookingResult) {
+      const res   = state.bookingResult;
+      const guide = state.guide;
+
+      this.booking = {
+        guideId:    guide.id,
+        guideName:  res.tourGuideName  ?? guide.name,
+        guideImage: guide.image        ?? guide.profilePictureUrl ?? '',
+        date:       res.bookingDate,
+        time:       '09:00 AM',
+        days:       res.numberOfDays,
+        totalPrice: res.totalPrice,
+      };
+
+      // ✅ 2. احفظ في sessionStorage كـ fallback لو حصل page refresh
+      sessionStorage.setItem('tourGuideBooking', JSON.stringify(this.booking));
+      return;
+    }
+
+    // ✅ 3. fallback: sessionStorage لو جه من refresh
     const raw = sessionStorage.getItem('tourGuideBooking');
     if (!raw) {
       this.router.navigate(['/tour-guide']);
@@ -71,7 +82,6 @@ export class Booking implements OnInit {
     this.booking = JSON.parse(raw);
   }
 
-  // ── Payment method selection ──────────────────────────────
   selectMethod(m: 'credit' | 'cash' | 'vodafone'): void {
     this.selectedMethod = m;
     this.resetFields();
@@ -98,7 +108,6 @@ export class Booking implements OnInit {
     this.otpError         = '';
   }
 
-  // ── Card formatting ───────────────────────────────────────
   formatCard(): void {
     this.cardError  = '';
     this.cardNumber = this.cardNumber
@@ -118,7 +127,6 @@ export class Booking implements OnInit {
     this.cvv = this.cvv.replace(/\D/g, '').substring(0, 3);
   }
 
-  // ── Validation ────────────────────────────────────────────
   isValidCard(): boolean {
     const digits = this.cardNumber.replace(/\s/g, '');
     return digits.length === 16 && this.luhnCheck(digits);
@@ -154,7 +162,6 @@ export class Booking implements OnInit {
     return sum % 10 === 0;
   }
 
-  // ── OTP ───────────────────────────────────────────────────
   validateVodafoneNumber(): void {
     this.vodafoneError = '';
     this.vodafoneNumber = this.vodafoneNumber.replace(/\D/g, '');
@@ -175,7 +182,6 @@ export class Booking implements OnInit {
     }, 1500);
   }
 
-  // ── Confirm Booking ───────────────────────────────────────
   confirmBooking(): void {
     if (!this.booking) return;
     this.cardError = this.expiryError = this.cvvError = this.vodafoneError = this.otpError = '';
@@ -218,10 +224,9 @@ export class Booking implements OnInit {
 
     this.isProcessing = true;
 
-    // TODO: استبدل بـ HTTP call لما الـ API يجهز
     setTimeout(() => {
       this.isProcessing = false;
-      // لا تمسح الـ sessionStorage هنا — الـ confirmed page هتمسحه
+      sessionStorage.removeItem('tourGuideBooking');
       this.router.navigate(['/tour-guide/booking-confirmed'], {
         queryParams: {
           method:  this.selectedMethod,

@@ -291,7 +291,68 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+/* Login Prompt */
+.login-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 16px;
+  text-align: center;
+  animation: fadeIn 0.2s ease;
+}
 
+.login-prompt-icon {
+  font-size: 2.5rem;
+}
+
+.login-prompt-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.login-prompt-text {
+  font-size: 0.88rem;
+  color: #666;
+  margin: 0;
+}
+
+.btn-go-login {
+  width: 100%;
+  padding: 12px;
+  background: #c8a96e;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-go-login:hover { background: #b8975a; }
+
+.btn-dismiss {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  color: #999;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-dismiss:hover { border-color: #999; color: #666; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 .spinner {
   width: 16px;
   height: 16px;

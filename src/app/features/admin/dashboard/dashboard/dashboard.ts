@@ -60,25 +60,25 @@ export class Dashboard implements OnInit {
     });
 
     // Tour Guides
-    const guides         = this.tourGuideService.getAll();
-    this.stats[2].value  = guides.length;
-    this.topGuides       = guides.slice(0, 3).map((g: TourGuide) => ({
-      name:   g.name,
-      rating: g.rating,
-      tours:  g.tours,
-      status: g.status,
-    }));
+    this.tourGuideService.adminGetAll().subscribe({
+      next: (guides: TourGuide[]) => {
+        this.stats[2].value = guides.length;
+        this.topGuides      = guides.slice(0, 3).map(g => ({
+          name:   g.name,
+          rating: g.rating,
+          tours:  g.tours  ?? 0,
+          status: g.status ?? 'Active',
+        }));
+      },
+      error: () => {}
+    });
 
     // Attractions
-    const categories     = this.attractionService.getCategories();
-    const attractions    = this.attractionService.getAll();
-    this.stats[3].value  = attractions.length;
-    this.topAttractions  = attractions.slice(0, 3).map((a: Attraction) => ({
+    const attractions   = this.attractionService.getAll();
+    this.stats[3].value = attractions.length;
+    this.topAttractions = attractions.slice(0, 3).map((a: Attraction) => ({
       name:     a.name,
-      category: (a.categoryIds ?? [])
-        .map(id => categories.find(c => c.id === id)?.name ?? '')
-        .filter(Boolean)
-        .join(', '),
+      category: (a.categoryIds ?? []).join(', '),
       rating:   a.rating,
       fee:      a.fee,
     }));
