@@ -10,13 +10,16 @@
     <div class="profile-avatar-wrap">
       <div class="image-container">
         <div class="image-inner">
-          <img *ngIf="profileImage()" [src]="profileImage()" class="profile-img" alt="Profile" />
-          <div *ngIf="!profileImage()" class="profile-placeholder">
-            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-          </div>
+          @if (profileImage()) {
+            <img [src]="profileImage()" class="profile-img" alt="Profile" />
+          } @else {
+            <div class="profile-placeholder">
+              <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+          }
         </div>
 
         <button class="camera-btn" (click)="fileInput.click()">
@@ -26,12 +29,14 @@
           </svg>
         </button>
 
-        <button *ngIf="profileImage()" class="remove-btn" (click)="removeProfileImage()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
+        @if (profileImage()) {
+          <button class="remove-btn" (click)="removeProfileImage()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        }
 
         <input #fileInput type="file" accept="image/*" style="display:none" (change)="onImageSelected($event)" />
       </div>
@@ -81,3 +86,25 @@
     </main>
   </div>
 </div>
+
+<!-- ✅ Crop Modal -->
+@if (showCropper) {
+  <div class="crop-modal">
+    <div class="crop-box">
+      <h3 class="crop-title">Crop Your Photo</h3>
+     <image-cropper
+  [imageChangedEvent]="imageChangedEvent"
+  [maintainAspectRatio]="true"
+  [aspectRatio]="1"
+  format="jpeg"
+  [output]="'base64'"
+  (imageCropped)="onImageCropped($event)"
+  [roundCropper]="true"
+></image-cropper>
+      <div class="crop-actions">
+        <button class="crop-cancel" (click)="cancelCrop()">Cancel</button>
+        <button class="crop-save" (click)="saveCrop()">Save</button>
+      </div>
+    </div>
+  </div>
+}

@@ -4,11 +4,12 @@ import { RouterModule, RouterOutlet, Router, NavigationEnd } from '@angular/rout
 import { filter } from 'rxjs/operators';
 import { DarkModeService } from '../../../core/services/dark-mode.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 
 @Component({
   selector: 'app-profile-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, RouterOutlet],
+  imports: [CommonModule, RouterModule, RouterOutlet, ImageCropperComponent],
   templateUrl: './profile-layout.html',
   styleUrl: './profile-layout.css',
 })
@@ -19,6 +20,9 @@ export class ProfileLayout {
   private cdr = inject(ChangeDetectorRef);
 
   profileImage = signal<string>('');
+  showCropper = false;
+  imageChangedEvent: Event | null = null;
+  croppedImage = '';
 
   titleMap: Record<string, string> = {
     '/profile/personal-information': 'Personal Information',
@@ -48,9 +52,7 @@ export class ProfileLayout {
     this.currentTitle = this.titleMap[clean] ?? 'Profile';
   }
 
-  get isDarkMode(): boolean {
-    return this.darkMode.isDarkMode();
-  }
+  get isDarkMode(): boolean { return this.darkMode.isDarkMode(); }
 
   get userName(): string {
     const user = this.auth.currentUser();
@@ -63,17 +65,48 @@ export class ProfileLayout {
     return `${user.firstName?.charAt(0) ?? ''}${user.lastName?.charAt(0) ?? ''}`.toUpperCase();
   }
 
+
   onImageSelected(event: Event): void {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
+  console.log('image selected!'); // ✅
+  this.imageChangedEvent = event;
+  this.showCropper = true;
+  this.cdr.detectChanges();
+}
+
+onImageCropped(event: ImageCroppedEvent): void {
+  console.log('full event:', event);
+  // بناخد الـ base64 أو نحوله من الـ blob
+  if (event.base64) {
+    this.croppedImage = event.base64;
+  } else if (event.blob) {
     const reader = new FileReader();
     reader.onload = () => {
-      const base64 = reader.result as string;
-      this.auth.updateProfileImage(base64);
-      this.profileImage.set(base64);
-      this.cdr.detectChanges();
+      this.croppedImage = reader.result as string;
+      console.log('croppedImage from blob:', this.croppedImage.substring(0, 30));
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(event.blob);
+  }
+}
+
+saveCrop(): void {
+  const imageToSave = this.croppedImage; // ✅ بنحفظه في variable قبل ما نمسحه
+  
+  if (imageToSave) {
+    this.auth.updateProfileImage(imageToSave);
+    this.profileImage.set(imageToSave);
+  }
+  
+  this.showCropper = false;
+  this.croppedImage = '';
+  this.imageChangedEvent = null;
+  this.cdr.detectChanges();
+}
+ 
+
+  cancelCrop(): void {
+    this.showCropper = false;
+    this.imageChangedEvent = null;
+    this.croppedImage = '';
   }
 
   removeProfileImage(): void {
