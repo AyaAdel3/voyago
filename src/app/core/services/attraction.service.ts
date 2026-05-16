@@ -1,109 +1,89 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { tap, map } from 'rxjs/operators';
 
-export interface Feature {
+export interface AttractionImage {
   id: number;
-  icon: string;
-  name: string;
-}
-
-export interface Category {
-  id: number;
-  icon: string;
-  name: string;
+  imageUrl: string;
+  isMain: boolean;
 }
 
 export interface Attraction {
   id: number;
   name: string;
+  description: string;
+  rating: number;
+  category: string;
+  mainImageUrl: string | null;
+}
+
+export interface AttractionDetails {
+  id: number;
+  name: string;
+  description: string;
+  location: string;
+  yearOfInscription: number;
+  ticketPrice: number;
+  rating: number;
+  category: string;
+  images: AttractionImage[];
+}
+
+export interface AdminAttraction {
+  id: number;
+  name: string;
   location: string;
   rating: number;
-  images: string[];
-  description: string;
-  place: string;
-  dateOfInscription: number;
   ticketPrice: number;
-  categoryIds: number[];
+  category: string;
   status: string;
-  fee: number;
-  featureIds?: number[];
+  mainImageUrl: string | null;
+}
+
+export interface AdminAttractionsResponse {
+  totalAttractions: number;
+  activeAttractions: number;
+  inactiveAttractions: number;
+  attractions: AdminAttraction[];
 }
 
 @Injectable({ providedIn: 'root' })
 export class AttractionService {
-  private features: Feature[] = [
-    { id: 1, icon: '🅿️', name: 'Parking' },
-    { id: 2, icon: '♿', name: 'Wheelchair Access' },
-    { id: 3, icon: '🚻', name: 'Restrooms' },
-    { id: 4, icon: '🍽️', name: 'Restaurant' },
-    { id: 5, icon: '🎒', name: 'Guided Tours' },
-    { id: 6, icon: '📸', name: 'Photography Allowed' },
-    { id: 7, icon: '🏕️', name: 'Camping' },
-    { id: 8, icon: '🛒', name: 'Gift Shop' },
-  ];
+  private apiUrl = '/api/Attractions';
+  private adminUrl = '/api/admin/attractions';
 
-  private categories: Category[] = [
-    { id: 1, icon: '🏛️', name: 'Historical' },
-    { id: 2, icon: '🌿', name: 'Nature' },
-  ];
+  private _cache: Attraction[] | null = null;
+  private _detailsCache: Map<number, AttractionDetails> = new Map();
+  private _adminCache: AdminAttractionsResponse | null = null;
 
-  private attractions: Attraction[] = [
-    {
-      id: 1, name: 'Wadi El Hitan Protected Area', location: 'Fayoum, Egypt',
-      rating: 4,
-      images: [
-        'https://images.unsplash.com/photo-1568322445389-f64ac2515020?w=800&h=500&fit=crop',
-        'https://images.unsplash.com/photo-1553913861-c0fddf2619ee?w=800&h=500&fit=crop',
-        'https://images.unsplash.com/photo-1509316785289-025f5b846b35?w=800&h=500&fit=crop',
-      ],
-      description: 'Wadi El Hitan, Whale Valley, is a paleontological site in the Faiyum desert of Egypt. It contains fossils of the earliest, and now extinct, suborder of whales.',
-      place: 'Fayoum, Egypt', dateOfInscription: 2005,
-      ticketPrice: 100, fee: 100, categoryIds: [1], featureIds: [], status: 'Active'
-    },
-    {
-      id: 2, name: 'Wadi El Rayan Waterfalls', location: 'Fayoum, Egypt',
-      rating: 5,
-      images: [
-        'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=800&h=500&fit=crop',
-        'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&h=500&fit=crop',
-        'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&h=500&fit=crop',
-      ],
-      description: 'Wadi El Rayan is a protected area featuring the only natural waterfalls in Egypt. The area includes two lakes connected by a waterfall and is home to diverse wildlife.',
-      place: 'Fayoum, Egypt', dateOfInscription: 2003,
-      ticketPrice: 80, fee: 80, categoryIds: [2], featureIds: [], status: 'Active'
-    },
-    {
-      id: 3, name: 'Lake Qarun', location: 'Fayoum, Egypt',
-      rating: 4,
-      images: [
-        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=500&fit=crop',
-        'https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800&h=500&fit=crop',
-        'https://images.unsplash.com/photo-1475924156734-496f6cac6ec1?w=800&h=500&fit=crop',
-      ],
-      description: 'Lake Qarun is one of Egypt\'s oldest natural lakes and a protected area. It is a haven for migratory birds and offers stunning views of the surrounding desert landscape.',
-      place: 'Fayoum, Egypt', dateOfInscription: 1989,
-      ticketPrice: 50, fee: 50, categoryIds: [2], featureIds: [], status: 'Active'
-    }
-  ];
+  constructor(private http: HttpClient) {}
 
-  getFeatures(): Feature[]   { return this.features; }
-  getCategories(): Category[] { return this.categories; }
-  getAll(): Attraction[]     { return this.attractions; }
-
-  getById(id: number): Attraction | undefined {
-    return this.attractions.find(a => a.id === id);
+  // ── Public ──────────────────────────────────────────────
+  getAll(): Observable<Attraction[]> {
+    if (this._cache) return of(this._cache);
+    return this.http.get<Attraction[]>(this.apiUrl).pipe(
+      tap(data => this._cache = data)
+    );
   }
 
-  add(a: Omit<Attraction, 'id'>): void {
-    const newId = Math.max(...this.attractions.map(x => x.id)) + 1;
-    this.attractions.push({ ...a, id: newId });
+  getById(id: number): Observable<AttractionDetails> {
+    if (this._detailsCache.has(id)) return of(this._detailsCache.get(id)!);
+    return this.http.get<AttractionDetails>(`${this.apiUrl}/${id}`).pipe(
+      tap(data => this._detailsCache.set(id, data))
+    );
   }
 
-  update(id: number, data: Partial<Attraction>): void {
-    const i = this.attractions.findIndex(a => a.id === id);
-    if (i !== -1) this.attractions[i] = { ...this.attractions[i], ...data };
+  // ── Admin ────────────────────────────────────────────────
+  adminGetAll(): Observable<AdminAttractionsResponse> {
+    if (this._adminCache) return of(this._adminCache);
+    return this.http.get<AdminAttractionsResponse>(`${this.adminUrl}/GetAllAttractions`).pipe(
+      tap(data => this._adminCache = data)
+    );
   }
 
-  delete(id: number): void {
-    this.attractions = this.attractions.filter(a => a.id !== id);
+  adminDelete(id: number): Observable<any> {
+    this._adminCache = null; // clear cache بعد الحذف
+    return this.http.delete(`${this.adminUrl}/${id}`);
   }
 }

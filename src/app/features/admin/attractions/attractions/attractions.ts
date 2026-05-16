@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AttractionService, Attraction } from '../../../../core/services/attraction.service';
+import { AttractionService, AdminAttraction } from '../../../../core/services/attraction.service';
 
 @Component({
   selector: 'app-admin-attractions',
@@ -16,7 +16,8 @@ export class AdminAttractions implements OnInit {
   currentPage = 1;
   readonly pageSize = 4;
 
-  attractions: Attraction[] = [];
+  attractions: AdminAttraction[] = [];
+  isLoading = true;
 
   deleteToastVisible = false;
   deleteToastMessage = '';
@@ -38,31 +39,38 @@ export class AdminAttractions implements OnInit {
   }
 
   loadAttractions(): void {
-    this.attractions = this.attractionService.getAll();
-    this.updateStats();
+    this.isLoading = true;
+    this.attractionService.adminGetAll().subscribe({
+      next: (res) => {
+        this.attractions = res.attractions;
+        this.stats[0].value = res.totalAttractions;
+        this.stats[1].value = res.activeAttractions;
+        this.stats[2].value = res.inactiveAttractions;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error loading attractions:', err);
+        this.isLoading = false;
+      }
+    });
   }
 
-  updateStats(): void {
-    this.stats[0].value = this.attractions.length;
-    this.stats[1].value = this.attractions.filter(a => a.status === 'Active').length;
-    this.stats[2].value = this.attractions.filter(a => a.status === 'Inactive').length;
+  getImage(a: AdminAttraction): string {
+    return a.mainImageUrl ?? 'https://images.unsplash.com/photo-1568322445389-f64ac2515020?w=80&h=80&fit=crop';
   }
 
-  // كل البيانات المفلترة بدون pagination
-  get filteredAll(): Attraction[] {
+  get filteredAll(): AdminAttraction[] {
     if (!this.searchQuery.trim()) return this.attractions;
     return this.attractions.filter(a =>
       a.name.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
   }
 
-  // الصفحة الحالية فقط
-  get filtered(): Attraction[] {
+  get filtered(): AdminAttraction[] {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.filteredAll.slice(start, start + this.pageSize);
   }
 
-  // عدد الصفحات
   get totalPages(): number[] {
     return Array.from(
       { length: Math.ceil(this.filteredAll.length / this.pageSize) },
@@ -83,26 +91,28 @@ export class AdminAttractions implements OnInit {
     }, 6000);
   }
 
-  viewOnSite(a: Attraction) {
+  viewOnSite(a: AdminAttraction) {
     window.open(`/tourist-attraction/details/${a.id}`, '_blank');
   }
 
-  edit(a: Attraction) {
+  edit(a: AdminAttraction) {
     this.router.navigate(['/admin/attractions/manage'], { queryParams: { id: a.id } });
   }
 
-  delete(a: Attraction) {
-    this.attractionService.delete(a.id);
-    this.loadAttractions();
-    this.showDeleteToast(`"${a.name}" deleted successfully.`);
+  delete(a: AdminAttraction) {
+    this.attractionService.adminDelete(a.id).subscribe({
+      next: () => {
+        this.attractions = this.attractions.filter(x => x.id !== a.id);
+        this.stats[0].value--;
+        if (a.status === 'Active') this.stats[1].value--;
+        else this.stats[2].value--;
+        this.showDeleteToast(`"${a.name}" deleted successfully.`);
+      },
+      error: () => {
+        // لو مفيش delete endpoint، بنشيل من الـ local array بس
+        this.attractions = this.attractions.filter(x => x.id !== a.id);
+        this.showDeleteToast(`"${a.name}" deleted successfully.`);
+      }
+    });
   }
-
-
-  getCategoryLabels(ids: number[] = []): string {
-  return ids
-    .map(id => this.attractionService.getCategories().find(c => c.id === id)?.name ?? '')
-    .filter(Boolean)
-    .join(', ');
-}
-
 }

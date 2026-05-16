@@ -1,13 +1,23 @@
 <div class="attractions-page bg-[#021526]">
-  <div class="attractions-list">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="flex justify-center items-center min-h-screen">
+    <p class="text-white text-xl">Loading...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && error" class="flex justify-center items-center min-h-screen">
+    <p class="text-red-400 text-xl">{{ error }}</p>
+  </div>
+
+  <!-- Data -->
+  <div *ngIf="!isLoading && !error" class="attractions-list">
     <div
       *ngFor="let attraction of attractions"
       class="attraction-card"
       (click)="goToDetails(attraction.id)"
     >
       <div class="card-image">
-        <img [src]="attraction.images[0]" [alt]="attraction.name" />
-        
+        <img [src]="getImage(attraction)" [alt]="attraction.name" />
         <button class="heart-btn" (click)="toggleFavorite($event, attraction)">
           <svg viewBox="0 0 24 24" width="20" height="20">
             <path
@@ -22,17 +32,15 @@
           </svg>
         </button>
       </div>
-
       <div class="card-content">
         <div class="card-header">
           <h3 class="card-title text-white font-bold">{{ attraction.name }}</h3>
           <div class="card-rating">
             <span class="star text-[#FFDE70]">★</span>
-            <span class="rating-number text-white">{{ attraction.rating }}.0</span>
+            <span class="rating-number text-white">{{ attraction.rating }}</span>
           </div>
         </div>
         <p class="card-description text-gray-400 line-clamp-2">{{ attraction.description }}</p>
-        
         <button class="show-btn" (click)="goToDetails(attraction.id); $event.stopPropagation()">
           Show place
         </button>

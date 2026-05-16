@@ -55,7 +55,12 @@
   <div class="form-row">
     <div>
       <label class="form-label">Ticket Price (LE) <span class="req">*</span></label>
-      <input class="form-input" [(ngModel)]="attraction.fee" type="number" placeholder="100" />
+      <input
+        class="form-input"
+        [(ngModel)]="attraction.ticketPrice"
+        type="number"
+        placeholder="100"
+      />
     </div>
     <div>
       <label class="form-label">Date of Inscription <span class="req">*</span></label>
@@ -139,29 +144,6 @@
       [(ngModel)]="attraction.description"
       placeholder="Enter detailed Attractions description..."
     ></textarea>
-  </div>
-
-  <!-- ── Status ── -->
-  <div class="status-section">
-    <h4>Attraction Status <span class="req">*</span></h4>
-    <div class="status-btns">
-      <button
-        class="btn-status btn-status-active"
-        [class.selected]="attraction.status === 'Active'"
-        (click)="setStatus('Active')"
-        type="button"
-      >
-        <span class="status-dot"></span> Active
-      </button>
-      <button
-        class="btn-status btn-status-inactive"
-        [class.selected]="attraction.status === 'Inactive'"
-        (click)="setStatus('Inactive')"
-        type="button"
-      >
-        <span class="status-dot"></span> Inactive
-      </button>
-    </div>
   </div>
 
   <!-- ── Actions ── -->

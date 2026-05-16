@@ -34,24 +34,30 @@
     </a>
   </div>
 
-  <div class="admin-table">
+  <!-- Loading -->
+  <div *ngIf="isLoading" style="text-align: center; padding: 2rem; color: #a3c4eb">
+    Loading attractions...
+  </div>
+
+  <div class="admin-table" *ngIf="!isLoading">
     <div class="table-header attr-grid">
       <span>Attraction Name</span>
-      <span>Location</span>
       <span>Category</span>
       <span>Rating</span>
-      <span>Ticket Price</span>
-      <span>Status</span>
       <span>Actions</span>
     </div>
 
     <div *ngFor="let a of filtered" class="table-row attr-grid">
+      <!-- اسم + صورة -->
       <div class="attr-name-cell">
-        <img [src]="a.images[0]" [alt]="a.name" class="attr-thumb" />
+        <img [src]="getImage(a)" [alt]="a.name" class="attr-thumb" />
         <span class="cell-name">{{ a.name }}</span>
       </div>
-      <span class="cell-muted">{{ a.location }}</span>
-      <span>{{ getCategoryLabels(a.categoryIds) }}</span>
+
+      <!-- category دلوقتي string مش array -->
+      <span>{{ a.category }}</span>
+
+      <!-- rating -->
       <span class="rating-cell">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
           <path
@@ -60,12 +66,8 @@
         </svg>
         {{ a.rating }}
       </span>
-      <span class="price-cell">{{ a.fee }}LE</span>
-      <span>
-        <span class="status-badge" [ngClass]="'status-' + a.status.toLowerCase()">{{
-          a.status
-        }}</span>
-      </span>
+
+      <!-- actions -->
       <div class="actions-cell">
         <button class="btn-view-site" (click)="viewOnSite(a)">
           <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">

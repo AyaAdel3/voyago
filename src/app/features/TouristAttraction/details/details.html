@@ -1,4 +1,22 @@
-@if (attraction) {
+<!-- Loading -->
+<div
+  *ngIf="isLoading"
+  class="details-page"
+  style="display: flex; align-items: center; justify-content: center"
+>
+  <p style="color: white; font-size: 1.2rem">Loading...</p>
+</div>
+
+<!-- Error -->
+<div
+  *ngIf="error"
+  class="details-page"
+  style="display: flex; align-items: center; justify-content: center"
+>
+  <p style="color: #f87171; font-size: 1.2rem">{{ error }}</p>
+</div>
+
+@if (attraction && !isLoading && !error) {
   <div class="details-page">
     <button class="back-btn" (click)="goBack()">← Back</button>
 
@@ -7,7 +25,7 @@
         <!-- GALLERY -->
         <div class="gallery">
           <div class="gallery-main" (click)="openLightbox(activeImage)">
-            <img [src]="attraction.images[activeImage]" [alt]="attraction.name" />
+            <img [src]="getImageByIndex(activeImage)" [alt]="attraction.name" />
             <div class="main-overlay">
               <svg viewBox="0 0 24 24" width="28" height="28" fill="white" style="opacity: 0.7">
                 <path
@@ -23,7 +41,7 @@
               [class.active-thumb]="activeImage === i"
               (click)="setActiveImage(i)"
             >
-              <img [src]="img" [alt]="attraction.name + ' ' + (i + 1)" />
+              <img [src]="getImageUrl(img)" [alt]="attraction.name + ' ' + (i + 1)" />
               <div
                 *ngIf="i === 2 && attraction.images.length > 3"
                 class="more-photos"
@@ -35,7 +53,7 @@
           </div>
         </div>
 
-        <!-- Title & Rating Badge -->
+        <!-- Title & Rating -->
         <div class="details-rating">
           <h1 class="details-title">{{ attraction.name }}</h1>
           <div class="rating-badge-new">
@@ -58,7 +76,6 @@
       <!-- Info Card -->
       <div class="details-right">
         <div class="info-card">
-          <!-- Header -->
           <div class="card-header">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="#FFDE70">
               <path
@@ -68,14 +85,12 @@
             <span>Site Details</span>
           </div>
 
-          <!-- Category badges -->
-          <div class="badges-row" *ngIf="attraction.categoryIds.length">
-            <span *ngFor="let id of attraction.categoryIds" class="badge badge-category">{{
-              getCategoryLabel(id)
-            }}</span>
+          <!-- Category - string من الـ API -->
+          <div class="badges-row" *ngIf="attraction.category">
+            <span class="badge badge-category">{{ attraction.category }}</span>
           </div>
 
-          <!-- Place -->
+          <!-- Location -->
           <div class="info-item">
             <div class="info-icon">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="#a3c4eb">
@@ -85,12 +100,12 @@
               </svg>
             </div>
             <div class="info-text">
-              <span class="label">Place</span>
-              <span class="info-value">{{ attraction.place }}</span>
+              <span class="label">Location</span>
+              <span class="info-value">{{ attraction.location }}</span>
             </div>
           </div>
 
-          <!-- Date of Inscription -->
+          <!-- Year of Inscription -->
           <div class="info-item">
             <div class="info-icon">
               <svg viewBox="0 0 24 24" width="15" height="15" fill="#a3c4eb">
@@ -100,12 +115,11 @@
               </svg>
             </div>
             <div class="info-text">
-              <span class="label">Date of Inscription</span>
-              <span class="info-value">{{ attraction.dateOfInscription }}</span>
+              <span class="label">Year of Inscription</span>
+              <span class="info-value">{{ attraction.yearOfInscription }}</span>
             </div>
           </div>
 
-          <!-- Divider -->
           <div class="card-divider"></div>
 
           <!-- Ticket Price -->
@@ -134,7 +148,7 @@
           <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
         </svg>
       </button>
-      <img [src]="attraction.images[lbIndex]" [alt]="attraction.name" class="lb-img" />
+      <img [src]="getImageByIndex(lbIndex)" [alt]="attraction.name" class="lb-img" />
       <button
         class="lb-arrow lb-next"
         (click)="lbNext()"

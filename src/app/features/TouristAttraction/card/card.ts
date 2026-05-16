@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { timeout, finalize } from 'rxjs/operators';
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AttractionService, Attraction } from '../../../core/services/attraction.service';
 
@@ -13,15 +15,45 @@ export type { Attraction };
   templateUrl: './card.html',
   styleUrls: ['./card.css']
 })
-export class TouristAttractionCard {
+export class TouristAttractionCard implements OnInit, OnDestroy {
   attractions: Attraction[] = [];
+  isLoading = true;
+  error: string | null = null;
+
+  fallbackImage = 'https://images.unsplash.com/photo-1568322445389-f64ac2515020?w=800&h=500&fit=crop';
+
+  private sub!: Subscription;
 
   constructor(
     private router: Router,
     private favoritesService: FavoritesService,
     private attractionService: AttractionService
-  ) {
-    this.attractions = this.attractionService.getAll();
+  ) {}
+
+  ngOnInit() {
+    this.sub = this.attractionService.getAll().pipe(
+      timeout(8000),
+      finalize(() => {
+        this.isLoading = false;
+      })
+    ).subscribe({
+      next: (data) => {
+        this.attractions = data;
+        // preload كل الـ details في الخلفية بعد ما الـ cards تتحمل
+        data.forEach(a => this.attractionService.getById(a.id).subscribe());
+      },
+      error: (err) => {
+        console.error('Error fetching attractions:', err);
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
+
+  getImage(attraction: Attraction): string {
+    return attraction.mainImageUrl ?? this.fallbackImage;
   }
 
   isFavorite(name: string): boolean {
@@ -30,17 +62,15 @@ export class TouristAttractionCard {
 
   toggleFavorite(event: Event, attraction: Attraction) {
     event.stopPropagation();
-
     if (this.isFavorite(attraction.name)) {
-      // ✅ بنبعت الـ name مش الـ index
       this.favoritesService.removeFavorite(attraction.name);
     } else {
       this.favoritesService.addToFavorites({
         title: attraction.name,
-        image: attraction.images[0],
-        price: attraction.ticketPrice + ' le / Ticket',
+        image: this.getImage(attraction),
+        price: 'N/A',
         rating: attraction.rating,
-        type: 'attraction'  // ✅ ده اللي كان ناقص
+        type: 'attraction'
       });
     }
   }
