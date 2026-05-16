@@ -1,11 +1,10 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Footer } from "./shared/components/footer/footer";
 import { AuthModalService } from './core/services/auth-modal.service';
 import { Login } from './core/Auth/login/login';
 import { Register } from './core/Auth/register/register';
-import { TourGuideService } from './core/services/tour-guide.service';
 
 @Component({
   selector: 'app-root',
@@ -13,15 +12,8 @@ import { TourGuideService } from './core/services/tour-guide.service';
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App implements OnInit {
+export class App {
   protected readonly title = signal('Voyago');
 
-  constructor(
-    public modal: AuthModalService,
-    private tourGuideService: TourGuideService
-  ) {}
-
-  ngOnInit() {
-    this.tourGuideService.getAll().subscribe();
-  }
+  constructor(public modal: AuthModalService) {}
 }
