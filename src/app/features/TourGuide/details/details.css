@@ -28,8 +28,8 @@
   position: relative;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
   animation: slideUp 0.25s ease;
-  max-height: 95vh;
-  overflow-y: auto;
+  max-height: none;
+  overflow-y: visible;
 }
 
 @keyframes slideUp {
@@ -119,9 +119,18 @@
   margin: 8px 0 4px;
 }
 
-.languages-list {
+/* .languages-list {
   list-style: disc;
   padding-left: 18px;
+  margin: 0;
+} */
+
+.languages-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px 0.1rem;
+  list-style: disc;
+  padding-left: 1rem;
   margin: 0;
 }
 
