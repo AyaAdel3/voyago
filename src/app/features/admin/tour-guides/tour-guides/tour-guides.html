@@ -63,16 +63,13 @@
       <!-- Email -->
       <span class="cell-muted">{{ g.email || '—' }}</span>
 
-      <!-- ✅ Languages — chips + badge للزيادة -->
+      <!-- Languages -->
       <div class="lang-tags">
         <ng-container *ngIf="g.languages && g.languages.length; else noLangs">
-          <!-- أول اتنين كـ chips -->
           <span
             *ngFor="let l of g.languages.slice(0, 2)"
             class="lang-tag"
           >{{ l }}</span>
-
-          <!-- لو زيادة عن اتنين، اعرض الكاونتر -->
           <span
             *ngIf="g.languages.length > 2"
             class="lang-tag lang-tag-more"
@@ -92,7 +89,7 @@
         <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
         </svg>
-        {{ g.rating ?? '—' }}
+        {{ g.rating }}
       </span>
 
       <!-- Status badge -->
