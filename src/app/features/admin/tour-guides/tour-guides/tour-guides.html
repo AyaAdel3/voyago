@@ -1,17 +1,17 @@
 <div>
   <h2 class="section-title">Tour Guides Management</h2>
 
+  <!-- Stats -->
   <div class="tour-guides-stats">
     <div class="stats-row">
       <div *ngFor="let s of stats" class="stat-card" [ngClass]="s.type">
         <p class="stat-label">{{ s.label }}</p>
-        <div class="stat-value">
-          {{ s.value }} <span>{{ s.icon }}</span>
-        </div>
+        <div class="stat-value">{{ s.value }} <span>{{ s.icon }}</span></div>
       </div>
     </div>
   </div>
 
+  <!-- Toolbar -->
   <div class="toolbar">
     <div class="toolbar-search">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="#4a6a88">
@@ -26,13 +26,17 @@
     </div>
     <a class="btn-add" [routerLink]="'/admin/tour-guides/manage'">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
       </svg>
       Add Tour Guide
     </a>
   </div>
 
-  <div class="admin-table">
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="empty-state">Loading tour guides…</div>
+
+  <!-- Table -->
+  <div class="admin-table" *ngIf="!isLoading">
     <div class="table-header guides-grid">
       <span>Tour Name</span>
       <span>Email</span>
@@ -44,38 +48,62 @@
     </div>
 
     <div *ngFor="let g of filtered" class="table-row guides-grid">
+
+      <!-- Name + Avatar -->
       <div class="guide-name-cell">
-        <img [src]="g.image" [alt]="g.name" class="guide-avatar" />
+        <img
+          [src]="g.profilePictureUrl || g.image || 'assets/images/default-avatar.png'"
+          [alt]="g.name"
+          class="guide-avatar"
+          (error)="$any($event.target).src='assets/images/default-avatar.png'"
+        />
         <span class="cell-name">{{ g.name }}</span>
       </div>
 
-      <span class="cell-muted">{{ g.email }}</span>
+      <!-- Email -->
+      <span class="cell-muted">{{ g.email || '—' }}</span>
 
+      <!-- ✅ Languages — chips + badge للزيادة -->
       <div class="lang-tags">
-        <span *ngFor="let l of (g.languages || []).slice(0, 2)" class="lang-tag">{{ l }}</span>
-        <span *ngIf="(g.languages?.length || 0) > 2" class="lang-tag">
-          +{{ (g.languages?.length || 0) - 2 }}
-        </span>
+        <ng-container *ngIf="g.languages && g.languages.length; else noLangs">
+          <!-- أول اتنين كـ chips -->
+          <span
+            *ngFor="let l of g.languages.slice(0, 2)"
+            class="lang-tag"
+          >{{ l }}</span>
+
+          <!-- لو زيادة عن اتنين، اعرض الكاونتر -->
+          <span
+            *ngIf="g.languages.length > 2"
+            class="lang-tag lang-tag-more"
+            [title]="g.languages.slice(2).join(', ')"
+          >+{{ g.languages.length - 2 }}</span>
+        </ng-container>
+        <ng-template #noLangs>
+          <span class="cell-muted">—</span>
+        </ng-template>
       </div>
 
-      <span class="cell-muted">{{ g.phoneNumber }}</span>
+      <!-- Phone -->
+      <span class="cell-muted">{{ g.phoneNumber || g.phone || '—' }}</span>
 
+      <!-- Rating -->
       <span class="rating-cell">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
           <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
         </svg>
-        {{ g.rating }}
+        {{ g.rating ?? '—' }}
       </span>
 
+      <!-- Status badge -->
       <span>
         <span
           class="status-badge"
           [ngClass]="'status-' + (g.status || 'active').toLowerCase()"
-        >
-          {{ g.status || 'Active' }}
-        </span>
+        >{{ g.status || 'Active' }}</span>
       </span>
 
+      <!-- Actions -->
       <div class="actions-cell">
         <button class="btn-view-site" (click)="view(g)">
           <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
@@ -83,12 +111,12 @@
           </svg>
           View
         </button>
-        <button class="btn-icon btn-edit" (click)="edit(g)">
+        <button class="btn-icon btn-edit" (click)="edit(g)" title="Edit">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
           </svg>
         </button>
-        <button class="btn-icon btn-delete" (click)="delete(g)">
+        <button class="btn-icon btn-delete" (click)="delete(g)" title="Delete">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
             <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
           </svg>
@@ -96,7 +124,9 @@
       </div>
     </div>
 
-    <div *ngIf="filtered.length === 0" class="empty-state">No tour guides found.</div>
+    <div *ngIf="filtered.length === 0 && !isLoading" class="empty-state">
+      No tour guides found.
+    </div>
   </div>
 
   <!-- Pagination -->
@@ -104,33 +134,57 @@
     <button
       class="page-btn arrow"
       [disabled]="currentPage === 1"
-      (click)="currentPage = currentPage - 1"
+      (click)="currentPage = currentPage - 1; onSearch()"
     >‹</button>
-
     <button
       *ngFor="let p of totalPages"
       class="page-btn"
       [class.active]="p === currentPage"
       (click)="currentPage = p"
     >{{ p }}</button>
-
     <button
       class="page-btn arrow"
       [disabled]="currentPage === totalPages.length"
-      (click)="currentPage = currentPage + 1"
+      (click)="currentPage = currentPage + 1; onSearch()"
     >›</button>
   </div>
 </div>
 
 <!-- Details Popup -->
 <ng-container *ngIf="selectedGuide">
-  <app-tour-guide-details [guide]="selectedGuide!" (closeDetails)="closeDetails()">
-  </app-tour-guide-details>
+  <app-tour-guide-details
+    [guide]="selectedGuide!"
+    (closeDetails)="closeDetails()"
+  ></app-tour-guide-details>
 </ng-container>
 
-<!-- Delete Toast -->
-<div class="toast toast-delete" *ngIf="deleteToastVisible">
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="#ef4444">
+<!-- Confirm Delete Modal -->
+<div class="modal-overlay" *ngIf="confirmDeleteVisible" (click)="cancelDelete()">
+  <div class="confirm-modal" (click)="$event.stopPropagation()">
+    <div class="confirm-icon">
+      <svg viewBox="0 0 24 24" width="32" height="32" fill="#ef4444">
+        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+      </svg>
+    </div>
+    <h3>Delete Tour Guide</h3>
+    <p>Are you sure you want to delete <strong>{{ guideToDelete?.name }}</strong>?<br/>This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn-cancel-modal" (click)="cancelDelete()">Cancel</button>
+      <button class="btn-confirm-delete" (click)="confirmDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div
+  class="toast"
+  *ngIf="deleteToastVisible"
+  [ngClass]="deleteToastSuccess ? 'toast-delete-success' : 'toast-delete'"
+>
+  <svg *ngIf="deleteToastSuccess" viewBox="0 0 24 24" width="18" height="18" fill="#22c55e">
+    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+  </svg>
+  <svg *ngIf="!deleteToastSuccess" viewBox="0 0 24 24" width="18" height="18" fill="#ef4444">
     <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
   </svg>
   <span style="flex: 1">{{ deleteToastMessage }}</span>

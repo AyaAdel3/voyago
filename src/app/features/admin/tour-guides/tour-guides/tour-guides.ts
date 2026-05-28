@@ -17,12 +17,16 @@ export class AdminTourGuides implements OnInit {
   currentPage = 1;
   readonly pageSize = 4;
 
-  guides: TourGuide[] = [];
+  guides: TourGuide[]             = [];
   selectedGuide: TourGuide | null = null;
-  isLoading = false;
+  isLoading                       = false;
 
   deleteToastVisible = false;
   deleteToastMessage = '';
+  deleteToastSuccess = true;
+
+  confirmDeleteVisible            = false;
+  guideToDelete: TourGuide | null = null;
 
   availableStatuses: { id: number; name: string }[] = [];
 
@@ -49,10 +53,16 @@ export class AdminTourGuides implements OnInit {
       next: (data) => {
         this.guides    = data;
         this.isLoading = false;
-        this.updateStats();
+        // ✅ استخدم الـ stats من الـ API response مباشرة
+        this.stats[0].value = this.tourGuideService.adminStats.total;
+        this.stats[1].value = this.tourGuideService.adminStats.active;
+        this.stats[2].value = this.tourGuideService.adminStats.inactive;
         this.cdr.detectChanges();
       },
-      error: () => { this.isLoading = false; }
+      error: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -63,16 +73,12 @@ export class AdminTourGuides implements OnInit {
     });
   }
 
-  updateStats(): void {
-    this.stats[0].value = this.guides.length;
-    this.stats[1].value = this.guides.filter(g => g.status?.toLowerCase() === 'active').length;
-    this.stats[2].value = this.guides.filter(g => g.status?.toLowerCase() === 'inactive').length;
-  }
-
   get filteredAll(): TourGuide[] {
-    if (!this.searchQuery.trim()) return this.guides;
+    const q = this.searchQuery.trim().toLowerCase();
+    if (!q) return this.guides;
     return this.guides.filter(g =>
-      g.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      g.name.toLowerCase().includes(q) ||
+      (g.email ?? '').toLowerCase().includes(q)
     );
   }
 
@@ -88,6 +94,8 @@ export class AdminTourGuides implements OnInit {
     );
   }
 
+  onSearch(): void { this.currentPage = 1; }
+
   changeStatus(g: TourGuide, statusId: number): void {
     this.tourGuideService.adminUpdateStatus(g.id, statusId).subscribe({
       next: () => { this.loadGuides(); },
@@ -95,36 +103,54 @@ export class AdminTourGuides implements OnInit {
     });
   }
 
-  onSearch(): void {
-    this.currentPage = 1;
-  }
-
-  showDeleteToast(msg: string) {
-    this.deleteToastMessage = msg;
-    this.deleteToastVisible = true;
-    setTimeout(() => {
-      this.deleteToastVisible = false;
-      this.cdr.detectChanges();
-    }, 3000);
-  }
-
   view(g: TourGuide)  { this.selectedGuide = g; }
   closeDetails()      { this.selectedGuide = null; }
-  edit(g: TourGuide)  { this.router.navigate(['/admin/tour-guides/manage'], { queryParams: { id: g.id } }); }
+
+  edit(g: TourGuide): void {
+    this.router.navigate(['/admin/tour-guides/manage'], { queryParams: { id: g.id } });
+  }
 
   delete(g: TourGuide): void {
+    this.guideToDelete        = g;
+    this.confirmDeleteVisible = true;
+    this.cdr.detectChanges();
+  }
+
+  confirmDelete(): void {
+    if (!this.guideToDelete) return;
+    const g = this.guideToDelete;
+    this.confirmDeleteVisible = false;
+    this.guideToDelete        = null;
+
     this.tourGuideService.adminDelete(g.id).subscribe({
       next: () => {
         this.loadGuides();
-        this.showDeleteToast(`"${g.name}" deleted successfully.`);
+        this.showDeleteToast(`"${g.name}" deleted successfully.`, true);
       },
       error: (err) => {
         const errors = err?.error?.errors;
         const msg = Array.isArray(errors)
           ? errors.join(' ')
-          : (err?.error?.message ?? 'Failed to delete.');
-        this.showDeleteToast(msg);
+          : (err?.error?.message ?? 'Failed to delete. Please try again.');
+        this.showDeleteToast(msg, false);
       }
     });
+  }
+
+  cancelDelete(): void {
+    this.confirmDeleteVisible = false;
+    this.guideToDelete        = null;
+    this.cdr.detectChanges();
+  }
+
+  showDeleteToast(msg: string, success = true): void {
+    this.deleteToastMessage = msg;
+    this.deleteToastSuccess = success;
+    this.deleteToastVisible = true;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.deleteToastVisible = false;
+      this.cdr.detectChanges();
+    }, 3000);
   }
 }
