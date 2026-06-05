@@ -23,26 +23,17 @@ export interface TourGuideBookingData {
 export class Booking implements OnInit {
   booking: TourGuideBookingData | null = null;
 
-  selectedMethod: 'credit' | 'cash' | 'vodafone' = 'credit';
+  selectedMethod: 'credit' | 'cash' = 'credit';
   isProcessing = false;
 
   cardNumber  = '';
   expiryDate  = '';
-  cvv         = '';
+  cvv           = '';
+  cvvInputType  = "text"; // unused, kept for safety
 
-  vodafoneNumber        = '';
-  vodafoneOtp           = '';
-  otpSent               = false;
-  otpSending            = false;
-  private otpSentForNumber = '';
-
-  depositMethod: 'credit' | 'vodafone' = 'credit';
-
-  cardError     = '';
-  expiryError   = '';
-  cvvError      = '';
-  vodafoneError = '';
-  otpError      = '';
+  cardError   = '';
+  expiryError = '';
+  cvvError    = '';
 
   get depositAmount(): number {
     return Math.round((this.booking?.totalPrice ?? 0) * 0.3);
@@ -51,7 +42,6 @@ export class Booking implements OnInit {
   constructor(private router: Router) {}
 
   ngOnInit(): void {
-    // ✅ 1. جرب router state الأول (لما بييجي من details مباشرة)
     const state = history.state;
 
     if (state?.bookingResult) {
@@ -68,12 +58,10 @@ export class Booking implements OnInit {
         totalPrice: res.totalPrice,
       };
 
-      // ✅ 2. احفظ في sessionStorage كـ fallback لو حصل page refresh
       sessionStorage.setItem('tourGuideBooking', JSON.stringify(this.booking));
       return;
     }
 
-    // ✅ 3. fallback: sessionStorage لو جه من refresh
     const raw = sessionStorage.getItem('tourGuideBooking');
     if (!raw) {
       this.router.navigate(['/tour-guide']);
@@ -82,30 +70,18 @@ export class Booking implements OnInit {
     this.booking = JSON.parse(raw);
   }
 
-  selectMethod(m: 'credit' | 'cash' | 'vodafone'): void {
+  selectMethod(m: 'credit' | 'cash'): void {
     this.selectedMethod = m;
     this.resetFields();
   }
 
-  selectDepositMethod(m: 'credit' | 'vodafone'): void {
-    this.depositMethod = m;
-    this.resetFields();
-  }
-
   private resetFields(): void {
-    this.cardNumber       = '';
-    this.expiryDate       = '';
-    this.cvv              = '';
-    this.vodafoneNumber   = '';
-    this.vodafoneOtp      = '';
-    this.otpSent          = false;
-    this.otpSending       = false;
-    this.otpSentForNumber = '';
-    this.cardError        = '';
-    this.expiryError      = '';
-    this.cvvError         = '';
-    this.vodafoneError    = '';
-    this.otpError         = '';
+    this.cardNumber   = '';
+    this.expiryDate   = '';
+    this.cvv          = '';
+    this.cardError    = '';
+    this.expiryError  = '';
+    this.cvvError     = '';
   }
 
   formatCard(): void {
@@ -121,6 +97,9 @@ export class Booking implements OnInit {
     if (val.length >= 3) val = val.substring(0, 2) + '/' + val.substring(2);
     this.expiryDate = val;
   }
+
+  onCvvFocus(): void { }
+  onCvvBlur(): void { if (!this.cvv) this.cvvInputType = 'text'; }
 
   formatCvv(): void {
     this.cvvError = '';
@@ -144,13 +123,6 @@ export class Booking implements OnInit {
 
   isValidCvv(): boolean { return this.cvv.length === 3; }
 
-  isValidVodafoneNumber(): boolean {
-    return this.vodafoneNumber.length === 11 &&
-      (this.vodafoneNumber.startsWith('010') ||
-       this.vodafoneNumber.startsWith('011') ||
-       this.vodafoneNumber.startsWith('015'));
-  }
-
   private luhnCheck(num: string): boolean {
     let sum = 0, shouldDouble = false;
     for (let i = num.length - 1; i >= 0; i--) {
@@ -162,63 +134,15 @@ export class Booking implements OnInit {
     return sum % 10 === 0;
   }
 
-  validateVodafoneNumber(): void {
-    this.vodafoneError = '';
-    this.vodafoneNumber = this.vodafoneNumber.replace(/\D/g, '');
-    if (this.otpSent && this.vodafoneNumber !== this.otpSentForNumber) {
-      this.otpSent = false; this.otpSending = false;
-      this.vodafoneOtp = ''; this.otpError = ''; this.otpSentForNumber = '';
-    }
-  }
-
-  validateOtp(): void { this.otpError = ''; }
-
-  sendOtp(): void {
-    if (!this.isValidVodafoneNumber()) return;
-    this.otpSending = true;
-    setTimeout(() => {
-      this.otpSent = true; this.otpSending = false;
-      this.otpSentForNumber = this.vodafoneNumber;
-    }, 1500);
-  }
-
   confirmBooking(): void {
     if (!this.booking) return;
-    this.cardError = this.expiryError = this.cvvError = this.vodafoneError = this.otpError = '';
+    this.cardError = this.expiryError = this.cvvError = '';
     let hasError = false;
 
-    if (this.selectedMethod === 'credit') {
-      if (!this.isValidCard())   { this.cardError   = 'Please enter a valid card number.'; hasError = true; }
-      if (!this.isValidExpiry()) { this.expiryError = 'Please enter a valid expiry date.'; hasError = true; }
-      if (!this.isValidCvv())    { this.cvvError    = 'Please enter a valid CVV.';          hasError = true; }
-    }
-
-    if (this.selectedMethod === 'vodafone') {
-      if (!this.isValidVodafoneNumber()) {
-        this.vodafoneError = 'Please enter a valid number starting with 010, 011, or 015.'; hasError = true;
-      } else if (!this.otpSent) {
-        this.vodafoneError = 'Please send and verify the OTP first.'; hasError = true;
-      } else if (this.vodafoneOtp.length < 4) {
-        this.otpError = 'Please enter the 4-digit OTP.'; hasError = true;
-      }
-    }
-
-    if (this.selectedMethod === 'cash') {
-      if (this.depositMethod === 'credit') {
-        if (!this.isValidCard())   { this.cardError   = 'Please enter a valid card number.'; hasError = true; }
-        if (!this.isValidExpiry()) { this.expiryError = 'Please enter a valid expiry date.'; hasError = true; }
-        if (!this.isValidCvv())    { this.cvvError    = 'Please enter a valid CVV.';          hasError = true; }
-      }
-      if (this.depositMethod === 'vodafone') {
-        if (!this.isValidVodafoneNumber()) {
-          this.vodafoneError = 'Please enter a valid number starting with 010, 011, or 015.'; hasError = true;
-        } else if (!this.otpSent) {
-          this.vodafoneError = 'Please send and verify the OTP first.'; hasError = true;
-        } else if (this.vodafoneOtp.length < 4) {
-          this.otpError = 'Please enter the 4-digit OTP.'; hasError = true;
-        }
-      }
-    }
+    // Both 'credit' and 'cash' (deposit) require card details
+    if (!this.isValidCard())   { this.cardError   = 'Please enter a valid card number.'; hasError = true; }
+    if (!this.isValidExpiry()) { this.expiryError = 'Please enter a valid expiry date.'; hasError = true; }
+    if (!this.isValidCvv())    { this.cvvError    = 'Please enter a valid CVV.';          hasError = true; }
 
     if (hasError) return;
 
@@ -226,7 +150,6 @@ export class Booking implements OnInit {
 
     setTimeout(() => {
       this.isProcessing = false;
-      sessionStorage.removeItem('tourGuideBooking');
       this.router.navigate(['/tour-guide/booking-confirmed'], {
         queryParams: {
           method:  this.selectedMethod,

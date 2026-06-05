@@ -63,7 +63,6 @@ export class Details implements OnInit {
   decrementDays(): void { if (this.days > 1) this.days--; }
   onClose(): void { this.closeDetails.emit(); }
 
-  // ✅ بيقفل الـ details popup ويفتح الـ login modal في نفس المكان
   goToLogin(): void {
     this.closeDetails.emit();
     this.authModal.openLogin();
@@ -82,6 +81,14 @@ export class Details implements OnInit {
     this.errorMessage    = '';
     this.showLoginPrompt = false;
 
+    // ✅ لو admin → logout وعامله كـ guest
+    if (this.authService.isAdmin()) {
+      this.authService.logout();
+      this.showLoginPrompt = true;
+      this.cdr.detectChanges();
+      return;
+    }
+
     // ✅ لو مش logged in → عرض login prompt
     if (!this.authService.isLoggedIn()) {
       this.showLoginPrompt = true;
@@ -99,7 +106,6 @@ export class Details implements OnInit {
         this.isLoading = false;
         this.cdr.detectChanges();
 
-        // ✅ قفل الـ popup وروح لبيدج الدفع
         this.closeDetails.emit();
         this.router.navigate(['/tour-guide/booking'], {
           state: {

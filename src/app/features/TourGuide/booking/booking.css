@@ -74,7 +74,6 @@
   background: #021526; border-radius: 3.75rem;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
-.vf-icon { background: #021526 !important; }
 .option-title { font-weight: 700; color: #0d1526; margin: 0; font-size: .95rem; }
 .option-sub   { font-size: .82rem; color: #173B64; margin: .2rem 0 .4rem; }
 .cash-note    { font-size: .82rem; color: #173B64; margin: .3rem 0 0; }
@@ -95,27 +94,12 @@
 .f-input::placeholder { color: #8899bb; }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
 .secure-note { display: flex; align-items: center; gap: .4rem; font-size: .78rem; color: #000; margin: 0; }
-.vf-input-row { display: flex; gap: .6rem; align-items: center; margin-bottom: .8rem; }
-.btn-otp {
-  background: #173B64; color: white; border: none;
-  padding: .65rem 1rem; border-radius: 8px;
-  font-size: .82rem; font-weight: 600; cursor: pointer; white-space: nowrap;
-}
-.btn-otp:hover:not(:disabled) { background: #2d4f7a; }
-.btn-otp:disabled { opacity: .5; cursor: not-allowed; }
 .deposit-section { background: #A3C4EB; border-radius: 2.5rem; padding: 1rem 1.2rem; margin-bottom: 1rem; }
 .deposit-notice  { background: #173B64; border-radius: 1.7rem; padding: .75rem 1rem; margin-bottom: 1rem; }
 .deposit-title   { font-size: .78rem; font-weight: 700; color: #F6FAFF; margin: 0 0 .2rem; }
 .deposit-amount  { font-size: 1.4rem; font-weight: 800; color: #F6FAFF; margin: 0 0 .2rem; }
 .deposit-sub     { font-size: .78rem; font-weight: 400; color: #F6FAFF; }
 .deposit-desc    { font-size: .8rem; color: #F6FAFF; margin: 0; }
-.deposit-choose-label { font-size: .85rem; font-weight: 700; color: #173B64; margin: 0 0 .6rem; }
-.deposit-tabs { display: flex; gap: .5rem; margin-bottom: .8rem; }
-.deposit-tab {
-  flex: 1; padding: .55rem; border-radius: 10px;
-  background: #ced4db; color: #000; font-size: .82rem; font-weight: 600; cursor: pointer;
-}
-.deposit-tab.active-tab { background: #1e3a5f; color: white; }
 
 /* ── Summary Box ─────────────────────────────────── */
 .summary-box   { background: #A3C4EB; border-radius: 2rem; padding: 1.25rem; }
@@ -155,5 +139,7 @@
 .terms { font-size: .75rem; color: #F6FAFF; text-align: center; margin: .6rem 0 0; }
 .field-error { color: #ef4444; font-size: .78rem; font-weight: 500; margin: -.4rem 0 .5rem; }
 .f-input.input-error { border: 1.5px solid #ef4444; }
+.cvv-input:placeholder-shown { font-family: inherit; letter-spacing: normal; }
+.cvv-input::placeholder { font-family: inherit; letter-spacing: normal; }
 .footer-title { text-align: center; padding: 2rem 0 0; }
 @media (max-width: 768px) { .booking-layout { grid-template-columns: 1fr; } }

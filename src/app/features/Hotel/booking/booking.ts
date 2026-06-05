@@ -17,9 +17,10 @@ export class Booking implements OnInit {
   selectedMethod: 'credit' | 'cash' = 'credit';
   isProcessing = false;
 
-  cardNumber = '';
-  expiryDate = '';
-  cvv        = '';
+  cardNumber   = '';
+  expiryDate   = '';
+  cvv          = '';
+  cvvInputType = 'text';
 
   cardError   = '';
   expiryError = '';
@@ -45,12 +46,13 @@ export class Booking implements OnInit {
   }
 
   private resetFields(): void {
-    this.cardNumber = '';
-    this.expiryDate = '';
-    this.cvv        = '';
-    this.cardError  = '';
+    this.cardNumber  = '';
+    this.expiryDate  = '';
+    this.cvv         = '';
+    this.cvvInputType = 'text';
+    this.cardError   = '';
     this.expiryError = '';
-    this.cvvError   = '';
+    this.cvvError    = '';
   }
 
   formatCard(): void {
@@ -76,6 +78,9 @@ export class Booking implements OnInit {
     this.cvv = this.cvv.replace(/\D/g, '').substring(0, 3);
   }
 
+  onCvvFocus(): void { this.cvvInputType = 'password'; }
+  onCvvBlur():  void { if (!this.cvv) this.cvvInputType = 'text'; }
+
   isValidCard(): boolean {
     const digits = this.cardNumber.replace(/\s/g, '');
     return digits.length === 16 && this.luhnCheck(digits);
@@ -85,28 +90,21 @@ export class Booking implements OnInit {
     if (!/^\d{2}\/\d{2}$/.test(this.expiryDate)) return false;
     const [mm, yy] = this.expiryDate.split('/').map(Number);
     if (mm < 1 || mm > 12) return false;
-    const now       = new Date();
-    const cardYear  = 2000 + yy;
-    const cardMonth = mm;
+    const now      = new Date();
+    const cardYear = 2000 + yy;
     return (
       cardYear > now.getFullYear() ||
-      (cardYear === now.getFullYear() && cardMonth >= now.getMonth() + 1)
+      (cardYear === now.getFullYear() && mm >= now.getMonth() + 1)
     );
   }
 
-  isValidCvv(): boolean {
-    return this.cvv.length === 3;
-  }
+  isValidCvv(): boolean { return this.cvv.length === 3; }
 
   private luhnCheck(num: string): boolean {
-    let sum = 0;
-    let shouldDouble = false;
+    let sum = 0, shouldDouble = false;
     for (let i = num.length - 1; i >= 0; i--) {
       let digit = parseInt(num[i], 10);
-      if (shouldDouble) {
-        digit *= 2;
-        if (digit > 9) digit -= 9;
-      }
+      if (shouldDouble) { digit *= 2; if (digit > 9) digit -= 9; }
       sum += digit;
       shouldDouble = !shouldDouble;
     }
@@ -115,9 +113,7 @@ export class Booking implements OnInit {
 
   confirmBooking(): void {
     if (!this.booking) return;
-
     this.cardError = this.expiryError = this.cvvError = '';
-
     let hasError = false;
 
     if (!this.isValidCard())   { this.cardError   = 'Please enter a valid card number.'; hasError = true; }
@@ -134,14 +130,12 @@ export class Booking implements OnInit {
         this.router.navigate(['/hotels/booking-confirmed'], {
           queryParams: {
             bookingId,
-            method: this.selectedMethod,
+            method:  this.selectedMethod,
             deposit: this.selectedMethod === 'cash' ? this.depositAmount : null,
           },
         });
       },
-      error: () => {
-        this.isProcessing = false;
-      },
+      error: () => { this.isProcessing = false; },
     });
   }
 }

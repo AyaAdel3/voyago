@@ -36,9 +36,15 @@ export const adminGuard: CanActivateFn = () => {
 };
 
 // 🔒 User Guard
+// لو الأدمن حاول يدخل على route يوزر → logout وسيبه يكمل كـ guest
 export const userGuard: CanActivateFn = () => {
   const auth   = inject(AuthService);
   const router = inject(Router);
+
+  if (auth.isAdmin()) {
+    auth.logout();
+    return true;
+  }
 
   if (!auth.isLoggedIn()) {
     inject(AuthModalService).openLogin();
@@ -46,18 +52,19 @@ export const userGuard: CanActivateFn = () => {
     return false;
   }
 
-  if (auth.isAdmin()) {
-    router.navigate(['/admin/dashboard']);
-    return false;
-  }
-
   return true;
 };
 
 // 🔒 Auth Guard
+// نفس المنطق — لو الأدمن دخل على profile مثلاً → logout وسيبه
 export const authGuard: CanActivateFn = () => {
   const auth   = inject(AuthService);
   const router = inject(Router);
+
+  if (auth.isAdmin()) {
+    auth.logout();
+    return true;
+  }
 
   if (!auth.isLoggedIn()) {
     inject(AuthModalService).openLogin();
