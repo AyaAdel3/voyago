@@ -1,145 +1,141 @@
-<div class="profile-layout">
+<main class="content">
+  <div class="info-header">
+    <h1>Favourites</h1>
+  </div>
 
-
-  <main class="content">
-    <div class="info-header">
-      <h1>Favourites</h1>
+  <!-- Hotels Section -->
+  <section class="fav-section">
+    <div class="section-header">
+      <span>🏨</span>
+      <h3>Hotels</h3>
+      <span class="section-count">{{ hotels.length }}</span>
     </div>
-
-    <!-- Hotels Section -->
-    <section class="fav-section">
-      <div class="section-header">
-        <span>🏨</span>
-        <h3>Hotels</h3>
-        <span class="section-count">{{ hotels.length }}</span>
-      </div>
-      @if (hotels.length > 0) {
-        <div class="plan-grid">
-          @for (item of hotels; track item.title) {
-            <div class="favorite-card">
-              <div class="card-image-wrapper">
-                <img [src]="item.image" class="card-img" />
-                <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
-              </div>
-              <div class="card-info">
-                <h3>{{ item.title }}</h3>
-                <div class="item-meta">
-                  <span class="item-price">{{ item.price }}</span>
-                  <span class="dot">•</span>
-                  <span class="item-rating">⭐ {{ item.rating }}</span>
-                </div>
+    @if (hotels.length > 0) {
+      <div class="plan-grid">
+        @for (item of hotels; track item.title) {
+          <div class="favorite-card">
+            <div class="card-image-wrapper">
+              <img [src]="item.image" class="card-img" />
+              <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
+            </div>
+            <div class="card-info">
+              <h3>{{ item.title }}</h3>
+              <div class="item-meta">
+                <span class="item-price">{{ item.price }}</span>
+                <span class="dot">•</span>
+                <span class="item-rating">⭐ {{ item.rating }}</span>
               </div>
             </div>
-          }
-        </div>
-      } @else {
-        <div class="empty-state">
-          <span class="empty-icon">🏨</span>
-          <p>No favourite hotels yet</p>
-        </div>
-      }
-    </section>
-
-    <!-- Restaurants Section -->
-    <section class="fav-section">
-      <div class="section-header">
-        <span>🍽️</span>
-        <h3>Restaurants</h3>
-        <span class="section-count">{{ restaurants.length }}</span>
+          </div>
+        }
       </div>
-      @if (restaurants.length > 0) {
-        <div class="plan-grid">
-          @for (item of restaurants; track item.title) {
-            <div class="favorite-card">
-              <div class="card-image-wrapper">
-                <img [src]="item.image" class="card-img" />
-                <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
-              </div>
-              <div class="card-info">
-                <h3>{{ item.title }}</h3>
-                <div class="item-meta">
-                  <span class="item-price">{{ item.price }}</span>
-                  <span class="dot">•</span>
-                  <span class="item-rating">⭐ {{ item.rating }}</span>
-                </div>
+    } @else {
+      <div class="empty-state">
+        <span class="empty-icon">🏨</span>
+        <p>No favourite hotels yet</p>
+      </div>
+    }
+  </section>
+
+  <!-- Restaurants Section -->
+  <section class="fav-section">
+    <div class="section-header">
+      <span>🍽️</span>
+      <h3>Restaurants</h3>
+      <span class="section-count">{{ restaurants.length }}</span>
+    </div>
+    @if (restaurants.length > 0) {
+      <div class="plan-grid">
+        @for (item of restaurants; track item.title) {
+          <div class="favorite-card">
+            <div class="card-image-wrapper">
+              <img [src]="item.image" class="card-img" />
+              <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
+            </div>
+            <div class="card-info">
+              <h3>{{ item.title }}</h3>
+              <div class="item-meta">
+                <span class="item-price">{{ item.price }}</span>
+                <span class="dot">•</span>
+                <span class="item-rating">⭐ {{ item.rating }}</span>
               </div>
             </div>
-          }
-        </div>
-      } @else {
-        <div class="empty-state">
-          <span class="empty-icon">🍽️</span>
-          <p>No favourite restaurants yet</p>
-        </div>
-      }
-    </section>
-
-    <!-- Tour Guides Section -->
-    <section class="fav-section">
-      <div class="section-header">
-        <span>🧭</span>
-        <h3>Tour Guides</h3>
-        <span class="section-count">{{ tourGuides.length }}</span>
+          </div>
+        }
       </div>
-      @if (tourGuides.length > 0) {
-        <div class="plan-grid">
-          @for (item of tourGuides; track item.title) {
-            <div class="favorite-card">
-              <div class="card-image-wrapper">
-                <img [src]="item.image" class="card-img" />
-                <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
-              </div>
-              <div class="card-info">
-                <h3>{{ item.title }}</h3>
-                <div class="item-meta">
-                  <span class="item-price">{{ item.price }}</span>
-                  <span class="dot">•</span>
-                  <span class="item-rating">⭐ {{ item.rating }}</span>
-                </div>
+    } @else {
+      <div class="empty-state">
+        <span class="empty-icon">🍽️</span>
+        <p>No favourite restaurants yet</p>
+      </div>
+    }
+  </section>
+
+  <!-- Tour Guides Section -->
+  <section class="fav-section">
+    <div class="section-header">
+      <span>🧭</span>
+      <h3>Tour Guides</h3>
+      <span class="section-count">{{ tourGuides.length }}</span>
+    </div>
+    @if (tourGuides.length > 0) {
+      <div class="plan-grid">
+        @for (item of tourGuides; track item.title) {
+          <div class="favorite-card">
+            <div class="card-image-wrapper">
+              <img [src]="item.image" class="card-img" />
+              <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
+            </div>
+            <div class="card-info">
+              <h3>{{ item.title }}</h3>
+              <div class="item-meta">
+                <span class="item-price">{{ item.price }}</span>
+                <span class="dot">•</span>
+                <span class="item-rating">⭐ {{ item.rating }}</span>
               </div>
             </div>
-          }
-        </div>
-      } @else {
-        <div class="empty-state">
-          <span class="empty-icon">🧭</span>
-          <p>No favourite tour guides yet</p>
-        </div>
-      }
-    </section>
-
-    <!-- Tourist Attractions Section -->
-    <section class="fav-section">
-      <div class="section-header">
-        <span>🗺️</span>
-        <h3>Tourist Attractions</h3>
-        <span class="section-count">{{ touristAttractions.length }}</span>
+          </div>
+        }
       </div>
-      @if (touristAttractions.length > 0) {
-        <div class="plan-grid">
-          @for (item of touristAttractions; track item.title) {
-            <div class="favorite-card">
-              <div class="card-image-wrapper">
-                <img [src]="item.image" class="card-img" />
-                <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
-              </div>
-              <div class="card-info">
-                <h3>{{ item.title }}</h3>
-                <div class="item-meta">
-                  <span class="item-price">{{ item.price }}</span>
-                  <span class="dot">•</span>
-                  <span class="item-rating">⭐ {{ item.rating }}</span>
-                </div>
+    } @else {
+      <div class="empty-state">
+        <span class="empty-icon">🧭</span>
+        <p>No favourite tour guides yet</p>
+      </div>
+    }
+  </section>
+
+  <!-- Tourist Attractions Section -->
+  <section class="fav-section">
+    <div class="section-header">
+      <span>🗺️</span>
+      <h3>Tourist Attractions</h3>
+      <span class="section-count">{{ touristAttractions.length }}</span>
+    </div>
+    @if (touristAttractions.length > 0) {
+      <div class="plan-grid">
+        @for (item of touristAttractions; track item.title) {
+          <div class="favorite-card">
+            <div class="card-image-wrapper">
+              <img [src]="item.image" class="card-img" />
+              <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
+            </div>
+            <div class="card-info">
+              <h3>{{ item.title }}</h3>
+              <div class="item-meta">
+                <span class="item-price">{{ item.price }}</span>
+                <span class="dot">•</span>
+                <span class="item-rating">⭐ {{ item.rating }}</span>
               </div>
             </div>
-          }
-        </div>
-      } @else {
-        <div class="empty-state">
-          <span class="empty-icon">🗺️</span>
-          <p>No favourite tourist attractions yet</p>
-        </div>
-      }
-    </section>
-  </main>
-</div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="empty-state">
+        <span class="empty-icon">🗺️</span>
+        <p>No favourite tourist attractions yet</p>
+      </div>
+    }
+  </section>
+</main>

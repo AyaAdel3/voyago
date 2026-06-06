@@ -96,7 +96,7 @@
 /* Main Content */
 .content {
   flex: 1;
-  padding: 60px 100px;
+  padding: 30px 40px;
 }
 
 .info-header {
@@ -111,6 +111,7 @@
   font-weight: 600;
   margin: 0;
 }
+
 
 .edit-btn, .save-btn {
   background-color: #FFE194;

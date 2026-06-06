@@ -1,175 +1,173 @@
-<div class="profile-layout">
-  <main class="content">
-    <div
-      class="info-header"
-      style="display: flex; justify-content: space-between; align-items: center"
-    >
-      <h1>Your Plans</h1>
+<main class="content">
+  <div
+    class="info-header"
+    style="display: flex; justify-content: space-between; align-items: center"
+  >
+    <h1>Your Plans</h1>
 
-      @if (plans.length > PLANS_VISIBLE) {
-        <div class="main-slider-controls">
-          <button class="arrow-btn" (click)="prevPlans()" [disabled]="planOffset === 0">❮</button>
-          <button
-            class="arrow-btn"
-            (click)="nextPlans()"
-            [disabled]="planOffset + PLANS_VISIBLE >= plans.length"
-          >
-            ❯
-          </button>
+    @if (plans.length > PLANS_VISIBLE) {
+      <div class="main-slider-controls">
+        <button class="arrow-btn" (click)="prevPlans()" [disabled]="planOffset === 0">❮</button>
+        <button
+          class="arrow-btn"
+          (click)="nextPlans()"
+          [disabled]="planOffset + PLANS_VISIBLE >= plans.length"
+        >
+          ❯
+        </button>
+      </div>
+    }
+  </div>
+
+  @if (plans.length === 0) {
+    <div class="empty-state">
+      <span class="empty-icon">🗺️</span>
+      <p>No saved plans yet</p>
+    </div>
+  }
+
+  @if (plans.length > 0) {
+    <div class="plans-row">
+      @for (plan of visiblePlans; track plan.id) {
+        <div class="plan-column">
+          <div class="plan-header">
+            <h2 class="plan-title">{{ plan.name || 'Plan ' + (planOffset + $index + 1) }}</h2>
+            <button class="delete-plan-btn" (click)="deletePlan(plan.id)">🗑</button>
+          </div>
+
+          <section class="fav-section">
+            <div class="section-header">
+              <span>🏨</span>
+              <h3>Hotel</h3>
+            </div>
+            @if (plan.hotel) {
+              <div class="actual-card">
+                <img [src]="getImage(plan.hotel, 'hotel')" class="card-img" alt="Hotel" />
+                <div class="card-body">
+                  <h3>{{ plan.hotel.name }}</h3>
+                  <button class="view-btn" (click)="goToDetails('hotels', plan.hotel.id)">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            } @else {
+              <div class="empty-state-small">
+                <span>🏨</span>
+                <p>No hotel selected</p>
+              </div>
+            }
+          </section>
+
+          <section class="fav-section">
+            <div
+              class="section-header"
+              style="display: flex; justify-content: space-between; align-items: center"
+            >
+              <div style="display: flex; align-items: center; gap: 8px">
+                <span>🍽️</span>
+                <h3>Restaurants</h3>
+              </div>
+              @if (plan.restaurants && plan.restaurants.length > 1) {
+                <div class="inner-slider-controls">
+                  <button
+                    class="small-arrow"
+                    (click)="slidePrev(plan.id, 'restaurants')"
+                    [disabled]="!canSlidePrev(plan.id, 'restaurants')"
+                  >
+                    ❮
+                  </button>
+                  <button
+                    class="small-arrow"
+                    (click)="slideNext(plan.id, 'restaurants', plan.restaurants.length)"
+                    [disabled]="!canSlideNext(plan.id, 'restaurants', plan.restaurants.length)"
+                  >
+                    ❯
+                  </button>
+                </div>
+              }
+            </div>
+            @if (plan.restaurants && plan.restaurants.length > 0) {
+              <div class="actual-card">
+                @for (
+                  item of getVisible(plan.restaurants, plan.id, 'restaurants');
+                  track item.id
+                ) {
+                  <div class="inner-item">
+                    <img [src]="getImage(item, 'rest')" class="card-img" alt="Restaurant" />
+                    <div class="card-body">
+                      <h3>{{ item.name }}</h3>
+                      <button class="view-btn" (click)="goToDetails('restaurant', item.id)">
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-state-small">
+                <span>🍽️</span>
+                <p>No restaurants selected</p>
+              </div>
+            }
+          </section>
+
+          <section class="fav-section">
+            <div
+              class="section-header"
+              style="display: flex; justify-content: space-between; align-items: center"
+            >
+              <div style="display: flex; align-items: center; gap: 8px">
+                <span>🗺️</span>
+                <h3>Attractions</h3>
+              </div>
+              @if (plan.attractions && plan.attractions.length > 1) {
+                <div class="inner-slider-controls">
+                  <button
+                    class="small-arrow"
+                    (click)="slidePrev(plan.id, 'attractions')"
+                    [disabled]="!canSlidePrev(plan.id, 'attractions')"
+                  >
+                    ❮
+                  </button>
+                  <button
+                    class="small-arrow"
+                    (click)="slideNext(plan.id, 'attractions', plan.attractions.length)"
+                    [disabled]="!canSlideNext(plan.id, 'attractions', plan.attractions.length)"
+                  >
+                    ❯
+                  </button>
+                </div>
+              }
+            </div>
+            @if (plan.attractions && plan.attractions.length > 0) {
+              <div class="actual-card">
+                @for (
+                  item of getVisible(plan.attractions, plan.id, 'attractions');
+                  track item.id
+                ) {
+                  <div class="inner-item">
+                    <img [src]="getImage(item, 'attr')" class="card-img" alt="Attraction" />
+                    <div class="card-body">
+                      <h3>{{ item.name }}</h3>
+                      <button
+                        class="view-btn"
+                        (click)="goToDetails('tourist-attraction', item.id)"
+                      >
+                        View Details
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-state-small">
+                <span>🗺️</span>
+                <p>No attractions selected</p>
+              </div>
+            }
+          </section>
         </div>
       }
     </div>
-
-    @if (plans.length === 0) {
-      <div class="empty-state">
-        <span class="empty-icon">🗺️</span>
-        <p>No saved plans yet</p>
-      </div>
-    }
-
-    @if (plans.length > 0) {
-      <div class="plans-row">
-        @for (plan of visiblePlans; track plan.id) {
-          <div class="plan-column">
-            <div class="plan-header">
-              <h2 class="plan-title">{{ plan.name || 'Plan ' + (planOffset + $index + 1) }}</h2>
-              <button class="delete-plan-btn" (click)="deletePlan(plan.id)">🗑</button>
-            </div>
-
-            <section class="fav-section">
-              <div class="section-header">
-                <span>🏨</span>
-                <h3>Hotel</h3>
-              </div>
-              @if (plan.hotel) {
-                <div class="actual-card">
-                  <img [src]="getImage(plan.hotel, 'hotel')" class="card-img" alt="Hotel" />
-                  <div class="card-body">
-                    <h3>{{ plan.hotel.name }}</h3>
-                    <button class="view-btn" (click)="goToDetails('hotels', plan.hotel.id)">
-                      View Details
-                    </button>
-                  </div>
-                </div>
-              } @else {
-                <div class="empty-state-small">
-                  <span>🏨</span>
-                  <p>No hotel selected</p>
-                </div>
-              }
-            </section>
-
-            <section class="fav-section">
-              <div
-                class="section-header"
-                style="display: flex; justify-content: space-between; align-items: center"
-              >
-                <div style="display: flex; align-items: center; gap: 8px">
-                  <span>🍽️</span>
-                  <h3>Restaurants</h3>
-                </div>
-                @if (plan.restaurants && plan.restaurants.length > 1) {
-                  <div class="inner-slider-controls">
-                    <button
-                      class="small-arrow"
-                      (click)="slidePrev(plan.id, 'restaurants')"
-                      [disabled]="!canSlidePrev(plan.id, 'restaurants')"
-                    >
-                      ❮
-                    </button>
-                    <button
-                      class="small-arrow"
-                      (click)="slideNext(plan.id, 'restaurants', plan.restaurants.length)"
-                      [disabled]="!canSlideNext(plan.id, 'restaurants', plan.restaurants.length)"
-                    >
-                      ❯
-                    </button>
-                  </div>
-                }
-              </div>
-              @if (plan.restaurants && plan.restaurants.length > 0) {
-                <div class="actual-card">
-                  @for (
-                    item of getVisible(plan.restaurants, plan.id, 'restaurants');
-                    track item.id
-                  ) {
-                    <div class="inner-item">
-                      <img [src]="getImage(item, 'rest')" class="card-img" alt="Restaurant" />
-                      <div class="card-body">
-                        <h3>{{ item.name }}</h3>
-                        <button class="view-btn" (click)="goToDetails('restaurant', item.id)">
-                          View Details
-                        </button>
-                      </div>
-                    </div>
-                  }
-                </div>
-              } @else {
-                <div class="empty-state-small">
-                  <span>🍽️</span>
-                  <p>No restaurants selected</p>
-                </div>
-              }
-            </section>
-
-            <section class="fav-section">
-              <div
-                class="section-header"
-                style="display: flex; justify-content: space-between; align-items: center"
-              >
-                <div style="display: flex; align-items: center; gap: 8px">
-                  <span>🗺️</span>
-                  <h3>Attractions</h3>
-                </div>
-                @if (plan.attractions && plan.attractions.length > 1) {
-                  <div class="inner-slider-controls">
-                    <button
-                      class="small-arrow"
-                      (click)="slidePrev(plan.id, 'attractions')"
-                      [disabled]="!canSlidePrev(plan.id, 'attractions')"
-                    >
-                      ❮
-                    </button>
-                    <button
-                      class="small-arrow"
-                      (click)="slideNext(plan.id, 'attractions', plan.attractions.length)"
-                      [disabled]="!canSlideNext(plan.id, 'attractions', plan.attractions.length)"
-                    >
-                      ❯
-                    </button>
-                  </div>
-                }
-              </div>
-              @if (plan.attractions && plan.attractions.length > 0) {
-                <div class="actual-card">
-                  @for (
-                    item of getVisible(plan.attractions, plan.id, 'attractions');
-                    track item.id
-                  ) {
-                    <div class="inner-item">
-                      <img [src]="getImage(item, 'attr')" class="card-img" alt="Attraction" />
-                      <div class="card-body">
-                        <h3>{{ item.name }}</h3>
-                        <button
-                          class="view-btn"
-                          (click)="goToDetails('tourist-attraction', item.id)"
-                        >
-                          View Details
-                        </button>
-                      </div>
-                    </div>
-                  }
-                </div>
-              } @else {
-                <div class="empty-state-small">
-                  <span>🗺️</span>
-                  <p>No attractions selected</p>
-                </div>
-              }
-            </section>
-          </div>
-        }
-      </div>
-    }
-  </main>
-</div>
+  }
+</main>
