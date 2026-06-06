@@ -23,8 +23,16 @@ import { SearchService, SearchResult } from '../../../core/services/search.servi
   styleUrl: './navbar.css',
 })
 export class Navbar implements OnInit {
-  isDarkMode = false;
-  searchQuery = '';
+  isDarkMode     = false;
+  searchQuery    = '';
+  mobileMenuOpen = false;
+  isMobile       = window.innerWidth <= 768;
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.isMobile = window.innerWidth <= 768;
+    if (!this.isMobile) this.mobileMenuOpen = false;
+  }
 
   constructor(
     public modal:  AuthModalService,
@@ -59,11 +67,13 @@ export class Navbar implements OnInit {
 
   goToResult(result: SearchResult): void {
     this.search.clear();
-    this.searchQuery = '';
+    this.searchQuery    = '';
+    this.mobileMenuOpen = false;  // بيقفل الـ menu لو الـ search اتضغط من جواه
     this.router.navigate([result.route]);
   }
 
   goToProfile(): void {
+    this.mobileMenuOpen = false;
     this.router.navigate(['/profile']);
   }
 
@@ -71,6 +81,7 @@ export class Navbar implements OnInit {
   onDocumentClick(event: Event): void {
     if (!this.elRef.nativeElement.contains(event.target)) {
       this.search.close();
+      this.mobileMenuOpen = false;  // بيقفل الـ menu لو ضغط برا الـ navbar
     }
   }
 

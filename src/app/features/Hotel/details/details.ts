@@ -36,8 +36,9 @@ export class Details implements OnInit {
   totalAmount    = 0;
   bookingError   = '';
 
-  newComment = '';
-  newRating  = 0;
+  newComment  = '';
+  newRating   = 0;
+  submitting  = false; // ← guard against double-submit
 
   activeImage  = 0;
   lightboxOpen = false;
@@ -118,20 +119,19 @@ export class Details implements OnInit {
   // ── Price calculation ─────────────────────────────────
 
   recalc(): void {
-  this.nights = calcNights(this.checkIn, this.checkOut);
+    this.nights = calcNights(this.checkIn, this.checkOut);
 
-  const hasDate = !!this.checkIn && !!this.checkOut &&
-    new Date(this.checkOut) > new Date(this.checkIn);
+    const hasDate = !!this.checkIn && !!this.checkOut &&
+      new Date(this.checkOut) > new Date(this.checkIn);
 
-  const roomsCost    = this.selectedRooms.reduce((s, r) => s + r.price * r.quantity, 0);
-  const featuresCost = this.selectedFeatures.reduce((s, f) => s + f.price * f.quantity, 0);
+    const roomsCost    = this.selectedRooms.reduce((s, r) => s + r.price * r.quantity, 0);
+    const featuresCost = this.selectedFeatures.reduce((s, f) => s + f.price * f.quantity, 0);
 
-  this.basePrice     = hasDate ? roomsCost * this.nights : 0;
-
-  const subtotal     = this.basePrice + (hasDate ? featuresCost : 0);
-  this.serviceCharge = hasDate ? Math.round(subtotal * 0.05) : 0;
-  this.totalAmount   = hasDate ? subtotal + this.serviceCharge : 0;
-}
+    this.basePrice     = hasDate ? roomsCost * this.nights : 0;
+    const subtotal     = this.basePrice + (hasDate ? featuresCost : 0);
+    this.serviceCharge = hasDate ? Math.round(subtotal * 0.05) : 0;
+    this.totalAmount   = hasDate ? subtotal + this.serviceCharge : 0;
+  }
 
   // ── Rooms ─────────────────────────────────────────────
 
@@ -210,16 +210,36 @@ export class Details implements OnInit {
 
   // ── Reviews ───────────────────────────────────────────
 
+  // الـ service دايماً بيحط userName: 'You' للريفيو الجديد
+  isMyReview(review: Review): boolean {
+    return review.userName === 'You';
+  }
+
   submitReview(): void {
-    if (!this.newComment.trim() || this.newRating === 0) return;
-    this.hotelService.submitReview(this.hotel.id, this.newComment, this.newRating).subscribe({
-      next: (review: Review) => {
-        this.reviews    = [review, ...this.reviews];
-        this.newComment = '';
-        this.newRating  = 0;
-        this.cdr.detectChanges();
-      },
-    });
+    if (!this.newComment.trim() || this.newRating === 0 || this.submitting) return;
+    this.submitting = true;
+
+    // الـ service بيضيف الريفيو في reviewsSubject
+    // وده بيعمل emit تلقائي على getReviews() — مش محتاجين نضيف يدوياً هنا
+    this.hotelService.submitReview(this.hotel.id, this.newComment, this.newRating)
+      .subscribe({
+        next: () => {
+          this.newComment = '';
+          this.newRating  = 0;
+          this.submitting = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.submitting = false;
+          this.cdr.detectChanges();
+        },
+      });
+  }
+
+  deleteReview(review: Review): void {
+    // بنكلم الـ service مباشرةً — هو بيشيله من reviewsSubject
+    // وده بيعمل emit تلقائي على getReviews() فالـ UI بيتحدث لوحده
+    this.hotelService.deleteReview(review.id);
   }
 
   starsArray(n: number): number[] { return Array(n).fill(0); }

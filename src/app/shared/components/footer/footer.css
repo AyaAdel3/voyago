@@ -11,7 +11,7 @@
   font-family: 'Outfit', sans-serif;
 }
 
-/* ── Footer headings ── */
+/* ── Desktop headings ── */
 .footer-heading {
   font-family: 'Outfit', sans-serif;
   font-size: 15px;
@@ -20,30 +20,44 @@
   margin-bottom: 4px;
 }
 
-/* ── Footer links ── */
+/* ── Desktop links ── */
 .footer-link {
   font-family: 'Outfit', sans-serif;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 400;
-  color: #F6FAFF;
+  color: #a8bdd4;
   text-decoration: none;
   transition: color 0.2s;
-  white-space: nowrap;
+}
+.footer-link:hover { color: #ffffff; }
+
+/* ── Mobile headings ── */
+.footer-heading-mobile {
+  font-family: 'Outfit', sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
 }
 
-.footer-link:hover {
-  color: #d8dbdf;
+/* ── Mobile links ── */
+.footer-link-mobile {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #a8bdd4;
+  text-decoration: none;
+  transition: color 0.2s;
 }
+.footer-link-mobile:hover { color: #ffffff; }
 
-/* ── Contact input focus ── */
+/* ── Contact input ── */
 .contact-input:focus {
   border-color: rgba(255, 255, 255, 0.45);
   box-shadow: 0 0 0 3px rgba(245, 200, 66, 0.07);
 }
 
-/* ── Contact Send button ── */
+/* ── Contact button ── */
 .contact-btn {
   box-shadow: 0 2px 10px rgba(245, 200, 66, 0.3);
-  
 }
-

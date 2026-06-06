@@ -105,3 +105,133 @@
 
 .brand-name { font-size: 1.5rem; font-weight: 800; color: #A3C4EB; margin: 0; font-family: 'Manrope', serif; }
 .brand-tag  { color: #F6FAFF; font-size: .82rem; margin: .2rem 0 0; }
+
+/* ══════════════════════════════════════════════════════════
+   TABLET  (max 1024px)
+══════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .confirmed-page {
+    max-width: 520px;
+    margin: 1.5rem auto;
+  }
+
+  .title    { font-size: 1.8rem; }
+  .subtitle { font-size: .85rem; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   MOBILE  (max 640px)
+══════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .confirmed-mainpage {
+    padding: 1rem .5rem 2.5rem;
+  }
+
+  .confirmed-page {
+    margin: 1rem auto;
+    padding: 0 .25rem;
+    max-width: 100%;
+  }
+
+  /* Globe */
+  .globe-wrap {
+    width: 140px;
+    height: 120px;
+    margin-bottom: 1rem;
+  }
+
+  /* Title */
+  .title {
+    font-size: 1.7rem;
+    margin-bottom: .4rem;
+  }
+
+  .subtitle {
+    font-size: .82rem;
+    margin-bottom: 1.2rem;
+    padding: 0 .5rem;
+  }
+
+  /* Booking card */
+  .booking-card {
+    border-radius: 1.8rem;
+    margin-bottom: 1.2rem;
+    width: 100%;
+  }
+
+  .id-row {
+    padding: 1.4rem 1rem;
+    border-radius: 20px;
+    flex-wrap: wrap;
+    gap: .4rem;
+  }
+
+  .id-label { font-size: .82rem; }
+  .id-val   { font-size: .75rem; word-break: break-all; text-align: right; max-width: 60%; }
+
+  .card-body {
+    padding: .85rem 1rem;
+    gap: .8rem;
+  }
+
+  .d-icon   { width: 34px; height: 34px; flex-shrink: 0; }
+  .d-label  { font-size: .78rem; transform: translateX(-.5rem); }
+  .d-label1 { font-size: .78rem; transform: translateX(-1rem); }
+  .d-val    { font-size: .92rem; }
+  .d-sub    { font-size: .78rem; transform: translateX(-.4rem); }
+
+  .breakdown-label { font-size: .78rem; }
+  .breakdown-row   { font-size: .88rem; }
+
+  /* Payment row */
+  .payment-row {
+    padding: .85rem 1rem;
+    gap: .5rem;
+  }
+
+  .pay-left  { gap: .6rem; }
+  .total-val { font-size: 1rem; }
+
+  .status-badge { font-size: .78rem; padding: 3px 10px; }
+
+  /* Farewell */
+  .farewell {
+    font-size: .8rem;
+    padding: 0 .5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  /* Button */
+  .btn-home {
+    width: 100%;
+    max-width: 320px;
+    padding: .9rem 2rem;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .brand-name { font-size: 1.3rem; }
+  .brand-tag  { font-size: .8rem; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   VERY SMALL  (max 380px)
+══════════════════════════════════════════════════════════ */
+@media (max-width: 380px) {
+  .title    { font-size: 1.5rem; }
+  .subtitle { font-size: .78rem; }
+
+  .id-row   { padding: 1.1rem .85rem; }
+  .id-val   { font-size: .68rem; }
+
+  .card-body { padding: .75rem .85rem; }
+
+  .d-val  { font-size: .85rem; }
+  .d-icon { width: 30px; height: 30px; }
+
+  .breakdown-row { font-size: .82rem; }
+
+  .total-val { font-size: .95rem; }
+
+  .btn-home { font-size: .95rem; padding: .85rem 1.5rem; }
+}

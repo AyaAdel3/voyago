@@ -76,9 +76,13 @@ export class HotelService {
       comment,
       date:        new Date().toISOString().split('T')[0],
     };
+
+    // نضيف في reviewsSubject — وده بيعمل emit تلقائي على getReviews()
     const current = this.reviewsSubject.getValue();
-    this.reviewsSubject.next([...current, newReview]);
-    return new BehaviorSubject(newReview).asObservable();
+    this.reviewsSubject.next([newReview, ...current]);
+
+    // نرجع of() مش BehaviorSubject عشان يعمل emit مرة واحدة بس وينتهي
+    return of(newReview);
   }
 
   deleteReview(reviewId: number): void {
@@ -101,10 +105,6 @@ export class HotelService {
   setBooking(data: BookingData): void  { this.currentBooking.set(data); }
   getBooking(): BookingData | null     { return this.currentBooking(); }
 
-  /**
-   * ✅ بيبني الـ RoomType[] من roomPrices الخاصة بالهوتيل
-   * لو مفيش roomPrices يستخدم DEFAULT_ROOM_PRICES كـ fallback
-   */
   getDefaultRooms(hotel: Hotel): RoomType[] {
     const prices: HotelRoomPrices = hotel.roomPrices ?? {
       standard: hotel.pricePerNight,
@@ -138,6 +138,6 @@ export class HotelService {
     const rand  = Array.from({ length: 8 }, () =>
       chars[Math.floor(Math.random() * chars.length)]
     ).join('');
-    return new BehaviorSubject({ bookingId: `BK-${rand}` }).asObservable();
+    return of({ bookingId: `BK-${rand}` });
   }
 }

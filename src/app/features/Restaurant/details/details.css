@@ -2,47 +2,37 @@
 
 /* ── Loading ────────────────────────────────────────────── */
 .loading-wrap {
-  display: flex;
-  justify-content: center;
-  padding: 4rem;
+  display: flex; justify-content: center; padding: 4rem;
 }
 .spinner {
-  width: 40px;
-  height: 40px;
+  width: 40px; height: 40px;
   border: 3px solid #1e3a5f;
   border-top-color: #f5c518;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── Page ───────────────────────────────────────────────── */
 .rest-page {
   background: #021526;
   min-height: 100vh;
   padding: 1.5rem 2rem 3rem;
+  overflow-x: hidden;
 }
 
-/* ══ TOP ROW ════════════════════════════════════════════ */
-.top-row {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 2rem;
-  align-items: start;
+/* ── Content wrapper ────────────────────────────────────── */
+.content-wrap {
   max-width: 1210px;
   margin: 0 auto;
-}
-
-/* ── Gallery col ─────────────────────────────────────── */
-.gallery-col {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
-/* ── Gallery ─────────────────────────────────────────── */
+/* ══ 1. GALLERY (full width) ════════════════════════════ */
+.gallery-wrap { width: 100%; }
+
 .gallery {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -51,241 +41,149 @@
   overflow: hidden;
   height: 320px;
 }
-
 .gallery-main {
-  position: relative;
-  cursor: pointer;
-  overflow: hidden;
+  position: relative; cursor: pointer; overflow: hidden;
 }
 .gallery-main img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.3s ease;
+  width: 100%; height: 100%; object-fit: cover;
+  display: block; transition: transform 0.3s ease;
 }
 .gallery-main:hover img { transform: scale(1.03); }
-
 .main-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(2, 21, 38, 0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute; inset: 0;
+  background: rgba(2,21,38,0);
+  display: flex; align-items: center; justify-content: center;
   transition: background 0.2s;
 }
-.gallery-main:hover .main-overlay { background: rgba(2, 21, 38, 0.3); }
-
+.gallery-main:hover .main-overlay { background: rgba(2,21,38,0.3); }
 .gallery-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
 .gallery-thumb {
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
+  position: relative; overflow: hidden; cursor: pointer;
 }
 .gallery-thumb img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.25s ease;
+  width: 100%; height: 100%; object-fit: cover;
+  display: block; transition: transform 0.25s ease;
 }
 .gallery-thumb:hover img { transform: scale(1.06); }
 .gallery-thumb.active-thumb::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 3px solid #f5c518;
-  pointer-events: none;
+  content: ''; position: absolute; inset: 0;
+  border: 3px solid #f5c518; pointer-events: none;
 }
 .more-photos {
-  position: absolute;
-  inset: 0;
-  background: rgba(2, 21, 38, 0.62);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
-  font-size: 0.88rem;
-  cursor: pointer;
-  transition: background 0.2s;
+  position: absolute; inset: 0;
+  background: rgba(2,21,38,0.62);
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: 700; font-size: 0.88rem;
+  cursor: pointer; transition: background 0.2s;
 }
-.more-photos:hover { background: rgba(2, 21, 38, 0.78); }
+.more-photos:hover { background: rgba(2,21,38,0.78); }
 
-/* ── Restaurant Header ───────────────────────────────── */
-.rest-header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
+/* ══ 2. TOP ROW: details left + widget right ════════════ */
+.top-row {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+  align-items: start;
 }
+
+/* ── Left col ─────────────────────────────────────────── */
+.gallery-col {
+  display: flex; flex-direction: column; gap: 1.25rem;
+}
+
+.rest-header { display: flex; flex-direction: column; gap: 0.3rem; }
 .rest-name {
-  font-size: 1.6rem;
-  font-weight: 800;
-  color: #f6faff;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin: 0;
+  font-size: 1.6rem; font-weight: 800; color: #f6faff;
+  display: flex; align-items: center; gap: 0.5rem; margin: 0;
 }
-.stars { display: flex; gap: 2px; }
 .rest-address { font-size: 0.82rem; color: #f6faff; margin: 0; }
 .rest-meta    { font-size: 0.85rem; color: #f6faff; margin: 0; }
 
-/* ── Section ─────────────────────────────────────────── */
-.section-block  { margin-bottom: 0.75rem; }
-.section-title  { font-size: 1.5rem; font-weight: 600; color: #f6faff; margin: 0 0 0.6rem; }
-.about-text     { font-size: 0.9rem; color: #f6faff; line-height: 1.75; margin: 0; }
+.section-block { margin-bottom: 0.75rem; }
+.section-title { font-size: 1.5rem; font-weight: 600; color: #f6faff; margin: 0 0 0.6rem; }
+.about-text    { font-size: 0.9rem; color: #f6faff; line-height: 1.75; margin: 0; }
 
 .amenities-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .amenity-chip  {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: #f6faff;
-  padding: 0.35rem 0.9rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
+  display: flex; align-items: center; gap: 0.4rem;
+  color: #f6faff; padding: 0.35rem 0.9rem;
+  border-radius: 20px; font-size: 0.9rem;
 }
 
 .host-row {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin: 0.5rem 0 1rem;
+  display: flex; align-items: center; gap: 0.75rem; margin: 0.5rem 0;
 }
 .host-avatar {
-  width: 42px;
-  height: 42px;
-  background: #ffde70;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 42px; height: 42px; background: #ffde70;
+  border-radius: 50%; display: flex;
+  align-items: center; justify-content: center;
 }
 .host-name { font-weight: 500; font-size: 1.2rem; color: #f6faff; }
 
-/* ── Write Review ────────────────────────────────────── */
-.write-review { border-radius: 10px; padding: 1rem 1.25rem; }
+/* ── Rating Badge ─────────────────────────────────────── */
+.rating-badge-new {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #173b64; color: #f6faff;
+  font-size: 0.88rem; font-weight: 700;
+  padding: 0.22rem 0.6rem; border-radius: 20px;
+  white-space: nowrap; align-self: center;
+}
+
+/* ══ 3. WRITE REVIEW (standalone, full width) ═══════════ */
+.write-review { padding: 0.25rem 0; }
 .review-form-row {
-  transform: translateY(-1rem);
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 0.6rem;
+  display: flex; gap: 0.75rem; align-items: center;
 }
 .review-input {
-  flex: 1;
-  background: #fef5d6;
-  border: none;
-  transform: translateX(-0.5rem);
-  border-radius: 10px;
-  padding: 1rem 2rem;
-  color: #272626;
-  font-size: 0.88rem;
+  flex: 1; background: #fef5d6; border: none;
+  border-radius: 10px; padding: 1rem 1.5rem;
+  color: #272626; font-size: 0.88rem;
 }
 .review-input::placeholder { color: #8899bb; }
-
+.review-actions {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0.4rem;
+}
+.star-picker { display: flex; gap: 0.2rem; }
 .btn-submit {
-  transform: translateY(0.5rem);
-  background: #173b64;
-  color: #f6faff;
-  border: none;
-  padding: 0.6rem 2.3rem;
-  border-radius: 48px;
-  font-weight: 600;
-  font-size: 0.88rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
+  background: #173b64; color: #f6faff; border: none;
+  padding: 0.6rem 2.3rem; border-radius: 48px;
+  font-weight: 600; font-size: 0.88rem; cursor: pointer;
+  transition: background 0.2s; white-space: nowrap;
+  width: 8.7rem; height: 2.5rem;
 }
 .btn-submit:hover { background: #2d4f7a; }
-.star-picker { display: flex; gap: 0.2rem; }
 
-/* ── Reviews ─────────────────────────────────────────── */
-.comment {
-  transform: translateY(-1.5rem);
-  max-width: 1210px;
-  margin: 2rem auto 0;
-  padding: 0;
-}
-.reviews-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
+/* ══ 4. REVIEWS GRID ════════════════════════════════════ */
+.comment { max-width: 1210px; margin: 0 auto; padding: 0; }
+.reviews-section { display: flex; flex-direction: column; gap: 1rem; }
 .reviews-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
   gap: 0.75rem;
 }
-
 .review-card {
-  background: #fef5d6;
-  border-radius: 12px;
-  padding: 0.85rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  background: #fef5d6; border-radius: 12px;
+  padding: 0.85rem; display: flex;
+  flex-direction: column; gap: 0.5rem; position: relative;
 }
-
-.reviewer-info {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
+.reviewer-info  { display: flex; align-items: flex-start; gap: 0.5rem; }
 .reviewer-avatar {
-  width: 36px;
-  height: 36px;
-  background: #e6d0a1;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #5a3e2b;
-  font-weight: 700;
-  font-size: 0.85rem;
-  flex-shrink: 0;
-  overflow: hidden;
+  width: 36px; height: 36px; background: #e6d0a1;
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; color: #5a3e2b; font-weight: 700;
+  font-size: 0.85rem; flex-shrink: 0; overflow: hidden;
 }
-.avatar-img { width: 100%; height: 100%; object-fit: cover; }
-
-.reviewer-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.reviewer-name {
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: #2d2323;
-  margin: 0;
-  line-height: 1.2;
-}
-
-.review-stars { display: flex; gap: 2px; }
-
-/* ✅ تاريخ الكومنت */
-.review-date {
-  font-size: 0.68rem;
-  color: #8a6a3a;
-  margin: 0;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-}
-
-.review-comment {
-  font-size: 0.75rem;
-  color: #1a1919;
-  line-height: 1.5;
-  margin: 0;
-}
+.avatar-img     { width: 100%; height: 100%; object-fit: cover; }
+.reviewer-meta  { display: flex; flex-direction: column; gap: 0.25rem; }
+.reviewer-name  { font-size: 0.8rem; font-weight: 700; color: #2d2323; margin: 0; line-height: 1.2; }
+.review-stars   { display: flex; gap: 2px; }
+.review-date    { font-size: 0.68rem; color: #8a6a3a; margin: 0; font-weight: 500; }
+.review-comment { font-size: 0.75rem; color: #1a1919; line-height: 1.5; margin: 0; }
 
 /* ════════════════════════════════════════════════════════
    RESERVATION WIDGET
@@ -295,255 +193,235 @@
   background: #a3c4eb;
   border-radius: 2rem;
   padding: 1.4rem 1.25rem;
-  top: 1rem;
   color: #173b64;
 }
 
-/* Date pill */
-.dt-row-single {  margin-bottom: 1rem;
-  display: flex;
-  justify-content: center; }
-
-.custom-date {
-  position: relative;
-  display: inline-block;
-  width: fit-content;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-}
-
+.dt-row-single  { margin-bottom: 1rem; display: flex; justify-content: center; }
+.custom-date    { position: relative; display: inline-flex; justify-content: center; margin: 0 auto; }
 .date-input-hidden {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-  z-index: 2;
-  box-sizing: border-box;
-  opacity: 0;
-  pointer-events: none;
+  position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  width: 100%; height: 100%; z-index: 2; box-sizing: border-box; pointer-events: none;
 }
-
 .date-display {
-  background: #173b64;
-  color: #f6faff;
-  padding: 0.3rem 0.9rem;
-  border-radius: 20px;
-  font-size: 0.72rem;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  width: fit-content;
-  margin: 0 auto;
+  background: #173b64; color: #f6faff;
+  padding: 0.3rem 0.9rem; border-radius: 20px;
+  font-size: 0.72rem; cursor: pointer; transition: background 0.2s;
+  white-space: nowrap; height: 28px;
+  display: flex; align-items: center; gap: 0.4rem;
+  width: fit-content; margin: 0 auto;
 }
 .date-display:hover { background: #1e4a7a; }
-
 .date-label-inside {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #a3c4eb;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
+  font-size: 0.7rem; font-weight: 700; color: #a3c4eb;
+  text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
 }
-
-.date-value {
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: #f6faff;
-}
-
+.date-value { font-size: 0.72rem; font-weight: 500; color: #f6faff; }
 .field-error .date-display { border: 1.5px solid #dc2626 !important; }
-.field-error .text-input    { border: 1.5px solid #dc2626 !important; }
+.field-error .text-input   { border: 1.5px solid #dc2626 !important; }
 
-/* Widget sections */
 .widget-section { margin-bottom: 0.9rem; }
 .widget-label {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #173b64;
-  margin: 0 0 0.4rem;
-  text-align: center;
+  font-size: 1rem; font-weight: 700; color: #173b64;
+  margin: 0 0 0.4rem; text-align: center;
 }
-
-/* Table options */
 .option-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.2rem 0;
+  display: flex; justify-content: space-between;
+  align-items: center; padding: 0.2rem 0;
 }
 .option-name { font-size: 0.9rem; color: #173b64; }
-.qty-ctrl {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-}
+.qty-ctrl    { display: flex; align-items: center; gap: 0.25rem; }
 .qty-ctrl button {
-  width: 20px;
-  height: 20px;
-  background: transparent;
-  border: none;
-  font-size: 1.1rem;
-  font-weight: 400;
-  cursor: pointer;
-  color: #173b64;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 20px; height: 20px; background: transparent; border: none;
+  font-size: 1.1rem; cursor: pointer; color: #173b64;
+  display: flex; align-items: center; justify-content: center;
 }
-.qty-val {
-  min-width: 20px;
-  text-align: center;
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: #173b64;
-}
-
-/* Text inputs */
+.qty-val { min-width: 20px; text-align: center; font-weight: 700; font-size: 0.9rem; color: #173b64; }
 .text-input {
-  width: 100%;
-  background: #173b64;
-  border: none;
-  border-radius: 20px;
-  padding: 0.55rem 0.9rem;
-  color: #f6faff;
-  font-size: 0.85rem;
-  box-sizing: border-box;
+  width: 100%; background: #173b64; border: none;
+  border-radius: 20px; padding: 0.55rem 0.9rem;
+  color: #f6faff; font-size: 0.85rem; box-sizing: border-box;
 }
 .text-input::placeholder { color: #f6faff; }
-
-/* Error */
 .res-error-msg {
-  color: #dc2626;
-  background: rgba(220, 38, 38, 0.1);
-  border: 1px solid rgba(220, 38, 38, 0.35);
-  border-radius: 8px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-align: center;
-  padding: 0.4rem 0.7rem;
-  margin: 0.3rem 0;
+  color: #dc2626; background: rgba(220,38,38,0.1);
+  border: 1px solid rgba(220,38,38,0.35); border-radius: 8px;
+  font-size: 0.8rem; font-weight: 600; text-align: center;
+  padding: 0.4rem 0.7rem; margin: 0.3rem 0;
 }
-
-/* Reservation button */
 .btn-reserve {
-  width: 100%;
-  background: #ffde70;
-  color: #173b64;
-  border: none;
-  padding: 0.75rem;
-  border-radius: 24px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  margin-top: 0.5rem;
+  width: 100%; background: #ffde70; color: #173b64; border: none;
+  padding: 0.75rem; border-radius: 24px; font-weight: 700;
+  font-size: 0.95rem; cursor: pointer; margin-top: 0.5rem;
   transition: background 0.2s, transform 0.15s;
 }
 .btn-reserve:hover { background: #f5c842; transform: scale(1.02); }
 
 /* ── Lightbox ─────────────────────────────────────────── */
 .lightbox {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.9);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  animation: fadeIn 0.2s ease;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+  z-index: 9999; display: flex; align-items: center;
+  justify-content: center; animation: fadeIn 0.2s ease;
 }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
 .lightbox-inner {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  position: relative; display: flex;
+  flex-direction: column; align-items: center;
 }
 .lb-img {
-  max-width: 88vw;
-  max-height: 78vh;
-  object-fit: contain;
-  border-radius: 12px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  max-width: 88vw; max-height: 78vh; object-fit: contain;
+  border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);
   animation: zoomIn 0.2s ease;
 }
 @keyframes zoomIn {
   from { transform: scale(0.95); opacity: 0; }
-  to   { transform: scale(1);    opacity: 1; }
+  to   { transform: scale(1); opacity: 1; }
 }
 .lb-close {
-  position: absolute;
-  top: -42px;
-  right: 0;
-  background: none;
-  border: none;
-  color: #f6faff;
-  font-size: 1.5rem;
-  cursor: pointer;
-  opacity: 0.75;
+  position: absolute; top: -42px; right: 0;
+  background: none; border: none; color: #f6faff;
+  font-size: 1.5rem; cursor: pointer; opacity: 0.75;
   transition: opacity 0.2s, transform 0.2s;
 }
 .lb-close:hover { opacity: 1; transform: scale(1.2); }
-
 .lb-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(255,255,255,0.15);
-  border: none;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s;
-  backdrop-filter: blur(4px);
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,0.15); border: none;
+  border-radius: 50%; width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: background 0.2s; backdrop-filter: blur(4px);
 }
 .lb-arrow:hover:not(:disabled) { background: rgba(255,255,255,0.3); }
 .lb-arrow:disabled { opacity: 0.25; cursor: not-allowed; }
 .lb-prev { left: -58px; }
 .lb-next { right: -58px; }
-
 .lb-counter { color: rgba(255,255,255,0.65); font-size: 0.82rem; margin-top: 0.75rem; }
-.lb-dots { display: flex; gap: 6px; margin-top: 0.5rem; }
+.lb-dots    { display: flex; gap: 6px; margin-top: 0.5rem; }
 .lb-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.3);
-  cursor: pointer;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(255,255,255,0.3); cursor: pointer;
   transition: background 0.2s, transform 0.2s;
 }
 .lb-dot.active { background: #f5c518; transform: scale(1.3); }
-.rating-badge-new {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: #173b64;
-  color: #f6faff;
-  font-size: 0.88rem;
-  font-weight: 700;
-  padding: 0.22rem 0.6rem;
-  border-radius: 20px;
-  white-space: nowrap;
-  align-self: center;
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — TABLET  (≤ 1024px)
+════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .rest-page { padding: 1.5rem 1.25rem 3rem; }
+
+  .top-row {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .reservation-widget {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    transform: translateX(0);
+    border-radius: 1.75rem;
+  }
 }
-/* ── Responsive ─────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .top-row { grid-template-columns: 1fr; }
-  .reservation-widget { position: static; }
-  .gallery { grid-template-columns: 1fr; height: auto; }
-  .gallery-grid { grid-template-columns: repeat(2, 1fr); height: 160px; }
-  .lb-prev { left: -44px; }
-  .lb-next { right: -44px; }
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — MOBILE  (≤ 640px)
+
+   الترتيب المطلوب:
+   1. Gallery       (gallery-wrap)
+   2. Details       (gallery-col inside top-row)
+   3. Widget        (reservation-widget inside top-row)
+   4. Review form   (write-review standalone)
+   5. Reviews grid  (comment)
+   
+   الـ structure في الـ DOM بالفعل بالترتيب ده — مفيش حاجة للـ order!
+════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .rest-page { padding: 0.75rem 0.75rem 3rem; }
+
+  .content-wrap { gap: 1rem; }
+
+  /* top-row: عمود واحد — details فوق، widget تحت */
+  .top-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .gallery-col { order: 1; }
+
+  .reservation-widget {
+    order: 2;
+    width: 100%;
+    transform: translateX(0);
+    border-radius: 1.25rem;
+    padding: 1rem 1rem 1.25rem;
+  }
+
+  /* ── Gallery mobile ── */
+  .gallery {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .gallery-main { height: 220px; }
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    height: 80px;
+    gap: 6px;
+  }
+
+  /* ── Details ── */
+  .rest-name { font-size: 1.3rem; }
+
+  /* ── Widget internals ── */
+  .date-display { height: 34px; font-size: 0.82rem; padding: 0.4rem 1rem; }
+  .widget-label { font-size: 1.1rem; margin-bottom: 0.55rem; }
+  .option-row   { padding: 0.42rem 0; }
+  .option-name  { font-size: 1rem; }
+  .qty-ctrl button { font-size: 1.4rem; width: 1.8rem; height: 1.8rem; }
+  .qty-val         { font-size: 1.05rem; min-width: 1.4rem; }
+  .text-input { font-size: 1rem; padding: 0.7rem 1rem; border-radius: 14px; }
+  .btn-reserve { padding: 0.95rem; font-size: 1.05rem; border-radius: 1rem; margin-top: 0.75rem; }
+
+  /* ── Review form ── */
+  .review-form-row {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+  .review-input  { padding: 0.9rem 1rem; font-size: 0.9rem; border-radius: 12px; }
+  .review-actions {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-submit { width: auto; padding: 0.6rem 1.8rem; font-size: 0.9rem; height: 2.75rem; }
+  .star-picker svg { width: 26px; height: 26px; }
+
+  /* ── Reviews ── */
+  .reviews-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+
+  /* ── Lightbox ── */
+  .lb-prev { left: -36px; }
+  .lb-next { right: -36px; }
+}
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — VERY SMALL  (≤ 380px)
+════════════════════════════════════════════════════════ */
+@media (max-width: 380px) {
+  .gallery-main { height: 190px; }
+  .gallery-grid { height: 65px; }
+  .rest-name    { font-size: 1.15rem; }
+  .reviews-grid { grid-template-columns: 1fr; }
+  .lb-prev { left: -28px; }
+  .lb-next { right: -28px; }
+  .review-actions { flex-direction: column; align-items: stretch; }
+  .btn-submit { width: 100%; text-align: center; }
+}
+
+/* host above comment */
+.write-review .host-row {
+  margin-bottom: 0.6rem;
+  margin-top: 0;
 }

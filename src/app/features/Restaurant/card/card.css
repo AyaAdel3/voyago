@@ -110,7 +110,7 @@
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s, background 0.2s;
-  z-index: 4; /* فوق الـ inactive overlay عشان يشتغل */
+  z-index: 4;
 }
 .fav-btn:hover { transform: scale(1.15); background: rgba(0,0,0,0.5); }
 .fav-btn.active { background: rgba(255,222,112,0.2); }
@@ -129,7 +129,7 @@
   align-items: flex-start;
 }
 
-.restaurant-name { font-size: 1.15rem; font-weight: 700; color: #0d1526; margin: 0; }
+.restaurant-name    { font-size: 1.15rem; font-weight: 700; color: #0d1526; margin: 0; }
 .restaurant-cuisine { font-size: 0.85rem; color: #3a5070; margin: 0.2rem 0 0; }
 
 .rating-badge {
@@ -176,7 +176,92 @@
   background: #c8b96a;
 }
 
-@media (max-width: 600px) {
-  .restaurant-card { flex-direction: column; width: 100%; height: auto; }
-  .card-img-wrap { width: 100%; height: 200px; }
+/* ══════════════════════════════════════
+   RESTAURANT CARD — Responsive
+══════════════════════════════════════ */
+
+/* ── Tablet (max 1024px) ── */
+@media (max-width: 1024px) {
+  .restaurants-page {
+    padding: 0 1.5rem;
+  }
+
+  .restaurant-card {
+    width: 100%;
+    height: auto;
+  }
+
+  .card-img-wrap {
+    width: 320px;
+    height: 220px;
+  }
+}
+
+/* ── Mobile (max 768px) ── */
+@media (max-width: 768px) {
+  .restaurantpage {
+    padding: 0.5rem 0;
+  }
+
+  .restaurants-page {
+    padding: 0 1rem;
+    gap: 1rem;
+    margin: 1rem auto;
+  }
+
+  .restaurant-card {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    border-radius: 1.5rem;
+    padding: 6px;
+    gap: 0;
+  }
+
+  .card-img-wrap {
+    width: 100%;
+    height: 200px;
+    border-radius: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-body {
+    padding: 0.75rem 1rem 1rem;
+    gap: 0.4rem;
+  }
+
+  .restaurant-name    { font-size: 1rem; }
+  .restaurant-cuisine { font-size: 0.8rem; }
+
+  .restaurant-desc {
+    font-size: 0.82rem;
+    -webkit-line-clamp: 3;
+  }
+
+  .btn-show {
+    width: 100%;
+    text-align: center;
+    padding: 0.55rem 1rem;
+    font-size: 0.9rem;
+    margin: 0 !important;
+  }
+
+  .card-footer {
+    justify-content: stretch;
+  }
+
+  .inactive-overlay {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .loading-wrap {
+    padding: 4rem 2rem;
+    transform: translateY(2rem);
+  }
+}
+
+/* ── Small mobile (max 400px) ── */
+@media (max-width: 400px) {
+  .card-img-wrap { height: 170px; }
 }

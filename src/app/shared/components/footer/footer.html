@@ -1,74 +1,96 @@
-<footer class="w-full bg-[#0F1A2E] border-t border-white/[0.07] px-12 py-5 font-[Nunito Sans]">
-  <div class="flex items-start justify-between gap-8">
-    <!-- ── Support ── -->
-    <div class="flex flex-col gap-3">
-      <h4 class="footer-heading text-white font-semibold text-base">Support</h4>
-      <a routerLink="/home" routerLinkActive="text-black" class="footer-link"
-        >House in tunis village</a
-      >
-      <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis</a>
-      <a routerLink="/home" routerLinkActive="text-black" class="footer-link"
-        >House in tunis village</a
-      >
-      <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis</a>
-    </div>
+<footer class="w-full bg-[#0F1A2E] border-t border-white/[0.07] font-[Nunito Sans]">
 
-    <!-- ── Hosting ── -->
-    <div class="flex flex-col gap-3">
-      <h4 class="footer-heading text-white font-semibold text-base">Hosting</h4>
-      <a routerLink="/home" routerLinkActive="text-black" class="footer-link"
-        >House in tunis village</a
-      >
-      <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis</a>
-      <a routerLink="/home" routerLinkActive="text-black" class="footer-link"
-        >House in tunis village</a
-      >
-      <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis</a>
-    </div>
+  <div class="px-6 md:px-12 py-10">
 
-    <!-- ── About Us ── -->
-    <div class="flex flex-col gap-3">
-      <h4 class="footer-heading text-white font-semibold text-base">About Us</h4>
-      <a routerLink="/about/who-we-are" class="footer-link">Who We Are</a>
-      <a routerLink="/about/what-we-offer" class="footer-link">What We Offer</a>
-      <a routerLink="/about/our-journey" class="footer-link">Our Journey</a>
-    </div>
-
-    <!-- ── Contact Us ── -->
-    <div class="flex flex-col gap-3">
-      <h4 class="footer-heading text-white font-semibold text-base">Contact us</h4>
-      <div class="contact-wrap relative w-[220px]">
-        <input
-          type="email"
-          class="contact-input w-full bg-transparent border border-white/[0.22] rounded-full py-2.5 pl-5 pr-20 text-white text-sm placeholder-[#6b84a0] outline-none transition-all"
-          placeholder="Your email"
-        />
-        <button
-          type="button"
-          class="contact-btn absolute right-1 top-1/2 -translate-y-1/2 bg-[#f5c842] text-[#0d1526] text-sm font-semibold rounded-full px-4 py-1.5 cursor-pointer transition-all hover:bg-[#ffd95a]"
-        >
-          Send
-        </button>
+    <!-- ══ DESKTOP: 4 columns ══ -->
+    <div class="hidden md:grid md:grid-cols-4 gap-10">
+      <div class="flex flex-col gap-3">
+        <h4 class="footer-heading">Support</h4>
+        <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis village</a>
+        <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis</a>
+        <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis village</a>
+        <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis</a>
+      </div>
+      <div class="flex flex-col gap-3">
+        <h4 class="footer-heading">Hosting</h4>
+        <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis village</a>
+        <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis</a>
+        <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis village</a>
+        <a routerLink="/home" routerLinkActive="text-black" class="footer-link">House in tunis</a>
+      </div>
+      <div class="flex flex-col gap-3">
+        <h4 class="footer-heading">About Us</h4>
+        <a routerLink="/about/who-we-are"    class="footer-link">Who We Are</a>
+        <a routerLink="/about/what-we-offer" class="footer-link">What We Offer</a>
+        <a routerLink="/about/our-journey"   class="footer-link">Our Journey</a>
+      </div>
+      <div class="flex flex-col gap-3">
+        <h4 class="footer-heading">Contact us</h4>
+        <div class="contact-wrap relative w-[220px]">
+          <input type="email"
+            class="contact-input w-full bg-transparent border border-white/[0.22] rounded-full py-2.5 pl-5 pr-20 text-white text-sm placeholder-[#6b84a0] outline-none transition-all"
+            placeholder="Your email" />
+          <button type="button"
+            class="contact-btn absolute right-1 top-1/2 -translate-y-1/2 bg-[#f5c842] text-[#0d1526] text-sm font-semibold rounded-full px-4 py-1.5 cursor-pointer hover:bg-[#ffd95a]">
+            Send
+          </button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- ── Bottom Bar ── -->
-  <div class="mt-10 pt-5 border-t border-white/[0.07] flex items-center justify-between">
-    <span class="text-[#6b84a0] text-xs">© 2024 VOYAGO. All rights reserved.</span>
-    <div class="flex items-center gap-5">
-      <a
-        routerLink="/home"
-        routerLinkActive="text-black"
-        class="text-[#6b84a0] text-xs hover:text-white transition-colors"
-        >Privacy Policy</a
-      >
-      <a
-        routerLink="/home"
-        routerLinkActive="text-black"
-        class="text-[#6b84a0] text-xs hover:text-white transition-colors"
-        >Terms of Service</a
-      >
+    <!-- ══ MOBILE ══ -->
+    <div class="flex flex-col md:hidden">
+
+      <!-- Row 1: Support + Hosting -->
+      <div class="grid grid-cols-2 gap-4 pb-5 border-b border-white/[0.08]">
+        <div class="flex flex-col gap-3">
+          <h4 class="footer-heading-mobile">Support</h4>
+          <a routerLink="/home" class="footer-link-mobile">House in tunis village</a>
+          <a routerLink="/home" class="footer-link-mobile">House in tunis</a>
+          <a routerLink="/home" class="footer-link-mobile">House in tunis village</a>
+          <a routerLink="/home" class="footer-link-mobile">House in tunis</a>
+        </div>
+        <div class="flex flex-col gap-3">
+          <h4 class="footer-heading-mobile">Hosting</h4>
+          <a routerLink="/home" class="footer-link-mobile">House in tunis village</a>
+          <a routerLink="/home" class="footer-link-mobile">House in tunis</a>
+          <a routerLink="/home" class="footer-link-mobile">House in tunis village</a>
+          <a routerLink="/home" class="footer-link-mobile">House in tunis</a>
+        </div>
+      </div>
+
+      <!-- Row 2: About Us + Contact -->
+      <div class="grid grid-cols-2 gap-4 pt-5">
+        <div class="flex flex-col gap-3">
+          <h4 class="footer-heading-mobile">About Us</h4>
+          <a routerLink="/about/who-we-are"    class="footer-link-mobile">Who We Are</a>
+          <a routerLink="/about/what-we-offer" class="footer-link-mobile">What We Offer</a>
+          <a routerLink="/about/our-journey"   class="footer-link-mobile">Our Journey</a>
+        </div>
+        <div class="flex flex-col gap-3">
+          <h4 class="footer-heading-mobile">Contact us</h4>
+          <div class="contact-wrap relative w-full">
+            <input type="email"
+              class="contact-input w-full bg-transparent border border-white/[0.22] rounded-full py-2.5 pl-4 pr-16 text-white text-sm placeholder-[#6b84a0] outline-none transition-all"
+              placeholder="Email" />
+            <button type="button"
+              class="contact-btn absolute right-1 top-1/2 -translate-y-1/2 bg-[#f5c842] text-[#0d1526] text-xs font-semibold rounded-full px-3 py-1.5 cursor-pointer hover:bg-[#ffd95a]">
+              Send
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
+
+  <!-- ══ Bottom Bar ══ -->
+  <div class="px-6 md:px-12 py-4 border-t border-white/[0.07] flex flex-col sm:flex-row items-center justify-between gap-2">
+    <span class="text-[#6b84a0] text-sm">© 2024 VOYAGO. All rights reserved.</span>
+    <div class="flex items-center gap-5">
+      <a routerLink="/home" class="text-[#6b84a0] text-sm hover:text-white transition-colors">Privacy Policy</a>
+      <a routerLink="/home" class="text-[#6b84a0] text-sm hover:text-white transition-colors">Terms of Service</a>
+    </div>
+  </div>
+
 </footer>

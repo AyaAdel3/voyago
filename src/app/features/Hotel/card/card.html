@@ -38,16 +38,14 @@
       </div>
 
       <div class="card-body font-[Nunito Sans]">
-        <div class="card-header translate-y-4 gap-[3px]">
+        <div class="card-header gap-[3px]">
           <div>
-            <h3 class="hotel-name color-[#173B64]">{{ hotel.name }}</h3>
-            <!-- Price = Standard room price per night -->
-            <p class="hotel-price color-[#021526] font-medium">
+            <h3 class="hotel-name">{{ hotel.name }}</h3>
+            <p class="hotel-price font-medium">
               {{ hotel.pricePerNight | number }}LE / night
             </p>
           </div>
-          <!-- Rating badge -->
-          <div class="rating-badge me-2">
+          <div class="rating-badge">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="#021526">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
             </svg>
@@ -55,11 +53,11 @@
           </div>
         </div>
 
-        <p class="hotel-desc font-normal color-[#021526] translate-y-4">{{ hotel.description }}</p>
+        <p class="hotel-desc font-normal">{{ hotel.description }}</p>
 
         <div class="card-footer">
           <button
-            class="btn-show mb-1.5 me-2"
+            class="btn-show"
             (click)="goToDetails(hotel.id); $event.stopPropagation()"
           >
             Show hotel
