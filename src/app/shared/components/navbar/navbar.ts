@@ -11,6 +11,7 @@ import { EnterCode } from '../../../core/Auth/enter-code/enter-code';
 import { ResetPassword } from '../../../core/Auth/reset-password/reset-password';
 import { LanguageService } from '../../../core/services/language.service';
 import { SearchService, SearchResult } from '../../../core/services/search.service';
+import { DarkModeService } from '../../../core/services/dark-mode.service'; // ← ضيف ده
 
 @Component({
   selector: 'app-navbar',
@@ -23,7 +24,7 @@ import { SearchService, SearchResult } from '../../../core/services/search.servi
   styleUrl: './navbar.css',
 })
 export class Navbar implements OnInit {
-  isDarkMode     = false;
+  // ← شلنا isDarkMode من هنا
   searchQuery    = '';
   mobileMenuOpen = false;
   isMobile       = window.innerWidth <= 768;
@@ -35,30 +36,21 @@ export class Navbar implements OnInit {
   }
 
   constructor(
-    public modal:  AuthModalService,
-    public auth:   AuthService,
-    public router: Router,
-    public lang:   LanguageService,
-    public search: SearchService,
-    private elRef: ElementRef,
+    public modal:    AuthModalService,
+    public auth:     AuthService,
+    public router:   Router,
+    public lang:     LanguageService,
+    public search:   SearchService,
+    private elRef:   ElementRef,
+    public darkMode: DarkModeService, // ← ضيف ده
   ) {}
 
   ngOnInit(): void {
-    const savedMode = localStorage.getItem('darkMode');
-    if (savedMode === 'true') {
-      this.isDarkMode = true;
-      this.applyDarkMode();
-    }
+    // ← شلنا كود الـ darkMode من هنا، الـ Service بيتولاه في الـ constructor بتاعه
   }
 
   toggleDarkMode(): void {
-    this.isDarkMode = !this.isDarkMode;
-    this.applyDarkMode();
-    localStorage.setItem('darkMode', this.isDarkMode.toString());
-  }
-
-  applyDarkMode(): void {
-    document.body.classList.toggle('dark-mode', this.isDarkMode);
+    this.darkMode.toggle(); // ← بنستخدم الـ Service بدل الـ local logic
   }
 
   onSearchInput(): void {
@@ -68,7 +60,7 @@ export class Navbar implements OnInit {
   goToResult(result: SearchResult): void {
     this.search.clear();
     this.searchQuery    = '';
-    this.mobileMenuOpen = false;  // بيقفل الـ menu لو الـ search اتضغط من جواه
+    this.mobileMenuOpen = false;
     this.router.navigate([result.route]);
   }
 
@@ -81,7 +73,7 @@ export class Navbar implements OnInit {
   onDocumentClick(event: Event): void {
     if (!this.elRef.nativeElement.contains(event.target)) {
       this.search.close();
-      this.mobileMenuOpen = false;  // بيقفل الـ menu لو ضغط برا الـ navbar
+      this.mobileMenuOpen = false;
     }
   }
 

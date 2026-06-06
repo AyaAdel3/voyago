@@ -1,12 +1,21 @@
 <div class="bg-[#021526] min-h-screen text-white px-4 py-6">
-
   <!-- ══ Offers ══ -->
   <section class="mb-10">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-lg font-semibold">Offers</h2>
       <div class="flex gap-2">
-        <button (click)="prevOffer()" class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm">❮</button>
-        <button (click)="nextOffer()" class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm">❯</button>
+        <button
+          (click)="prevOffer()"
+          class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm"
+        >
+          ❮
+        </button>
+        <button
+          (click)="nextOffer()"
+          class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm"
+        >
+          ❯
+        </button>
       </div>
     </div>
 
@@ -14,8 +23,12 @@
       @for (offer of visibleOffers; track $index) {
         <div class="relative flex-1 h-[200px] rounded-2xl overflow-hidden">
           <img [src]="offer.image" alt="offer" class="w-full h-full object-cover" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex flex-col justify-end p-5">
-       <p class="text-white text-xl font-bold mb-3 max-w-[220px] leading-snug">{{ offer.title }}</p>
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex flex-col justify-end p-5"
+          >
+            <p class="text-white text-xl font-bold mb-3 max-w-[220px] leading-snug">
+              {{ offer.title }}
+            </p>
             <button class="bg-yellow-400 text-black text-sm font-bold px-6 py-2 rounded-full w-fit">
               BOOK NOW
             </button>
@@ -52,7 +65,9 @@
 
     <div class="grid grid-cols-4 gap-4">
       @for (item of visibleRecommended; track item.name) {
-        <div class="bg-[#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer">
+        <div
+          class="card-footer-home [#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer"
+        >
           <div class="relative w-full">
             <img [src]="item.image" alt="place" class="w-full h-[180px] object-cover" />
             <button
@@ -63,10 +78,10 @@
             </button>
           </div>
           <div class="p-3">
-         <p class="text-white text-lg font-semibold">{{ item.name }}</p>
+            <p class="text-white text-lg font-semibold">{{ item.name }}</p>
             <div class="flex justify-between items-center mt-1.5">
               <p class="text-gray-400 text-base">{{ item.price }}</p>
-               <span class="text-yellow-400 text-base">⭐ {{ item.rating }}</span>
+              <span class="text-yellow-400 text-base">⭐ {{ item.rating }}</span>
             </div>
           </div>
         </div>
@@ -86,7 +101,9 @@
 
     <div class="grid grid-cols-4 gap-4">
       @for (item of visibleAvailable; track item.name) {
-        <div class="bg-[#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer">
+        <div
+          class="card-footer-home bg-[#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer"
+        >
           <div class="relative w-full">
             <img [src]="item.image" alt="place" class="w-full h-[180px] object-cover" />
             <button
@@ -120,5 +137,4 @@
     </div>
     <app-chatbot (openChange)="chatbotOpen = $event"></app-chatbot>
   </div>
-
 </div>

@@ -1,25 +1,36 @@
 import { Injectable, signal } from '@angular/core';
 
-@Injectable({ providedIn: 'root' })
+@Injectable({
+  providedIn: 'root',
+})
 export class DarkModeService {
+
   isDarkMode = signal<boolean>(false);
 
   constructor() {
-    // قرا الـ saved mode من الـ localStorage
-    const saved = localStorage.getItem('darkMode');
-    const dark = saved === 'true';
+
+    const savedMode = localStorage.getItem('darkMode');
+    const dark = savedMode === 'true';
+
     this.isDarkMode.set(dark);
+
     this.applyClass(dark);
   }
 
   toggle(): void {
-    const newVal = !this.isDarkMode();
-    this.isDarkMode.set(newVal);
-    localStorage.setItem('darkMode', newVal.toString());
-    this.applyClass(newVal);
+
+    const newMode = !this.isDarkMode();
+
+    this.isDarkMode.set(newMode);
+
+    localStorage.setItem('darkMode', newMode.toString());
+
+    this.applyClass(newMode);
   }
 
-  private applyClass(dark: boolean): void {
-    document.body.classList.toggle('dark-mode', dark);
+  private applyClass(isDark: boolean): void {
+
+    document.body.classList.toggle('dark-mode', isDark);
+
   }
 }

@@ -5,7 +5,7 @@
 
 .profile-layout {
   display: flex;
-  background-color: #0A1128; /* نفس درجة الكحلي في الصورة */
+  background-color: #0a1128; /* نفس درجة الكحلي في الصورة */
   min-height: 100vh;
   color: white;
 }
@@ -73,9 +73,9 @@
 }
 
 .active-link {
-  color: #FFE194 !important; /* اللون الأصفر من الصورة */
+  color: #ffe194 !important; /* اللون الأصفر من الصورة */
   opacity: 1 !important;
-  border-bottom: 2px solid #FFE194;
+  border-bottom: 2px solid #ffe194;
   width: fit-content;
   padding-bottom: 5px;
 }
@@ -112,10 +112,10 @@
   margin: 0;
 }
 
-
-.edit-btn, .save-btn {
-  background-color: #FFE194;
-  color: #0A1128;
+.edit-btn,
+.save-btn {
+  background-color: #ffe194;
+  color: #0a1128;
   border: none;
   padding: 8px 45px;
   border-radius: 20px;
@@ -140,7 +140,7 @@
 .profile-input {
   background: transparent;
   border: none;
-  border-bottom: 1px solid #FFE194;
+  border-bottom: 1px solid #ffe194;
   color: #7a9cc6;
   font-size: 20px;
   width: 100%;

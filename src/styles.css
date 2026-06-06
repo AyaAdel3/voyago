@@ -192,7 +192,8 @@ body:not(.dark-mode) .budget-page,
 body:not(.dark-mode) .rest-page,
 body:not(.dark-mode) .booking-mainpage,
 body:not(.dark-mode) .confirmed-mainpage,
-body:not(.dark-mode) .confirm-page {
+body:not(.dark-mode) .confirm-page,
+body:not(.dark-mode) .profile-shell {
   background: #f0f4f8 !important;
 }
 
@@ -859,7 +860,7 @@ body:not(.dark-mode) .restaurantpage {
 ══════════════════════════════════════ */
 
 /* ── Layout ── */
-body:not(.dark-mode) .profile-layout {
+body:not(.dark-mode) .profile-layout .details-container {
   background-color: #f0f4f8 !important;
   color: #0d1b2a !important;
 }
@@ -941,12 +942,49 @@ body:not(.dark-mode) .profile-layout .section-header {
 }
 
 body:not(.dark-mode) .profile-layout .section-header h3 {
-  color: #0d1b2a !important;
+  color: #173b64 !important;
 }
 
 body:not(.dark-mode) .profile-layout .section-count {
   background: #e2eaf4 !important;
-  color: #5a6a7a !important;
+  color: #1e6ab0 !important;
+}
+body:not(.dark-mode) .profile-layout {
+  background: #f6faff !important;
+}
+body:not(.dark-mode) .fav-section h3,
+body:not(.dark-mode) .info-header h1 {
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .fav-section span {
+  color: #173b64 !important;
+}
+
+body:not(.dark-mode) .fav-section p,
+body:not(.dark-mode) .details-container p,
+body:not(.dark-mode) .empty-state p {
+  color: #1e6ab0 !important;
+}
+
+body:not(.dark-mode) .empty-state {
+  background: #e2eaf4 !important;
+  border-color: #1e6ab0 !important;
+}
+body:not(.dark-mode) .fav-section .favorite-card {
+  background: #e2eaf4 !important;
+  border-radius: 25px;
+  margin-bottom: 15px;
+  padding: 0 5px 15px;
+}
+
+body:not(.dark-mode) .plan-column {
+  background-color: #e2eaf4;
+}
+body:not(.dark-mode) .plans-row .actual-card {
+  background-color: #173b64 !important;
+}
+body:not(.dark-mode) .plans-row .card-body h3 {
+  color: #f8fafc !important;
 }
 
 /* ── Cards ── */
@@ -991,4 +1029,14 @@ body:not(.dark-mode) .profile-layout .delete-plan-btn {
   background: rgba(239, 68, 68, 0.08) !important;
   border-color: rgba(239, 68, 68, 0.25) !important;
   color: #ef4444 !important;
+}
+body:not(.dark-mode) .card-footer-home {
+  background-color: #173b64 !important;
+}
+
+body:not(.dark-mode) .admin-shell .dark-pill {
+  background-color: #173b64 !important;
+}
+body:not(.dark-mode) .admin-shell .dark-pill svg {
+  color: #ffffff !important;
 }
