@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
-import { tap, map } from 'rxjs/operators';
+import { tap } from 'rxjs/operators';
 
 export interface AttractionImage {
   id: number;
@@ -48,42 +48,106 @@ export interface AdminAttractionsResponse {
   attractions: AdminAttraction[];
 }
 
-@Injectable({ providedIn: 'root' })
+export interface AdminAttractionPayload {
+  name: string;
+  description: string;
+  Location: string;
+  yearOfInscription: number;
+  ticketPrice: number;
+  rating: number;
+  category: number;
+}
+
+@Injectable({
+  providedIn: 'root'
+})
 export class AttractionService {
+
   private apiUrl = '/api/Attractions';
   private adminUrl = '/api/admin/attractions';
 
   private _cache: Attraction[] | null = null;
-  private _detailsCache: Map<number, AttractionDetails> = new Map();
-  private _adminCache: AdminAttractionsResponse | null = null;
 
   constructor(private http: HttpClient) {}
 
-  // ── Public ──────────────────────────────────────────────
+  // ───────────────── Public ─────────────────
+
   getAll(): Observable<Attraction[]> {
-    if (this._cache) return of(this._cache);
+
+    if (this._cache) {
+      return of(this._cache);
+    }
+
     return this.http.get<Attraction[]>(this.apiUrl).pipe(
       tap(data => this._cache = data)
     );
   }
 
   getById(id: number): Observable<AttractionDetails> {
-    if (this._detailsCache.has(id)) return of(this._detailsCache.get(id)!);
-    return this.http.get<AttractionDetails>(`${this.apiUrl}/${id}`).pipe(
-      tap(data => this._detailsCache.set(id, data))
+
+    return this.http.get<AttractionDetails>(
+      `${this.apiUrl}/${id}`
     );
   }
 
-  // ── Admin ────────────────────────────────────────────────
+  // ───────────────── Admin ─────────────────
+
+  adminGetCategories(): Observable<{ id: number; name: string }[]> {
+
+    return this.http.get<{ id: number; name: string }[]>(
+      `${this.adminUrl}/GetAllCategories`
+    );
+  }
+
   adminGetAll(): Observable<AdminAttractionsResponse> {
-    if (this._adminCache) return of(this._adminCache);
-    return this.http.get<AdminAttractionsResponse>(`${this.adminUrl}/GetAllAttractions`).pipe(
-      tap(data => this._adminCache = data)
+
+    return this.http.get<AdminAttractionsResponse>(
+      `${this.adminUrl}/GetAllAttractions`
+    );
+  }
+
+  adminAdd(payload: AdminAttractionPayload): Observable<any> {
+
+    this._cache = null;
+
+    return this.http.post(this.adminUrl, payload);
+  }
+
+  adminUpdate(id: number, payload: AdminAttractionPayload): Observable<any> {
+
+    this._cache = null;
+
+    return this.http.put(`${this.adminUrl}/${id}`, payload);
+  }
+
+  adminAddImages(id: number, files: File[]): Observable<any> {
+
+    const formData = new FormData();
+
+    files.forEach(file => {
+      formData.append('images', file);
+    });
+
+    return this.http.post(
+      `${this.adminUrl}/${id}/images`,
+      formData
     );
   }
 
   adminDelete(id: number): Observable<any> {
-    this._adminCache = null; // clear cache بعد الحذف
+
+    this._cache = null;
+
     return this.http.delete(`${this.adminUrl}/${id}`);
+  }
+
+  adminDeleteImage(
+    attractionId: number,
+    imageId: number
+  ): Observable<any> {
+
+    return this.http.delete(
+      `${this.adminUrl}/${attractionId}/images/${imageId}`
+    );
   }
 }

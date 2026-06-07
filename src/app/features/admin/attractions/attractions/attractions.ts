@@ -51,6 +51,7 @@ export class AdminAttractions implements OnInit {
         this.stats[1].value = res.activeAttractions;
         this.stats[2].value = res.inactiveAttractions;
         this.isLoading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Error loading attractions:', err);
