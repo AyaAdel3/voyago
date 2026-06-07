@@ -3,6 +3,7 @@
   min-height: 100vh;
   padding: 1rem 0;
 }
+
 .attractions-list {
   max-width: 61rem;
   margin: 2rem auto;
@@ -75,6 +76,7 @@
 .heart-btn:hover {
   background: rgba(255, 222, 112, 0.2);
 }
+
 .card-content {
   display: flex;
   flex-direction: column;
@@ -119,7 +121,6 @@
   gap: 4px;
   background: transparent;
   color: #021526;
-  /* padding: 4px 10px; */
   border-radius: 20px;
   font-weight: 700;
   font-size: 0.9rem;
@@ -161,4 +162,91 @@
 
 .show-btn:hover {
   background: #ffd040;
+}
+
+/* ══════════════════════════════════════
+   ATTRACTION CARD — Responsive
+══════════════════════════════════════ */
+
+/* ── Tablet (max 1024px) ── */
+@media (max-width: 1024px) {
+  .attractions-list {
+    padding: 0 1.5rem;
+  }
+
+  .attraction-card {
+    width: 100%;
+    height: auto;
+  }
+
+  .card-image {
+    width: 320px;
+    height: 220px;
+  }
+}
+
+/* ── Mobile (max 768px) ── */
+@media (max-width: 768px) {
+  .attractions-page {
+    padding: 0.5rem 0;
+  }
+
+  .attractions-list {
+    padding: 0 1rem;
+    gap: 1rem;
+    margin: 1rem auto;
+  }
+
+  .attraction-card {
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+    border-radius: 1.5rem;
+    padding: 6px;
+    gap: 0;
+  }
+
+  .card-image {
+    width: 100%;
+    height: 200px;
+    border-radius: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-content {
+    padding: 0.75rem 1rem 1rem;
+    gap: 0.4rem;
+    height: auto;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    padding: 0;
+  }
+
+  .card-description {
+    font-size: 0.82rem;
+    -webkit-line-clamp: 3;
+    padding: 0;
+  }
+
+  .show-btn {
+    width: 100%;
+    text-align: center;
+    padding: 0.55rem 1rem;
+    font-size: 0.9rem;
+    margin: 0 !important;
+    align-self: stretch;
+  }
+
+  .card-header {
+    align-items: flex-start;
+  }
+}
+
+/* ── Small mobile (max 400px) ── */
+@media (max-width: 400px) {
+  .card-image {
+    height: 170px;
+  }
 }

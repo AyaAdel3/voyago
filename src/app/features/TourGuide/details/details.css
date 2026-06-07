@@ -9,7 +9,6 @@
   padding: 16px;
   animation: fadeIn 0.2s ease;
 }
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -28,10 +27,7 @@
   position: relative;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
   animation: slideUp 0.25s ease;
-  max-height: none;
-  overflow-y: visible;
 }
-
 @keyframes slideUp {
   from {
     transform: translateY(20px);
@@ -61,21 +57,19 @@
   margin: 0 0 24px;
 }
 
-/* الـ body بيتقسم لجزئين: top و bottom */
 .popup-body {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-/* الجزء العلوي: صورة + بيانات + booking card */
+/* Desktop: guide-details يسار + booking-panel يمين */
 .popup-top {
   display: flex;
   gap: 24px;
   align-items: flex-start;
 }
 
-/* Left */
 .guide-details {
   flex: 1;
   display: flex;
@@ -106,7 +100,6 @@
   align-items: center;
   gap: 6px;
 }
-
 .detail-item svg {
   color: #ffde70;
   flex-shrink: 0;
@@ -119,12 +112,6 @@
   margin: 8px 0 4px;
 }
 
-/* .languages-list {
-  list-style: disc;
-  padding-left: 18px;
-  margin: 0;
-} */
-
 .languages-list {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -133,18 +120,15 @@
   padding-left: 1rem;
   margin: 0;
 }
-
 .languages-list li {
   color: #a3c4eb;
   font-size: 0.83rem;
   margin-bottom: 2px;
 }
 
-/* الـ about section تحت الكل بعرض كامل */
 .about-section-full {
   width: 100%;
 }
-
 .about-text {
   color: #a3c4eb;
   font-size: 0.82rem;
@@ -152,7 +136,7 @@
   margin: 0;
 }
 
-/* Right - Booking Card */
+/* Booking Panel */
 .booking-panel {
   width: 240px;
   flex-shrink: 0;
@@ -164,25 +148,21 @@
   gap: 14px;
   align-self: flex-start;
 }
-
 .booking-row {
   display: flex;
   gap: 9px;
 }
-
 .booking-field {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
-
 .booking-field label {
   color: #4a5a6a;
   font-size: 0.72rem;
   font-weight: 600;
 }
-
 .booking-input {
   background: #173b64;
   border: none;
@@ -195,45 +175,36 @@
   box-sizing: border-box;
   text-align: center;
 }
-
 .trip-label {
   color: #173b64;
   font-size: 0.85rem;
   font-weight: 700;
 }
-
 .days-counter {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: transparent;
-  padding: 0;
 }
-
 .price-per-day {
   color: #173b64;
   font-size: 0.7rem;
   flex: 1;
 }
-
 .counter-btn {
   background: transparent;
   border: none;
   color: #173b64;
   font-size: 1rem;
-  font-weight: 300;
   width: 10px;
   height: 10px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s;
 }
 .counter-btn:hover {
   color: #000;
 }
-
 .days-value {
   color: #173b64;
   font-weight: 500;
@@ -246,34 +217,13 @@
   justify-content: center;
   font-size: 0.8rem;
 }
-
-.payment-section {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.payment-option {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: #173b64;
-  font-size: 0.82rem;
-  cursor: pointer;
-}
-
-.payment-option input[type='radio'] {
-  accent-color: #1b2d45;
-}
-
 .total-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
-  padding-top: 8px;
+  padding-top: 6px;
 }
-
 .total-label {
   color: #173b64;
   font-size: 0.82rem;
@@ -283,12 +233,10 @@
   font-weight: 700;
   font-size: 0.95rem;
 }
-
 .error-msg {
   color: #e05c5c;
   font-size: 0.75rem;
 }
-
 .btn-book {
   background: #ffde70;
   color: #1b2d45;
@@ -313,17 +261,15 @@
   cursor: not-allowed;
 }
 
+/* Login Prompt */
 .login-prompt {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 10px;
   padding: 24px 16px;
   text-align: center;
-  animation: fadeIn 0.2s ease;
 }
-
 .login-prompt-icon {
   font-size: 2.5rem;
 }
@@ -338,16 +284,13 @@
   color: #666;
   margin: 0;
 }
-
 .btn-go-login {
   width: 80%;
   padding: 4px;
   background: #ffde70;
   color: #1b2d45;
-  transition: background 0.2s;
   border: none;
   border-radius: 8px;
-  /* padding: 5px; */
   font-weight: 700;
   font-size: 0.9rem;
   cursor: pointer;
@@ -355,7 +298,6 @@
 .btn-go-login:hover {
   background: #d4a900;
 }
-
 .btn-dismiss {
   width: 80%;
   padding: 4px;
@@ -365,7 +307,6 @@
   border-radius: 8px;
   font-size: 0.88rem;
   cursor: pointer;
-  transition: all 0.2s;
 }
 .btn-dismiss:hover {
   border-color: #999;
@@ -386,11 +327,233 @@
   }
 }
 
+/* ══════════════════════════════════════
+   POPUP — Mobile (max 600px)
+══════════════════════════════════════ */
 @media (max-width: 600px) {
-  .popup-top {
-    flex-direction: column;
+  .popup-overlay {
+    align-items: center;
+    padding: 10px;
   }
+
+  .popup-card {
+    border-radius: 16px;
+    padding: 20px 12px 20px;
+    max-height: 95vh;
+    overflow-y: auto;
+  }
+
+  .popup-title {
+    font-size: 0.9rem;
+    margin: 0 0 20px;
+    padding-right: 20px;
+  }
+
+  .popup-body {
+    gap: 10px;
+  }
+
+  /* popup-top: عمودين متساويين */
+  .popup-top {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+
+  /* guide-details: العمود الأول */
+  .guide-details {
+    grid-column: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .popup-avatar {
+    width: 70px;
+    height: 70px;
+    border-width: 2px;
+  }
+  .detail-name {
+    font-size: 0.82rem;
+    margin: 0;
+  }
+  .detail-item {
+    font-size: 0.72rem;
+    gap: 4px;
+  }
+  .detail-item svg {
+    width: 11px;
+    height: 11px;
+  }
+
+  .section-label {
+    font-size: 0.74rem;
+    margin: 4px 0 2px;
+  }
+  .languages-list {
+    grid-template-columns: 1fr;
+  }
+  .languages-list li {
+    font-size: 0.7rem;
+    margin-bottom: 1px;
+  }
+
+  /* booking-panel: العمود التاني */
   .booking-panel {
+    grid-column: 2;
     width: 100%;
+    border-radius: 12px;
+    padding: 10px 10px;
+    gap: 8px;
+    align-self: start;
+  }
+
+  .booking-field label {
+    font-size: 0.65rem;
+  }
+  .booking-input {
+    width: 100%;
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 12px;
+  }
+  .trip-label {
+    font-size: 0.74rem;
+  }
+  .price-per-day {
+    font-size: 0.62rem;
+  }
+  .days-value {
+    font-size: 0.7rem;
+    min-width: 16px;
+    height: 16px;
+  }
+  .counter-btn {
+    font-size: 0.85rem;
+  }
+  .total-row {
+    padding-top: 5px;
+  }
+  .total-label {
+    font-size: 0.7rem;
+  }
+  .total-value {
+    font-size: 0.8rem;
+  }
+  .btn-book {
+    width: 100%;
+    font-size: 0.78rem;
+    padding: 6px;
+  }
+  .login-prompt {
+    padding-top: 0px;
+    padding-bottom: 3px;
+  }
+  .login-prompt-icon {
+    font-size: 1.7rem;
+  }
+  .login-prompt-title,
+  .login-prompt-text {
+    font-size: 0.8rem;
+  }
+  .login-prompt button {
+    font-size: 0.8rem;
+  }
+  /* About كامل */
+  .about-text {
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 380px) {
+  .popup-card {
+    padding: 16px 8px;
+  }
+
+  .popup-title {
+    font-size: 0.8rem;
+    margin: 0 0 12px;
+  }
+
+  /* نفضل عمودين بس بنسب أصغر */
+  .popup-top {
+    grid-template-columns: 1.1fr 0.9fr !important;
+    gap: 6px;
+  }
+
+  .popup-avatar {
+    width: 52px;
+    height: 52px;
+  }
+
+  .detail-name {
+    font-size: 0.72rem;
+  }
+  .detail-item {
+    font-size: 0.62rem;
+  }
+  .detail-item svg {
+    width: 9px;
+    height: 9px;
+  }
+  .section-label {
+    font-size: 0.65rem;
+  }
+  .languages-list li {
+    font-size: 0.62rem;
+  }
+
+  .booking-panel {
+    padding: 8px 6px;
+    gap: 6px;
+    border-radius: 10px;
+  }
+
+  .booking-field label {
+    font-size: 0.6rem;
+  }
+
+  .booking-input {
+    font-size: 0.62rem;
+    padding: 3px 5px;
+    border-radius: 8px;
+  }
+
+  .trip-label {
+    font-size: 0.65rem;
+  }
+  .price-per-day {
+    font-size: 0.55rem;
+  }
+
+  .days-counter {
+    gap: 3px;
+  }
+  .counter-btn {
+    font-size: 0.75rem;
+  }
+  .days-value {
+    font-size: 0.6rem;
+    min-width: 14px;
+    height: 14px;
+  }
+
+  .total-label {
+    font-size: 0.6rem;
+  }
+  .total-value {
+    font-size: 0.7rem;
+  }
+
+  .btn-book {
+    width: 100%;
+    font-size: 0.68rem;
+    padding: 5px;
+  }
+
+  .about-text {
+    font-size: 0.68rem;
   }
 }

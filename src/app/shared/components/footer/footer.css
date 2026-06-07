@@ -29,12 +29,14 @@
   text-decoration: none;
   transition: color 0.2s;
 }
-.footer-link:hover { color: #ffffff; }
+.footer-link:hover {
+  color: #ffffff;
+}
 
 /* ── Mobile headings ── */
 .footer-heading-mobile {
   font-family: 'Outfit', sans-serif;
-  font-size: 17px;
+  font-size: 14px;
   font-weight: 700;
   color: #ffffff;
   margin: 0;
@@ -43,13 +45,15 @@
 /* ── Mobile links ── */
 .footer-link-mobile {
   font-family: 'Outfit', sans-serif;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 400;
   color: #a8bdd4;
   text-decoration: none;
   transition: color 0.2s;
 }
-.footer-link-mobile:hover { color: #ffffff; }
+.footer-link-mobile:hover {
+  color: #ffffff;
+}
 
 /* ── Contact input ── */
 .contact-input:focus {
@@ -60,4 +64,59 @@
 /* ── Contact button ── */
 .contact-btn {
   box-shadow: 0 2px 10px rgba(245, 200, 66, 0.3);
+}
+
+/* ══════════════════════════════════════
+   MOBILE  (max 480px)
+══════════════════════════════════════ */
+@media (max-width: 480px) {
+  .footer-heading-mobile {
+    font-size: 13px;
+  }
+
+  .footer-link-mobile {
+    font-size: 12px;
+  }
+
+  /* Contact input أصغر على الشاشات الضيقة */
+  .contact-input {
+    font-size: 12px !important;
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .contact-btn {
+    font-size: 11px !important;
+    padding: 5px 10px !important;
+  }
+}
+
+/* ══════════════════════════════════════
+   VERY SMALL  (max 360px)
+══════════════════════════════════════ */
+@media (max-width: 360px) {
+  .footer-heading-mobile {
+    font-size: 12px;
+  }
+
+  .footer-link-mobile {
+    font-size: 11px;
+  }
+
+  /* Contact column: input تحت الـ heading مباشرة بدون ضغط */
+  .contact-input {
+    padding-left: 10px !important;
+    padding-right: 52px !important;
+    font-size: 11px !important;
+  }
+
+  .contact-btn {
+    font-size: 10px !important;
+    padding: 4px 8px !important;
+  }
+
+  /* Bottom bar: نص أصغر */
+  .text-sm {
+    font-size: 11px;
+  }
 }

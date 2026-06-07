@@ -1,3 +1,4 @@
+/* ===== OVERLAY ===== */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -9,9 +10,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 99999;
 }
 
+/* ===== MODAL CARD ===== */
 .modal-card {
   background: #173b64;
   border-radius: 18px;
@@ -23,16 +25,32 @@
   overflow: hidden;
 }
 
-/* Title أصغر */
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: #f6faff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
 .modal-title {
   color: #f6faff;
   font-size: 1.6rem;
   font-weight: 700;
-  margin: 0 0 16px 0;
+  margin: 0 0 16px;
   text-align: left;
 }
 
-/* Inputs أصغر */
+.api-error {
+  color: #e05c5c;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+
+/* ===== INPUTS ===== */
 .field-group {
   margin-bottom: 9px;
 }
@@ -49,31 +67,46 @@
   box-sizing: border-box;
   transition: border-color 0.2s;
 }
-
 .field-group input::placeholder {
   color: #6a7f99;
-  outline: none;
 }
-
 .field-group input:focus {
   border-bottom-color: #ffde70;
-  outline: none;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.field-group input:focus::placeholder {
+  color: #ffde70;
+  transition: color 0.2s;
+}
+.field-group input.error-input {
+  border-bottom-color: #e05c5c;
 }
 
 .input-icon-wrap {
-  position: relative;
   display: flex;
   align-items: center;
   border-bottom: 1.5px solid #f6faff;
+  transition: border-color 0.2s;
 }
-
 .input-icon-wrap input {
   border-bottom: none !important;
   flex: 1;
 }
-
+.input-icon-wrap:focus-within {
+  border-bottom-color: #ffde70;
+}
+.input-icon-wrap:focus-within input::placeholder {
+  color: #ffde70;
+}
 .input-icon-wrap.error-input {
   border-bottom-color: #e05c5c;
+}
+.input-icon-wrap:focus,
+.input-icon-wrap:focus-within,
+.input-icon-wrap input:focus {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .eye-btn {
@@ -89,10 +122,19 @@
   color: #e05c5c;
   font-size: 0.7rem;
   display: block;
-  margin-bottom: 2px;
+  margin-top: 2px;
 }
 
-/* Button */
+.forgot-password {
+  margin: 4px 0 0;
+}
+.forgot-password a {
+  color: #ffde70;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+/* ===== BUTTON ===== */
 .btn-submit {
   background: #ffde70;
   color: #1a1a2e;
@@ -107,9 +149,27 @@
   display: block;
   transition: background 0.2s;
 }
-
 .btn-submit:hover {
   background: #e09400;
+}
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #1a1a2e;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .switch-link {
@@ -117,21 +177,19 @@
   font-size: 0.8rem;
   margin-bottom: 16px;
 }
-
 .switch-link a {
   color: #ffde70;
   font-weight: 600;
   cursor: pointer;
 }
 
-/* Divider */
+/* ===== DIVIDER ===== */
 .divider {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 12px;
 }
-
 .divider::before,
 .divider::after {
   content: '';
@@ -139,20 +197,18 @@
   height: 1px;
   background: #f6faff;
 }
-
 .divider span {
   color: #f6faff;
   font-size: 0.8rem;
   white-space: nowrap;
 }
 
-/* Social */
+/* ===== SOCIAL ===== */
 .social-buttons {
   display: flex;
   justify-content: center;
   gap: 12px;
 }
-
 .social-btn {
   width: 46px;
   height: 46px;
@@ -165,50 +221,171 @@
   cursor: pointer;
   transition: border-color 0.2s;
 }
-
 .social-btn:hover {
   border-color: #f5a623;
 }
 
-/* Close button */
-.close-btn {
-  position: absolute;
-  top: 12px;
-  right: 14px;
-  background: none;
-  border: none;
-  color: #f6faff;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
+/* ===== NAME ROW (signup) ===== */
 .name-row {
   display: flex;
   gap: 2.8rem;
 }
-
 .name-row .field-group {
   flex: 1;
-}
-/* لما تعمل focus الـ placeholder يبقى أصفر */
-.field-group input:focus::placeholder {
-  color: #ffde70;
-  transition: color 0.2s;
-}
-
-.input-icon-wrap:focus-within input::placeholder {
-  color: #ffde70;
-}
-
-.field-group input:focus {
-  outline: none !important;
-  box-shadow: none !important;
-  border-bottom-color: #ffde70;
-}
-.modal-overlay {
-  z-index: 99999;
 }
 
 :root[dir='rtl'] .modal-title {
   text-align: right !important;
+}
+
+/* ══════════════════════════════════════
+   TABLET  (max 600px)
+══════════════════════════════════════ */
+@media (max-width: 600px) {
+  .modal-card {
+    padding: 32px 24px 24px;
+    border-radius: 14px;
+    max-height: 95vh;
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  .modal-title {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+  }
+
+  .field-group {
+    margin-bottom: 8px;
+  }
+  .field-group input {
+    font-size: 0.82rem;
+    padding: 8px 0;
+  }
+
+  .btn-submit {
+    padding: 9px 28px;
+    font-size: 0.85rem;
+    margin-top: 12px;
+  }
+
+  .name-row {
+    gap: 1.2rem;
+  }
+
+  .social-btn {
+    width: 42px;
+    height: 42px;
+  }
+  .social-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* ══════════════════════════════════════
+   MOBILE  (max 430px)
+══════════════════════════════════════ */
+@media (max-width: 430px) {
+  .modal-card {
+    padding: 28px 16px 20px;
+    border-radius: 12px;
+  }
+
+  .modal-title {
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+  }
+
+  .field-group {
+    margin-bottom: 6px;
+  }
+  .field-group input {
+    font-size: 0.78rem;
+    padding: 7px 0;
+  }
+
+  .error-msg {
+    font-size: 0.65rem;
+  }
+
+  .forgot-password a {
+    font-size: 0.72rem;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 9px 20px;
+    font-size: 0.82rem;
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  .switch-link {
+    font-size: 0.72rem;
+    margin-bottom: 12px;
+  }
+
+  .divider span {
+    font-size: 0.72rem;
+  }
+  .divider {
+    margin-bottom: 10px;
+  }
+
+  .social-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+  }
+  .social-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* name-row: عمودين بس gap أصغر */
+  .name-row {
+    gap: 0.8rem;
+  }
+}
+
+/* ══════════════════════════════════════
+   VERY SMALL  (max 360px)
+══════════════════════════════════════ */
+@media (max-width: 360px) {
+  .modal-card {
+    padding: 24px 12px 18px;
+  }
+
+  .modal-title {
+    font-size: 1rem;
+  }
+
+  .field-group input {
+    font-size: 0.74rem;
+  }
+
+  .btn-submit {
+    font-size: 0.78rem;
+    padding: 8px 16px;
+  }
+
+  .switch-link {
+    font-size: 0.68rem;
+  }
+
+  /* name-row: عمود واحد على الشاشات الضيقة جداً */
+  .name-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .social-btn {
+    width: 34px;
+    height: 34px;
+  }
+  .social-btn svg {
+    width: 16px;
+    height: 16px;
+  }
 }
