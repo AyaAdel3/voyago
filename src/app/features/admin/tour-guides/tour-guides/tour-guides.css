@@ -74,70 +74,6 @@
     opacity: 1;
   }
 }
-/* ── Confirm Delete Modal ─────────────────────────────── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.45);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.confirm-modal {
-  background: #fff;
-  border-radius: 14px;
-  padding: 2rem 2.2rem;
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-}
-
-.confirm-modal h3 {
-  margin: 0.75rem 0 0.5rem;
-  font-size: 1.15rem;
-  color: #1a2e44;
-}
-
-.confirm-modal p {
-  font-size: 0.9rem;
-  color: #4a6a88;
-  line-height: 1.6;
-}
-
-.confirm-actions {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-  margin-top: 1.5rem;
-}
-
-.btn-cancel-modal {
-  padding: 0.55rem 1.4rem;
-  border-radius: 8px;
-  border: 1.5px solid #d1d5db;
-  background: #fff;
-  color: #4a6a88;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.btn-cancel-modal:hover { background: #f3f4f6; }
-
-.btn-confirm-delete {
-  padding: 0.55rem 1.4rem;
-  border-radius: 8px;
-  border: none;
-  background: #ef4444;
-  color: #fff;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.btn-confirm-delete:hover { background: #dc2626; }
 
 /* ── Toast success variant ────────────────────────────── */
 .toast-delete-success {
@@ -187,7 +123,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 0.75rem;
+  margin: 0 auto 0.1rem;
+  margin-top: 12px;
+  margin-bottom: 0px;
 }
 
 .confirm-modal h3 {
@@ -224,7 +162,9 @@
   font-size: 0.88rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 .btn-cancel-modal:hover {
   background: #1e3a5a;
@@ -242,4 +182,6 @@
   cursor: pointer;
   transition: background 0.2s;
 }
-.btn-confirm-delete:hover { background: #dc2626; }
+.btn-confirm-delete:hover {
+  background: #dc2626;
+}

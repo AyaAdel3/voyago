@@ -21,6 +21,10 @@ export class AdminAttractions implements OnInit {
 
   deleteToastVisible = false;
   deleteToastMessage = '';
+  deleteToastSuccess = true;
+
+  confirmDeleteVisible = false;
+  attractionToDelete: AdminAttraction | null = null;
 
   stats = [
     { label: 'Total Attractions', value: 0, icon: '🗺', type: 'total'    },
@@ -82,13 +86,15 @@ export class AdminAttractions implements OnInit {
     this.currentPage = 1;
   }
 
-  showDeleteToast(msg: string) {
+  showDeleteToast(msg: string, success = true): void {
     this.deleteToastMessage = msg;
+    this.deleteToastSuccess = success;
     this.deleteToastVisible = true;
+    this.cdr.detectChanges();
     setTimeout(() => {
       this.deleteToastVisible = false;
       this.cdr.detectChanges();
-    }, 6000);
+    }, 3000);
   }
 
   viewOnSite(a: AdminAttraction) {
@@ -97,6 +103,23 @@ export class AdminAttractions implements OnInit {
 
   edit(a: AdminAttraction) {
     this.router.navigate(['/admin/attractions/manage'], { queryParams: { id: a.id } });
+  }
+
+  askDelete(a: AdminAttraction): void {
+    this.attractionToDelete = a;
+    this.confirmDeleteVisible = true;
+  }
+
+  cancelDelete(): void {
+    this.confirmDeleteVisible = false;
+    this.attractionToDelete = null;
+  }
+
+  confirmDelete(): void {
+    if (!this.attractionToDelete) return;
+    this.confirmDeleteVisible = false;
+    this.delete(this.attractionToDelete);
+    this.attractionToDelete = null;
   }
 
   delete(a: AdminAttraction) {
@@ -109,7 +132,6 @@ export class AdminAttractions implements OnInit {
         this.showDeleteToast(`"${a.name}" deleted successfully.`);
       },
       error: () => {
-        // لو مفيش delete endpoint، بنشيل من الـ local array بس
         this.attractions = this.attractions.filter(x => x.id !== a.id);
         this.showDeleteToast(`"${a.name}" deleted successfully.`);
       }

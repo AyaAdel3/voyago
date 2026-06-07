@@ -1040,3 +1040,47 @@ body:not(.dark-mode) .admin-shell .dark-pill {
 body:not(.dark-mode) .admin-shell .dark-pill svg {
   color: #ffffff !important;
 }
+/*       responsive           */
+/* ══ Light Mode — Mobile Menu ══ */
+body:not(.dark-mode) .mobile-menu {
+  background: #f0f4f8 !important;
+}
+
+body:not(.dark-mode) .mobile-link {
+  color: #173b64 !important;
+}
+
+body:not(.dark-mode) .mobile-link:hover {
+  background: rgba(13, 21, 38, 0.06) !important;
+}
+
+body:not(.dark-mode) .mobile-link.active-link {
+  background: rgba(23, 59, 100, 0.1) !important;
+  color: #173b64 !important;
+}
+
+body:not(.dark-mode) .mobile-link svg {
+  fill: #173b64 !important;
+}
+
+body:not(.dark-mode) .mobile-divider {
+  background: rgba(13, 21, 38, 0.1) !important;
+}
+
+body:not(.dark-mode) .mobile-auth-outline {
+  color: #173b64 !important;
+  border-color: rgba(13, 21, 38, 0.4) !important;
+}
+
+body:not(.dark-mode) .mobile-auth-outline:hover {
+  background: rgba(13, 21, 38, 0.06) !important;
+}
+
+body:not(.dark-mode) .hamburger-btn span {
+  background: #173b64 !important;
+}
+
+body:not(.dark-mode) .hamburger-btn {
+  background: rgba(13, 21, 38, 0.07) !important;
+  border-color: rgba(13, 21, 38, 0.18) !important;
+}

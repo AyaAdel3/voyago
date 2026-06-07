@@ -34,7 +34,6 @@
     </a>
   </div>
 
-  <!-- Loading -->
   <div *ngIf="isLoading" style="text-align: center; padding: 2rem; color: #a3c4eb">
     Loading attractions...
   </div>
@@ -48,16 +47,11 @@
     </div>
 
     <div *ngFor="let a of filtered" class="table-row attr-grid">
-      <!-- اسم + صورة -->
       <div class="attr-name-cell">
         <img [src]="getImage(a)" [alt]="a.name" class="attr-thumb" />
         <span class="cell-name">{{ a.name }}</span>
       </div>
-
-      <!-- category دلوقتي string مش array -->
       <span>{{ a.category }}</span>
-
-      <!-- rating -->
       <span class="rating-cell">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
           <path
@@ -66,8 +60,6 @@
         </svg>
         {{ a.rating }}
       </span>
-
-      <!-- actions -->
       <div class="actions-cell">
         <button class="btn-view-site" (click)="viewOnSite(a)">
           <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
@@ -84,7 +76,7 @@
             />
           </svg>
         </button>
-        <button class="btn-icon btn-delete" (click)="delete(a)">
+        <button class="btn-icon btn-delete" (click)="askDelete(a)">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
             <path
               d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
@@ -97,7 +89,6 @@
     <div *ngIf="filtered.length === 0" class="empty-state">No attractions found.</div>
   </div>
 
-  <!-- Pagination -->
   <div class="pagination" *ngIf="totalPages.length > 1">
     <button
       class="page-btn arrow"
@@ -124,9 +115,36 @@
   </div>
 </div>
 
-<!-- Delete Toast -->
-<div class="toast toast-delete" *ngIf="deleteToastVisible">
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="#ef4444">
+<!-- Confirm Delete Modal -->
+<div class="modal-overlay" *ngIf="confirmDeleteVisible" (click)="cancelDelete()">
+  <div class="confirm-modal" (click)="$event.stopPropagation()">
+    <div class="confirm-icon">
+      <svg viewBox="0 0 24 24" width="32" height="32" fill="#ef4444">
+        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+      </svg>
+    </div>
+    <h3>Delete Attraction</h3>
+    <p>
+      Are you sure you want to delete <strong>{{ attractionToDelete?.name }}</strong
+      >?<br />This action cannot be undone.
+    </p>
+    <div class="confirm-actions">
+      <button class="btn-cancel-modal" (click)="cancelDelete()">Cancel</button>
+      <button class="btn-confirm-delete" (click)="confirmDelete()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div
+  class="toast"
+  *ngIf="deleteToastVisible"
+  [ngClass]="deleteToastSuccess ? 'toast-delete-success' : 'toast-delete'"
+>
+  <svg *ngIf="deleteToastSuccess" viewBox="0 0 24 24" width="18" height="18" fill="#22c55e">
+    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+  </svg>
+  <svg *ngIf="!deleteToastSuccess" viewBox="0 0 24 24" width="18" height="18" fill="#ef4444">
     <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
   </svg>
   <span style="flex: 1">{{ deleteToastMessage }}</span>

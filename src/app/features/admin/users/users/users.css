@@ -1,2 +1,17 @@
-.users-grid{grid-template-columns: 2fr 1fr 0.8fr 0.8fr 1fr 1fr 1.5fr;}
-.mini-rating{display: flex; align-items: center; gap: 3px;}
+.users-grid {
+  grid-template-columns: 2fr 2fr 1fr;
+}
+.mini-rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.status-badge {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.status-badge:hover {
+  opacity: 0.8;
+}

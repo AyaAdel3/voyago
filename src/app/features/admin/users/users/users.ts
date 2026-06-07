@@ -2,19 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-const STORAGE_KEY = 'voyago_users';
-
 @Component({
   selector: 'app-admin-users',
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './users.html',
-  styleUrls: ['../../admin-shared.css','./users.css'],
+  styleUrls: ['../../admin-shared.css', './users.css'],
 })
 export class AdminUsers implements OnInit {
   searchQuery = '';
   currentPage = 1;
-  totalPages = [1, 2, 3, 4, 10];
+  pageSize = 10;
 
   users: any[] = [];
 
@@ -22,18 +20,16 @@ export class AdminUsers implements OnInit {
     { label: 'Total Users', value: 0, icon: '👤', type: 'total' },
     { label: 'Active', value: 0, icon: '✓', type: 'active' },
     { label: 'Inactive', value: 0, icon: '⊘', type: 'inactive' },
-    { label: 'Blocked', value: 0, icon: '⚠', type: 'blocked' },
   ];
 
   ngOnInit(): void {
-    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-
-    // 👇 نأمن الـ status لو مش موجود
-    this.users = data.map((u: any) => ({
-      ...u,
-      status: u.status ?? 'Active',
-    }));
-
+    this.users = [
+      { id: 1, name: 'Ahmed Mohamed', email: 'ahmed@voyago.com', status: 'Active' },
+      { id: 2, name: 'Sara Ali',      email: 'sara@voyago.com',  status: 'Inactive' },
+      { id: 3, name: 'Omar Hassan',   email: 'omar@voyago.com',  status: 'Active' },
+      { id: 4, name: 'Nour Khaled',   email: 'nour@voyago.com',  status: 'Inactive' },
+      { id: 5, name: 'Mona Tarek',    email: 'mona@voyago.com',  status: 'Active' },
+    ];
     this.updateStats();
   }
 
@@ -41,29 +37,34 @@ export class AdminUsers implements OnInit {
     this.stats[0].value = this.users.length;
     this.stats[1].value = this.users.filter(u => u.status === 'Active').length;
     this.stats[2].value = this.users.filter(u => u.status === 'Inactive').length;
-    this.stats[3].value = this.users.filter(u => u.status === 'Blocked').length;
   }
 
   get filtered() {
-    if (!this.searchQuery) return this.users;
-    const q = this.searchQuery.toLowerCase();
-    return this.users.filter(u =>
-      u.name.toLowerCase().includes(q) ||
-      u.email.toLowerCase().includes(q)
-    );
+    const list = this.searchQuery
+      ? this.users.filter(u =>
+          u.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          u.email.toLowerCase().includes(this.searchQuery.toLowerCase())
+        )
+      : this.users;
+
+    const start = (this.currentPage - 1) * this.pageSize;
+    return list.slice(start, start + this.pageSize);
   }
 
-  delete(u: any) {
-    if (confirm(`Delete user "${u.name}"?`)) {
-      this.users = this.users.filter(x => x.id !== u.id);
+  get totalPages(): number[] {
+    const list = this.searchQuery
+      ? this.users.filter(u =>
+          u.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+          u.email.toLowerCase().includes(this.searchQuery.toLowerCase())
+        )
+      : this.users;
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.users));
-
-      this.updateStats(); // 👈 بدل ما تعيدي الحساب يدوي
-    }
+    const count = Math.ceil(list.length / this.pageSize);
+    return Array.from({ length: count }, (_, i) => i + 1);
   }
 
-  roleClass(role: string) {
-    return role === 'admin' ? 'role-admin' : 'role-user';
+  toggleStatus(u: any): void {
+    u.status = u.status === 'Active' ? 'Inactive' : 'Active';
+    this.updateStats();
   }
 }
