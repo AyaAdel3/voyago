@@ -30,7 +30,7 @@
   gap: 1.5rem;
 }
 
-/* ══ 1. GALLERY (full width) ════════════════════════════ */
+/* ══ 1. GALLERY (داخل gallery-col) ══════════════════════ */
 .gallery-wrap { width: 100%; }
 
 .gallery {
@@ -85,12 +85,12 @@
 /* ══ 2. TOP ROW: details left + widget right ════════════ */
 .top-row {
   display: grid;
-  grid-template-columns: 1fr 300px;
+  grid-template-columns: 1fr 290px;
   gap: 2rem;
   align-items: start;
 }
 
-/* ── Left col ─────────────────────────────────────────── */
+/* ── Left col: gallery + details ─────────────────────── */
 .gallery-col {
   display: flex; flex-direction: column; gap: 1.25rem;
 }
@@ -159,11 +159,15 @@
 .btn-submit:hover { background: #2d4f7a; }
 
 /* ══ 4. REVIEWS GRID ════════════════════════════════════ */
-.comment { max-width: 1210px; margin: 0 auto; padding: 0; }
+/* ══ 4. REVIEWS GRID ════════════════════════════════════ */
+.comment { 
+  width: 100%;
+  padding: 0; 
+}
 .reviews-section { display: flex; flex-direction: column; gap: 1rem; }
 .reviews-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 0.75rem;
 }
 .review-card {
@@ -189,11 +193,13 @@
    RESERVATION WIDGET
 ════════════════════════════════════════════════════════ */
 .reservation-widget {
-  transform: translateX(2.5rem);
+  transform: none;
   background: #a3c4eb;
   border-radius: 2rem;
   padding: 1.4rem 1.25rem;
   color: #173b64;
+  position: sticky;
+  top: 1.5rem;
 }
 
 .dt-row-single  { margin-bottom: 1rem; display: flex; justify-content: center; }
@@ -320,27 +326,18 @@
     margin: 0 auto;
     transform: translateX(0);
     border-radius: 1.75rem;
+    position: static;
   }
 }
 
 /* ════════════════════════════════════════════════════════
    RESPONSIVE — MOBILE  (≤ 640px)
-
-   الترتيب المطلوب:
-   1. Gallery       (gallery-wrap)
-   2. Details       (gallery-col inside top-row)
-   3. Widget        (reservation-widget inside top-row)
-   4. Review form   (write-review standalone)
-   5. Reviews grid  (comment)
-   
-   الـ structure في الـ DOM بالفعل بالترتيب ده — مفيش حاجة للـ order!
 ════════════════════════════════════════════════════════ */
 @media (max-width: 640px) {
   .rest-page { padding: 0.75rem 0.75rem 3rem; }
 
   .content-wrap { gap: 1rem; }
 
-  /* top-row: عمود واحد — details فوق، widget تحت */
   .top-row {
     display: flex;
     flex-direction: column;
@@ -355,6 +352,7 @@
     transform: translateX(0);
     border-radius: 1.25rem;
     padding: 1rem 1rem 1.25rem;
+    position: static;
   }
 
   /* ── Gallery mobile ── */
@@ -384,10 +382,11 @@
 
   /* ── Review form ── */
   .review-form-row {
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: stretch;
-  }
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  max-width: 860px;
+}
   .review-input  { padding: 0.9rem 1rem; font-size: 0.9rem; border-radius: 12px; }
   .review-actions {
     flex-direction: row;
@@ -407,6 +406,120 @@
 }
 
 /* ════════════════════════════════════════════════════════
+   RESPONSIVE — TABLET  (≤ 1024px)
+════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .rest-page { padding: 1.5rem 1.25rem 3rem; }
+ 
+  .top-row {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+ 
+  .reservation-widget {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+    transform: translateX(0);
+    border-radius: 1.75rem;
+    position: static;
+  }
+}
+ 
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — MOBILE  (≤ 640px)
+ 
+   الترتيب المطلوب:
+   1. Gallery       (gallery-wrap داخل gallery-col)
+   2. Details       (rest-header, section-block داخل gallery-col)
+   3. Widget        (reservation-widget)
+   4. Review form   (write-review داخل gallery-col)
+   5. Reviews grid  (comment)
+════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .rest-page { padding: 0.75rem 0.75rem 3rem; }
+ 
+  .content-wrap { gap: 1rem; }
+ 
+  /* top-row يبقى flex column */
+  .top-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+ 
+  /* gallery-col يبقى display:contents عشان أتحكم في order كل child على حدة */
+  .gallery-col {
+    display: contents;
+  }
+ 
+  /* ترتيب العناصر */
+  .gallery-wrap   { order: 1; width: 100%; }
+  .rest-header    { order: 2; width: 100%; }
+  .section-block  { order: 3; width: 100%; }
+ 
+  .reservation-widget {
+    order: 4;
+    width: 100%;
+    transform: translateX(0);
+    transform: translateY(.7rem);
+    border-radius: 1.25rem;
+    padding: 1rem 1rem 1.25rem;
+    position: static;
+  }
+ 
+  .write-review   { order: 5; width: 100%; }
+ 
+  /* ── Gallery mobile ── */
+  .gallery {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+  .gallery-main { height: 220px; }
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+    height: 80px;
+    gap: 6px;
+  }
+ 
+  /* ── Details ── */
+  .rest-name { font-size: 1.3rem; }
+ 
+  /* ── Widget internals ── */
+  .date-display { height: 34px; font-size: 0.82rem; padding: 0.4rem 1rem; }
+  .widget-label { font-size: 1.1rem; margin-bottom: 0.55rem; }
+  .option-row   { padding: 0.42rem 0; }
+  .option-name  { font-size: 1rem; }
+  .qty-ctrl button { font-size: 1.4rem; width: 1.8rem; height: 1.8rem; }
+  .qty-val         { font-size: 1.05rem; min-width: 1.4rem; }
+  .text-input { font-size: 1rem; padding: 0.7rem 1rem; border-radius: 14px; }
+  .btn-reserve { padding: 0.95rem; font-size: 1.05rem; border-radius: 1rem; margin-top: 0.75rem; }
+ 
+  /* ── Review form ── */
+  .review-form-row {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+  }
+  .review-input  { padding: 0.9rem 1rem; font-size: 0.9rem; border-radius: 12px; height: auto; }
+  .review-actions {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-submit { width: auto; padding: 0.6rem 1.8rem; font-size: 0.9rem; height: 2.75rem; }
+  .star-picker svg { width: 26px; height: 26px; }
+ 
+  /* ── Reviews ── */
+  .reviews-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+ 
+  /* ── Lightbox ── */
+  .lb-prev { left: -36px; }
+  .lb-next { right: -36px; }
+}
+ 
+/* ════════════════════════════════════════════════════════
    RESPONSIVE — VERY SMALL  (≤ 380px)
 ════════════════════════════════════════════════════════ */
 @media (max-width: 380px) {
@@ -419,7 +532,7 @@
   .review-actions { flex-direction: column; align-items: stretch; }
   .btn-submit { width: 100%; text-align: center; }
 }
-
+ 
 /* host above comment */
 .write-review .host-row {
   margin-bottom: 0.6rem;

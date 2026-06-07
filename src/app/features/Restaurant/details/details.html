@@ -17,39 +17,40 @@
   <!-- Content -->
   <div *ngIf="!loading && !error && restaurant" class="content-wrap">
 
-    <!-- ══ 1. GALLERY ══ -->
-    <div class="gallery-wrap">
-      <div class="gallery">
-        <div class="gallery-main" (click)="openLightbox(activeImage)">
-          <img [src]="restaurant.images[activeImage]" [alt]="restaurant.name" />
-          <div class="main-overlay">
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="white" style="opacity:.7">
-              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-            </svg>
-          </div>
-        </div>
-        <div class="gallery-grid">
-          <div *ngFor="let img of restaurant.images.slice(1,5); let i = index"
-            class="gallery-thumb"
-            [class.active-thumb]="activeImage === i + 1"
-            (click)="setActiveImage(i + 1)">
-            <img [src]="img" [alt]="restaurant.name + ' ' + (i+2)" />
-            <div *ngIf="i === 3 && restaurant.images.length > 5"
-              class="more-photos"
-              (click)="openLightbox(i+1); $event.stopPropagation()">
-              +{{ restaurant.images.length - 5 }} photos
+    <!-- ══ TOP ROW: gallery+details LEFT  |  widget RIGHT ══ -->
+    <div class="top-row">
+
+      <!-- ── LEFT col: gallery + details + write review ── -->
+      <div class="gallery-col">
+
+        <!-- ══ 1. GALLERY ══ -->
+        <div class="gallery-wrap">
+          <div class="gallery">
+            <div class="gallery-main" (click)="openLightbox(activeImage)">
+              <img [src]="restaurant.images[activeImage]" [alt]="restaurant.name" />
+              <div class="main-overlay">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="white" style="opacity:.7">
+                  <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="gallery-grid">
+              <div *ngFor="let img of restaurant.images.slice(1,5); let i = index"
+                class="gallery-thumb"
+                [class.active-thumb]="activeImage === i + 1"
+                (click)="setActiveImage(i + 1)">
+                <img [src]="img" [alt]="restaurant.name + ' ' + (i+2)" />
+                <div *ngIf="i === 3 && restaurant.images.length > 5"
+                  class="more-photos"
+                  (click)="openLightbox(i+1); $event.stopPropagation()">
+                  +{{ restaurant.images.length - 5 }} photos
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ══ 2. DETAILS + WIDGET ROW ══ -->
-    <div class="top-row">
-
-      <!-- ── LEFT: Details only (no review form here) ── -->
-      <div class="gallery-col">
-
+        <!-- ══ 2. DETAILS ══ -->
         <div class="rest-header">
           <div class="flex items-center gap-3">
             <h1 class="rest-name">{{ restaurant.name }}</h1>
@@ -80,10 +81,36 @@
           </div>
         </div>
 
+        <!-- ══ 3. WRITE REVIEW — جوا gallery-col ══ -->
+        <div class="write-review">
+          <div class="host-row">
+            <div class="host-avatar">
+              <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff">
+                <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+              </svg>
+            </div>
+            <span class="host-name">Yara morad</span>
+          </div>
+          <div class="review-form-row">
+            <input type="text" placeholder="comment" [(ngModel)]="newComment" class="review-input" />
+            <div class="review-actions">
+              <div class="star-picker">
+                <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="22" height="22"
+                  [style.fill]="s <= newRating ? '#FFDE70' : '#8899bb'"
+                  (click)="newRating = s" style="cursor:pointer">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <button class="btn-submit" (click)="submitReview()">Submit</button>
+            </div>
+          </div>
+        </div>
+
       </div>
+      <!-- نهاية gallery-col -->
 
       <!-- ── RIGHT: Reservation Widget ── -->
-      <div class="reservation-widget">
+      <div class="reservation-widget -translate-y-6">
         <div class="dt-row-single">
           <div class="custom-date" [class.field-error]="resError && !selectedDate">
             <label class="date-display" [class.placeholder]="!selectedDate">
@@ -126,31 +153,7 @@
       </div>
 
     </div>
-
-    <!-- ══ 3. WRITE REVIEW ══ -->
-    <div class="write-review">
-      <div class="host-row">
-        <div class="host-avatar">
-          <svg viewBox="0 0 24 24" width="26" height="26" fill="#fff">
-            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-          </svg>
-        </div>
-        <span class="host-name">Yara morad</span>
-      </div>
-      <div class="review-form-row">
-        <input type="text" placeholder="comment" [(ngModel)]="newComment" class="review-input" />
-        <div class="review-actions">
-          <div class="star-picker">
-            <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="22" height="22"
-              [style.fill]="s <= newRating ? '#FFDE70' : '#8899bb'"
-              (click)="newRating = s" style="cursor:pointer">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
-            </svg>
-          </div>
-          <button class="btn-submit" (click)="submitReview()">Submit</button>
-        </div>
-      </div>
-    </div>
+    <!-- نهاية top-row -->
 
     <!-- ══ 4. CUSTOMER REVIEWS ══ -->
     <div class="comment">
