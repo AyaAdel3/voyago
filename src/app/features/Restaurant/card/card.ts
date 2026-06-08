@@ -49,7 +49,7 @@ export class Card implements OnInit {
     this.router.navigate(['restaurant/details', id]);
   }
 
-  toggleFav(event: MouseEvent, r: any): void {
+  toggleFav(event: MouseEvent, r: Restaurant): void {
     event.stopPropagation();
     this.restaurantService.toggleFavorite(r.id);
     if (this.isRestaurantInFav(r.name)) {

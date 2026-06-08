@@ -4,7 +4,7 @@
 // ============================================================
 
 import { Hotel, MOCK_HOTELS } from './hotel.model';
-import { Restaurant, MOCK_RESTAURANTS } from './restaurant.model';
+import { Restaurant } from './restaurant.model';
 
 // ── Tourist Attraction ────────────────────────────────────
 export interface Attraction {
@@ -85,4 +85,4 @@ export const MOCK_ATTRACTIONS: Attraction[] = [
 ];
 
 // re-export عشان نستخدم نفس البيانات الموجودة
-export { MOCK_HOTELS, MOCK_RESTAURANTS };
+export { MOCK_HOTELS };

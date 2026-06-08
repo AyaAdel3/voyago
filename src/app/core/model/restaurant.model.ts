@@ -29,6 +29,40 @@ export interface Restaurant {
   status?:     'Active' | 'Inactive' | 'Blocked';
   tables?:     RestaurantTables;
   featureIds?: number[];
+  features?:   Feature[];
+}
+
+// ── API List Response (GET /Restaurants) ─────────────────
+export interface RestaurantApiResponse {
+  id:           number;
+  name:         string;
+  description:  string;
+  rating:       number;
+  cuisineType:  string;
+  minPrice:     number;
+  maxPrice:     number;
+  mainImageUrl: string;
+}
+
+// ── API Detail Response (GET /Restaurants/:id) ───────────
+export interface RestaurantImageApi {
+  id:       number;
+  imageUrl: string;
+  isMain:   boolean;
+}
+
+export interface RestaurantDetailApiResponse {
+  id:          number;
+  name:        string;
+  description: string;
+  address:     string;
+  rating:      number;
+  cuisineType: string;
+  minPrice:    number;
+  maxPrice:    number;
+  images:      RestaurantImageApi[];
+  features:    Feature[];
+  comments:    RestaurantReview[];
 }
 
 export interface RestaurantReview {
@@ -39,6 +73,7 @@ export interface RestaurantReview {
   userAvatar?:  string;
   rating:       number;
   comment:      string;
+  content?:     string;  
   date:         string;
 }
 
@@ -68,76 +103,6 @@ export const MOCK_FEATURES: Feature[] = [
   { id: 3, name: 'Smoking Allowed', icon: '🚬' },
   { id: 4, name: 'Outdoor Seating', icon: '🪑' },
   { id: 5, name: 'Lake View',       icon: '🌊' },
-];
-
-export const MOCK_RESTAURANTS: Restaurant[] = [
-  {
-    id:          1,
-    name:        'Aura',
-    rating:      4.8,
-    stars:       4,
-    cuisine:     'Fine Dining',
-    minPrice:    150,
-    maxPrice:    500,
-    location:    'Four Seasons Hotel At The First Residence, Giza Governate',
-    status:      'Active',
-    description: 'Aura, Located At The Four Seasons Hotel, Is A Traditional Lebanese Restaurant. Though The Poolside Views Of The City And The Smell Of Fresh Bread Baking In The Brick Oven Are Enticing, The Real Star Of Aura Is The Modern Shami Cuisine.',
-    images: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800',
-      'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400',
-      'https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=400',
-      'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=400',
-      'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400',
-    ],
-    amenities:  ['Valet parking is available.', 'Smoking is allowed'],
-    featureIds: [1, 3],
-    openTime:   '12:00',
-    closeTime:  '23:00',
-    tables: { total: 20, for2: 8, for4: 8, for6: 4 },
-  },
-  {
-    id:          2,
-    name:        'House in Tunis Village',
-    rating:      4.8,
-    stars:       5,
-    cuisine:     'Egyptian',
-    minPrice:    100,
-    maxPrice:    300,
-    location:    'Tunis Village, Fayoum, Egypt',
-    status:      'Active',
-    description: 'Traditional Egyptian cuisine in the heart of Tunis village with stunning lake views.',
-    images: [
-      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800',
-      'https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=400',
-      'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400',
-    ],
-    amenities:  ['Free Parking', 'Outdoor Seating'],
-    featureIds: [1, 4, 5],
-    openTime:   '09:00',
-    closeTime:  '22:00',
-    tables: { total: 15, for2: 6, for4: 6, for6: 3 },
-  },
-  {
-    id:          3,
-    name:        'Mediterranean Garden',
-    rating:      4.8,
-    stars:       4,
-    cuisine:     'Mediterranean',
-    minPrice:    200,
-    maxPrice:    600,
-    location:    'Tunis Village, Fayoum, Egypt',
-    status:      'Active',
-    description: 'Fresh Mediterranean dishes with garden seating and lake views.',
-    images: [
-      'https://images.unsplash.com/photo-1544148103-0773bf10d330?w=800',
-      'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400',
-    ],
-    amenities:  ['WiFi', 'Live Music'],
-    featureIds: [2, 4],
-    openTime:   '13:00',
-    closeTime:  '00:00',
-    tables: { total: 12, for2: 4, for4: 6, for6: 2 },
-  },
 ];
 
 export const MOCK_RESTAURANT_REVIEWS: RestaurantReview[] = [

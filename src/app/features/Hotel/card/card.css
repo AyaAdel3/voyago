@@ -135,6 +135,8 @@
   font-weight: 700;
   color: #0d1526;
   margin: 0;
+  flex: 1;
+  padding: 20px 0px;
 }
 
 .hotel-price {

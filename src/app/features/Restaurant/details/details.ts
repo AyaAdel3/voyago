@@ -21,8 +21,6 @@ export class Details implements OnInit {
   loading = true;
   error   = false;
 
-  availableFeatures: Feature[] = [];
-
   selectedDate    = '';
   selectedTables: TableType[] = [];
   guestName       = '';
@@ -48,10 +46,6 @@ export class Details implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.restaurantService.getFeatures().subscribe(features => {
-      this.availableFeatures = features;
-    });
-
     this.route.params.subscribe(params => {
       const id = +params['id'];
       if (!id || isNaN(id)) { this.router.navigate(['/Restaurants']); return; }
@@ -60,7 +54,6 @@ export class Details implements OnInit {
       this.restaurant = null!;
       this.cdr.detectChanges();
       this.loadRestaurant(id);
-      this.loadReviews(id);
     });
   }
 
@@ -72,6 +65,9 @@ export class Details implements OnInit {
         this.selectedTables = this.restaurantService.getDefaultTables();
         this.loading        = false;
         this.cdr.detectChanges();
+
+        // جيب الـ reviews بعد ما الـ restaurant اتحمل
+        this.loadReviews(id);
       },
       error: () => { this.loading = false; this.error = true; this.cdr.detectChanges(); }
     });
@@ -79,15 +75,18 @@ export class Details implements OnInit {
 
   private loadReviews(id: number): void {
     this.restaurantService.getReviews(id).subscribe({
-      next: (reviews: RestaurantReview[]) => { this.reviews = reviews; this.cdr.detectChanges(); }
+      next: (reviews: RestaurantReview[]) => {
+        this.reviews = reviews;
+        this.cdr.detectChanges();
+      }
     });
   }
 
+  // الـ features جاية مع الـ restaurant مباشرة من الـ API
   getFeatureLabel(id: number): Feature | null {
-    return this.availableFeatures.find(f => f.id === id) ?? null;
+    return this.restaurant?.features?.find(f => f.id === id) ?? null;
   }
 
-  /** يعرض السعر بالشكل: 150-500 LE */
   getPriceRange(): string {
     return `${this.restaurant.minPrice}-${this.restaurant.maxPrice} LE`;
   }
@@ -104,11 +103,7 @@ export class Details implements OnInit {
   }
 
   private tryCleanError(): void {
-    if (
-      this.selectedDate &&
-      this.guestName.trim() &&
-      this.phone.trim()
-    ) this.resError = '';
+    if (this.selectedDate && this.guestName.trim() && this.phone.trim()) this.resError = '';
   }
 
   formatPhone(): void {
@@ -121,7 +116,6 @@ export class Details implements OnInit {
       this.resError = 'This restaurant is currently not available for reservations.';
       return;
     }
-
     if (!this.selectedDate)     { this.resError = 'Please select a date.'; return; }
     if (!this.guestName.trim()) { this.resError = 'Please enter your name.'; return; }
     if (!this.phone.trim())     { this.resError = 'Please enter your phone number.'; return; }
