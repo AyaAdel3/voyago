@@ -52,17 +52,20 @@ export interface RestaurantImageApi {
 }
 
 export interface RestaurantDetailApiResponse {
-  id:          number;
-  name:        string;
-  description: string;
-  address:     string;
-  rating:      number;
-  cuisineType: string;
-  minPrice:    number;
-  maxPrice:    number;
-  images:      RestaurantImageApi[];
-  features:    Feature[];
-  comments:    RestaurantReview[];
+  id:            number;
+  name:          string;
+  description:   string;
+  address:       string;
+  rating:        number;
+  cuisineType:   string;
+  minPrice:      number;
+  maxPrice:      number;
+  tablesForTwo:  number;   // ✅ مضاف
+  tablesForFour: number;   // ✅ مضاف
+  tablesForSix:  number;   // ✅ مضاف
+  images:        RestaurantImageApi[];
+  features:      Feature[];
+  comments:      RestaurantReview[];
 }
 
 // ── Admin API Response (GET /admin/restaurants/GetAllRestaurants) ──
@@ -116,32 +119,32 @@ export const RESTAURANT_STATUSES = [
 
 // ── Admin Add/Update Request Bodies ──────────────────────
 export interface AdminRestaurantAddRequest {
-  name:         string;
-  description:  string;
-  address:      string;
-  rating:       number;
-  cuisineType:  number;  // enum id
-  minPrice:     number;
-  maxPrice:     number;
+  name:          string;
+  description:   string;
+  address:       string;
+  rating:        number;
+  cuisineType:   number;
+  minPrice:      number;
+  maxPrice:      number;
   tablesForTwo:  number;
   tablesForFour: number;
   tablesForSix:  number;
-  featureIds:   number[];
+  featureIds:    number[];
 }
 
 export interface AdminRestaurantUpdateRequest {
-  name:         string;
-  description:  string;
-  address:      string;
-  rating:       number;
-  cuisineType:  number;  // enum id
-  minPrice:     number;
-  maxPrice:     number;
+  name:          string;
+  description:   string;
+  address:       string;
+  rating:        number;
+  cuisineType:   number;
+  minPrice:      number;
+  maxPrice:      number;
   tablesForTwo:  number;
   tablesForFour: number;
   tablesForSix:  number;
-  status:       number;  // enum id: 1=Active, 2=Inactive
-  featureIds:   number[];
+  status:        number;
+  featureIds:    number[];
 }
 
 export interface RestaurantReview {

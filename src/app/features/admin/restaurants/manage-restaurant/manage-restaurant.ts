@@ -1,10 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { RestaurantService } from '../../../../core/services/resturant.service';
 import {
-  Restaurant,
   RestaurantTables,
   Feature,
   CuisineType,
@@ -12,7 +11,13 @@ import {
   RESTAURANT_STATUSES,
   AdminRestaurantAddRequest,
   AdminRestaurantUpdateRequest,
+  RestaurantDetailApiResponse,
 } from '../../../../core/model/restaurant.model';
+
+interface ImageSlot {
+  id:  number | null;  // null = صورة جديدة، number = صورة موجودة على السيرفر
+  url: string;
+}
 
 @Component({
   selector: 'app-manage-restaurant',
@@ -25,24 +30,23 @@ export class ManageRestaurant implements OnInit {
   isEdit        = false;
   restaurantId: number | null = null;
 
-  // الصور المحددة كـ File objects للرفع
-  selectedFiles: File[] = [];
-  // روابط الـ preview (base64 للجديدة + URLs للموجودة)
-  images: string[] = [];
+  selectedFiles: File[]      = [];
+  images:        ImageSlot[] = [];   // ✅ بقت objects بدل strings
 
   toastMessage = '';
   toastVisible = false;
+  toastSuccess = true;
   isSaving     = false;
 
-  availableFeatures: Feature[]     = [];
+  availableFeatures:  Feature[]    = [];
   selectedFeatureIds: number[]     = [];
   featuresDropdownOpen             = false;
 
-  cuisineTypes: CuisineType[]      = CUISINE_TYPES;
+  cuisineTypes:      CuisineType[] = CUISINE_TYPES;
   selectedCuisineId: number | null = null;
 
-  statuses = RESTAURANT_STATUSES;
-  selectedStatusId                 = 1; // default: Active
+  statuses         = RESTAURANT_STATUSES;
+  selectedStatusId = 1;
 
   restaurant = {
     name:        '',
@@ -55,8 +59,11 @@ export class ManageRestaurant implements OnInit {
 
   tables: RestaurantTables = { total: 0, for2: 0, for4: 0, for6: 0 };
 
+  private token = localStorage.getItem('token') ?? '';
+
   constructor(
     private router:  Router,
+    private cdr:     ChangeDetectorRef,
     private route:   ActivatedRoute,
     private service: RestaurantService,
   ) {}
@@ -64,45 +71,62 @@ export class ManageRestaurant implements OnInit {
   ngOnInit() {
     this.service.getFeatures().subscribe(features => {
       this.availableFeatures = features;
-    });
 
-    this.route.queryParams.subscribe(params => {
-      if (params['id']) {
-        this.restaurantId = +params['id'];
-        this.isEdit       = true;
-        this.loadRestaurant(this.restaurantId);
-      }
+      this.route.queryParams.subscribe(params => {
+        if (params['id']) {
+          this.restaurantId = +params['id'];
+          this.isEdit       = true;
+          this.loadRestaurant(this.restaurantId);
+        }
+      });
     });
   }
 
+  // ── Load for Edit ─────────────────────────────────────────
   private loadRestaurant(id: number) {
-    this.service.getRestaurantById(id).subscribe(r => {
-      if (!r) return;
+    this.service['http']
+      .get<RestaurantDetailApiResponse>(`http://voyagoo.runasp.net/Restaurants/${id}`)
+      .subscribe({
+        next: (r: RestaurantDetailApiResponse) => {
+          this.restaurant = {
+            name:        r.name,
+            description: r.description,
+            address:     r.address,
+            rating:      r.rating,
+            minPrice:    r.minPrice,
+            maxPrice:    r.maxPrice,
+          };
 
-      this.images = [...r.images];
+          // cuisineType string → id
+          const found = this.cuisineTypes.find(
+            c => c.name.toLowerCase() === r.cuisineType.toLowerCase()
+          );
+          this.selectedCuisineId = found?.id ?? null;
 
-      // map cuisine name → id
-      const found = this.cuisineTypes.find(c =>
-        c.name.toLowerCase() === r.cuisine.toLowerCase()
-      );
-      this.selectedCuisineId = found?.id ?? null;
+          // features → ids
+          this.selectedFeatureIds = r.features ? r.features.map(f => f.id) : [];
 
-      // map status string → id
-      const status = (r as any).status ?? 'Active';
-      this.selectedStatusId = status === 'Inactive' ? 2 : 1;
+          // ✅ images — بنحفظ id + url عشان نقدر نحذف
+          this.images = r.images
+            ? r.images
+                .sort((a, b) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0))
+                .map(img => ({ id: img.id, url: img.imageUrl }))
+            : [];
 
-      this.restaurant = {
-        name:        r.name,
-        description: r.description,
-        address:     r.location,
-        rating:      r.rating,
-        minPrice:    r.minPrice,
-        maxPrice:    r.maxPrice,
-      };
+          // tables
+          const for2  = r.tablesForTwo  ?? 0;
+          const for4  = r.tablesForFour ?? 0;
+          const for6  = r.tablesForSix  ?? 0;
+          this.tables = { for2, for4, for6, total: for2 + for4 + for6 };
 
-      if (r.tables)     this.tables             = { ...r.tables };
-      if (r.featureIds) this.selectedFeatureIds = [...r.featureIds];
-    });
+          this.selectedStatusId = 1;
+          this.cdr.detectChanges();
+        },
+        error: (err: any) => {
+          console.error('Failed to load restaurant for edit:', err);
+          this.showToast('Failed to load restaurant data.', false, false);
+        },
+      });
   }
 
   // ── Features helpers ──────────────────────────────────────
@@ -148,26 +172,49 @@ export class ManageRestaurant implements OnInit {
       this.selectedFiles.push(file);
       const reader = new FileReader();
       reader.onload = (e) => {
-        if (e.target?.result) this.images.push(e.target.result as string);
+        if (e.target?.result) {
+          // ✅ id = null للصور الجديدة
+          this.images.push({ id: null, url: e.target.result as string });
+        }
       };
       reader.readAsDataURL(file);
     });
-    // reset input عشان ينفع تختار نفس الصورة تاني مرة
     input.value = '';
   }
 
   removeImage(i: number) {
-    this.images.splice(i, 1);
-    // لو base64 (صورة جديدة) نشيلها من selectedFiles برضو
-    if (i < this.selectedFiles.length) {
-      this.selectedFiles.splice(i, 1);
+    const slot = this.images[i];
+
+    if (slot.id !== null && this.restaurantId !== null) {
+      // ✅ صورة موجودة على السيرفر → نكلم DELETE endpoint
+      this.service['http']
+        .delete<void>(
+          `http://voyagoo.runasp.net/admin/restaurants/${this.restaurantId}/images/${slot.id}`,
+          { headers: { Authorization: `Bearer ${this.token}` } }
+        )
+        .subscribe({
+          next: () => {
+            this.images.splice(i, 1);
+            this.cdr.detectChanges();
+          },
+          error: (err: any) => {
+            console.error('Failed to delete image:', err);
+            this.showToast('Failed to delete image. Please try again.', false, false);
+          },
+        });
+    } else {
+      // صورة جديدة لسه ما اترفعتش → نشيلها من الـ local arrays بس
+      const newIndex = this.images.slice(0, i).filter(s => s.id === null).length;
+      this.images.splice(i, 1);
+      this.selectedFiles.splice(newIndex, 1);
     }
   }
 
   // ── Toast ─────────────────────────────────────────────────
 
-  showToast(msg: string, navigate = true) {
+  showToast(msg: string, navigate = true, success = true) {
     this.toastMessage = msg;
+    this.toastSuccess = success;
     this.toastVisible = true;
     setTimeout(() => {
       this.toastVisible = false;
@@ -179,22 +226,22 @@ export class ManageRestaurant implements OnInit {
 
   private validate(): boolean {
     if (!this.restaurant.name.trim()) {
-      this.showToast('Restaurant name is required.', false); return false;
+      this.showToast('Restaurant name is required.', false, false); return false;
     }
     if (!this.restaurant.description.trim()) {
-      this.showToast('Description is required.', false); return false;
+      this.showToast('Description is required.', false, false); return false;
     }
     if (!this.restaurant.address.trim()) {
-      this.showToast('Address is required.', false); return false;
+      this.showToast('Address is required.', false, false); return false;
     }
     if (!this.selectedCuisineId) {
-      this.showToast('Please select a cuisine type.', false); return false;
+      this.showToast('Please select a cuisine type.', false, false); return false;
     }
     if (!this.restaurant.rating) {
-      this.showToast('Rating is required.', false); return false;
+      this.showToast('Rating is required.', false, false); return false;
     }
     if (!this.restaurant.minPrice || !this.restaurant.maxPrice) {
-      this.showToast('Price range is required.', false); return false;
+      this.showToast('Price range is required.', false, false); return false;
     }
     return true;
   }
@@ -203,18 +250,16 @@ export class ManageRestaurant implements OnInit {
 
   save() {
     if (!this.validate() || this.isSaving) return;
-
-    const token = localStorage.getItem('token') ?? '';
     this.isSaving = true;
 
     if (this.isEdit && this.restaurantId !== null) {
-      this.doUpdate(token);
+      this.doUpdate();
     } else {
-      this.doAdd(token);
+      this.doAdd();
     }
   }
 
-  private doAdd(token: string) {
+  private doAdd() {
     const body: AdminRestaurantAddRequest = {
       name:          this.restaurant.name.trim(),
       description:   this.restaurant.description.trim(),
@@ -229,20 +274,12 @@ export class ManageRestaurant implements OnInit {
       featureIds:    [...this.selectedFeatureIds],
     };
 
-    this.service.addRestaurantApi(body, token).subscribe({
+    this.service.addRestaurantApi(body, this.token).subscribe({
       next: (res) => {
-        // لو في صور، ارفعها على الـ id الجديد
         if (this.selectedFiles.length > 0) {
-          this.service.uploadRestaurantImages(res.id, this.selectedFiles, token).subscribe({
-            next: () => {
-              this.isSaving = false;
-              this.showToast('Restaurant added successfully!');
-            },
-            error: () => {
-              this.isSaving = false;
-              // الـ restaurant اتضاف بس الصور فشلوا
-              this.showToast('Restaurant added, but images failed to upload.');
-            },
+          this.service.uploadRestaurantImages(res.id, this.selectedFiles, this.token).subscribe({
+            next:  () => { this.isSaving = false; this.showToast('Restaurant added successfully!'); },
+            error: () => { this.isSaving = false; this.showToast('Restaurant added, but images failed to upload.'); },
           });
         } else {
           this.isSaving = false;
@@ -252,12 +289,12 @@ export class ManageRestaurant implements OnInit {
       error: (err) => {
         this.isSaving = false;
         console.error('Add failed:', err);
-        this.showToast('Failed to add restaurant. Please try again.', false);
+        this.showToast('Failed to add restaurant. Please try again.', false, false);
       },
     });
   }
 
-  private doUpdate(token: string) {
+  private doUpdate() {
     const body: AdminRestaurantUpdateRequest = {
       name:          this.restaurant.name.trim(),
       description:   this.restaurant.description.trim(),
@@ -273,19 +310,12 @@ export class ManageRestaurant implements OnInit {
       featureIds:    [...this.selectedFeatureIds],
     };
 
-    this.service.updateRestaurantApi(this.restaurantId!, body, token).subscribe({
+    this.service.updateRestaurantApi(this.restaurantId!, body, this.token).subscribe({
       next: () => {
-        // لو في صور جديدة، ارفعها
         if (this.selectedFiles.length > 0) {
-          this.service.uploadRestaurantImages(this.restaurantId!, this.selectedFiles, token).subscribe({
-            next: () => {
-              this.isSaving = false;
-              this.showToast('Restaurant updated successfully!');
-            },
-            error: () => {
-              this.isSaving = false;
-              this.showToast('Updated, but new images failed to upload.');
-            },
+          this.service.uploadRestaurantImages(this.restaurantId!, this.selectedFiles, this.token).subscribe({
+            next:  () => { this.isSaving = false; this.showToast('Restaurant updated successfully!'); },
+            error: () => { this.isSaving = false; this.showToast('Updated, but new images failed to upload.'); },
           });
         } else {
           this.isSaving = false;
@@ -295,14 +325,14 @@ export class ManageRestaurant implements OnInit {
       error: (err) => {
         this.isSaving = false;
         console.error('Update failed:', err);
-        this.showToast('Failed to update restaurant. Please try again.', false);
+        this.showToast('Failed to update restaurant. Please try again.', false, false);
       },
     });
   }
 
   clear() {
-    this.restaurant     = { name: '', description: '', address: '', rating: '', minPrice: 0, maxPrice: 0 };
-    this.tables         = { total: 0, for2: 0, for4: 0, for6: 0 };
+    this.restaurant         = { name: '', description: '', address: '', rating: '', minPrice: 0, maxPrice: 0 };
+    this.tables             = { total: 0, for2: 0, for4: 0, for6: 0 };
     this.selectedFeatureIds = [];
     this.selectedCuisineId  = null;
     this.selectedStatusId   = 1;

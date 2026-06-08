@@ -19,12 +19,18 @@ export class AdminRestaurants implements OnInit {
 
   restaurants: AdminRestaurantApiItem[] = [];
 
+  // ── Toast ──────────────────────────────────
   deleteToastVisible = false;
+  deleteToastSuccess = true;
   deleteToastMessage = '';
 
-  // ── Reviews Modal ──────────────────────────
-  reviewsModalVisible          = false;
-  selectedRestaurantName       = '';
+  // ── Confirm Delete Modal ────────────────────
+  confirmDeleteVisible = false;
+  restaurantToDelete: AdminRestaurantApiItem | null = null;
+
+  // ── Reviews Modal ───────────────────────────
+  reviewsModalVisible       = false;
+  selectedRestaurantName    = '';
   selectedRestaurantReviews: RestaurantReview[] = [];
   selectedRestaurantId: number | null = null;
 
@@ -57,7 +63,7 @@ export class AdminRestaurants implements OnInit {
     });
   }
 
-  // ── كل البيانات المفلترة (بدون pagination) ──
+  // ── Filtering & Pagination ──────────────────
   get filteredAll(): AdminRestaurantApiItem[] {
     if (!this.searchQuery.trim()) return this.restaurants;
     return this.restaurants.filter(r =>
@@ -65,33 +71,42 @@ export class AdminRestaurants implements OnInit {
     );
   }
 
-  // ── الصفحة الحالية فقط ──
   get filtered(): AdminRestaurantApiItem[] {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.filteredAll.slice(start, start + this.pageSize);
   }
 
-  // ── عدد الصفحات ──
   get totalPages(): number[] {
     return Array.from(
-      { length: Math.ceil(this.filteredAll.length / this.pageSize) },
+      { length: Math.ceil(this.filteredAll.length / this.pageSize) || 1 },
       (_, i) => i + 1
     );
   }
 
-  onSearch(): void {
-    this.currentPage = 1;
+  onSearch(): void { this.currentPage = 1; }
+
+  goToPage(p: number): void { this.currentPage = p; }
+
+  prevPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
   }
 
-  showDeleteToast(msg: string): void {
+  nextPage(): void {
+    if (this.currentPage < this.totalPages.length) this.currentPage++;
+  }
+
+  // ── Toast ───────────────────────────────────
+  showToast(success: boolean, msg: string): void {
+    this.deleteToastSuccess = success;
     this.deleteToastMessage = msg;
     this.deleteToastVisible  = true;
     setTimeout(() => {
       this.deleteToastVisible = false;
       this.cdr.detectChanges();
-    }, 6000);
+    }, 4000);
   }
 
+  // ── Navigation ──────────────────────────────
   viewOnSite(r: AdminRestaurantApiItem): void {
     window.open(`/restaurant/details/${r.id}`, '_blank');
   }
@@ -100,7 +115,26 @@ export class AdminRestaurants implements OnInit {
     this.router.navigate(['/admin/restaurants/manage'], { queryParams: { id: r.id } });
   }
 
+  // ── Delete Flow ─────────────────────────────
+  /** Step 1 — فتح الـ confirm modal */
   delete(r: AdminRestaurantApiItem): void {
+    this.restaurantToDelete  = r;
+    this.confirmDeleteVisible = true;
+  }
+
+  /** Step 2 — إلغاء */
+  cancelDelete(): void {
+    this.confirmDeleteVisible = false;
+    this.restaurantToDelete  = null;
+  }
+
+  /** Step 3 — تأكيد الحذف */
+  confirmDelete(): void {
+    if (!this.restaurantToDelete) return;
+    const r = this.restaurantToDelete;
+    this.confirmDeleteVisible = false;
+    this.restaurantToDelete  = null;
+
     const token = localStorage.getItem('token') ?? '';
 
     this.restaurantService.deleteRestaurant(r.id, token).subscribe({
@@ -109,18 +143,17 @@ export class AdminRestaurants implements OnInit {
         this.stats[0].value = this.restaurants.length;
         this.stats[1].value = this.restaurants.filter(x => x.status === 'Active').length;
         this.stats[2].value = this.restaurants.filter(x => x.status === 'Inactive').length;
-        this.showDeleteToast(`"${r.name}" deleted successfully.`);
+        this.showToast(true, `"${r.name}" deleted successfully.`);
         this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: err => {
         console.error('Delete failed:', err);
-        this.showDeleteToast(`Failed to delete "${r.name}". Please try again.`);
+        this.showToast(false, `Failed to delete "${r.name}". Please try again.`);
       },
     });
   }
 
-  // ── Reviews Modal ──────────────────────────────────────
-
+  // ── Reviews Modal ───────────────────────────
   openReviews(r: AdminRestaurantApiItem): void {
     this.selectedRestaurantId   = r.id;
     this.selectedRestaurantName = r.name;
@@ -141,6 +174,6 @@ export class AdminRestaurants implements OnInit {
     this.restaurantService.deleteReview(review.id);
     this.selectedRestaurantReviews =
       this.selectedRestaurantReviews.filter(r => r.id !== review.id);
-    this.showDeleteToast(`Review by "${review.userName}" removed.`);
+    this.showToast(true, `Review by "${review.userName}" removed.`);
   }
 }

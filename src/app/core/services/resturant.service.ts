@@ -19,6 +19,8 @@ import {
   MOCK_FEATURES,
 } from '../model/restaurant.model';
 
+
+
 @Injectable({ providedIn: 'root' })
 export class RestaurantService {
 
@@ -129,6 +131,14 @@ export class RestaurantService {
   getAdminRestaurants(token: string): Observable<AdminRestaurantsApiResponse> {
     return this.http.get<AdminRestaurantsApiResponse>(
       `${this.adminApiUrl}/GetAllRestaurants`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  /** GET /admin/restaurants/{id} — نفس شكل RestaurantDetailApiResponse */
+  getAdminRestaurantById(id: number, token: string): Observable<RestaurantDetailApiResponse> {
+    return this.http.get<RestaurantDetailApiResponse>(
+      `${this.adminApiUrl}/${id}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
   }

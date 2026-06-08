@@ -117,12 +117,12 @@ h2.section-title {
   gap: 0.5rem;
   font-size: 0.88rem;
   font-weight: 600;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
   z-index: 9999;
   animation: slideIn 0.3s ease;
 }
 .toast-delete {
-  border: 1px solid rgba(239,68,68,0.35);
+  border: 1px solid rgba(239, 68, 68, 0.35);
 }
 .toast-close {
   background: none;
@@ -134,11 +134,19 @@ h2.section-title {
   line-height: 1;
   transition: color 0.2s;
 }
-.toast-close:hover { color: #ef4444; }
+.toast-close:hover {
+  color: #ef4444;
+}
 
 @keyframes slideIn {
-  from { transform: translateY(1rem); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+  from {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* ── Reviews Button ──────────────────────────────────────── */
@@ -147,26 +155,28 @@ h2.section-title {
   align-items: center;
   gap: 4px;
   padding: 5px 10px;
-  background: rgba(99,179,237,0.1);
-  border: 1px solid rgba(99,179,237,0.25);
+  background: rgba(99, 179, 237, 0.1);
+  border: 1px solid rgba(99, 179, 237, 0.25);
   border-radius: 8px;
   color: #63b3ed;
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
   white-space: nowrap;
 }
 .btn-reviews:hover {
-  background: rgba(99,179,237,0.2);
-  border-color: rgba(99,179,237,0.45);
+  background: rgba(99, 179, 237, 0.2);
+  border-color: rgba(99, 179, 237, 0.45);
 }
 
 /* ── Modal Overlay ───────────────────────────────────────── */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   z-index: 1000;
   display: flex;
@@ -176,27 +186,37 @@ h2.section-title {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* ── Modal Box ───────────────────────────────────────────── */
 .reviews-modal {
   background: #0d1f33;
-  border: 1px solid rgba(163,196,235,0.15);
+  border: 1px solid rgba(163, 196, 235, 0.15);
   border-radius: 18px;
   width: 560px;
   max-width: 95vw;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
   animation: slideUp 0.25s ease;
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 .reviews-modal-header {
@@ -204,7 +224,7 @@ h2.section-title {
   align-items: flex-start;
   justify-content: space-between;
   padding: 1.25rem 1.5rem 1rem;
-  border-bottom: 1px solid rgba(163,196,235,0.1);
+  border-bottom: 1px solid rgba(163, 196, 235, 0.1);
   flex-shrink: 0;
 }
 
@@ -231,7 +251,9 @@ h2.section-title {
   line-height: 1;
   transition: color 0.2s;
 }
-.modal-close-btn:hover { color: #ef4444; }
+.modal-close-btn:hover {
+  color: #ef4444;
+}
 
 /* ── Modal Body ──────────────────────────────────────────── */
 .reviews-modal-body {
@@ -256,13 +278,13 @@ h2.section-title {
 /* ── Review Card ─────────────────────────────────────────── */
 .review-card {
   background: #162a40;
-  border: 1px solid rgba(163,196,235,0.1);
+  border: 1px solid rgba(163, 196, 235, 0.1);
   border-radius: 12px;
   padding: 0.85rem 1rem;
   transition: border-color 0.2s;
 }
 .review-card:hover {
-  border-color: rgba(163,196,235,0.22);
+  border-color: rgba(163, 196, 235, 0.22);
 }
 
 .review-card-top {
@@ -277,7 +299,7 @@ h2.section-title {
   height: 34px;
   border-radius: 50%;
   background: #1e3a5a;
-  border: 1px solid rgba(163,196,235,0.2);
+  border: 1px solid rgba(163, 196, 235, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -327,10 +349,12 @@ h2.section-title {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 }
 .review-delete-btn:hover {
-  background: rgba(239,68,68,0.15);
+  background: rgba(239, 68, 68, 0.15);
   color: #ef4444;
 }
 
@@ -340,4 +364,161 @@ h2.section-title {
   margin: 0;
   line-height: 1.5;
   padding-right: 0.25rem;
+}
+
+/* ── Toast ───────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: #0d1f33;
+  color: #c8dff0;
+  border-radius: 12px;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  z-index: 9999;
+  animation: slideIn 0.3s ease;
+}
+.toast-delete {
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+.toast-close {
+  background: none;
+  border: none;
+  color: #7a9cbf;
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding-left: 0.5rem;
+  line-height: 1;
+  transition: color 0.2s;
+}
+.toast-close:hover {
+  color: #ef4444;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(1rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ── Toast success variant ────────────────────────────── */
+.toast-delete-success {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+/* ✅ lang-tag-more — بيتميز عن الباقي */
+.lang-tag-more {
+  background: #1a3a5c;
+  color: #c8dff0;
+  font-weight: 700;
+  cursor: default;
+}
+.lang-tag-more:hover {
+  background: #0d2a45;
+}
+/* ── Confirm Delete Modal ─────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.confirm-modal {
+  background: #0d1f33;
+  border: 1px solid rgba(163, 196, 235, 0.15);
+  border-radius: 16px;
+  padding: 2rem 2.2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.confirm-icon {
+  width: 52px;
+  height: 52px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1.5px solid rgba(239, 68, 68, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.1rem;
+  margin-top: 12px;
+  margin-bottom: 0px;
+}
+
+.confirm-modal h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e2edf7;
+}
+
+.confirm-modal p {
+  font-size: 0.88rem;
+  color: #7a9cbf;
+  line-height: 1.6;
+}
+
+.confirm-modal p strong {
+  color: #c8dff0;
+  font-weight: 700;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.btn-cancel-modal {
+  padding: 0.55rem 1.6rem;
+  border-radius: 10px;
+  border: 1.5px solid rgba(163, 196, 235, 0.2);
+  background: #162a40;
+  color: #7a9cbf;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.btn-cancel-modal:hover {
+  background: #1e3a5a;
+  color: #c8dff0;
+}
+
+.btn-confirm-delete {
+  padding: 0.55rem 1.6rem;
+  border-radius: 10px;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-confirm-delete:hover {
+  background: #dc2626;
 }
