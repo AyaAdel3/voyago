@@ -12,18 +12,35 @@
     </div>
     <div class="upload-empty" *ngIf="!images.length" (click)="fileInput.click()">
       <svg viewBox="0 0 24 24" width="36" height="36" fill="#7a9cbf">
-        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+        <path
+          d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"
+        />
       </svg>
       <span>Click to upload images</span>
-      <span style="font-size:0.75rem">Or Drag &amp; drop</span>
-      <span style="font-size:0.72rem;color:#4a6a88">PNG, JPG up to 5MB (Max 15 images)</span>
+      <span style="font-size: 0.75rem">Or Drag &amp; drop</span>
+      <span style="font-size: 0.72rem; color: #4a6a88">PNG, JPG up to 5MB (Max 15 images)</span>
     </div>
-    <button class="upload-circle-btn" type="button" (click)="fileInput.click()" *ngIf="images.length" title="Add more photos">
+    <button
+      class="upload-circle-btn"
+      type="button"
+      (click)="fileInput.click()"
+      *ngIf="images.length"
+      title="Add more photos"
+    >
       <svg viewBox="0 0 24 24" width="18" height="18" fill="white">
-        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+        <path
+          d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"
+        />
       </svg>
     </button>
-    <input #fileInput type="file" accept="image/*" multiple style="display:none" (change)="onFileSelected($event)" />
+    <input
+      #fileInput
+      type="file"
+      accept="image/*"
+      multiple
+      style="display: none"
+      (change)="onFileSelected($event)"
+    />
   </div>
 
   <!-- ── Name ── -->
@@ -32,32 +49,56 @@
     <input class="form-input" [(ngModel)]="restaurant.name" placeholder="Enter Restaurant Name" />
   </div>
 
-  <!-- ── Location ── -->
+  <!-- ── Address ── -->
   <div class="form-group">
-    <label class="form-label">Location <span class="req">*</span></label>
-    <input class="form-input" [(ngModel)]="restaurant.location" placeholder="e.g. Fayoum, Egypt" />
+    <label class="form-label">Address <span class="req">*</span></label>
+    <input
+      class="form-input"
+      [(ngModel)]="restaurant.address"
+      placeholder="e.g. Tunis Village, Qarun Lake Road, Faiyum"
+    />
   </div>
 
   <!-- ── Row: Min Price, Max Price, Cuisine, Rating ── -->
   <div class="form-row">
     <div>
       <label class="form-label">Min Price (LE) <span class="req">*</span></label>
-      <input class="form-input" [(ngModel)]="restaurant.minPrice"
-             type="number" min="0" placeholder="150" />
+      <input
+        class="form-input"
+        [(ngModel)]="restaurant.minPrice"
+        type="number"
+        min="0"
+        placeholder="150"
+      />
     </div>
     <div>
       <label class="form-label">Max Price (LE) <span class="req">*</span></label>
-      <input class="form-input" [(ngModel)]="restaurant.maxPrice"
-             type="number" min="0" placeholder="500" />
+      <input
+        class="form-input"
+        [(ngModel)]="restaurant.maxPrice"
+        type="number"
+        min="0"
+        placeholder="500"
+      />
     </div>
     <div>
       <label class="form-label">Cuisine Type <span class="req">*</span></label>
-      <input class="form-input" [(ngModel)]="restaurant.cuisine" placeholder="Fine Dining" />
+      <select class="form-input" [(ngModel)]="selectedCuisineId">
+        <option [ngValue]="null" disabled>Select cuisine...</option>
+        <option *ngFor="let c of cuisineTypes" [ngValue]="c.id">{{ c.name }}</option>
+      </select>
     </div>
     <div>
       <label class="form-label">Rating <span class="req">*</span></label>
-      <input class="form-input" [(ngModel)]="restaurant.rating"
-             type="number" step="0.1" min="0" max="5" placeholder="4.5" />
+      <input
+        class="form-input"
+        [(ngModel)]="restaurant.rating"
+        type="number"
+        step="0.1"
+        min="0"
+        max="5"
+        placeholder="4.5"
+      />
     </div>
   </div>
 
@@ -71,25 +112,47 @@
       </span>
     </div>
     <div class="features-dropdown-wrap">
-      <button type="button" class="features-trigger" (click)="featuresDropdownOpen = !featuresDropdownOpen">
+      <button
+        type="button"
+        class="features-trigger"
+        (click)="featuresDropdownOpen = !featuresDropdownOpen"
+      >
         <span>{{ selectedFeatureIds.length ? 'Add more features...' : 'Select features...' }}</span>
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"
-             [style.transform]="featuresDropdownOpen ? 'rotate(180deg)' : 'rotate(0)'">
-          <path d="M7 10l5 5 5-5z"/>
+        <svg
+          viewBox="0 0 24 24"
+          width="16"
+          height="16"
+          fill="currentColor"
+          [style.transform]="featuresDropdownOpen ? 'rotate(180deg)' : 'rotate(0)'"
+        >
+          <path d="M7 10l5 5 5-5z" />
         </svg>
       </button>
       <div class="features-dropdown" *ngIf="featuresDropdownOpen">
-        <div *ngFor="let f of availableFeatures"
-             class="feature-option"
-             [class.selected]="isFeatureSelected(f.id)"
-             (click)="toggleFeature(f.id)">
+        <div
+          *ngFor="let f of availableFeatures"
+          class="feature-option"
+          [class.selected]="isFeatureSelected(f.id)"
+          (click)="toggleFeature(f.id)"
+        >
           <span class="feature-icon">{{ f.icon }}</span>
           <span class="feature-name">{{ f.name }}</span>
-          <svg *ngIf="isFeatureSelected(f.id)" viewBox="0 0 24 24" width="16" height="16" fill="#22c55e" style="margin-left:auto">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+          <svg
+            *ngIf="isFeatureSelected(f.id)"
+            viewBox="0 0 24 24"
+            width="16"
+            height="16"
+            fill="#22c55e"
+            style="margin-left: auto"
+          >
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
           </svg>
         </div>
-        <div *ngIf="availableFeatures.length === 0" class="feature-option" style="color:#4a6a88;cursor:default">
+        <div
+          *ngIf="availableFeatures.length === 0"
+          class="feature-option"
+          style="color: #4a6a88; cursor: default"
+        >
           Loading features...
         </div>
         <button type="button" class="features-done-btn" (click)="closeDropdown()">Done</button>
@@ -103,26 +166,43 @@
     <div class="rooms-form-grid">
       <div class="room-input-wrap">
         <label class="room-input-label">For 2</label>
-        <input class="form-input room-input" [(ngModel)]="tables.for2"
-               type="number" min="0" placeholder="0"
-               (ngModelChange)="calcTotal()" />
+        <input
+          class="form-input room-input"
+          [(ngModel)]="tables.for2"
+          type="number"
+          min="0"
+          placeholder="0"
+          (ngModelChange)="calcTotal()"
+        />
       </div>
       <div class="room-input-wrap">
         <label class="room-input-label">For 4</label>
-        <input class="form-input room-input" [(ngModel)]="tables.for4"
-               type="number" min="0" placeholder="0"
-               (ngModelChange)="calcTotal()" />
+        <input
+          class="form-input room-input"
+          [(ngModel)]="tables.for4"
+          type="number"
+          min="0"
+          placeholder="0"
+          (ngModelChange)="calcTotal()"
+        />
       </div>
       <div class="room-input-wrap">
         <label class="room-input-label">For 6</label>
-        <input class="form-input room-input" [(ngModel)]="tables.for6"
-               type="number" min="0" placeholder="0"
-               (ngModelChange)="calcTotal()" />
+        <input
+          class="form-input room-input"
+          [(ngModel)]="tables.for6"
+          type="number"
+          min="0"
+          placeholder="0"
+          (ngModelChange)="calcTotal()"
+        />
       </div>
     </div>
     <div class="rooms-total-badge">
       <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-        <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
+        <path
+          d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"
+        />
       </svg>
       Total Tables: <strong>{{ tables.total }}</strong>
     </div>
@@ -131,28 +211,37 @@
   <!-- ── Description ── -->
   <div class="form-group">
     <label class="form-label">Restaurant Description <span class="req">*</span></label>
-    <textarea class="form-textarea" [(ngModel)]="restaurant.description"
-              placeholder="Enter detailed restaurant description..."></textarea>
+    <textarea
+      class="form-textarea"
+      [(ngModel)]="restaurant.description"
+      placeholder="Enter detailed restaurant description..."
+    ></textarea>
   </div>
 
   <!-- ── Status (Edit only) ── -->
   <div class="status-section" *ngIf="isEdit">
     <h4>Restaurant Status <span class="req">*</span></h4>
-    <div class="inactive-notice" *ngIf="restaurant.status === 'Inactive'">
+    <div class="inactive-notice" *ngIf="selectedStatusId === 2">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="#fbbf24">
-        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
       </svg>
       When set to Inactive, the restaurant card on the site will show a "Not available" notice.
     </div>
     <div class="status-btns">
-      <button class="btn-status btn-status-active"
-              [class.selected]="restaurant.status === 'Active'"
-              (click)="setStatus('Active')" type="button">
+      <button
+        class="btn-status btn-status-active"
+        [class.selected]="selectedStatusId === 1"
+        (click)="setStatus(1)"
+        type="button"
+      >
         <span class="status-dot"></span> Active
       </button>
-      <button class="btn-status btn-status-inactive"
-              [class.selected]="restaurant.status === 'Inactive'"
-              (click)="setStatus('Inactive')" type="button">
+      <button
+        class="btn-status btn-status-inactive"
+        [class.selected]="selectedStatusId === 2"
+        (click)="setStatus(2)"
+        type="button"
+      >
         <span class="status-dot"></span> Inactive
       </button>
     </div>
@@ -160,20 +249,22 @@
 
   <!-- ── Actions ── -->
   <div class="form-actions">
-    <button class="btn-save" (click)="save()" type="button">
+    <button class="btn-save" (click)="save()" type="button" [disabled]="isSaving">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-        <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+        <path
+          d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"
+        />
       </svg>
-      Save Restaurant
+      {{ isSaving ? 'Saving...' : 'Save Restaurant' }}
     </button>
-    <button class="btn-clear" (click)="clear()" type="button">Clear</button>
+    <button class="btn-clear" (click)="clear()" type="button" [disabled]="isSaving">Clear</button>
   </div>
 </div>
 
 <!-- ── Toast ── -->
 <div class="toast" *ngIf="toastVisible">
   <svg viewBox="0 0 24 24" width="18" height="18" fill="#22c55e">
-    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
   </svg>
   {{ toastMessage }}
 </div>

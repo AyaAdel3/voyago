@@ -65,6 +65,85 @@ export interface RestaurantDetailApiResponse {
   comments:    RestaurantReview[];
 }
 
+// ── Admin API Response (GET /admin/restaurants/GetAllRestaurants) ──
+export interface AdminRestaurantApiItem {
+  id:           number;
+  name:         string;
+  cuisineType:  string;
+  rating:       number;
+  priceRange:   string;
+  status:       'Active' | 'Inactive' | 'Blocked';
+  totalTables:  number;
+  mainImageUrl: string | null;
+}
+
+export interface AdminRestaurantsApiResponse {
+  totalRestaurants:    number;
+  activeRestaurants:   number;
+  inactiveRestaurants: number;
+  restaurants:         AdminRestaurantApiItem[];
+}
+
+// ── Cuisine Enum ──────────────────────────────────────────
+export interface CuisineType {
+  id:   number;
+  name: string;
+}
+
+export const CUISINE_TYPES: CuisineType[] = [
+  { id: 1,  name: 'Egyptian'   },
+  { id: 2,  name: 'Italian'    },
+  { id: 3,  name: 'American'   },
+  { id: 4,  name: 'Japanese'   },
+  { id: 5,  name: 'Chinese'    },
+  { id: 6,  name: 'Indian'     },
+  { id: 7,  name: 'Mexican'    },
+  { id: 8,  name: 'French'     },
+  { id: 9,  name: 'Turkish'    },
+  { id: 10, name: 'Lebanese'   },
+  { id: 11, name: 'Greek'      },
+  { id: 12, name: 'Thai'       },
+  { id: 13, name: 'FastFood'   },
+  { id: 14, name: 'SeaFood'    },
+  { id: 15, name: 'Vegetarian' },
+];
+
+// ── Status Enum ───────────────────────────────────────────
+export const RESTAURANT_STATUSES = [
+  { id: 1, name: 'Active'   },
+  { id: 2, name: 'Inactive' },
+];
+
+// ── Admin Add/Update Request Bodies ──────────────────────
+export interface AdminRestaurantAddRequest {
+  name:         string;
+  description:  string;
+  address:      string;
+  rating:       number;
+  cuisineType:  number;  // enum id
+  minPrice:     number;
+  maxPrice:     number;
+  tablesForTwo:  number;
+  tablesForFour: number;
+  tablesForSix:  number;
+  featureIds:   number[];
+}
+
+export interface AdminRestaurantUpdateRequest {
+  name:         string;
+  description:  string;
+  address:      string;
+  rating:       number;
+  cuisineType:  number;  // enum id
+  minPrice:     number;
+  maxPrice:     number;
+  tablesForTwo:  number;
+  tablesForFour: number;
+  tablesForSix:  number;
+  status:       number;  // enum id: 1=Active, 2=Inactive
+  featureIds:   number[];
+}
+
 export interface RestaurantReview {
   id:           number;
   restaurantId: number;
@@ -73,7 +152,7 @@ export interface RestaurantReview {
   userAvatar?:  string;
   rating:       number;
   comment:      string;
-  content?:     string;  
+  content?:     string;
   date:         string;
 }
 

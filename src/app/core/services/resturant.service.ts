@@ -10,6 +10,10 @@ import {
   TableType,
   ReservationData,
   Feature,
+  AdminRestaurantApiItem,
+  AdminRestaurantsApiResponse,
+  AdminRestaurantAddRequest,
+  AdminRestaurantUpdateRequest,
   MOCK_RESTAURANT_REVIEWS,
   DEFAULT_TABLES,
   MOCK_FEATURES,
@@ -18,7 +22,8 @@ import {
 @Injectable({ providedIn: 'root' })
 export class RestaurantService {
 
-  private readonly apiUrl = 'http://voyagoo.runasp.net/Restaurants';
+  private readonly apiUrl      = 'http://voyagoo.runasp.net/Restaurants';
+  private readonly adminApiUrl = 'http://voyagoo.runasp.net/admin/restaurants';
 
   private restaurantsSubject = new BehaviorSubject<Restaurant[]>([]);
   restaurants$ = this.restaurantsSubject.asObservable();
@@ -119,6 +124,49 @@ export class RestaurantService {
     return of(MOCK_FEATURES);
   }
 
+  // ── ADMIN READ ────────────────────────────────────────────
+
+  getAdminRestaurants(token: string): Observable<AdminRestaurantsApiResponse> {
+    return this.http.get<AdminRestaurantsApiResponse>(
+      `${this.adminApiUrl}/GetAllRestaurants`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  // ── ADMIN ADD ─────────────────────────────────────────────
+
+  addRestaurantApi(body: AdminRestaurantAddRequest, token: string): Observable<{ id: number }> {
+    return this.http.post<{ id: number }>(
+      this.adminApiUrl,
+      body,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  // ── ADMIN UPDATE ──────────────────────────────────────────
+
+  updateRestaurantApi(id: number, body: AdminRestaurantUpdateRequest, token: string): Observable<void> {
+    return this.http.put<void>(
+      `${this.adminApiUrl}/${id}`,
+      body,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  // ── ADMIN UPLOAD IMAGES ───────────────────────────────────
+
+  uploadRestaurantImages(id: number, files: File[], token: string): Observable<void> {
+    const formData = new FormData();
+    files.forEach(file => formData.append('images', file));
+    return this.http.post<void>(
+      `${this.adminApiUrl}/${id}/images`,
+      formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  // ── WRITE (local BehaviorSubject) ─────────────────────────
+
   submitReview(restaurantId: number, comment: string, rating: number): Observable<RestaurantReview> {
     const body = { content: comment, rating };
     return new Observable(observer => {
@@ -149,8 +197,6 @@ export class RestaurantService {
     this.reviewsSubject.next(current.filter(r => r.id !== reviewId));
   }
 
-  // ── WRITE ────────────────────────────────────────────────
-
   addRestaurant(restaurant: Restaurant): void {
     const current = this.restaurantsSubject.getValue();
     this.restaurantsSubject.next([...current, restaurant]);
@@ -165,9 +211,11 @@ export class RestaurantService {
     this.restaurantsSubject.next(newList);
   }
 
-  deleteRestaurant(id: number): void {
-    const current = this.restaurantsSubject.getValue();
-    this.restaurantsSubject.next(current.filter(r => r.id !== id));
+  deleteRestaurant(id: number, token: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.adminApiUrl}/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
   }
 
   // ── Favorites ────────────────────────────────────────────
@@ -199,8 +247,7 @@ export class RestaurantService {
 
   getDefaultTables(): TableType[] { return DEFAULT_TABLES.map(t => ({ ...t })); }
 
-  // بتاخد الداتا مباشرة كـ parameter عشان متعتمدش على الـ signal
-confirmReservation(data: ReservationData): Observable<string> {
+  confirmReservation(data: ReservationData): Observable<string> {
     const getQty = (capacity: number) =>
       data.tables.find(t => t.capacity === capacity)?.quantity ?? 0;
 

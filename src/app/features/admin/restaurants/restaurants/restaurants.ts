@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { RestaurantService } from '../../../../core/services/resturant.service';
-import { Restaurant, RestaurantReview } from '../../../../core/model/restaurant.model';
+import { AdminRestaurantApiItem, RestaurantReview } from '../../../../core/model/restaurant.model';
 
 @Component({
   selector: 'app-admin-restaurants',
@@ -17,7 +17,7 @@ export class AdminRestaurants implements OnInit {
   currentPage = 1;
   readonly pageSize = 4;
 
-  restaurants: (Restaurant & { status: string })[] = [];
+  restaurants: AdminRestaurantApiItem[] = [];
 
   deleteToastVisible = false;
   deleteToastMessage = '';
@@ -41,25 +41,24 @@ export class AdminRestaurants implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.restaurantService.getRestaurants().subscribe(list => {
-      this.restaurants = list.map(r => ({
-        ...r,
-        status: (r as any).status ?? 'Active',
-      }));
-      this.currentPage = 1;
-      this.updateStats();
-      this.cdr.detectChanges();
+    const token = localStorage.getItem('token') ?? '';
+
+    this.restaurantService.getAdminRestaurants(token).subscribe({
+      next: res => {
+        this.stats[0].value = res.totalRestaurants;
+        this.stats[1].value = res.activeRestaurants;
+        this.stats[2].value = res.inactiveRestaurants;
+
+        this.restaurants = res.restaurants;
+        this.currentPage = 1;
+        this.cdr.detectChanges();
+      },
+      error: err => console.error('Failed to load admin restaurants:', err),
     });
   }
 
-  updateStats(): void {
-    this.stats[0].value = this.restaurants.length;
-    this.stats[1].value = this.restaurants.filter(r => r.status === 'Active').length;
-    this.stats[2].value = this.restaurants.filter(r => r.status === 'Inactive').length;
-  }
-
   // ── كل البيانات المفلترة (بدون pagination) ──
-  get filteredAll() {
+  get filteredAll(): AdminRestaurantApiItem[] {
     if (!this.searchQuery.trim()) return this.restaurants;
     return this.restaurants.filter(r =>
       r.name.toLowerCase().includes(this.searchQuery.toLowerCase())
@@ -67,7 +66,7 @@ export class AdminRestaurants implements OnInit {
   }
 
   // ── الصفحة الحالية فقط ──
-  get filtered() {
+  get filtered(): AdminRestaurantApiItem[] {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.filteredAll.slice(start, start + this.pageSize);
   }
@@ -84,7 +83,7 @@ export class AdminRestaurants implements OnInit {
     this.currentPage = 1;
   }
 
-  showDeleteToast(msg: string) {
+  showDeleteToast(msg: string): void {
     this.deleteToastMessage = msg;
     this.deleteToastVisible  = true;
     setTimeout(() => {
@@ -93,38 +92,52 @@ export class AdminRestaurants implements OnInit {
     }, 6000);
   }
 
-  viewOnSite(r: Restaurant) {
+  viewOnSite(r: AdminRestaurantApiItem): void {
     window.open(`/restaurant/details/${r.id}`, '_blank');
   }
 
-  edit(r: Restaurant) {
+  edit(r: AdminRestaurantApiItem): void {
     this.router.navigate(['/admin/restaurants/manage'], { queryParams: { id: r.id } });
   }
 
-  delete(r: Restaurant) {
-    this.restaurantService.deleteRestaurant(r.id);
-    this.showDeleteToast(`"${r.name}" deleted successfully.`);
+  delete(r: AdminRestaurantApiItem): void {
+    const token = localStorage.getItem('token') ?? '';
+
+    this.restaurantService.deleteRestaurant(r.id, token).subscribe({
+      next: () => {
+        this.restaurants = this.restaurants.filter(x => x.id !== r.id);
+        this.stats[0].value = this.restaurants.length;
+        this.stats[1].value = this.restaurants.filter(x => x.status === 'Active').length;
+        this.stats[2].value = this.restaurants.filter(x => x.status === 'Inactive').length;
+        this.showDeleteToast(`"${r.name}" deleted successfully.`);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Delete failed:', err);
+        this.showDeleteToast(`Failed to delete "${r.name}". Please try again.`);
+      },
+    });
   }
 
   // ── Reviews Modal ──────────────────────────────────────
 
-  openReviews(restaurant: Restaurant) {
-    this.selectedRestaurantId   = restaurant.id;
-    this.selectedRestaurantName = restaurant.name;
-    this.restaurantService.getReviews(restaurant.id).subscribe(reviews => {
+  openReviews(r: AdminRestaurantApiItem): void {
+    this.selectedRestaurantId   = r.id;
+    this.selectedRestaurantName = r.name;
+    this.restaurantService.getReviews(r.id).subscribe(reviews => {
       this.selectedRestaurantReviews = reviews;
       this.cdr.detectChanges();
     });
     this.reviewsModalVisible = true;
   }
 
-  closeReviewsModal() {
+  closeReviewsModal(): void {
     this.reviewsModalVisible       = false;
     this.selectedRestaurantId      = null;
     this.selectedRestaurantReviews = [];
   }
 
-  deleteReview(review: RestaurantReview) {
+  deleteReview(review: RestaurantReview): void {
     this.restaurantService.deleteReview(review.id);
     this.selectedRestaurantReviews =
       this.selectedRestaurantReviews.filter(r => r.id !== review.id);
