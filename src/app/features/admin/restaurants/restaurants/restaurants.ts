@@ -143,6 +143,10 @@ export class AdminRestaurants implements OnInit {
         this.stats[0].value = this.restaurants.length;
         this.stats[1].value = this.restaurants.filter(x => x.status === 'Active').length;
         this.stats[2].value = this.restaurants.filter(x => x.status === 'Inactive').length;
+        const newTotalPages = Math.ceil(this.filteredAll.length / this.pageSize) || 1;
+if (this.currentPage > newTotalPages) {
+  this.currentPage = newTotalPages;
+}
         this.showToast(true, `"${r.name}" deleted successfully.`);
         this.cdr.detectChanges();
       },

@@ -130,10 +130,22 @@ export class AdminAttractions implements OnInit {
         this.stats[0].value--;
         if (a.status === 'Active') this.stats[1].value--;
         else this.stats[2].value--;
+
+        const newTotalPages = Math.ceil(this.filteredAll.length / this.pageSize) || 1;
+        if (this.currentPage > newTotalPages) {
+          this.currentPage = newTotalPages;
+        }
+
         this.showDeleteToast(`"${a.name}" deleted successfully.`);
       },
       error: () => {
         this.attractions = this.attractions.filter(x => x.id !== a.id);
+
+        const newTotalPages = Math.ceil(this.filteredAll.length / this.pageSize) || 1;
+        if (this.currentPage > newTotalPages) {
+          this.currentPage = newTotalPages;
+        }
+
         this.showDeleteToast(`"${a.name}" deleted successfully.`);
       }
     });
