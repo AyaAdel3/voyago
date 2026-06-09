@@ -118,6 +118,10 @@
   z-index: 10;
 }
 
+.camera-btn:hover {
+  background: #2a4f7a;
+}
+
 .remove-btn {
   position: absolute;
   top: 0;
@@ -133,6 +137,10 @@
   cursor: pointer;
   padding: 0;
   z-index: 10;
+}
+
+.remove-btn:hover {
+  background: rgba(255, 80, 80, 1);
 }
 
 .profile-name {
@@ -351,3 +359,184 @@
 }
 
 .crop-save:hover { opacity: 0.9; }
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════════════ */
+
+/* Large screens: 1200px فأقل */
+@media (max-width: 1200px) {
+  .profile-sidebar {
+    width: 200px;
+  }
+
+  .profile-content {
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+/* Tablet landscape: 1024px فأقل */
+@media (max-width: 1024px) {
+  .profile-sidebar {
+    width: 175px;
+    padding: 1rem 0.5rem;
+  }
+
+  .logo-text {
+    font-size: 0.85rem;
+  }
+
+  .profile-nav-item {
+    font-size: 0.8rem;
+    padding: 0.5rem 0.6rem;
+    gap: 0.5rem;
+  }
+
+  .profile-content {
+    padding: 1rem 1.25rem;
+  }
+
+  .profile-topbar {
+    padding: 0.75rem 1.25rem;
+  }
+
+  .profile-page-title {
+    font-size: 1.15rem;
+  }
+}
+
+/* Tablet portrait + Mobile: 768px فأقل */
+@media (max-width: 768px) {
+  .profile-shell {
+    flex-direction: column;
+  }
+
+  .profile-sidebar {
+    width: 100%;
+    height: auto;
+    position: sticky;
+    top: 0;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    z-index: 100;
+    scrollbar-width: none;
+  }
+
+  .profile-sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .profile-logo {
+    padding: 0;
+    margin-right: auto;
+    flex-shrink: 0;
+  }
+
+  .profile-avatar-wrap {
+    display: none;
+  }
+
+  .profile-nav {
+    flex-direction: row;
+    gap: 0.25rem;
+    flex: none;
+  }
+
+  .profile-nav-item {
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.72rem;
+    border-radius: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .profile-nav-item svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .profile-logout-btn {
+    margin-top: 0;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.4rem 0.65rem;
+    font-size: 0.72rem;
+    flex-shrink: 0;
+  }
+
+  .profile-logout-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .profile-topbar {
+    display: none;
+  }
+
+  .profile-content {
+    padding: 1rem;
+  }
+
+  /* ✅ إضافة: منع الـ horizontal scroll */
+  .profile-main {
+    overflow-x: hidden;
+  }
+
+  /* ✅ إضافة: الـ crop modal على موبايل */
+  .crop-box {
+    width: 90vw;
+    padding: 1rem;
+  }
+}
+
+/* Small Mobile: 480px فأقل */
+@media (max-width: 480px) {
+  .profile-sidebar {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .profile-nav-item span,
+  .profile-logout-btn span {
+    display: none;
+  }
+
+  .profile-nav-item {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .logo-text {
+    font-size: 0.8rem;
+  }
+
+  .profile-content {
+    padding: 0.75rem;
+  }
+}
+
+/* Extra Small Mobile: 400px فأقل */
+@media (max-width: 400px) {
+  .profile-sidebar {
+    padding: 0.4rem 0.5rem;
+  }
+
+  .profile-content {
+    padding: 0.5rem;
+  }
+
+  .logo-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* ✅ إضافة: الـ crop modal على أصغر شاشة */
+  .crop-box {
+    width: 95vw;
+    padding: 0.75rem;
+  }
+}

@@ -10,30 +10,13 @@
   color: white;
 }
 
-/* Sidebar */
-/* .sidebar {
+.sidebar {
   width: 300px;
   border-right: 1px solid #1e2e40;
   padding: 50px 30px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-} */
-
-.camera-btn {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background: #1e2e40;
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
 }
 
 .nav-links {
@@ -60,19 +43,26 @@
   padding-bottom: 5px;
 }
 
+/* ===== Content ===== */
 .content {
   flex: 1;
   padding: 60px 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .info-header h1 {
   font-size: 32px;
   font-weight: 600;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
+  align-self: flex-start;
 }
 
 /* ===== Sections ===== */
 .fav-section {
+  width: 100%;
+  max-width: 900px;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -185,4 +175,30 @@
   align-items: center;
   gap: 12px;
   font-size: 16px;
+}
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .content { padding: 40px 60px; }
+}
+
+@media (max-width: 768px) {
+  .content { padding: 20px 16px; }
+  .plan-grid { grid-template-columns: 1fr; }
+  .info-header h1 { font-size: 26px; }
+}
+
+@media (max-width: 480px) {
+  .content { padding: 16px 12px; }
+  .info-header h1 { font-size: 22px; }
+  .card-info h3 { font-size: 16px; }
+  .item-meta { font-size: 14px; }
+}
+
+@media (max-width: 400px) {
+  .content { padding: 12px 10px; }
+  .info-header h1 { font-size: 20px; }
 }

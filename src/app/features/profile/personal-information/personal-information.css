@@ -1,49 +1,34 @@
 :host {
   display: block;
-  font-family: 'Poppins', sans-serif; /* تأكد من استدعاء الخط في index.html */
+  font-family: 'Poppins', sans-serif;
 }
 
 .profile-layout {
   display: flex;
-  background-color: #0a1128; /* نفس درجة الكحلي في الصورة */
+  background-color: #0A1128;
   min-height: 100vh;
   color: white;
 }
 
-/* Sidebar */
-.sidebar {
-  width: 300px;
-  border-right: 1px solid #1e2e40;
-  padding: 50px 30px;
-  display: flex;
-  flex-direction: column;
+.content {
+  flex: 1;
+  padding: 30px 40px;
 }
 
-.image-container {
+/* ===== Profile Picture ===== */
+.profile-pic-wrapper {
   position: relative;
-  width: 100px; /* نفس الحجم اللي إنت عامله للدايرة */
+  width: 100px;
   height: 100px;
-  margin: 0 auto 20px;
-  background-color: #1a222b; /* لون غامق يتناسب مع التصميم */
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid #333;
-  overflow: visible;
+  margin-bottom: 16px;
 }
 
-.profile-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.image-container img {
+.profile-img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
+  border: 3px solid #FFE194;
 }
 
 .camera-btn {
@@ -51,59 +36,24 @@
   bottom: 5px;
   right: 5px;
   background: #1e2e40;
-  border-radius: 50%;
-  padding: 6px;
-  font-size: 14px;
-}
-
-.nav-links {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-}
-
-.nav-links a {
-  color: #ffffff;
-  text-decoration: none;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  opacity: 0.8;
-}
-
-.active-link {
-  color: #ffe194 !important; /* اللون الأصفر من الصورة */
-  opacity: 1 !important;
-  border-bottom: 2px solid #ffe194;
-  width: fit-content;
-  padding-bottom: 5px;
-}
-
-.logout-btn {
-  margin-top: auto;
-  background: none;
   border: none;
-  color: white;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   cursor: pointer;
-  font-size: 16px;
   padding: 0;
 }
 
-/* Main Content */
-.content {
-  flex: 1;
-  padding: 30px 40px;
-}
-
+/* ===== Header ===== */
 .info-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 50px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 30px;
 }
 
 .info-header h1 {
@@ -112,10 +62,10 @@
   margin: 0;
 }
 
-.edit-btn,
-.save-btn {
-  background-color: #ffe194;
-  color: #0a1128;
+/* ===== Buttons ===== */
+.edit-btn, .save-btn {
+  background-color: #FFE194;
+  color: #0A1128;
   border: none;
   padding: 8px 45px;
   border-radius: 20px;
@@ -124,6 +74,7 @@
   cursor: pointer;
 }
 
+/* ===== Details ===== */
 .details-container {
   display: flex;
   flex-direction: column;
@@ -132,15 +83,14 @@
 
 .data-value {
   font-size: 20px;
-  color: #7a9cc6; /* درجة الأزرق الفاتح للنصوص */
+  color: #7a9cc6;
   margin: 0;
 }
 
-/* Edit Mode Styling */
 .profile-input {
   background: transparent;
   border: none;
-  border-bottom: 1px solid #ffe194;
+  border-bottom: 1px solid #FFE194;
   color: #7a9cc6;
   font-size: 20px;
   width: 100%;
@@ -155,13 +105,69 @@
   display: block;
   margin-top: 5px;
 }
+
 .disabled-input {
   opacity: 0.5;
   cursor: not-allowed;
 }
-.profile-img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════════════ */
+
+@media (max-width: 1200px) {
+  .content { padding: 25px 35px; }
+  .info-header h1 { font-size: 28px; }
+}
+
+@media (max-width: 1024px) {
+  .content { padding: 20px 28px; }
+  .info-header h1 { font-size: 26px; }
+  .info-header { margin-bottom: 25px; }
+  .data-value { font-size: 18px; }
+  .profile-input { font-size: 18px; }
+  .edit-btn, .save-btn { padding: 7px 35px; font-size: 15px; }
+  .profile-pic-wrapper { width: 85px; height: 85px; }
+}
+
+@media (max-width: 768px) {
+  .content { padding: 20px 16px; }
+  .info-header { margin-bottom: 20px; }
+  .info-header h1 { font-size: 22px; }
+  .edit-btn, .save-btn { padding: 7px 28px; font-size: 14px; }
+  .data-value { font-size: 16px; }
+  .profile-input { font-size: 16px; max-width: 100%; }
+  .details-container { gap: 20px; }
+  .profile-pic-wrapper { width: 80px; height: 80px; }
+}
+
+@media (max-width: 480px) {
+  .content { padding: 16px 12px; }
+  .info-header h1 { font-size: 18px; }
+  .info-header { margin-bottom: 16px; }
+  .edit-btn, .save-btn { padding: 6px 20px; font-size: 13px; }
+  .data-value { font-size: 15px; }
+  .profile-input { font-size: 15px; }
+  .details-container { gap: 16px; }
+  .profile-pic-wrapper { width: 70px; height: 70px; }
+}
+
+@media (max-width: 400px) {
+  .content { padding: 12px 10px; }
+  .info-header {
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .info-header h1 { font-size: 16px; }
+  .edit-btn, .save-btn {
+    width: 100%;
+    text-align: center;
+    padding: 8px 0;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+  .data-value { font-size: 14px; }
+  .profile-input { font-size: 14px; }
+  .details-container { gap: 14px; }
+  .profile-pic-wrapper { width: 65px; height: 65px; }
 }

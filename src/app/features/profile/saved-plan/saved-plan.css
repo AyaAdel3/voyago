@@ -3,118 +3,63 @@
   font-family: 'Poppins', sans-serif;
 }
 
-.profile-layout {
+/* ─── Main Content ────────────────────────────────── */
+.content {
+  flex: 1;
+  padding: 40px 40px;
   display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  overflow: hidden;
   background-color: #0A1128;
   min-height: 100vh;
   color: white;
 }
 
-/* ─── Sidebar ─────────────────────────────────────── */
-.sidebar {
-  width: 300px;
-  border-right: 1px solid #1e2e40;
-  padding: 50px 30px;
+.info-header {
   display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-}
-
-.image-container {
-  position: relative;
-  width: 100px; /* نفس الحجم اللي إنت عامله للدايرة */
-  height: 100px;
-  margin: 0 auto 20px;
-  background-color: #1a222b; /* لون غامق يتناسب مع التصميم */
-  border-radius: 50%;
-  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  border: 2px solid #333;
-  overflow: visible;
-}
-.profile-placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.image-container img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.camera-btn {
-  position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background: #1e2e40;
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-}
-
-.nav-links {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-}
-
-.nav-links a {
-  color: #ffffff;
-  text-decoration: none;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  opacity: 0.8;
-}
-
-.active-link {
-  color: #FFE194 !important;
-  opacity: 1 !important;
-  border-bottom: 2px solid #FFE194;
-  width: fit-content;
-  padding-bottom: 5px;
-}
-
-.logout-btn {
-  margin-top: auto;
-  background: none;
-  border: none;
-  color: white;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-/* ─── Main Content ────────────────────────────────── */
-.content {
-  flex: 1;
-  padding: 60px 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  overflow: hidden;
 }
 
 .info-header h1 {
   font-size: 32px;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin: 0;
 }
 
-/* ─── Plans Row (أفقي مع scroll) ─────────────────── */
+/* ─── Main Slider Controls ────────────────────────── */
+.main-slider-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.arrow-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.arrow-btn:hover:not(:disabled) {
+  background: rgba(255, 225, 148, 0.3);
+  color: #FFE194;
+}
+
+.arrow-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ─── Plans Row ───────────────────────────────────── */
 .plans-row {
   display: flex;
   flex-direction: row;
@@ -122,7 +67,6 @@
   overflow-x: auto;
   padding-bottom: 1.5rem;
   align-items: flex-start;
-  /* scrollbar styling */
   scrollbar-width: thin;
   scrollbar-color: #1e2e40 transparent;
 }
@@ -208,14 +152,14 @@
   margin: 0;
 }
 
-/* ─── Slider Controls ─────────────────────────────── */
-.slider-controls {
+/* ─── Inner Slider Controls ───────────────────────── */
+.inner-slider-controls {
   display: flex;
   gap: 0.3rem;
   margin-left: auto;
 }
 
-.slider-controls button {
+.small-arrow {
   background: rgba(255, 255, 255, 0.1);
   border: none;
   color: white;
@@ -223,20 +167,19 @@
   height: 26px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.9rem;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
-  line-height: 1;
 }
 
-.slider-controls button:hover:not(:disabled) {
+.small-arrow:hover:not(:disabled) {
   background: rgba(255, 225, 148, 0.3);
   color: #FFE194;
 }
 
-.slider-controls button:disabled {
+.small-arrow:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
@@ -328,4 +271,146 @@
 
 .empty-state-small p {
   margin: 0;
+}
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════════════════════ */
+
+/* Large screens: 1200px فأقل */
+@media (max-width: 1200px) {
+  .content {
+    padding: 30px 30px;
+  }
+
+  .info-header h1 {
+    font-size: 28px;
+  }
+
+  .plan-column {
+    min-width: 300px;
+    max-width: 300px;
+  }
+}
+
+/* Tablet landscape: 1024px فأقل */
+@media (max-width: 1024px) {
+  .content {
+    padding: 24px 24px;
+  }
+
+  .info-header h1 {
+    font-size: 24px;
+  }
+
+  .plan-column {
+    min-width: 270px;
+    max-width: 270px;
+  }
+
+  .card-img {
+    height: 140px;
+  }
+}
+
+/* Tablet portrait + Mobile: 768px فأقل */
+@media (max-width: 768px) {
+  .content {
+    padding: 16px 12px;
+    gap: 1.25rem;
+  }
+
+  .info-header h1 {
+    font-size: 20px;
+  }
+
+  /* الخطط تبقى vertical stack بدل horizontal scroll */
+  .plans-row {
+    flex-direction: column;
+    overflow-x: visible;
+    padding-bottom: 0;
+    gap: 1rem;
+  }
+
+  .plan-column {
+    min-width: 100%;
+    max-width: 100%;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .empty-state {
+    padding: 3rem 2rem;
+    font-size: 0.9rem;
+  }
+
+  .card-img {
+    height: 180px;
+  }
+}
+
+/* Small Mobile: 480px فأقل */
+@media (max-width: 480px) {
+  .content {
+    padding: 12px 10px;
+  }
+
+  .info-header h1 {
+    font-size: 18px;
+  }
+
+  .plan-column {
+    padding: 0.85rem;
+    border-radius: 14px;
+  }
+
+  .plan-title {
+    font-size: 0.95rem;
+  }
+
+  .card-img {
+    height: 160px;
+  }
+
+  .card-body h3 {
+    font-size: 0.85rem;
+  }
+
+  .view-btn {
+    font-size: 0.78rem;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .empty-state {
+    padding: 2rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .empty-state .empty-icon {
+    font-size: 2.5rem;
+  }
+}
+
+/* Extra Small Mobile: 400px فأقل */
+@media (max-width: 400px) {
+  .content {
+    padding: 10px 8px;
+  }
+
+  .info-header h1 {
+    font-size: 16px;
+  }
+
+  .plan-column {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .card-img {
+    height: 140px;
+  }
+
+  .section-header h3 {
+    font-size: 0.85rem;
+  }
 }

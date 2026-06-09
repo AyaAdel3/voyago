@@ -21,6 +21,7 @@ export class PersonalInformation {
     lastName: 'Yousif',
     email: 'Mariammyousiff9@gmail.com',
     phone: '01045983677'
+    
   };
 
   editData = {
