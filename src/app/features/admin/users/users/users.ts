@@ -39,32 +39,48 @@ export class AdminUsers implements OnInit {
     this.stats[2].value = this.users.filter(u => u.status === 'Inactive').length;
   }
 
-  get filtered() {
-    const list = this.searchQuery
-      ? this.users.filter(u =>
-          u.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          u.email.toLowerCase().includes(this.searchQuery.toLowerCase())
-        )
-      : this.users;
+  get filteredAll(): any[] {
+    if (!this.searchQuery.trim()) return this.users;
+    return this.users.filter(u =>
+      u.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      u.email.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+  }
 
+  get filtered(): any[] {
     const start = (this.currentPage - 1) * this.pageSize;
-    return list.slice(start, start + this.pageSize);
+    return this.filteredAll.slice(start, start + this.pageSize);
   }
 
   get totalPages(): number[] {
-    const list = this.searchQuery
-      ? this.users.filter(u =>
-          u.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-          u.email.toLowerCase().includes(this.searchQuery.toLowerCase())
-        )
-      : this.users;
+    return Array.from(
+      { length: Math.ceil(this.filteredAll.length / this.pageSize) || 1 },
+      (_, i) => i + 1
+    );
+  }
 
-    const count = Math.ceil(list.length / this.pageSize);
-    return Array.from({ length: count }, (_, i) => i + 1);
+  onSearch(): void {
+    this.currentPage = 1;
+  }
+
+  goToPage(p: number): void { this.currentPage = p; }
+
+  prevPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages.length) this.currentPage++;
   }
 
   toggleStatus(u: any): void {
     u.status = u.status === 'Active' ? 'Inactive' : 'Active';
     this.updateStats();
+
+    // ✅ لو الصفحة الحالية بقت فاضية، ارجع للصفحة اللي قبلها
+    const newTotalPages = Math.ceil(this.filteredAll.length / this.pageSize) || 1;
+    if (this.currentPage > newTotalPages) {
+      this.currentPage = newTotalPages;
+    }
   }
 }

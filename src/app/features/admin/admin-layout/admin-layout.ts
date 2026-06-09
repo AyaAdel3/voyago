@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { DarkModeService } from '../../../core/services/dark-mode.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -14,6 +15,7 @@ import { DarkModeService } from '../../../core/services/dark-mode.service';
 export class AdminLayout {
   private router = inject(Router);
   public darkMode = inject(DarkModeService);
+  private auth = inject(AuthService);
 
   currentTitle = 'Dashboard';
   currentSubtitle = "Welcome back! Here's an overview of your tourism management system";
@@ -56,5 +58,10 @@ export class AdminLayout {
 
   isActive(path: string): boolean {
     return this.router.url.startsWith(path);
+  }
+
+  logout(): void {
+    this.auth.logout();
+    this.router.navigate(['/home']);
   }
 }

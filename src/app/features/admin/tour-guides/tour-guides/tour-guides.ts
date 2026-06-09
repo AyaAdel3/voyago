@@ -53,10 +53,13 @@ export class AdminTourGuides implements OnInit {
       next: (data) => {
         this.guides    = data;
         this.isLoading = false;
-        // ✅ استخدم الـ stats من الـ API response مباشرة
         this.stats[0].value = this.tourGuideService.adminStats.total;
         this.stats[1].value = this.tourGuideService.adminStats.active;
         this.stats[2].value = this.tourGuideService.adminStats.inactive;
+
+        // ✅ بعد ما الداتا اتحملت، تأكد إن currentPage مش فاضية
+        this.clampCurrentPage();
+
         this.cdr.detectChanges();
       },
       error: () => {
@@ -64,6 +67,14 @@ export class AdminTourGuides implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  // ✅ helper — لو الصفحة الحالية بقت فاضية، ارجع للصفحة اللي قبلها
+  private clampCurrentPage(): void {
+    const newTotalPages = Math.ceil(this.filteredAll.length / this.pageSize) || 1;
+    if (this.currentPage > newTotalPages) {
+      this.currentPage = newTotalPages;
+    }
   }
 
   loadStatuses(): void {
@@ -124,7 +135,7 @@ export class AdminTourGuides implements OnInit {
 
     this.tourGuideService.adminDelete(g.id).subscribe({
       next: () => {
-        this.loadGuides();
+        this.loadGuides(); // ✅ clampCurrentPage بتتنادى جواه أوتوماتيك
         this.showDeleteToast(`"${g.name}" deleted successfully.`, true);
       },
       error: (err) => {
