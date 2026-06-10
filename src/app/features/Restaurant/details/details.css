@@ -30,7 +30,7 @@
   gap: 1.5rem;
 }
 
-/* ══ 1. GALLERY (داخل gallery-col) ══════════════════════ */
+/* ══ 1. GALLERY ══════════════════════════════════════════ */
 .gallery-wrap { width: 100%; }
 
 .gallery {
@@ -39,8 +39,9 @@
   gap: 8px;
   border-radius: 16px;
   overflow: hidden;
-  height: 320px;
+  height: 360px;
 }
+
 .gallery-main {
   position: relative; cursor: pointer; overflow: hidden;
 }
@@ -49,6 +50,7 @@
   display: block; transition: transform 0.3s ease;
 }
 .gallery-main:hover img { transform: scale(1.03); }
+
 .main-overlay {
   position: absolute; inset: 0;
   background: rgba(2,21,38,0);
@@ -56,23 +58,27 @@
   transition: background 0.2s;
 }
 .gallery-main:hover .main-overlay { background: rgba(2,21,38,0.3); }
-.gallery-grid {
+
+.gallery-thumbs {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
 }
+
 .gallery-thumb {
-  position: relative; overflow: hidden; cursor: pointer;
+  position: relative; flex: 1; overflow: hidden; cursor: pointer;
 }
 .gallery-thumb img {
   width: 100%; height: 100%; object-fit: cover;
   display: block; transition: transform 0.25s ease;
 }
 .gallery-thumb:hover img { transform: scale(1.06); }
+
 .gallery-thumb.active-thumb::after {
   content: ''; position: absolute; inset: 0;
   border: 3px solid #f5c518; pointer-events: none;
 }
+
 .more-photos {
   position: absolute; inset: 0;
   background: rgba(2,21,38,0.62);
@@ -82,7 +88,7 @@
 }
 .more-photos:hover { background: rgba(2,21,38,0.78); }
 
-/* ══ 2. TOP ROW: details left + widget right ════════════ */
+/* ══ 2. TOP ROW ══════════════════════════════════════════ */
 .top-row {
   display: grid;
   grid-template-columns: 1fr 290px;
@@ -90,7 +96,6 @@
   align-items: start;
 }
 
-/* ── Left col: gallery + details ─────────────────────── */
 .gallery-col {
   display: flex; flex-direction: column; gap: 1.25rem;
 }
@@ -124,7 +129,6 @@
 }
 .host-name { font-weight: 500; font-size: 1.2rem; color: #f6faff; }
 
-/* ── Rating Badge ─────────────────────────────────────── */
 .rating-badge-new {
   display: inline-flex; align-items: center; gap: 4px;
   background: #173b64; color: #f6faff;
@@ -133,8 +137,10 @@
   white-space: nowrap; align-self: center;
 }
 
-/* ══ 3. WRITE REVIEW (standalone, full width) ═══════════ */
+/* ══ 3. WRITE REVIEW ═════════════════════════════════════ */
 .write-review { padding: 0.25rem 0; }
+.write-review .host-row { margin-bottom: 0.6rem; margin-top: 0; }
+
 .review-form-row {
   display: flex; gap: 0.75rem; align-items: center;
 }
@@ -157,13 +163,10 @@
   width: 8.7rem; height: 2.5rem;
 }
 .btn-submit:hover { background: #2d4f7a; }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* ══ 4. REVIEWS GRID ════════════════════════════════════ */
-/* ══ 4. REVIEWS GRID ════════════════════════════════════ */
-.comment { 
-  width: 100%;
-  padding: 0; 
-}
+/* ══ 4. REVIEWS GRID ═════════════════════════════════════ */
+.comment { width: 100%; padding: 0; }
 .reviews-section { display: flex; flex-direction: column; gap: 1rem; }
 .reviews-grid {
   display: grid;
@@ -175,6 +178,8 @@
   padding: 0.85rem; display: flex;
   flex-direction: column; gap: 0.5rem; position: relative;
 }
+.my-review { border: 1.5px solid #f5c518; }
+
 .reviewer-info  { display: flex; align-items: flex-start; gap: 0.5rem; }
 .reviewer-avatar {
   width: 36px; height: 36px; background: #e6d0a1;
@@ -189,32 +194,66 @@
 .review-date    { font-size: 0.68rem; color: #8a6a3a; margin: 0; font-weight: 500; }
 .review-comment { font-size: 0.75rem; color: #1a1919; line-height: 1.5; margin: 0; }
 
+/* ── Delete review button ─────────────────────────────────── */
+.delete-review-btn {
+  position: absolute; top: 0.45rem; right: 0.45rem;
+  width: 22px; height: 22px; border-radius: 50%; border: none;
+  background: rgba(0,0,0,0.12); color: #8a6a3a;
+  font-size: 0.65rem; font-weight: 700; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s, color 0.2s, transform 0.15s; z-index: 1;
+}
+.delete-review-btn:hover { background: #ef4444; color: #fff; transform: scale(1.15); }
+
 /* ════════════════════════════════════════════════════════
    RESERVATION WIDGET
 ════════════════════════════════════════════════════════ */
 .reservation-widget {
-  transform: none;
-  background: #a3c4eb;
-  border-radius: 2rem;
-  padding: 1.4rem 1.25rem;
-  color: #173b64;
-  position: sticky;
-  top: 1.5rem;
+  background: #a3c4eb; border-radius: 2rem;
+  padding: 1.4rem 1.25rem; color: #173b64;
+  position: sticky; top: 1.5rem;
+  overflow: visible;
 }
 
-.dt-row-single  { margin-bottom: 1rem; display: flex; justify-content: center; }
-.custom-date    { position: relative; display: inline-flex; justify-content: center; margin: 0 auto; }
-.date-input-hidden {
-  position: absolute; inset: 0; opacity: 0; cursor: pointer;
-  width: 100%; height: 100%; z-index: 2; box-sizing: border-box; pointer-events: none;
+.dt-row-single {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
 }
+
+.custom-date {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.date-input-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .date-display {
   background: #173b64; color: #f6faff;
   padding: 0.3rem 0.9rem; border-radius: 20px;
-  font-size: 0.72rem; cursor: pointer; transition: background 0.2s;
+  font-size: 0.72rem; cursor: pointer;
   white-space: nowrap; height: 28px;
   display: flex; align-items: center; gap: 0.4rem;
   width: fit-content; margin: 0 auto;
+  position: relative; user-select: none;
 }
 .date-display:hover { background: #1e4a7a; }
 .date-label-inside {
@@ -247,7 +286,7 @@
   border-radius: 20px; padding: 0.55rem 0.9rem;
   color: #f6faff; font-size: 0.85rem; box-sizing: border-box;
 }
-.text-input::placeholder { color: #f6faff; }
+.text-input::placeholder { color: #a3c4eb; }
 .res-error-msg {
   color: #dc2626; background: rgba(220,38,38,0.1);
   border: 1px solid rgba(220,38,38,0.35); border-radius: 8px;
@@ -261,6 +300,71 @@
   transition: background 0.2s, transform 0.15s;
 }
 .btn-reserve:hover { background: #f5c842; transform: scale(1.02); }
+
+/* ── Login Prompt ─────────────────────────────────────── */
+.login-prompt-res {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 10px;
+  padding: 20px 12px; text-align: center;
+}
+.login-prompt-icon  { font-size: 2.2rem; }
+.login-prompt-title { font-size: 1rem; font-weight: 700; color: #1a1a2e; margin: 0; }
+.login-prompt-text  { font-size: 0.82rem; color: #555; margin: 0; }
+.btn-go-login {
+  width: 80%; padding: 6px;
+  background: #ffde70; color: #1b2d45;
+  border: none; border-radius: 8px;
+  font-weight: 700; font-size: 0.88rem; cursor: pointer;
+}
+.btn-go-login:hover { background: #d4a900; }
+.btn-dismiss {
+  width: 80%; padding: 6px;
+  background: transparent; color: #1b2d45;
+  border: 1px solid #1b2d45; border-radius: 8px;
+  font-size: 0.85rem; cursor: pointer;
+}
+.btn-dismiss:hover { border-color: #999; color: #666; }
+
+/* ── Confirm Delete Dialog ────────────────────────────── */
+.confirm-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 200000; padding: 16px;
+  animation: fadeIn 0.15s ease; backdrop-filter: blur(4px);
+}
+.confirm-card {
+  background: #0d1f33; border: 1px solid rgba(163,196,235,0.15);
+  border-radius: 16px; padding: 2rem 2.2rem;
+  max-width: 400px; width: 90%; text-align: center;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  display: flex; flex-direction: column;
+  align-items: center; gap: 0; animation: slideUp 0.2s ease;
+}
+.confirm-icon {
+  width: 52px; height: 52px; background: rgba(239,68,68,0.12);
+  border: 1.5px solid rgba(239,68,68,0.3); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 12px auto 16px;
+}
+.confirm-title { font-size: 1.1rem; font-weight: 700; color: #e2edf7; margin: 0 0 0.5rem; }
+.confirm-text  { font-size: 0.88rem; color: #7a9cbf; margin: 0; line-height: 1.6; }
+.confirm-actions {
+  display: flex; gap: 0.75rem;
+  justify-content: center; margin-top: 1.5rem;
+}
+.btn-cancel-delete {
+  padding: 0.55rem 1.6rem; border-radius: 10px;
+  border: 1.5px solid rgba(163,196,235,0.2);
+  background: #162a40; color: #7a9cbf;
+  font-size: 0.88rem; font-weight: 600; cursor: pointer;
+}
+.btn-cancel-delete:hover { background: #1e3a5a; color: #c8dff0; }
+.btn-confirm-delete {
+  padding: 0.55rem 1.6rem; border-radius: 10px; border: none;
+  background: #ef4444; color: #fff;
+  font-size: 0.88rem; font-weight: 700; cursor: pointer;
+}
+.btn-confirm-delete:hover { background: #dc2626; }
 
 /* ── Lightbox ─────────────────────────────────────────── */
 .lightbox {
@@ -310,183 +414,79 @@
 .lb-dot.active { background: #f5c518; transform: scale(1.3); }
 
 /* ════════════════════════════════════════════════════════
-   RESPONSIVE — TABLET  (≤ 1024px)
+   ANIMATIONS
+════════════════════════════════════════════════════════ */
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — TABLET (≤ 1024px)
 ════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
   .rest-page { padding: 1.5rem 1.25rem 3rem; }
-
-  .top-row {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
-
+  .top-row { grid-template-columns: 1fr; gap: 1.25rem; }
   .reservation-widget {
-    width: 100%;
-    max-width: 520px;
-    margin: 0 auto;
-    transform: translateX(0);
-    border-radius: 1.75rem;
-    position: static;
+    width: 100%; max-width: 520px; margin: 0 auto;
+    border-radius: 1.75rem; position: static;
+    overflow: visible;
   }
 }
 
 /* ════════════════════════════════════════════════════════
-   RESPONSIVE — MOBILE  (≤ 640px)
+   RESPONSIVE — MOBILE (≤ 640px)
 ════════════════════════════════════════════════════════ */
 @media (max-width: 640px) {
   .rest-page { padding: 0.75rem 0.75rem 3rem; }
-
   .content-wrap { gap: 1rem; }
+  .top-row { display: flex; flex-direction: column; gap: 1rem; }
+  .gallery-col { display: contents; }
 
-  .top-row {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .gallery-col { order: 1; }
-
-  .reservation-widget {
-    order: 2;
-    width: 100%;
-    transform: translateX(0);
-    border-radius: 1.25rem;
-    padding: 1rem 1rem 1.25rem;
-    position: static;
-  }
-
-  /* ── Gallery mobile ── */
-  .gallery {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-  .gallery-main { height: 220px; }
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-    height: 80px;
-    gap: 6px;
-  }
-
-  /* ── Details ── */
-  .rest-name { font-size: 1.3rem; }
-
-  /* ── Widget internals ── */
-  .date-display { height: 34px; font-size: 0.82rem; padding: 0.4rem 1rem; }
-  .widget-label { font-size: 1.1rem; margin-bottom: 0.55rem; }
-  .option-row   { padding: 0.42rem 0; }
-  .option-name  { font-size: 1rem; }
-  .qty-ctrl button { font-size: 1.4rem; width: 1.8rem; height: 1.8rem; }
-  .qty-val         { font-size: 1.05rem; min-width: 1.4rem; }
-  .text-input { font-size: 1rem; padding: 0.7rem 1rem; border-radius: 14px; }
-  .btn-reserve { padding: 0.95rem; font-size: 1.05rem; border-radius: 1rem; margin-top: 0.75rem; }
-
-  /* ── Review form ── */
-  .review-form-row {
-  display: flex;
-  gap: 0.75rem;
-  align-items: center;
-  max-width: 860px;
-}
-  .review-input  { padding: 0.9rem 1rem; font-size: 0.9rem; border-radius: 12px; }
-  .review-actions {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  .btn-submit { width: auto; padding: 0.6rem 1.8rem; font-size: 0.9rem; height: 2.75rem; }
-  .star-picker svg { width: 26px; height: 26px; }
-
-  /* ── Reviews ── */
-  .reviews-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
-
-  /* ── Lightbox ── */
-  .lb-prev { left: -36px; }
-  .lb-next { right: -36px; }
-}
-
-/* ════════════════════════════════════════════════════════
-   RESPONSIVE — TABLET  (≤ 1024px)
-════════════════════════════════════════════════════════ */
-@media (max-width: 1024px) {
-  .rest-page { padding: 1.5rem 1.25rem 3rem; }
- 
-  .top-row {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
- 
-  .reservation-widget {
-    width: 100%;
-    max-width: 520px;
-    margin: 0 auto;
-    transform: translateX(0);
-    border-radius: 1.75rem;
-    position: static;
-  }
-}
- 
-/* ════════════════════════════════════════════════════════
-   RESPONSIVE — MOBILE  (≤ 640px)
- 
-   الترتيب المطلوب:
-   1. Gallery       (gallery-wrap داخل gallery-col)
-   2. Details       (rest-header, section-block داخل gallery-col)
-   3. Widget        (reservation-widget)
-   4. Review form   (write-review داخل gallery-col)
-   5. Reviews grid  (comment)
-════════════════════════════════════════════════════════ */
-@media (max-width: 640px) {
-  .rest-page { padding: 0.75rem 0.75rem 3rem; }
- 
-  .content-wrap { gap: 1rem; }
- 
-  /* top-row يبقى flex column */
-  .top-row {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
- 
-  /* gallery-col يبقى display:contents عشان أتحكم في order كل child على حدة */
-  .gallery-col {
-    display: contents;
-  }
- 
-  /* ترتيب العناصر */
   .gallery-wrap   { order: 1; width: 100%; }
   .rest-header    { order: 2; width: 100%; }
   .section-block  { order: 3; width: 100%; }
- 
   .reservation-widget {
-    order: 4;
-    width: 100%;
-    transform: translateX(0);
-    transform: translateY(.7rem);
-    border-radius: 1.25rem;
-    padding: 1rem 1rem 1.25rem;
-    position: static;
+    order: 4; width: 100%;
+    transform: translateY(0.7rem); border-radius: 1.25rem;
+    padding: 1rem 1rem 1.25rem; position: static;
+    overflow: visible;
   }
- 
-  .write-review   { order: 5; width: 100%; }
- 
-  /* ── Gallery mobile ── */
+  .write-review { order: 5; width: 100%; }
+
+  /* Gallery mobile */
   .gallery {
     grid-template-columns: 1fr;
     height: auto;
   }
-  .gallery-main { height: 220px; }
-  .gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .gallery-main  { height: 220px; }
+  .gallery-thumbs {
+    grid-template-columns: 1fr 1fr;
     height: 80px;
     gap: 6px;
   }
- 
-  /* ── Details ── */
+  .gallery-thumb { flex: unset; }
+
   .rest-name { font-size: 1.3rem; }
- 
-  /* ── Widget internals ── */
-  .date-display { height: 34px; font-size: 0.82rem; padding: 0.4rem 1rem; }
+
+  .dt-row-single {
+    width: 100%;
+    position: relative;
+    z-index: 10;
+  }
+  .custom-date {
+    width: 100%;
+  }
+  .date-display {
+    height: 34px; font-size: 0.82rem; padding: 0.4rem 1rem;
+    width: 85%; justify-content: center; box-sizing: border-box;
+  }
+  .date-input-hidden {
+    left: 0;
+    transform: none;
+    top: 100%;
+  }
+
   .widget-label { font-size: 1.1rem; margin-bottom: 0.55rem; }
   .option-row   { padding: 0.42rem 0; }
   .option-name  { font-size: 1rem; }
@@ -494,47 +494,30 @@
   .qty-val         { font-size: 1.05rem; min-width: 1.4rem; }
   .text-input { font-size: 1rem; padding: 0.7rem 1rem; border-radius: 14px; }
   .btn-reserve { padding: 0.95rem; font-size: 1.05rem; border-radius: 1rem; margin-top: 0.75rem; }
- 
-  /* ── Review form ── */
-  .review-form-row {
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: stretch;
-  }
+
+  .review-form-row { flex-direction: column; gap: 0.75rem; align-items: stretch; }
   .review-input  { padding: 0.9rem 1rem; font-size: 0.9rem; border-radius: 12px; height: auto; }
   .review-actions {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
+    flex-direction: row; justify-content: space-between;
+    align-items: center; gap: 0.5rem;
   }
   .btn-submit { width: auto; padding: 0.6rem 1.8rem; font-size: 0.9rem; height: 2.75rem; }
   .star-picker svg { width: 26px; height: 26px; }
- 
-  /* ── Reviews ── */
   .reviews-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
- 
-  /* ── Lightbox ── */
   .lb-prev { left: -36px; }
   .lb-next { right: -36px; }
 }
- 
+
 /* ════════════════════════════════════════════════════════
-   RESPONSIVE — VERY SMALL  (≤ 380px)
+   RESPONSIVE — VERY SMALL (≤ 380px)
 ════════════════════════════════════════════════════════ */
 @media (max-width: 380px) {
-  .gallery-main { height: 190px; }
-  .gallery-grid { height: 65px; }
+  .gallery-main  { height: 190px; }
+  .gallery-thumbs { height: 65px; }
   .rest-name    { font-size: 1.15rem; }
   .reviews-grid { grid-template-columns: 1fr; }
   .lb-prev { left: -28px; }
   .lb-next { right: -28px; }
   .review-actions { flex-direction: column; align-items: stretch; }
   .btn-submit { width: 100%; text-align: center; }
-}
- 
-/* host above comment */
-.write-review .host-row {
-  margin-bottom: 0.6rem;
-  margin-top: 0;
 }

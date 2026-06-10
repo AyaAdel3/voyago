@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,6 +7,8 @@ import {
   AVAILABLE_TIMES, Feature,
 } from '../../../core/model/restaurant.model';
 import { RestaurantService } from '../../../core/services/resturant.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
 
 @Component({
   selector: 'app-restaurant-details',
@@ -27,12 +29,16 @@ export class Details implements OnInit {
   phone           = '';
   resError        = '';
 
-  todayStr = new Date().toISOString().split('T')[0];
+  showLoginPrompt = false;
+  reviewToDelete: RestaurantReview | null = null;
 
+  todayStr       = new Date().toISOString().split('T')[0];
   availableTimes = AVAILABLE_TIMES;
 
   newComment = '';
   newRating  = 0;
+
+  isSubmittingReview = false;
 
   activeImage  = 0;
   lightboxOpen = false;
@@ -42,15 +48,30 @@ export class Details implements OnInit {
     private route:             ActivatedRoute,
     public  router:            Router,
     private restaurantService: RestaurantService,
+    private authService:       AuthService,
+    private authModal:         AuthModalService,
     private cdr:               ChangeDetectorRef,
   ) {}
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeydown(event: KeyboardEvent): void {
+    if (!this.lightboxOpen) return;
+
+    if (event.key === 'ArrowRight') {
+      this.lbNext();
+    } else if (event.key === 'ArrowLeft') {
+      this.lbPrev();
+    } else if (event.key === 'Escape') {
+      this.closeLightbox();
+    }
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const id = +params['id'];
       if (!id || isNaN(id)) { this.router.navigate(['/Restaurants']); return; }
-      this.loading = true;
-      this.error   = false;
+      this.loading    = true;
+      this.error      = false;
       this.restaurant = null!;
       this.cdr.detectChanges();
       this.loadRestaurant(id);
@@ -65,8 +86,6 @@ export class Details implements OnInit {
         this.selectedTables = this.restaurantService.getDefaultTables();
         this.loading        = false;
         this.cdr.detectChanges();
-
-        // جيب الـ reviews بعد ما الـ restaurant اتحمل
         this.loadReviews(id);
       },
       error: () => { this.loading = false; this.error = true; this.cdr.detectChanges(); }
@@ -82,7 +101,15 @@ export class Details implements OnInit {
     });
   }
 
-  // الـ features جاية مع الـ restaurant مباشرة من الـ API
+  get currentUserName(): string {
+    return this.authService.getFullName() || 'Guest';
+  }
+
+  goToLogin(): void {
+    this.showLoginPrompt = false;
+    this.authModal.openLogin();
+  }
+
   getFeatureLabel(id: number): Feature | null {
     return this.restaurant?.features?.find(f => f.id === id) ?? null;
   }
@@ -91,9 +118,9 @@ export class Details implements OnInit {
     return `${this.restaurant.minPrice}-${this.restaurant.maxPrice} LE`;
   }
 
-  setActiveImage(i: number): void  { this.activeImage = i; }
-  openLightbox(i: number): void    { this.lbIndex = i; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; }
-  closeLightbox(): void            { this.lightboxOpen = false; document.body.style.overflow = ''; }
+  setActiveImage(i: number): void { this.activeImage = i; }
+  openLightbox(i: number): void   { this.lbIndex = i; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; }
+  closeLightbox(): void           { this.lightboxOpen = false; document.body.style.overflow = ''; }
   lbPrev(): void { if (this.lbIndex > 0) this.lbIndex--; }
   lbNext(): void { if (this.lbIndex < this.restaurant.images.length - 1) this.lbIndex++; }
 
@@ -112,6 +139,19 @@ export class Details implements OnInit {
   }
 
   makeReservation(): void {
+    if (this.authService.isAdmin()) {
+      this.authService.logout();
+      this.showLoginPrompt = true;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    if (!this.authService.isLoggedIn()) {
+      this.showLoginPrompt = true;
+      this.cdr.detectChanges();
+      return;
+    }
+
     if ((this.restaurant as any).status === 'Inactive') {
       this.resError = 'This restaurant is currently not available for reservations.';
       return;
@@ -146,16 +186,52 @@ export class Details implements OnInit {
     this.router.navigate(['/restaurant/reservation', this.restaurant.id]);
   }
 
+  isMyReview(review: RestaurantReview): boolean {
+    const fullName = this.authService.getFullName()?.trim();
+    return !!fullName && review.userName?.trim() === fullName;
+  }
+
   submitReview(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
     if (!this.newComment.trim() || this.newRating === 0) return;
+
+    if (this.isSubmittingReview) return;
+    this.isSubmittingReview = true;
+
     this.restaurantService.submitReview(this.restaurant.id, this.newComment, this.newRating).subscribe({
       next: (review: RestaurantReview) => {
-        this.reviews    = [review, ...this.reviews];
+        const myReview  = { ...review, userName: this.authService.getFullName()?.trim() || review.userName };
+        this.reviews    = [myReview, ...this.reviews];
         this.newComment = '';
         this.newRating  = 0;
+        this.isSubmittingReview = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.isSubmittingReview = false;
         this.cdr.detectChanges();
       },
     });
+  }
+
+  requestDeleteReview(review: RestaurantReview): void {
+    this.reviewToDelete = review;
+  }
+
+  cancelDelete(): void {
+    this.reviewToDelete = null;
+  }
+
+  confirmDeleteReview(): void {
+    if (!this.reviewToDelete) return;
+    const id = (this.reviewToDelete as any).id;
+    this.restaurantService.deleteReview?.(id);
+    this.reviews        = this.reviews.filter(r => r !== this.reviewToDelete);
+    this.reviewToDelete = null;
+    this.cdr.detectChanges();
   }
 
   starsArray(n: number): number[] { return Array(n).fill(0); }
