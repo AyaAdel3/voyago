@@ -50,7 +50,6 @@ export class AuthService {
   register(payload: RegisterPayload): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${BASE_URL}/auth/register`, payload).pipe(
       map(res => {
-        // ✅ خزّن وقت انتهاء التوكن
         const expiresAt = Date.now() + (res.expiresIn * 1000);
         localStorage.setItem('voyago_token_expires_at', expiresAt.toString());
         return res;
@@ -62,13 +61,7 @@ export class AuthService {
   login(email: string, password: string): Observable<{ success: boolean; message: string }> {
     return this.http.post<AuthResponse>(`${BASE_URL}/Auth`, { email, password }).pipe(
       map(res => {
-        localStorage.setItem('voyago_token', res.token);
-        localStorage.setItem('voyago_refresh_token', res.refreshToken);
-
-        // ✅ خزّن وقت انتهاء التوكن
-        const expiresAt = Date.now() + (res.expiresIn * 1000);
-        localStorage.setItem('voyago_token_expires_at', expiresAt.toString());
-
+        this._saveTokens(res);
         const user: User = {
           firstName:    res.firstName,
           lastName:     res.lastName,
@@ -79,11 +72,35 @@ export class AuthService {
         };
         localStorage.setItem('voyago_current_user', JSON.stringify(user));
         this.currentUser.set(user);
-
         return { success: true, message: 'Welcome back!' };
       }),
       catchError(err => throwError(() => err))
     );
+  }
+
+  refreshToken(): Observable<AuthResponse> {
+    const token        = localStorage.getItem('voyago_token');
+    const refreshToken = localStorage.getItem('voyago_refresh_token');
+
+    if (!token || !refreshToken) {
+      return throwError(() => new Error('No tokens available'));
+    }
+
+    // ✅ الـ endpoint الصح
+    return this.http.post<AuthResponse>(`${BASE_URL}/Auth/refresh`, { token, refreshToken }).pipe(
+      map(res => {
+        this._saveTokens(res);
+        return res;
+      }),
+      catchError(err => throwError(() => err))
+    );
+  }
+
+  private _saveTokens(res: AuthResponse): void {
+    localStorage.setItem('voyago_token', res.token);
+    localStorage.setItem('voyago_refresh_token', res.refreshToken);
+    const expiresAt = Date.now() + (res.expiresIn * 1000);
+    localStorage.setItem('voyago_token_expires_at', expiresAt.toString());
   }
 
   updateProfileImage(imageBase64: string): void {
@@ -92,25 +109,6 @@ export class AuthService {
     const updated = { ...user, profileImage: imageBase64 };
     localStorage.setItem('voyago_current_user', JSON.stringify(updated));
     this.currentUser.set(updated);
-  }
-
-  refreshToken(): Observable<AuthResponse> {
-    const token        = localStorage.getItem('voyago_token');
-    const refreshToken = localStorage.getItem('voyago_refresh_token');
-
-    return this.http.post<AuthResponse>(`${BASE_URL}/Auth/refresh-token`, { token, refreshToken }).pipe(
-      map(res => {
-        localStorage.setItem('voyago_token', res.token);
-        localStorage.setItem('voyago_refresh_token', res.refreshToken);
-
-        // ✅ حدّث وقت انتهاء التوكن الجديد
-        const expiresAt = Date.now() + (res.expiresIn * 1000);
-        localStorage.setItem('voyago_token_expires_at', expiresAt.toString());
-
-        return res;
-      }),
-      catchError(err => throwError(() => err))
-    );
   }
 
   forgotPassword(email: string): Observable<any> {
@@ -142,7 +140,7 @@ export class AuthService {
     localStorage.removeItem('voyago_current_user');
     localStorage.removeItem('voyago_token');
     localStorage.removeItem('voyago_refresh_token');
-    localStorage.removeItem('voyago_token_expires_at'); // ✅ مسح وقت الانتهاء
+    localStorage.removeItem('voyago_token_expires_at');
     this.currentUser.set(null);
   }
 

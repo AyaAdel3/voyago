@@ -5,7 +5,6 @@ import { AuthService } from '../services/auth.service';
 import { catchError, throwError, switchMap, filter, take } from 'rxjs';
 import { BehaviorSubject } from 'rxjs';
 
-// ── Shared state — خارج الـ interceptor عشان يتشارك بين كل الـ requests ──
 let isRefreshing = false;
 let refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
@@ -13,18 +12,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router      = inject(Router);
 
-  // استثني الـ refresh endpoint عشان متدخلش في loop
-  if (req.url.includes('/Auth/refresh-token')) {
+  // ✅ الـ endpoint الصح
+  if (req.url.includes('/Auth/refresh')) {
     return next(req);
   }
 
   const token        = localStorage.getItem('voyago_token');
   const expiresAtStr = localStorage.getItem('voyago_token_expires_at');
-  const isAboutToExpire =
-    expiresAtStr && Date.now() > parseInt(expiresAtStr) - 60_000; // دقيقة قبل الانتهاء
+  const expiresAt    = expiresAtStr ? parseInt(expiresAtStr) : null;
+  const isAboutToExpire = token && expiresAt && Date.now() > expiresAt - 60_000;
 
-  // ✅ لو التوكن هينتهي قريباً، عمل refresh استباقي بدل ما تنتظر الـ 401
-  if (token && isAboutToExpire && !isRefreshing) {
+  // ── Proactive refresh لو التوكن هينتهي قريباً ──
+  if (isAboutToExpire && !isRefreshing) {
     isRefreshing = true;
     refreshTokenSubject.next(null);
 
@@ -44,14 +43,22 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     );
   }
 
-  // ── بعت الـ request العادي ──
+  // لو في refresh شغال دلوقتي، استنى
+  if (isAboutToExpire && isRefreshing) {
+    return refreshTokenSubject.pipe(
+      filter((t) => t !== null),
+      take(1),
+      switchMap((newToken) => next(addToken(req, newToken)))
+    );
+  }
+
+  // ── الـ request العادي ──
   return next(addToken(req, token)).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status !== 401) {
         return throwError(() => error);
       }
 
-      // ✅ لو في refresh شغال دلوقتي، استنى التوكن الجديد بدل ما تعمل refresh تاني
       if (isRefreshing) {
         return refreshTokenSubject.pipe(
           filter((t) => t !== null),
@@ -60,7 +67,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         );
       }
 
-      // ✅ ابدأ refresh وblock الـ requests التانية
       isRefreshing = true;
       refreshTokenSubject.next(null);
 
@@ -82,7 +88,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   );
 };
 
-// ── Helper ──
 function addToken(req: any, token: string | null) {
   return token
     ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
