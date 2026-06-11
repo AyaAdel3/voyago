@@ -273,7 +273,6 @@
   padding: 1rem 1.25rem;
 }
 
-/* host-row inside write-review — sits above the input */
 .write-review .host-row {
   display: flex;
   align-items: center;
@@ -336,6 +335,7 @@
   height: 2.5rem;
 }
 .btn-submit:hover { background: #2d4f7a; }
+.btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ════════════════════════════════════════════════════════
    CUSTOMER REVIEWS GRID
@@ -356,6 +356,10 @@
   background: #fef5d6;
   border-radius: 12px;
   padding: 0.85rem;
+  position: relative;
+}
+.my-review {
+  border: 1.5px solid #f5c518;
 }
 .reviewer-info {
   display: flex;
@@ -381,15 +385,7 @@
 .review-date    { font-size: 0.68rem; color: #8a6a3a; margin: 0; font-weight: 500; letter-spacing: 0.01em; }
 .review-comment { font-size: 0.76rem; color: #1a1919; line-height: 1.5; margin: 0; }
 
-/* ── My-review card + delete button ─────────────────────── */
-.review-card {
-  position: relative;
-}
-
-.my-review {
-  border: 1.5px solid #f5c518;
-}
-
+/* ── Delete review button ─────────────────────────────── */
 .delete-review-btn {
   position: absolute;
   top: 0.45rem;
@@ -427,6 +423,7 @@
   border-radius: 2.5rem;
   padding: 1.2rem;
   top: 1rem;
+  position: sticky;
 }
 
 /* Dates */
@@ -559,8 +556,141 @@
   font-style: italic;
 }
 
+/* ── Login Prompt ─────────────────────────────────────── */
+.login-prompt-res {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 12px;
+  text-align: center;
+}
+.login-prompt-icon { font-size: 2.2rem; }
+.login-prompt-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+.login-prompt-text {
+  font-size: 0.82rem;
+  color: #555;
+  margin: 0;
+}
+.btn-go-login {
+  width: 80%;
+  padding: 6px;
+  background: #ffde70;
+  color: #1b2d45;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.btn-go-login:hover { background: #d4a900; }
+.btn-dismiss {
+  width: 80%;
+  padding: 6px;
+  background: transparent;
+  color: #1b2d45;
+  border: 1px solid #1b2d45;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.btn-dismiss:hover { border-color: #999; color: #666; }
+
+/* ── Confirm Delete Dialog ────────────────────────────── */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200000;
+  padding: 16px;
+  animation: fadeIn 0.15s ease;
+  backdrop-filter: blur(4px);
+}
+.confirm-card {
+  background: #0d1f33;
+  border: 1px solid rgba(163, 196, 235, 0.15);
+  border-radius: 16px;
+  padding: 2rem 2.2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  animation: slideUp 0.2s ease;
+}
+.confirm-icon {
+  width: 52px;
+  height: 52px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1.5px solid rgba(239, 68, 68, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px auto 16px;
+}
+.confirm-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e2edf7;
+  margin: 0 0 0.5rem;
+}
+.confirm-text {
+  font-size: 0.88rem;
+  color: #7a9cbf;
+  margin: 0;
+  line-height: 1.6;
+}
+.confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+.btn-cancel-delete {
+  padding: 0.55rem 1.6rem;
+  border-radius: 10px;
+  border: 1.5px solid rgba(163, 196, 235, 0.2);
+  background: #162a40;
+  color: #7a9cbf;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-cancel-delete:hover { background: #1e3a5a; color: #c8dff0; }
+.btn-confirm-delete {
+  padding: 0.55rem 1.6rem;
+  border-radius: 10px;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-confirm-delete:hover { background: #dc2626; }
+
 /* ════════════════════════════════════════════════════════
-   RESPONSIVE — TABLET  (≤ 1024px)
+   ANIMATIONS
+════════════════════════════════════════════════════════ */
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE — TABLET (≤ 1024px)
 ════════════════════════════════════════════════════════ */
 @media (max-width: 1024px) {
   .outer-row {
@@ -577,6 +707,7 @@
     margin: 0 auto;
     transform: translateX(0);
     border-radius: 1.75rem;
+    position: static;
   }
 
   .reviews-section { transform: translate(0, 0); }
@@ -592,14 +723,7 @@
 }
 
 /* ════════════════════════════════════════════════════════
-   RESPONSIVE — MOBILE  (≤ 640px)
-
-   Desired order:
-   1. Gallery
-   2. Hotel details (title, about, amenities)
-   3. Booking widget
-   4. Host name + Review form
-   5. Customer Reviews grid
+   RESPONSIVE — MOBILE (≤ 640px)
 ════════════════════════════════════════════════════════ */
 @media (max-width: 640px) {
   .hotel-page { padding: 0.75rem 0.75rem 3rem; }
@@ -611,10 +735,7 @@
     gap: 1rem;
   }
 
-  /* display:contents makes left-col children direct flex items of outer-row */
-  .left-col {
-    display: contents;
-  }
+  .left-col { display: contents; }
 
   .gallery              { order: 1; width: 100%; }
   .details-section      { order: 2; width: 100%; }
@@ -638,6 +759,7 @@
     border-radius: 1.25rem;
     padding: 1rem 1rem 1.25rem;
     transform: translateX(0);
+    position: static;
   }
 
   .dates-row {
@@ -691,9 +813,7 @@
   .reviews-section { transform: none; }
   .write-review    { padding: 0.5rem 0; }
 
-  .write-review .host-row {
-    margin-bottom: 0.75rem;
-  }
+  .write-review .host-row { margin-bottom: 0.75rem; }
 
   .review-form-row {
     flex-direction: column;
@@ -740,7 +860,7 @@
 }
 
 /* ════════════════════════════════════════════════════════
-   RESPONSIVE — VERY SMALL  (≤ 380px)
+   RESPONSIVE — VERY SMALL (≤ 380px)
 ════════════════════════════════════════════════════════ */
 @media (max-width: 380px) {
   .gallery-main  { height: 190px; }

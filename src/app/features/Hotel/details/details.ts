@@ -1,11 +1,13 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  Hotel, Review, RoomType, HotelFeature, HotelFeatureDef, BookingData, BOARD_FEATURE_NAMES,
+  Hotel, Review, RoomType, HotelFeature, BookingData, BOARD_FEATURE_NAMES,
 } from '../../../core/model/hotel.model';
 import { HotelService } from '../../../core/services/hotel.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
 
 function calcNights(checkIn: string, checkOut: string): number {
   if (!checkIn || !checkOut) return 0;
@@ -36,9 +38,12 @@ export class Details implements OnInit {
   totalAmount    = 0;
   bookingError   = '';
 
+  showLoginPrompt = false;
+  reviewToDelete: Review | null = null;
+
   newComment  = '';
   newRating   = 0;
-  submitting  = false; // ← guard against double-submit
+  submitting  = false;
 
   activeImage  = 0;
   lightboxOpen = false;
@@ -48,8 +53,18 @@ export class Details implements OnInit {
     private route: ActivatedRoute,
     public  router: Router,
     private hotelService: HotelService,
+    private authService: AuthService,
+    private authModal: AuthModalService,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeydown(event: KeyboardEvent): void {
+    if (!this.lightboxOpen) return;
+    if (event.key === 'ArrowRight') this.lbNext();
+    else if (event.key === 'ArrowLeft') this.lbPrev();
+    else if (event.key === 'Escape') this.closeLightbox();
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -90,6 +105,17 @@ export class Details implements OnInit {
     this.hotelService.getReviews(id).subscribe({
       next: (reviews: Review[]) => { this.reviews = reviews; this.cdr.detectChanges(); }
     });
+  }
+
+  // ── Auth ──────────────────────────────────────────────
+
+  get currentUserName(): string {
+    return this.authService.getFullName() || 'Guest';
+  }
+
+  goToLogin(): void {
+    this.showLoginPrompt = false;
+    this.authModal.openLogin();
   }
 
   // ── Computed ──────────────────────────────────────────
@@ -191,6 +217,21 @@ export class Details implements OnInit {
   }
 
   bookNow(): void {
+    // Admin → logout وسيبه كـ guest
+    if (this.authService.isAdmin()) {
+      this.authService.logout();
+      this.showLoginPrompt = true;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    // غير logged in → prompt
+    if (!this.authService.isLoggedIn()) {
+      this.showLoginPrompt = true;
+      this.cdr.detectChanges();
+      return;
+    }
+
     const selectedRooms = this.selectedRooms.filter(r => r.quantity > 0);
     if (selectedRooms.length === 0)                         { this.bookingError = 'Please select at least one room to continue.'; return; }
     if (!this.checkIn || !this.checkOut)                    { this.bookingError = 'Please select check-in and check-out dates.'; return; }
@@ -210,17 +251,23 @@ export class Details implements OnInit {
 
   // ── Reviews ───────────────────────────────────────────
 
-  // الـ service دايماً بيحط userName: 'You' للريفيو الجديد
   isMyReview(review: Review): boolean {
-    return review.userName === 'You';
-  }
-
+  // الهوتل سيرفيس بيحط 'You' للريفيوهات الجديدة
+  if (review.userName === 'You') return true;
+  
+  // fallback: قارن بالاسم الحقيقي لو الـ service اتغير
+  const fullName = this.authService.getFullName()?.trim();
+  return !!fullName && review.userName?.trim() === fullName;
+}
   submitReview(): void {
+    if (!this.authService.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
+
     if (!this.newComment.trim() || this.newRating === 0 || this.submitting) return;
     this.submitting = true;
 
-    // الـ service بيضيف الريفيو في reviewsSubject
-    // وده بيعمل emit تلقائي على getReviews() — مش محتاجين نضيف يدوياً هنا
     this.hotelService.submitReview(this.hotel.id, this.newComment, this.newRating)
       .subscribe({
         next: () => {
@@ -236,10 +283,19 @@ export class Details implements OnInit {
       });
   }
 
-  deleteReview(review: Review): void {
-    // بنكلم الـ service مباشرةً — هو بيشيله من reviewsSubject
-    // وده بيعمل emit تلقائي على getReviews() فالـ UI بيتحدث لوحده
-    this.hotelService.deleteReview(review.id);
+  requestDeleteReview(review: Review): void {
+    this.reviewToDelete = review;
+  }
+
+  cancelDelete(): void {
+    this.reviewToDelete = null;
+  }
+
+  confirmDeleteReview(): void {
+    if (!this.reviewToDelete) return;
+    this.hotelService.deleteReview(this.reviewToDelete.id);
+    this.reviewToDelete = null;
+    this.cdr.detectChanges();
   }
 
   starsArray(n: number): number[] { return Array(n).fill(0); }

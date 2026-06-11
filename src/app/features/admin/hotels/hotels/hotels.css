@@ -369,3 +369,24 @@ h2.section-title {
   opacity: 1 !important;
   visibility: visible !important;
 }
+/* Header */
+.table-header {
+  width: 100%;
+  direction: ltr;
+  text-align: left;
+}
+
+.table-header.hotels-grid {
+  justify-items: start !important;
+}
+
+.table-header span {
+  text-align: left !important;
+  justify-self: start !important;
+}
+
+/* خلي أول عمود يبدأ من أقصى الشمال */
+.table-header span:first-child {
+  padding-left: 0;
+  margin-left: 0;
+}

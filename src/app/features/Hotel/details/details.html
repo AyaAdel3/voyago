@@ -52,7 +52,6 @@
       <!-- DETAILS -->
       <div class="details-section flex flex-col gap-2 text-[#F6FAFF]">
 
-        <!-- Title + Rating badge -->
         <div class="flex items-start gap-3 flex-wrap">
           <h1 class="hotel-title flex items-center gap-2 text-[1.55rem] font-extrabold m-0">
             {{ hotel.name }}
@@ -72,7 +71,6 @@
           <p class="about-text">{{ hotel.description }}</p>
         </div>
 
-        <!-- Great for your stay -->
         <div class="section-block" *ngIf="hotel.displayFeatures && hotel.displayFeatures.length">
           <h2 class="section-title font-bold">Great for your stay</h2>
           <div class="amenities-row">
@@ -85,7 +83,7 @@
 
       </div>
 
-      <!-- REVIEWS FORM — host-row moved INSIDE write-review, above the input -->
+      <!-- REVIEWS FORM -->
       <div class="reviews-section mobile-order-reviews-form">
         <div class="write-review">
           <div class="host-row">
@@ -94,7 +92,7 @@
                 <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
               </svg>
             </div>
-            <span class="host-name font-medium">Yara morad</span>
+            <span class="host-name font-medium">{{ currentUserName }}</span>
           </div>
           <div class="review-form-row">
             <input type="text" placeholder="Write your comment..." [(ngModel)]="newComment" class="review-input" />
@@ -109,7 +107,9 @@
                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
                 </svg>
               </div>
-              <button class="btn-submit" (click)="submitReview()">Submit</button>
+              <button class="btn-submit" (click)="submitReview()" [disabled]="submitting">
+                {{ submitting ? '...' : 'Submit' }}
+              </button>
             </div>
           </div>
         </div>
@@ -120,85 +120,99 @@
     <!-- RIGHT: Booking Widget -->
     <div class="booking-widget">
 
-      <!-- Dates -->
-      <div class="dates-row">
-        <div class="date-field">
-          <label>Check in</label>
-          <input
-            type="date"
-            [(ngModel)]="checkIn"
-            (change)="onDateChange()"
-            class="date-input"
-            [class.input-date-error]="bookingError && !checkIn" />
-        </div>
-        <div class="date-field">
-          <label>Check out</label>
-          <input
-            type="date"
-            [(ngModel)]="checkOut"
-            (change)="onDateChange()"
-            class="date-input"
-            [class.input-date-error]="bookingError && !checkOut" />
-        </div>
+      <!-- Login Prompt -->
+      <div class="login-prompt-res" *ngIf="showLoginPrompt">
+        <div class="login-prompt-icon">🔒</div>
+        <p class="login-prompt-title">Sign in required</p>
+        <p class="login-prompt-text">You need to be logged in to make a booking.</p>
+        <button class="btn-go-login" (click)="goToLogin()">Go to Login</button>
+        <button class="btn-dismiss" (click)="showLoginPrompt = false">Cancel</button>
       </div>
 
-      <!-- ROOM section -->
-      <div class="widget-section">
-        <h4 class="widget-label">Room</h4>
-        <div *ngFor="let r of selectedRooms; let i = index" class="option-row">
-          <span class="option-name">{{ r.type }}</span>
-          <div class="option-right">
-            <span class="option-price">{{ r.price | number }}LE</span>
-            <div class="qty-ctrl">
-              <button (click)="changeRoom(i, -1)">−</button>
-              <span class="qty-val">{{ r.quantity }}</span>
-              <button (click)="changeRoom(i, 1)">+</button>
+      <!-- Booking Form -->
+      <ng-container *ngIf="!showLoginPrompt">
+
+        <!-- Dates -->
+        <div class="dates-row">
+          <div class="date-field">
+            <label>Check in</label>
+            <input
+              type="date"
+              [(ngModel)]="checkIn"
+              (change)="onDateChange()"
+              class="date-input"
+              [class.input-date-error]="bookingError && !checkIn" />
+          </div>
+          <div class="date-field">
+            <label>Check out</label>
+            <input
+              type="date"
+              [(ngModel)]="checkOut"
+              (change)="onDateChange()"
+              class="date-input"
+              [class.input-date-error]="bookingError && !checkOut" />
+          </div>
+        </div>
+
+        <!-- ROOM section -->
+        <div class="widget-section">
+          <h4 class="widget-label">Room</h4>
+          <div *ngFor="let r of selectedRooms; let i = index" class="option-row">
+            <span class="option-name">{{ r.type }}</span>
+            <div class="option-right">
+              <span class="option-price">{{ r.price | number }}LE</span>
+              <div class="qty-ctrl">
+                <button (click)="changeRoom(i, -1)">−</button>
+                <span class="qty-val">{{ r.quantity }}</span>
+                <button (click)="changeRoom(i, 1)">+</button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- FEATURES section -->
-      <div class="widget-section">
-        <h4 class="widget-label">Features</h4>
-        <p *ngIf="totalRoomsSelected === 0" class="features-hint">Select rooms first to add features</p>
-        <ng-container *ngIf="selectedFeatures.length === 0 && totalRoomsSelected > 0">
-          <p class="features-hint">No bookable features for this hotel</p>
-        </ng-container>
-        <div *ngFor="let f of selectedFeatures; let i = index" class="option-row">
-          <span class="option-name">{{ f.name }}</span>
-          <div class="option-right">
-            <span class="option-price">{{ f.price | number }}LE</span>
-            <div class="qty-ctrl">
-              <button (click)="changeFeature(i, -1)" [disabled]="f.quantity === 0">−</button>
-              <span class="qty-val">{{ f.quantity }}</span>
-              <button (click)="changeFeature(i, 1)" [disabled]="!canIncrement(f)">+</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PRICE section -->
-      <div class="widget-section">
-        <h4 class="widget-label">Price</h4>
-        <div class="price-summary">
-          <div class="s-row">
-            <span>{{ nights }} Night{{ nights !== 1 ? 's' : '' }}</span>
-            <span>{{ basePrice | number }}LE</span>
-          </div>
-          <ng-container *ngFor="let f of selectedFeatures">
-            <div *ngIf="f.quantity > 0" class="s-row">
-              <span>{{ f.name }} × {{ f.quantity }}</span>
-              <span>{{ f.price * f.quantity | number }}LE</span>
-            </div>
+        <!-- FEATURES section -->
+        <div class="widget-section">
+          <h4 class="widget-label">Features</h4>
+          <p *ngIf="totalRoomsSelected === 0" class="features-hint">Select rooms first to add features</p>
+          <ng-container *ngIf="selectedFeatures.length === 0 && totalRoomsSelected > 0">
+            <p class="features-hint">No bookable features for this hotel</p>
           </ng-container>
-          <div class="s-row"><span>Service (5%)</span><span>{{ serviceCharge | number }}LE</span></div>
-          <div class="s-row s-total"><span>Total</span><span>{{ totalAmount | number }}LE</span></div>
+          <div *ngFor="let f of selectedFeatures; let i = index" class="option-row">
+            <span class="option-name">{{ f.name }}</span>
+            <div class="option-right">
+              <span class="option-price">{{ f.price | number }}LE</span>
+              <div class="qty-ctrl">
+                <button (click)="changeFeature(i, -1)" [disabled]="f.quantity === 0">−</button>
+                <span class="qty-val">{{ f.quantity }}</span>
+                <button (click)="changeFeature(i, 1)" [disabled]="!canIncrement(f)">+</button>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <p *ngIf="bookingError" class="booking-error-msg">{{ bookingError }}</p>
-      <button class="btn-book" (click)="bookNow()">Book now</button>
+        <!-- PRICE section -->
+        <div class="widget-section">
+          <h4 class="widget-label">Price</h4>
+          <div class="price-summary">
+            <div class="s-row">
+              <span>{{ nights }} Night{{ nights !== 1 ? 's' : '' }}</span>
+              <span>{{ basePrice | number }}LE</span>
+            </div>
+            <ng-container *ngFor="let f of selectedFeatures">
+              <div *ngIf="f.quantity > 0" class="s-row">
+                <span>{{ f.name }} × {{ f.quantity }}</span>
+                <span>{{ f.price * f.quantity | number }}LE</span>
+              </div>
+            </ng-container>
+            <div class="s-row"><span>Service (5%)</span><span>{{ serviceCharge | number }}LE</span></div>
+            <div class="s-row s-total"><span>Total</span><span>{{ totalAmount | number }}LE</span></div>
+          </div>
+        </div>
+
+        <p *ngIf="bookingError" class="booking-error-msg">{{ bookingError }}</p>
+        <button class="btn-book" (click)="bookNow()">Book now</button>
+
+      </ng-container>
     </div>
 
   </div>
@@ -210,11 +224,10 @@
       <div class="reviews-grid">
         <div *ngFor="let review of reviews" class="review-card" [class.my-review]="isMyReview(review)">
 
-          <!-- Delete button — visible only on the current user's reviews -->
           <button
             *ngIf="isMyReview(review)"
             class="delete-review-btn"
-            (click)="deleteReview(review)"
+            (click)="requestDeleteReview(review)"
             title="Delete your review">
             ✕
           </button>
@@ -234,6 +247,27 @@
           </div>
           <p class="review-comment">{{ review.comment }}</p>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM DELETE DIALOG -->
+  <div class="confirm-overlay" *ngIf="reviewToDelete" (click)="cancelDelete()">
+    <div class="confirm-card" (click)="$event.stopPropagation()">
+      <div class="confirm-icon">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
+          stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/>
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+          <path d="M10 11v6M14 11v6"/>
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        </svg>
+      </div>
+      <p class="confirm-title">Delete Review</p>
+      <p class="confirm-text">Are you sure you want to delete your review? This action cannot be undone.</p>
+      <div class="confirm-actions">
+        <button class="btn-cancel-delete" (click)="cancelDelete()">Cancel</button>
+        <button class="btn-confirm-delete" (click)="confirmDeleteReview()">Delete</button>
       </div>
     </div>
   </div>
