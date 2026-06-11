@@ -31,7 +31,7 @@ export class ManageHotel implements OnInit {
     location:         '',
     status:           'Active' as 'Active' | 'Inactive' | 'Blocked',
     discount:         0,
-    serviceChargePct: 5,
+    serviceChargePct: 0,
   };
 
   roomPrices: HotelRoomPrices = {
@@ -84,7 +84,7 @@ export class ManageHotel implements OnInit {
         location:         h.location,
         status:           (h as any).status ?? 'Active',
         discount:         (h as any).discount ?? 0,
-        serviceChargePct: (h as any).serviceChargePct ?? 5,
+        serviceChargePct: (h as any).serviceChargePct ?? 0,
       };
       if (h.rooms) this.rooms = { ...h.rooms };
 
@@ -289,7 +289,7 @@ export class ManageHotel implements OnInit {
     this.hotel = {
       name: '', rating: '',
       description: '', location: '', status: 'Active',
-      discount: 0, serviceChargePct: 5,
+      discount: 0, serviceChargePct: 0,
     };
     this.roomPrices                = { standard: 0, double: 0, triple: 0, suite: 0 };
     this.rooms                     = { total: 0, single: 0, double: 0, triple: 0, suite: 0 };

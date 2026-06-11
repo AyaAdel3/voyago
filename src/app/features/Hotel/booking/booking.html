@@ -183,6 +183,11 @@
         <div class="breakdown">
           <div class="b-row"><span>Venue Rental</span><span>{{ booking.totalAmount - booking.serviceCharge | number:'1.2-2' }}LE</span></div>
           <div class="b-row"><span>Service Fee</span><span>{{ booking.serviceCharge | number:'1.2-2' }}LE</span></div>
+<!-- أضف السطر ده -->
+<div *ngIf="booking.discount > 0" class="b-row b-discount">
+  <span>Discount ({{ booking.discount }}%)</span>
+  <span>-{{ booking.totalAmount * booking.discount / (100 - booking.discount) | number:'1.2-2' }}LE</span>
+</div>
           <div class="b-row b-total">
             <span>Total Amount</span>
             <span class="total-num">{{ booking.totalAmount | number:'1.2-2' }}LE</span>
