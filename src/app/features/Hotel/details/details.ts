@@ -39,6 +39,7 @@ export class Details implements OnInit {
   totalAmount    = 0;
   bookingError   = '';
 
+  // ✅ false من الأول — مش بيظهر غير لما يتفاعل
   showLoginPrompt = false;
   reviewToDelete: Review | null = null;
 
@@ -119,6 +120,22 @@ export class Details implements OnInit {
     this.authModal.openLogin();
   }
 
+  // ✅ بيظهر الـ prompt بس لما اليوزر يتفاعل وهو مش مسجل
+  checkAuthBeforeInteract(): boolean {
+    if (this.authService.isAdmin()) {
+      this.authService.logout();
+      this.showLoginPrompt = true;
+      this.cdr.detectChanges();
+      return false;
+    }
+    if (!this.authService.isLoggedIn()) {
+      this.showLoginPrompt = true;
+      this.cdr.detectChanges();
+      return false;
+    }
+    return true;
+  }
+
   // ── Computed ──────────────────────────────────────────
 
   get totalRoomsSelected(): number {
@@ -165,13 +182,11 @@ export class Details implements OnInit {
     this.basePrice = hasDate ? roomsCost * this.nights : 0;
     const subtotal = this.basePrice + (hasDate ? featuresCost : 0);
 
-    // Service charge — dynamic from hotel (0 means no service charge)
     const svcPct          = this.hotelServiceChargePct;
     this.serviceCharge    = hasDate && svcPct > 0
       ? Math.round(subtotal * (svcPct / 100))
       : 0;
 
-    // Discount
     const discountPct    = this.hotelDiscount;
     this.discountAmount  = hasDate && discountPct > 0
       ? Math.round(subtotal * (discountPct / 100))
@@ -185,6 +200,8 @@ export class Details implements OnInit {
   // ── Rooms ─────────────────────────────────────────────
 
   changeRoom(i: number, delta: number): void {
+    if (!this.checkAuthBeforeInteract()) return;
+
     this.selectedRooms[i].quantity = Math.max(0, this.selectedRooms[i].quantity + delta);
     const max = this.totalRoomsSelected;
 
@@ -216,11 +233,25 @@ export class Details implements OnInit {
   }
 
   changeFeature(i: number, delta: number): void {
+    if (!this.checkAuthBeforeInteract()) return;
+
     const f      = this.selectedFeatures[i];
     const newVal = f.quantity + delta;
     if (newVal < 0) return;
     if (delta > 0 && !this.canIncrement(f)) return;
     f.quantity = newVal;
+    this.recalc();
+  }
+
+  // ── Dates ─────────────────────────────────────────────
+
+  onDateChange(): void {
+    if (!this.checkAuthBeforeInteract()) {
+      this.checkIn  = '';
+      this.checkOut = '';
+      return;
+    }
+    if (this.canClearError()) this.bookingError = '';
     this.recalc();
   }
 
@@ -234,24 +265,8 @@ export class Details implements OnInit {
     );
   }
 
-  onDateChange(): void {
-    if (this.canClearError()) this.bookingError = '';
-    this.recalc();
-  }
-
   bookNow(): void {
-    if (this.authService.isAdmin()) {
-      this.authService.logout();
-      this.showLoginPrompt = true;
-      this.cdr.detectChanges();
-      return;
-    }
-
-    if (!this.authService.isLoggedIn()) {
-      this.showLoginPrompt = true;
-      this.cdr.detectChanges();
-      return;
-    }
+    if (!this.checkAuthBeforeInteract()) return;
 
     const selectedRooms = this.selectedRooms.filter(r => r.quantity > 0);
     if (selectedRooms.length === 0)                         { this.bookingError = 'Please select at least one room to continue.'; return; }

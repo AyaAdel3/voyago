@@ -120,7 +120,7 @@
     <!-- RIGHT: Booking Widget -->
     <div class="booking-widget">
 
-      <!-- Login Prompt -->
+      <!-- ✅ Login Prompt — بيظهر بس لما يتفاعل مع الـ widget وهو مش مسجل -->
       <div class="login-prompt-res" *ngIf="showLoginPrompt">
         <div class="login-prompt-icon">🔒</div>
         <p class="login-prompt-title">Sign in required</p>
@@ -129,7 +129,7 @@
         <button class="btn-dismiss" (click)="showLoginPrompt = false">Cancel</button>
       </div>
 
-      <!-- Booking Form -->
+      <!-- ✅ Booking Form — بيظهر دايماً إلا لو الـ login prompt شغال -->
       <ng-container *ngIf="!showLoginPrompt">
 
         <!-- Dates -->
@@ -205,13 +205,11 @@
               </div>
             </ng-container>
 
-            <!-- Service Charge — only shown if hotel has service charge > 0 -->
             <div class="s-row" *ngIf="hotelServiceChargePct > 0">
               <span>Service ({{ hotelServiceChargePct }}%)</span>
               <span>{{ serviceCharge | number }}LE</span>
             </div>
 
-            <!-- Discount — only shown if hotel has discount > 0 -->
             <div class="s-row s-discount" *ngIf="hotelDiscount > 0">
               <span>Discount ({{ hotelDiscount }}%)</span>
               <span>-{{ discountAmount | number }}LE</span>

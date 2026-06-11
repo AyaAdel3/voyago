@@ -59,8 +59,45 @@ export class Details implements OnInit {
     return new Date().toISOString().split('T')[0];
   }
 
-  incrementDays(): void { this.days++; }
-  decrementDays(): void { if (this.days > 1) this.days--; }
+  // ✅ تحقق Auth قبل أي تفاعل
+  private checkAuthBeforeInteract(): boolean {
+    if (this.authService.isAdmin()) {
+      this.authService.logout();
+      this.showLoginPrompt = true;
+      this.cdr.detectChanges();
+      return false;
+    }
+    if (!this.authService.isLoggedIn()) {
+      this.showLoginPrompt = true;
+      this.cdr.detectChanges();
+      return false;
+    }
+    return true;
+  }
+
+  // ✅ لما يغير الـ date
+  onDateChange(): void {
+    if (!this.checkAuthBeforeInteract()) {
+      this.selectedDate = '';
+      return;
+    }
+    this.errorMessage = '';
+  }
+
+  // ✅ لما يضغط +
+  incrementDays(): void {
+    if (!this.checkAuthBeforeInteract()) return;
+    this.days++;
+    this.errorMessage = '';
+  }
+
+  // ✅ لما يضغط −
+  decrementDays(): void {
+    if (!this.checkAuthBeforeInteract()) return;
+    if (this.days > 1) this.days--;
+    this.errorMessage = '';
+  }
+
   onClose(): void { this.closeDetails.emit(); }
 
   goToLogin(): void {
@@ -78,34 +115,18 @@ export class Details implements OnInit {
   }
 
   onBookNow(): void {
-    this.errorMessage    = '';
-    this.showLoginPrompt = false;
-
-    // ✅ لو admin → logout وعامله كـ guest
-    if (this.authService.isAdmin()) {
-      this.authService.logout();
-      this.showLoginPrompt = true;
-      this.cdr.detectChanges();
-      return;
-    }
-
-    // ✅ لو مش logged in → عرض login prompt
-    if (!this.authService.isLoggedIn()) {
-      this.showLoginPrompt = true;
-      this.cdr.detectChanges();
-      return;
-    }
+    if (!this.checkAuthBeforeInteract()) return;
 
     if (!this.selectedDate) { this.errorMessage = 'Please select a date.'; return; }
     if (this.days < 1)      { this.errorMessage = 'Duration must be at least 1 day.'; return; }
 
-    this.isLoading = true;
+    this.errorMessage = '';
+    this.isLoading    = true;
 
     this.tourGuideService.bookGuide(this.guide.id, this.selectedDate, this.days).subscribe({
       next: (res) => {
         this.isLoading = false;
         this.cdr.detectChanges();
-
         this.closeDetails.emit();
         this.router.navigate(['/tour-guide/booking'], {
           state: {
