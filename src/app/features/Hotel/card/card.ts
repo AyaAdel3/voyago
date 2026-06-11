@@ -14,7 +14,7 @@ import { FavoritesService } from '../../../core/services/favorites.service';
 })
 export class Card implements OnInit {
   hotels: Hotel[] = [];
-  loading = true;
+  loading = false;
 
   constructor(
     public hotelService: HotelService,
@@ -24,6 +24,8 @@ export class Card implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.loading = true;
+
     this.hotelService.getHotels().subscribe({
       next: (data) => {
         this.hotels = data;
@@ -56,7 +58,7 @@ export class Card implements OnInit {
         image: hotel.images[0],
         price: hotel.pricePerNight + 'le for 1 night',
         rating: hotel.rating,
-        type: 'hotel'
+        type: 'hotel',
       });
     }
   }

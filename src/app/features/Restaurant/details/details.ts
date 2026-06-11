@@ -3,8 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  Restaurant, RestaurantReview, TableType, ReservationData,
-  AVAILABLE_TIMES, Feature,
+  Restaurant,
+  RestaurantReview,
+  TableType,
+  ReservationData,
+  AVAILABLE_TIMES,
+  Feature,
 } from '../../../core/model/restaurant.model';
 import { RestaurantService } from '../../../core/services/resturant.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -18,39 +22,41 @@ import { AuthModalService } from '../../../core/services/auth-modal.service';
   styleUrl: './details.css',
 })
 export class Details implements OnInit {
+
   restaurant!: Restaurant;
   reviews: RestaurantReview[] = [];
-  loading = true;
-  error   = false;
 
-  selectedDate    = '';
+  loading = true;
+  error = false;
+
+  selectedDate = '';
   selectedTables: TableType[] = [];
-  guestName       = '';
-  phone           = '';
-  resError        = '';
+  guestName = '';
+  phone = '';
+  resError = '';
 
   showLoginPrompt = false;
   reviewToDelete: RestaurantReview | null = null;
 
-  todayStr       = new Date().toISOString().split('T')[0];
+  todayStr = new Date().toISOString().split('T')[0];
   availableTimes = AVAILABLE_TIMES;
 
   newComment = '';
-  newRating  = 0;
+  newRating = 0;
 
   isSubmittingReview = false;
 
-  activeImage  = 0;
+  activeImage = 0;
   lightboxOpen = false;
-  lbIndex      = 0;
+  lbIndex = 0;
 
   constructor(
-    private route:             ActivatedRoute,
-    public  router:            Router,
+    private route: ActivatedRoute,
+    public router: Router,
     private restaurantService: RestaurantService,
-    private authService:       AuthService,
-    private authModal:         AuthModalService,
-    private cdr:               ChangeDetectorRef,
+    private authService: AuthService,
+    private authModal: AuthModalService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   @HostListener('document:keydown', ['$event'])
@@ -68,12 +74,17 @@ export class Details implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
+
       const id = +params['id'];
-      if (!id || isNaN(id)) { this.router.navigate(['/Restaurants']); return; }
-      this.loading    = true;
-      this.error      = false;
-      this.restaurant = null!;
-      this.cdr.detectChanges();
+
+      if (!id || isNaN(id)) {
+        this.router.navigate(['/Restaurants']);
+        return;
+      }
+
+      this.loading = true;
+      this.error = false;
+
       this.loadRestaurant(id);
     });
   }
@@ -81,14 +92,28 @@ export class Details implements OnInit {
   private loadRestaurant(id: number): void {
     this.restaurantService.getRestaurantById(id).subscribe({
       next: (r: Restaurant | undefined) => {
-        if (!r) { this.router.navigate(['/Restaurants']); return; }
-        this.restaurant     = r;
+
+        if (!r) {
+          this.router.navigate(['/Restaurants']);
+          return;
+        }
+
+        this.restaurant = r;
         this.selectedTables = this.restaurantService.getDefaultTables();
-        this.loading        = false;
-        this.cdr.detectChanges();
+
         this.loadReviews(id);
+
+        this.loading = false;
+        this.error = false;
+
+        this.cdr.detectChanges();
       },
-      error: () => { this.loading = false; this.error = true; this.cdr.detectChanges(); }
+
+      error: () => {
+        this.loading = false;
+        this.error = true;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -118,27 +143,58 @@ export class Details implements OnInit {
     return `${this.restaurant.minPrice}-${this.restaurant.maxPrice} LE`;
   }
 
-  setActiveImage(i: number): void { this.activeImage = i; }
-  openLightbox(i: number): void   { this.lbIndex = i; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; }
-  closeLightbox(): void           { this.lightboxOpen = false; document.body.style.overflow = ''; }
-  lbPrev(): void { if (this.lbIndex > 0) this.lbIndex--; }
-  lbNext(): void { if (this.lbIndex < this.restaurant.images.length - 1) this.lbIndex++; }
+  setActiveImage(i: number): void {
+    this.activeImage = i;
+  }
+
+  openLightbox(i: number): void {
+    this.lbIndex = i;
+    this.lightboxOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeLightbox(): void {
+    this.lightboxOpen = false;
+    document.body.style.overflow = '';
+  }
+
+  lbPrev(): void {
+    if (this.lbIndex > 0) this.lbIndex--;
+  }
+
+  lbNext(): void {
+    if (this.lbIndex < this.restaurant.images.length - 1) this.lbIndex++;
+  }
 
   changeTable(i: number, delta: number): void {
-    this.selectedTables[i].quantity = Math.max(0, this.selectedTables[i].quantity + delta);
+    this.selectedTables[i].quantity = Math.max(
+      0,
+      this.selectedTables[i].quantity + delta
+    );
+
     if (this.resError) this.tryCleanError();
   }
 
   private tryCleanError(): void {
-    if (this.selectedDate && this.guestName.trim() && this.phone.trim()) this.resError = '';
+    if (
+      this.selectedDate &&
+      this.guestName.trim() &&
+      this.phone.trim()
+    ) {
+      this.resError = '';
+    }
   }
 
   formatPhone(): void {
     this.phone = this.phone.replace(/\D/g, '').substring(0, 11);
-    if (this.resError) this.tryCleanError();
+
+    if (this.resError) {
+      this.tryCleanError();
+    }
   }
 
   makeReservation(): void {
+
     if (this.authService.isAdmin()) {
       this.authService.logout();
       this.showLoginPrompt = true;
@@ -153,68 +209,113 @@ export class Details implements OnInit {
     }
 
     if ((this.restaurant as any).status === 'Inactive') {
-      this.resError = 'This restaurant is currently not available for reservations.';
+      this.resError =
+        'This restaurant is currently not available for reservations.';
       return;
     }
-    if (!this.selectedDate)     { this.resError = 'Please select a date.'; return; }
-    if (!this.guestName.trim()) { this.resError = 'Please enter your name.'; return; }
-    if (!this.phone.trim())     { this.resError = 'Please enter your phone number.'; return; }
+
+    if (!this.selectedDate) {
+      this.resError = 'Please select a date.';
+      return;
+    }
+
+    if (!this.guestName.trim()) {
+      this.resError = 'Please enter your name.';
+      return;
+    }
+
+    if (!this.phone.trim()) {
+      this.resError = 'Please enter your phone number.';
+      return;
+    }
 
     const validPrefixes = ['010', '011', '012', '015'];
-    const cleanPhone    = this.phone.replace(/\D/g, '');
-    if (cleanPhone.length !== 11 || !validPrefixes.some(p => cleanPhone.startsWith(p))) {
-      this.resError = 'Please enter a valid Egyptian number (010, 011, 012, 015).';
+    const cleanPhone = this.phone.replace(/\D/g, '');
+
+    if (
+      cleanPhone.length !== 11 ||
+      !validPrefixes.some(p => cleanPhone.startsWith(p))
+    ) {
+      this.resError =
+        'Please enter a valid Egyptian number (010, 011, 012, 015).';
       return;
     }
 
     this.resError = '';
 
     const data: ReservationData = {
-      restaurantId:      this.restaurant.id,
-      restaurantName:    this.restaurant.name,
+      restaurantId: this.restaurant.id,
+      restaurantName: this.restaurant.name,
       restaurantAddress: this.restaurant.location,
-      date:              this.selectedDate,
-      time:              '',
-      guestCount:        0,
-      tables:            this.selectedTables.filter(t => t.quantity > 0),
-      guestName:         this.guestName,
-      phone:             cleanPhone,
-      totalAmount:       0,
+      date: this.selectedDate,
+      time: '',
+      guestCount: 0,
+      tables: this.selectedTables.filter(t => t.quantity > 0),
+      guestName: this.guestName,
+      phone: cleanPhone,
+      totalAmount: 0,
     };
 
     this.restaurantService.setReservation(data);
-    this.router.navigate(['/restaurant/reservation', this.restaurant.id]);
+
+    this.router.navigate([
+      '/restaurant/reservation',
+      this.restaurant.id,
+    ]);
   }
 
   isMyReview(review: RestaurantReview): boolean {
     const fullName = this.authService.getFullName()?.trim();
-    return !!fullName && review.userName?.trim() === fullName;
+
+    return !!fullName &&
+      review.userName?.trim() === fullName;
   }
 
   submitReview(): void {
+
     if (!this.authService.isLoggedIn()) {
       this.authModal.openLogin();
       return;
     }
-    if (!this.newComment.trim() || this.newRating === 0) return;
+
+    if (!this.newComment.trim() || this.newRating === 0) {
+      return;
+    }
 
     if (this.isSubmittingReview) return;
+
     this.isSubmittingReview = true;
 
-    this.restaurantService.submitReview(this.restaurant.id, this.newComment, this.newRating).subscribe({
-      next: (review: RestaurantReview) => {
-        const myReview  = { ...review, userName: this.authService.getFullName()?.trim() || review.userName };
-        this.reviews    = [myReview, ...this.reviews];
-        this.newComment = '';
-        this.newRating  = 0;
-        this.isSubmittingReview = false;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.isSubmittingReview = false;
-        this.cdr.detectChanges();
-      },
-    });
+    this.restaurantService
+      .submitReview(
+        this.restaurant.id,
+        this.newComment,
+        this.newRating
+      )
+      .subscribe({
+        next: (review: RestaurantReview) => {
+
+          const myReview = {
+            ...review,
+            userName:
+              this.authService.getFullName()?.trim() ||
+              review.userName,
+          };
+
+          this.reviews = [myReview, ...this.reviews];
+
+          this.newComment = '';
+          this.newRating = 0;
+          this.isSubmittingReview = false;
+
+          this.cdr.detectChanges();
+        },
+
+        error: () => {
+          this.isSubmittingReview = false;
+          this.cdr.detectChanges();
+        },
+      });
   }
 
   requestDeleteReview(review: RestaurantReview): void {
@@ -226,29 +327,59 @@ export class Details implements OnInit {
   }
 
   confirmDeleteReview(): void {
+
     if (!this.reviewToDelete) return;
+
     const id = (this.reviewToDelete as any).id;
+
     this.restaurantService.deleteReview?.(id);
-    this.reviews        = this.reviews.filter(r => r !== this.reviewToDelete);
+
+    this.reviews = this.reviews.filter(
+      r => r !== this.reviewToDelete
+    );
+
     this.reviewToDelete = null;
+
     this.cdr.detectChanges();
   }
 
-  starsArray(n: number): number[] { return Array(n).fill(0); }
+  starsArray(n: number): number[] {
+    return Array(n).fill(0);
+  }
 
   formatDate(dateStr: string): string {
+
     if (!dateStr) return '';
-    const d      = new Date(dateStr);
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    const day    = d.getDate();
-    const suffix = day===1||day===21||day===31 ? 'st' : day===2||day===22 ? 'nd' : day===3||day===23 ? 'rd' : 'th';
+
+    const d = new Date(dateStr);
+
+    const months = [
+      'Jan','Feb','Mar','Apr','May','Jun',
+      'Jul','Aug','Sep','Oct','Nov','Dec'
+    ];
+
+    const day = d.getDate();
+
+    const suffix =
+      day === 1 || day === 21 || day === 31 ? 'st'
+      : day === 2 || day === 22 ? 'nd'
+      : day === 3 || day === 23 ? 'rd'
+      : 'th';
+
     return `${months[d.getMonth()]} ${day}${suffix}, ${d.getFullYear()}`;
   }
 
   formatReviewDate(dateStr: string): string {
+
     if (!dateStr) return '';
-    const d      = new Date(dateStr);
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    const d = new Date(dateStr);
+
+    const months = [
+      'Jan','Feb','Mar','Apr','May','Jun',
+      'Jul','Aug','Sep','Oct','Nov','Dec'
+    ];
+
     return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
   }
 }

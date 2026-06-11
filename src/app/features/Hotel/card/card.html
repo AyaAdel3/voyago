@@ -1,22 +1,15 @@
 <div class="hotelpage bg-[#021526]">
+  <!-- Loading -->
   <div *ngIf="loading" class="loading-wrap">
-    <div class="spinner"></div>
-    <p>Finding the best hotels for you…</p>
+    <p class="text-white text-xl">Loading...</p>
   </div>
 
+  <!-- Hotels -->
   <div *ngIf="!loading" class="hotels-page">
-    <div
-      *ngFor="let hotel of hotels"
-      class="hotel-card"
-      (click)="goToDetails(hotel.id)"
-    >
+    <div *ngFor="let hotel of hotels" class="hotel-card" (click)="goToDetails(hotel.id)">
       <div class="card-img-wrap">
-        <img
-          [src]="hotel.images[0]"
-          [alt]="hotel.name"
-          class="card-img"
-          loading="lazy"
-        />
+        <img [src]="hotel.images[0]" [alt]="hotel.name" class="card-img" loading="lazy" />
+
         <button
           class="fav-btn"
           [class.active]="isHotelInFav(hotel.name)"
@@ -41,25 +34,29 @@
         <div class="card-header gap-[3px]">
           <div>
             <h3 class="hotel-name">{{ hotel.name }}</h3>
-            <p class="hotel-price font-medium">
-              {{ hotel.pricePerNight | number }}LE / night
-            </p>
+
+            <p class="hotel-price font-medium">{{ hotel.pricePerNight | number }} LE / night</p>
           </div>
+
           <div class="rating-badge">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="#021526">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21
+                   12 17.77 5.82 21 7 14.14l-5-4.87
+                   6.91-1.01L12 2z"
+              />
             </svg>
+
             <span>{{ hotel.rating }}</span>
           </div>
         </div>
 
-        <p class="hotel-desc font-normal">{{ hotel.description }}</p>
+        <p class="hotel-desc font-normal">
+          {{ hotel.description }}
+        </p>
 
         <div class="card-footer">
-          <button
-            class="btn-show"
-            (click)="goToDetails(hotel.id); $event.stopPropagation()"
-          >
+          <button class="btn-show" (click)="goToDetails(hotel.id); $event.stopPropagation()">
             Show hotel
           </button>
         </div>

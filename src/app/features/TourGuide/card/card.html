@@ -1,11 +1,22 @@
 <div class="guidepage bg-[#021526]">
+  <div *ngIf="loading" class="flex justify-center items-center min-h-screen">
+    <p class="text-white text-xl">Loading...</p>
+  </div>
 
   <div *ngIf="error" class="error-wrap">
     <p>{{ error }}</p>
   </div>
 
+  <div *ngIf="!loading && !error" class="guides-page">
+    <p>{{ error }}</p>
+  </div>
+
   <div *ngIf="!error" class="guides-page">
-    <div *ngFor="let guide of guides; trackBy: trackById" class="guide-card" (click)="openDetails(guide)">
+    <div
+      *ngFor="let guide of guides; trackBy: trackById"
+      class="guide-card"
+      (click)="openDetails(guide)"
+    >
       <div class="card-img-wrap">
         <img
           [src]="guide.image"
@@ -42,7 +53,9 @@
           </div>
           <div class="rating-badge me-2">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="#021526">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z" />
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
+              />
             </svg>
             <span>{{ guide.rating }}</span>
           </div>

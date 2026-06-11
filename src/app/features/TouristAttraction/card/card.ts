@@ -1,10 +1,20 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { timeout, finalize } from 'rxjs/operators';
+
 import { FavoritesService } from '../../../core/services/favorites.service';
-import { AttractionService, Attraction } from '../../../core/services/attraction.service';
+import {
+  AttractionService,
+  Attraction
+} from '../../../core/services/attraction.service';
 
 export type { Attraction };
 
@@ -16,34 +26,52 @@ export type { Attraction };
   styleUrls: ['./card.css']
 })
 export class TouristAttractionCard implements OnInit, OnDestroy {
+
   attractions: Attraction[] = [];
   isLoading = true;
   error: string | null = null;
 
-  fallbackImage = 'https://images.unsplash.com/photo-1568322445389-f64ac2515020?w=800&h=500&fit=crop';
+  fallbackImage =
+    'https://images.unsplash.com/photo-1568322445389-f64ac2515020?w=800&h=500&fit=crop';
 
   private sub!: Subscription;
 
   constructor(
     private router: Router,
     private favoritesService: FavoritesService,
-    private attractionService: AttractionService
+    private attractionService: AttractionService,
+    private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+
+    this.isLoading = true;
+
     this.sub = this.attractionService.getAll().pipe(
       timeout(8000),
       finalize(() => {
         this.isLoading = false;
+        this.cdr.detectChanges();
       })
     ).subscribe({
       next: (data) => {
+
         this.attractions = data;
-        // preload كل الـ details في الخلفية بعد ما الـ cards تتحمل
-        data.forEach(a => this.attractionService.getById(a.id).subscribe());
+
+        data.forEach(a => {
+          this.attractionService.getById(a.id).subscribe();
+        });
+
+        this.cdr.detectChanges();
       },
+
       error: (err) => {
+
         console.error('Error fetching attractions:', err);
+
+        this.error = 'Failed to load attractions. Please try again.';
+
+        this.cdr.detectChanges();
       }
     });
   }
@@ -60,11 +88,16 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
     return this.favoritesService.isFavorite(name);
   }
 
-  toggleFavorite(event: Event, attraction: Attraction) {
+  toggleFavorite(event: Event, attraction: Attraction): void {
+
     event.stopPropagation();
+
     if (this.isFavorite(attraction.name)) {
+
       this.favoritesService.removeFavorite(attraction.name);
+
     } else {
+
       this.favoritesService.addToFavorites({
         title: attraction.name,
         image: this.getImage(attraction),
@@ -72,10 +105,11 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
         rating: attraction.rating,
         type: 'attraction'
       });
+
     }
   }
 
-  goToDetails(id: number) {
+  goToDetails(id: number): void {
     this.router.navigate(['/tourist-attraction/details', id]);
   }
 }
