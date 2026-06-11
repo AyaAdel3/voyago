@@ -35,6 +35,7 @@ export class Details implements OnInit {
   selectedFeatures: HotelFeature[] = [];
   basePrice      = 0;
   serviceCharge  = 0;
+  discountAmount = 0;
   totalAmount    = 0;
   bookingError   = '';
 
@@ -130,6 +131,14 @@ export class Details implements OnInit {
       .reduce((s, f) => s + f.quantity, 0);
   }
 
+  get hotelDiscount(): number {
+    return this.hotel?.discount ?? 0;
+  }
+
+  get hotelServiceChargePct(): number {
+    return this.hotel?.serviceChargePct ?? 0;
+  }
+
   private isBoard(f: HotelFeature): boolean {
     return BOARD_FEATURE_NAMES.includes(f.name);
   }
@@ -153,10 +162,24 @@ export class Details implements OnInit {
     const roomsCost    = this.selectedRooms.reduce((s, r) => s + r.price * r.quantity, 0);
     const featuresCost = this.selectedFeatures.reduce((s, f) => s + f.price * f.quantity, 0);
 
-    this.basePrice     = hasDate ? roomsCost * this.nights : 0;
-    const subtotal     = this.basePrice + (hasDate ? featuresCost : 0);
-    this.serviceCharge = hasDate ? Math.round(subtotal * 0.05) : 0;
-    this.totalAmount   = hasDate ? subtotal + this.serviceCharge : 0;
+    this.basePrice = hasDate ? roomsCost * this.nights : 0;
+    const subtotal = this.basePrice + (hasDate ? featuresCost : 0);
+
+    // Service charge — dynamic from hotel (0 means no service charge)
+    const svcPct          = this.hotelServiceChargePct;
+    this.serviceCharge    = hasDate && svcPct > 0
+      ? Math.round(subtotal * (svcPct / 100))
+      : 0;
+
+    // Discount
+    const discountPct    = this.hotelDiscount;
+    this.discountAmount  = hasDate && discountPct > 0
+      ? Math.round(subtotal * (discountPct / 100))
+      : 0;
+
+    this.totalAmount = hasDate
+      ? subtotal + this.serviceCharge - this.discountAmount
+      : 0;
   }
 
   // ── Rooms ─────────────────────────────────────────────
@@ -217,7 +240,6 @@ export class Details implements OnInit {
   }
 
   bookNow(): void {
-    // Admin → logout وسيبه كـ guest
     if (this.authService.isAdmin()) {
       this.authService.logout();
       this.showLoginPrompt = true;
@@ -225,7 +247,6 @@ export class Details implements OnInit {
       return;
     }
 
-    // غير logged in → prompt
     if (!this.authService.isLoggedIn()) {
       this.showLoginPrompt = true;
       this.cdr.detectChanges();
@@ -242,7 +263,7 @@ export class Details implements OnInit {
       hotelId: this.hotel.id, hotelName: this.hotel.name,
       checkIn: this.checkIn,  checkOut: this.checkOut,
       rooms: selectedRooms,   features: this.selectedFeatures,
-      totalNights: this.nights, discount: 0,
+      totalNights: this.nights, discount: this.hotelDiscount,
       serviceCharge: this.serviceCharge, totalAmount: this.totalAmount,
     };
     this.hotelService.setBooking(bookingData);
@@ -252,13 +273,11 @@ export class Details implements OnInit {
   // ── Reviews ───────────────────────────────────────────
 
   isMyReview(review: Review): boolean {
-  // الهوتل سيرفيس بيحط 'You' للريفيوهات الجديدة
-  if (review.userName === 'You') return true;
-  
-  // fallback: قارن بالاسم الحقيقي لو الـ service اتغير
-  const fullName = this.authService.getFullName()?.trim();
-  return !!fullName && review.userName?.trim() === fullName;
-}
+    if (review.userName === 'You') return true;
+    const fullName = this.authService.getFullName()?.trim();
+    return !!fullName && review.userName?.trim() === fullName;
+  }
+
   submitReview(): void {
     if (!this.authService.isLoggedIn()) {
       this.authModal.openLogin();

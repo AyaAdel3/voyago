@@ -25,20 +25,21 @@ export class ManageHotel implements OnInit {
   toastVisible = false;
 
   hotel = {
-    name:          '',
-    rating:        '',
-    description:   '',
-    location:      '',
-    status:        'Active' as 'Active' | 'Inactive' | 'Blocked',
+    name:             '',
+    rating:           '',
+    description:      '',
+    location:         '',
+    status:           'Active' as 'Active' | 'Inactive' | 'Blocked',
+    discount:         0,
+    serviceChargePct: 5,
   };
 
-  // ✅ أسعار الغرف — الأدمن بيدخلهم يدوياً
-roomPrices: HotelRoomPrices = {
-  standard: 0,
-  double:   0,
-  triple:   0,
-  suite:    0,
-};
+  roomPrices: HotelRoomPrices = {
+    standard: 0,
+    double:   0,
+    triple:   0,
+    suite:    0,
+  };
 
   rooms: HotelRooms = { total: 0, single: 0, double: 0, triple: 0, suite: 0 };
 
@@ -77,19 +78,19 @@ roomPrices: HotelRoomPrices = {
 
       this.images = [...h.images];
       this.hotel  = {
-        name:          h.name,
-        rating:        h.rating.toString(),
-        description:   h.description,
-        location:      h.location,
-        status:        (h as any).status ?? 'Active',
+        name:             h.name,
+        rating:           h.rating.toString(),
+        description:      h.description,
+        location:         h.location,
+        status:           (h as any).status ?? 'Active',
+        discount:         (h as any).discount ?? 0,
+        serviceChargePct: (h as any).serviceChargePct ?? 5,
       };
       if (h.rooms) this.rooms = { ...h.rooms };
 
-      // ✅ تحميل أسعار الغرف — لو موجودة في الهوتيل
       if (h.roomPrices) {
         this.roomPrices = { ...h.roomPrices };
       } else {
-        // fallback من pricePerNight القديم
         this.roomPrices = {
           standard: h.pricePerNight,
           double:   Math.round(h.pricePerNight * 1.5),
@@ -98,19 +99,16 @@ roomPrices: HotelRoomPrices = {
         };
       }
 
-      // Display feature IDs
       this.selectedDisplayFeatureIds = h.displayFeatureIds
         ? [...h.displayFeatureIds]
         : [];
 
-      // Fixed booking features
       const hotelBookingFeatures = h.bookingFeatures ?? [];
       this.fixedBookingFeatures = FIXED_BOOKING_FEATURE_NAMES.map(name => {
         const found = hotelBookingFeatures.find(f => f.name === name);
         return found ? { ...found } : { name, price: 0 };
       });
 
-      // Extra
       this.extraBookingFeatures = hotelBookingFeatures
         .filter(f => !FIXED_BOOKING_FEATURE_NAMES.includes(f.name))
         .map(f => ({ ...f }));
@@ -224,6 +222,9 @@ roomPrices: HotelRoomPrices = {
       return;
     }
 
+    const discount         = Math.min(100, Math.max(0, this.hotel.discount         ?? 0));
+    const serviceChargePct = Math.min(100, Math.max(0, this.hotel.serviceChargePct ?? 0));
+
     const displayFeatures: HotelDisplayFeature[] = this.availableDisplayFeatures
       .filter(f => this.selectedDisplayFeatureIds.includes(f.id))
       .map(f => ({ icon: f.icon, name: f.name }));
@@ -233,7 +234,6 @@ roomPrices: HotelRoomPrices = {
       ...this.extraBookingFeatures,
     ];
 
-    // ✅ pricePerNight دايما = سعر الـ Standard
     const pricePerNight = this.roomPrices.standard;
 
     if (this.isEdit && this.hotelId !== null) {
@@ -242,13 +242,15 @@ roomPrices: HotelRoomPrices = {
         const updated: Hotel = {
           ...existing,
           name:               this.hotel.name,
-          pricePerNight,                          // ✅ = standard price
+          pricePerNight,
           roomPrices:         { ...this.roomPrices },
           rating:             +this.hotel.rating,
           description:        this.hotel.description,
           location:           this.hotel.location,
           images:             [...this.images],
           status:             this.hotel.status,
+          discount,
+          serviceChargePct,
           rooms:              { ...this.rooms },
           displayFeatureIds:  [...this.selectedDisplayFeatureIds],
           displayFeatures,
@@ -262,7 +264,7 @@ roomPrices: HotelRoomPrices = {
       const newHotel: Hotel = {
         id:                Date.now(),
         name:              this.hotel.name,
-        pricePerNight,                            // ✅ = standard price
+        pricePerNight,
         roomPrices:        { ...this.roomPrices },
         stars:             0,
         rating:            +this.hotel.rating,
@@ -271,6 +273,8 @@ roomPrices: HotelRoomPrices = {
         images:            [...this.images],
         amenities:         [],
         status:            this.hotel.status,
+        discount,
+        serviceChargePct,
         rooms:             { ...this.rooms },
         displayFeatureIds: [...this.selectedDisplayFeatureIds],
         displayFeatures,
@@ -285,6 +289,7 @@ roomPrices: HotelRoomPrices = {
     this.hotel = {
       name: '', rating: '',
       description: '', location: '', status: 'Active',
+      discount: 0, serviceChargePct: 5,
     };
     this.roomPrices                = { standard: 0, double: 0, triple: 0, suite: 0 };
     this.rooms                     = { total: 0, single: 0, double: 0, triple: 0, suite: 0 };

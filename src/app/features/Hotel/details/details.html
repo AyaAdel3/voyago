@@ -204,7 +204,19 @@
                 <span>{{ f.price * f.quantity | number }}LE</span>
               </div>
             </ng-container>
-            <div class="s-row"><span>Service (5%)</span><span>{{ serviceCharge | number }}LE</span></div>
+
+            <!-- Service Charge — only shown if hotel has service charge > 0 -->
+            <div class="s-row" *ngIf="hotelServiceChargePct > 0">
+              <span>Service ({{ hotelServiceChargePct }}%)</span>
+              <span>{{ serviceCharge | number }}LE</span>
+            </div>
+
+            <!-- Discount — only shown if hotel has discount > 0 -->
+            <div class="s-row s-discount" *ngIf="hotelDiscount > 0">
+              <span>Discount ({{ hotelDiscount }}%)</span>
+              <span>-{{ discountAmount | number }}LE</span>
+            </div>
+
             <div class="s-row s-total"><span>Total</span><span>{{ totalAmount | number }}LE</span></div>
           </div>
         </div>

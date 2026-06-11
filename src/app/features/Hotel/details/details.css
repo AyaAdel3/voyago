@@ -876,3 +876,7 @@
   }
   .btn-submit { width: 100%; text-align: center; }
 }
+.s-discount {
+  color: #173b64;
+  font-weight: 600;
+}

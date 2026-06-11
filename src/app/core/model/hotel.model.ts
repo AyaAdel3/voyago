@@ -36,8 +36,10 @@ export interface Hotel {
   amenities: string[];
   stars: number;
   status?: 'Active' | 'Inactive' | 'Blocked';
+  discount?: number;          // 0-100 percentage, 0 = no discount
+  serviceChargePct?: number;  // 0-100 percentage, 0 = no service charge
   rooms?: HotelRooms;
-  roomPrices?: HotelRoomPrices;          // ✅ الجديد — أسعار كل نوع غرفة
+  roomPrices?: HotelRoomPrices;
   displayFeatures?: HotelDisplayFeature[];
   displayFeatureIds?: number[];
   bookingFeatures?: BookingFeatureDef[];
@@ -116,7 +118,6 @@ export const MOCK_DISPLAY_FEATURES: HotelFeatureDef[] = [
   { id: 9, name: 'Private Pool',     icon: '🏊', price: 0 },
 ];
 
-// ✅ بيبني الـ RoomType[] من الأسعار المحددة يدوياً
 export function buildDefaultRooms(roomPrices: HotelRoomPrices): RoomType[] {
   return [
     { type: 'Standard', price: roomPrices.standard, quantity: 0 },
@@ -126,7 +127,6 @@ export function buildDefaultRooms(roomPrices: HotelRoomPrices): RoomType[] {
   ];
 }
 
-// ✅ Default fallback prices
 export const DEFAULT_ROOM_PRICES: HotelRoomPrices = {
   standard: 150,
   double:   225,
@@ -144,6 +144,7 @@ export const DEFAULT_FEATURES: HotelFeature[] = [
 
 export const MOCK_HOTELS: Hotel[] = [
   {
+    // Hotel 1: discount 15% + service 5%
     id: 1,
     name: 'House in tunis village',
     location: 'Tunis Village, 29000 Fayoum, Egypt',
@@ -151,6 +152,8 @@ export const MOCK_HOTELS: Hotel[] = [
     rating: 4.8,
     stars: 4,
     status: 'Active',
+    discount: 15,
+    serviceChargePct: 5,
     description:
       'Comfortable accommodations in the heart of Tunis village. Enjoy family rooms with private bathrooms, balconies, and pool views. Each room includes air-conditioning, a sofa bed, and a refrigerator.',
     images: [
@@ -175,6 +178,7 @@ export const MOCK_HOTELS: Hotel[] = [
     rooms: { total: 20, single: 8, double: 6, triple: 4, suite: 2 },
   },
   {
+    // Hotel 2: no discount + no service charge
     id: 2,
     name: 'Tzila Lodge',
     location: 'Tunis Village, 29000 Fayoum, Egypt',
@@ -183,6 +187,8 @@ export const MOCK_HOTELS: Hotel[] = [
     rating: 4.8,
     stars: 4,
     status: 'Active',
+    discount: 0,
+    serviceChargePct: 0,
     description:
       'Exceptional facilities: guests enjoy a sun terrace, garden, and a year-round outdoor swimming pool.',
     images: [
@@ -208,6 +214,7 @@ export const MOCK_HOTELS: Hotel[] = [
     rooms: { total: 15, single: 5, double: 6, triple: 3, suite: 1 },
   },
   {
+    // Hotel 3: no discount + service 10%
     id: 3,
     name: 'Desert Rose Resort',
     location: 'Qarun Lake, Fayoum, Egypt',
@@ -215,6 +222,8 @@ export const MOCK_HOTELS: Hotel[] = [
     rating: 4.5,
     stars: 5,
     status: 'Active',
+    discount: 0,
+    serviceChargePct: 10,
     description:
       'Luxury desert retreat overlooking the enchanting Qarun Lake.',
     images: [
