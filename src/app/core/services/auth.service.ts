@@ -39,7 +39,6 @@ export interface AuthResponse {
 
 const BASE_URL = 'http://voyagoo.runasp.net';
 
-
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
@@ -49,7 +48,15 @@ export class AuthService {
   constructor(private http: HttpClient) {}
 
   register(payload: RegisterPayload): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${BASE_URL}/auth/register`, payload);
+    return this.http.post<AuthResponse>(`${BASE_URL}/auth/register`, payload).pipe(
+      map(res => {
+        // ✅ خزّن وقت انتهاء التوكن
+        const expiresAt = Date.now() + (res.expiresIn * 1000);
+        localStorage.setItem('voyago_token_expires_at', expiresAt.toString());
+        return res;
+      }),
+      catchError(err => throwError(() => err))
+    );
   }
 
   login(email: string, password: string): Observable<{ success: boolean; message: string }> {
@@ -57,6 +64,10 @@ export class AuthService {
       map(res => {
         localStorage.setItem('voyago_token', res.token);
         localStorage.setItem('voyago_refresh_token', res.refreshToken);
+
+        // ✅ خزّن وقت انتهاء التوكن
+        const expiresAt = Date.now() + (res.expiresIn * 1000);
+        localStorage.setItem('voyago_token_expires_at', expiresAt.toString());
 
         const user: User = {
           firstName:    res.firstName,
@@ -91,6 +102,11 @@ export class AuthService {
       map(res => {
         localStorage.setItem('voyago_token', res.token);
         localStorage.setItem('voyago_refresh_token', res.refreshToken);
+
+        // ✅ حدّث وقت انتهاء التوكن الجديد
+        const expiresAt = Date.now() + (res.expiresIn * 1000);
+        localStorage.setItem('voyago_token_expires_at', expiresAt.toString());
+
         return res;
       }),
       catchError(err => throwError(() => err))
@@ -126,6 +142,7 @@ export class AuthService {
     localStorage.removeItem('voyago_current_user');
     localStorage.removeItem('voyago_token');
     localStorage.removeItem('voyago_refresh_token');
+    localStorage.removeItem('voyago_token_expires_at'); // ✅ مسح وقت الانتهاء
     this.currentUser.set(null);
   }
 
