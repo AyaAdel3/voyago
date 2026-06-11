@@ -1,70 +1,106 @@
 <div>
   <h2 class="section-title">Users Management</h2>
 
+  <!-- Stats -->
   <div class="stats-row">
     <div *ngFor="let s of stats" class="stat-card" [ngClass]="s.type">
       <p class="stat-label">{{ s.label }}</p>
       <div class="stat-value">
-        {{ s.value }} <span>{{ s.icon }}</span>
+        {{ s.value }}
+        <span>{{ s.icon }}</span>
       </div>
     </div>
   </div>
 
-  <div class="toolbar">
-    <div class="toolbar-search">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="#4a6a88">
-        <path
-          d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading-wrap">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Content -->
+  <div *ngIf="!isLoading">
+    <!-- Error -->
+    <div *ngIf="errorMsg" class="error-banner">
+      <span>⚠ {{ errorMsg }}</span>
+      <button class="retry-btn" (click)="loadUsers()">Retry</button>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-search">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="#4a6a88">
+          <path
+            d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5
+            6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79
+            l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5
+            S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+          />
+        </svg>
+
+        <input
+          type="text"
+          placeholder="Search Users..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
         />
-      </svg>
-      <input type="text" placeholder="Search Users..." [(ngModel)]="searchQuery" />
-    </div>
-  </div>
+      </div>
 
-  <div class="admin-table">
-    <div class="table-header users-grid">
-      <span>Users Name</span>
-      <span>Email</span>
-      <span>Status</span>
+      <button class="refresh-btn" (click)="loadUsers()">↻ Refresh</button>
     </div>
 
-    <div *ngFor="let u of filtered" class="table-row users-grid">
-      <span class="cell-name">{{ u.name }}</span>
-      <span class="cell-muted">{{ u.email }}</span>
-      <span>
-        <span
-          class="status-badge"
-          [ngClass]="'status-' + u.status.toLowerCase()"
-          (click)="toggleStatus(u)"
-          style="cursor: pointer"
-          >{{ u.status }}</span
-        >
-      </span>
-    </div>
-  </div>
+    <!-- Table -->
+    <div class="admin-table">
+      <div class="table-header users-grid">
+        <span>Users Name</span>
+        <span>Email</span>
+        <span>Status</span>
+      </div>
 
-  <div class="pagination" *ngIf="totalPages.length > 1">
-    <button
-      class="page-btn arrow"
-      [disabled]="currentPage === 1"
-      (click)="currentPage = currentPage - 1"
-    >
-      ‹
-    </button>
-    <button
-      *ngFor="let p of totalPages"
-      class="page-btn"
-      [class.active]="p === currentPage"
-      (click)="currentPage = p"
-    >
-      {{ p }}
-    </button>
-    <button
-      class="page-btn arrow"
-      [disabled]="currentPage === totalPages.length"
-      (click)="currentPage = currentPage + 1"
-    >
-      ›
-    </button>
+      <div *ngIf="filtered.length === 0" class="empty-state">
+        <span> No users found{{ searchQuery ? ' for "' + searchQuery + '"' : '' }} </span>
+      </div>
+
+      <div *ngFor="let u of filtered" class="table-row users-grid">
+        <span class="cell-name">{{ u.name }}</span>
+
+        <span class="cell-muted">
+          {{ u.email }}
+        </span>
+
+        <span>
+          <span
+            class="status-badge"
+            [ngClass]="'status-' + u.status.toLowerCase()"
+            (click)="toggleStatus(u)"
+            style="cursor: pointer"
+            [title]="'Click to mark as ' + (u.status === 'Active' ? 'Inactive' : 'Active')"
+          >
+            {{ u.status }}
+          </span>
+        </span>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages.length > 1">
+      <button class="page-btn arrow" [disabled]="currentPage === 1" (click)="prevPage()">‹</button>
+
+      <button
+        *ngFor="let p of totalPages"
+        class="page-btn"
+        [class.active]="p === currentPage"
+        (click)="goToPage(p)"
+      >
+        {{ p }}
+      </button>
+
+      <button
+        class="page-btn arrow"
+        [disabled]="currentPage === totalPages.length"
+        (click)="nextPage()"
+      >
+        ›
+      </button>
+    </div>
   </div>
 </div>
