@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import {
   Restaurant,
@@ -14,12 +14,10 @@ import {
   AdminRestaurantsApiResponse,
   AdminRestaurantAddRequest,
   AdminRestaurantUpdateRequest,
+  AdminReviewsApiResponse,
   MOCK_RESTAURANT_REVIEWS,
   DEFAULT_TABLES,
-  MOCK_FEATURES,
 } from '../model/restaurant.model';
-
-
 
 @Injectable({ providedIn: 'root' })
 export class RestaurantService {
@@ -36,11 +34,9 @@ export class RestaurantService {
   private favIds             = signal<Set<number>>(new Set());
   private currentReservation = signal<ReservationData | null>(null);
 
-  constructor(private http: HttpClient) {
+  constructor(public http: HttpClient) {
     this.loadRestaurants();
   }
-
-  // ── LOAD LIST FROM API ────────────────────────────────────
 
   private loadRestaurants(): void {
     this.http.get<RestaurantApiResponse[]>(this.apiUrl).pipe(
@@ -70,8 +66,6 @@ export class RestaurantService {
     };
   }
 
-  // ── MAP DETAIL RESPONSE ───────────────────────────────────
-
   private mapDetailToRestaurant(r: RestaurantDetailApiResponse): Restaurant {
     return {
       id:          r.id,
@@ -94,8 +88,6 @@ export class RestaurantService {
       status:      'Active',
     };
   }
-
-  // ── READ ─────────────────────────────────────────────────
 
   getRestaurants(): Observable<Restaurant[]> {
     return this.restaurants$;
@@ -122,11 +114,13 @@ export class RestaurantService {
     );
   }
 
-  getFeatures(): Observable<Feature[]> {
-    return of(MOCK_FEATURES);
+  // ── GET FEATURES من الـ API ───────────────────────────────
+  getFeatures(token: string): Observable<Feature[]> {
+    return this.http.get<Feature[]>(
+      'http://voyagoo.runasp.net/admin/features',
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
   }
-
-  // ── ADMIN READ ────────────────────────────────────────────
 
   getAdminRestaurants(token: string): Observable<AdminRestaurantsApiResponse> {
     return this.http.get<AdminRestaurantsApiResponse>(
@@ -135,7 +129,6 @@ export class RestaurantService {
     );
   }
 
-  /** GET /admin/restaurants/{id} — نفس شكل RestaurantDetailApiResponse */
   getAdminRestaurantById(id: number, token: string): Observable<RestaurantDetailApiResponse> {
     return this.http.get<RestaurantDetailApiResponse>(
       `${this.adminApiUrl}/${id}`,
@@ -143,7 +136,23 @@ export class RestaurantService {
     );
   }
 
-  // ── ADMIN ADD ─────────────────────────────────────────────
+  getAdminReviews(restaurantId: number, token: string): Observable<RestaurantReview[]> {
+    return this.http.get<AdminReviewsApiResponse>(
+      `${this.adminApiUrl}/${restaurantId}/GetAllComments`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    ).pipe(
+      map(res => res.comments.map(c => ({
+        id:           c.id,
+        restaurantId: restaurantId,
+        userName:     c.userName,
+        userCountry:  '',
+        userAvatar:   c.profilePictureUrl ?? undefined,
+        rating:       c.rating,
+        content:      c.content,
+        date:         c.createdAt,
+      } as RestaurantReview)))
+    );
+  }
 
   addRestaurantApi(body: AdminRestaurantAddRequest, token: string): Observable<{ id: number }> {
     return this.http.post<{ id: number }>(
@@ -153,8 +162,6 @@ export class RestaurantService {
     );
   }
 
-  // ── ADMIN UPDATE ──────────────────────────────────────────
-
   updateRestaurantApi(id: number, body: AdminRestaurantUpdateRequest, token: string): Observable<void> {
     return this.http.put<void>(
       `${this.adminApiUrl}/${id}`,
@@ -163,7 +170,13 @@ export class RestaurantService {
     );
   }
 
-  // ── ADMIN UPLOAD IMAGES ───────────────────────────────────
+  updateRestaurantStatus(id: number, status: string, token: string): Observable<void> {
+    return this.http.patch<void>(
+      `${this.adminApiUrl}/${id}/status`,
+      { status },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
 
   uploadRestaurantImages(id: number, files: File[], token: string): Observable<void> {
     const formData = new FormData();
@@ -174,8 +187,6 @@ export class RestaurantService {
       { headers: { Authorization: `Bearer ${token}` } }
     );
   }
-
-  // ── WRITE (local BehaviorSubject) ─────────────────────────
 
   submitReview(restaurantId: number, comment: string, rating: number): Observable<RestaurantReview> {
     const body = { content: comment, rating };
@@ -188,7 +199,7 @@ export class RestaurantService {
             userName:     'You',
             userCountry:  'Egypt',
             rating,
-            comment,
+            content:      comment,
             date:         new Date().toISOString().split('T')[0],
           };
           observer.next(newReview);
@@ -202,9 +213,30 @@ export class RestaurantService {
     });
   }
 
+  deleteOwnReview(restaurantId: number, commentId: number, token: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/${restaurantId}/comments/${commentId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  deleteReviewAdmin(restaurantId: number, commentId: number, token: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.adminApiUrl}/${restaurantId}/comments/${commentId}/DeleteComment`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
   deleteReview(reviewId: number): void {
     const current = this.reviewsSubject.getValue();
     this.reviewsSubject.next(current.filter(r => r.id !== reviewId));
+  }
+
+  deleteRestaurant(id: number, token: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.adminApiUrl}/${id}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
   }
 
   addRestaurant(restaurant: Restaurant): void {
@@ -221,15 +253,6 @@ export class RestaurantService {
     this.restaurantsSubject.next(newList);
   }
 
-  deleteRestaurant(id: number, token: string): Observable<void> {
-    return this.http.delete<void>(
-      `${this.adminApiUrl}/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-  }
-
-  // ── Favorites ────────────────────────────────────────────
-
   isFavorite(id: number): boolean { return this.favIds().has(id); }
 
   toggleFavorite(id: number): void {
@@ -237,8 +260,6 @@ export class RestaurantService {
     current.has(id) ? current.delete(id) : current.add(id);
     this.favIds.set(current);
   }
-
-  // ── Reservation ──────────────────────────────────────────
 
   setReservation(data: ReservationData): void {
     this.currentReservation.set(data);

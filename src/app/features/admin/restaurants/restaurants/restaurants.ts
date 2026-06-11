@@ -24,15 +24,18 @@ export class AdminRestaurants implements OnInit {
   deleteToastSuccess = true;
   deleteToastMessage = '';
 
-  // ── Confirm Delete Modal ────────────────────
+  // ── Confirm Delete Restaurant Modal ─────────
   confirmDeleteVisible = false;
   restaurantToDelete: AdminRestaurantApiItem | null = null;
 
   // ── Reviews Modal ───────────────────────────
-  reviewsModalVisible       = false;
-  selectedRestaurantName    = '';
+  reviewsModalVisible           = false;
+  selectedRestaurantName        = '';
   selectedRestaurantReviews: RestaurantReview[] = [];
   selectedRestaurantId: number | null = null;
+
+  // ── Confirm Delete Review Modal ─────────────
+  reviewToDelete: RestaurantReview | null = null;
 
   stats = [
     { label: 'Total Restaurants', value: 0, icon: '🍽', type: 'total'    },
@@ -54,9 +57,8 @@ export class AdminRestaurants implements OnInit {
         this.stats[0].value = res.totalRestaurants;
         this.stats[1].value = res.activeRestaurants;
         this.stats[2].value = res.inactiveRestaurants;
-
-        this.restaurants = res.restaurants;
-        this.currentPage = 1;
+        this.restaurants    = res.restaurants;
+        this.currentPage    = 1;
         this.cdr.detectChanges();
       },
       error: err => console.error('Failed to load admin restaurants:', err),
@@ -84,16 +86,9 @@ export class AdminRestaurants implements OnInit {
   }
 
   onSearch(): void { this.currentPage = 1; }
-
   goToPage(p: number): void { this.currentPage = p; }
-
-  prevPage(): void {
-    if (this.currentPage > 1) this.currentPage--;
-  }
-
-  nextPage(): void {
-    if (this.currentPage < this.totalPages.length) this.currentPage++;
-  }
+  prevPage(): void { if (this.currentPage > 1) this.currentPage--; }
+  nextPage(): void { if (this.currentPage < this.totalPages.length) this.currentPage++; }
 
   // ── Toast ───────────────────────────────────
   showToast(success: boolean, msg: string): void {
@@ -115,20 +110,17 @@ export class AdminRestaurants implements OnInit {
     this.router.navigate(['/admin/restaurants/manage'], { queryParams: { id: r.id } });
   }
 
-  // ── Delete Flow ─────────────────────────────
-  /** Step 1 — فتح الـ confirm modal */
+  // ── Delete Restaurant Flow ───────────────────
   delete(r: AdminRestaurantApiItem): void {
     this.restaurantToDelete  = r;
     this.confirmDeleteVisible = true;
   }
 
-  /** Step 2 — إلغاء */
   cancelDelete(): void {
     this.confirmDeleteVisible = false;
     this.restaurantToDelete  = null;
   }
 
-  /** Step 3 — تأكيد الحذف */
   confirmDelete(): void {
     if (!this.restaurantToDelete) return;
     const r = this.restaurantToDelete;
@@ -144,9 +136,7 @@ export class AdminRestaurants implements OnInit {
         this.stats[1].value = this.restaurants.filter(x => x.status === 'Active').length;
         this.stats[2].value = this.restaurants.filter(x => x.status === 'Inactive').length;
         const newTotalPages = Math.ceil(this.filteredAll.length / this.pageSize) || 1;
-if (this.currentPage > newTotalPages) {
-  this.currentPage = newTotalPages;
-}
+        if (this.currentPage > newTotalPages) this.currentPage = newTotalPages;
         this.showToast(true, `"${r.name}" deleted successfully.`);
         this.cdr.detectChanges();
       },
@@ -161,23 +151,60 @@ if (this.currentPage > newTotalPages) {
   openReviews(r: AdminRestaurantApiItem): void {
     this.selectedRestaurantId   = r.id;
     this.selectedRestaurantName = r.name;
-    this.restaurantService.getReviews(r.id).subscribe(reviews => {
-      this.selectedRestaurantReviews = reviews;
-      this.cdr.detectChanges();
+    this.reviewsModalVisible    = true;
+
+    const token = localStorage.getItem('token') ?? '';
+
+    // ✅ admin endpoint بدل الـ public endpoint
+    this.restaurantService.getAdminReviews(r.id, token).subscribe({
+      next: reviews => {
+        this.selectedRestaurantReviews = reviews;
+        this.cdr.detectChanges();
+      },
+      error: err => console.error('Failed to load reviews:', err),
     });
-    this.reviewsModalVisible = true;
   }
 
   closeReviewsModal(): void {
     this.reviewsModalVisible       = false;
     this.selectedRestaurantId      = null;
     this.selectedRestaurantReviews = [];
+    this.reviewToDelete            = null;
   }
 
-  deleteReview(review: RestaurantReview): void {
-    this.restaurantService.deleteReview(review.id);
-    this.selectedRestaurantReviews =
-      this.selectedRestaurantReviews.filter(r => r.id !== review.id);
-    this.showToast(true, `Review by "${review.userName}" removed.`);
+  // ── Delete Review Flow ───────────────────────
+  requestDeleteReview(review: RestaurantReview): void {
+    this.reviewToDelete = review;
+  }
+
+  cancelDeleteReview(): void {
+    this.reviewToDelete = null;
+  }
+
+  confirmDeleteReview(): void {
+    if (!this.reviewToDelete) return;
+
+    const review = this.reviewToDelete;
+    const token  = localStorage.getItem('token') ?? '';
+
+    this.restaurantService.deleteReviewAdmin(
+      this.selectedRestaurantId!,
+      review.id,
+      token
+    ).subscribe({
+      next: () => {
+        this.selectedRestaurantReviews =
+          this.selectedRestaurantReviews.filter(r => r.id !== review.id);
+        this.reviewToDelete = null;
+        this.showToast(true, `Review by "${review.userName}" removed.`);
+        this.cdr.detectChanges();
+      },
+      error: err => {
+        console.error('Failed to delete review:', err);
+        this.reviewToDelete = null;
+        this.showToast(false, `Failed to remove review. Please try again.`);
+        this.cdr.detectChanges();
+      },
+    });
   }
 }

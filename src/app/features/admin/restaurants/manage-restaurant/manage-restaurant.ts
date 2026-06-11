@@ -15,7 +15,7 @@ import {
 } from '../../../../core/model/restaurant.model';
 
 interface ImageSlot {
-  id:  number | null;  // null = صورة جديدة، number = صورة موجودة على السيرفر
+  id:  number | null;
   url: string;
 }
 
@@ -31,7 +31,7 @@ export class ManageRestaurant implements OnInit {
   restaurantId: number | null = null;
 
   selectedFiles: File[]      = [];
-  images:        ImageSlot[] = [];   // ✅ بقت objects بدل strings
+  images:        ImageSlot[] = [];
 
   toastMessage = '';
   toastVisible = false;
@@ -69,22 +69,28 @@ export class ManageRestaurant implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.service.getFeatures().subscribe(features => {
-      this.availableFeatures = features;
+    // ✅ جيب الـ features من الـ API دايماً — Add و Edit
+    this.service.getFeatures(this.token).subscribe({
+      next: features => {
+        this.availableFeatures = features;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        console.error('Failed to load features');
+      },
+    });
 
-      this.route.queryParams.subscribe(params => {
-        if (params['id']) {
-          this.restaurantId = +params['id'];
-          this.isEdit       = true;
-          this.loadRestaurant(this.restaurantId);
-        }
-      });
+    this.route.queryParams.subscribe(params => {
+      if (params['id']) {
+        this.restaurantId = +params['id'];
+        this.isEdit       = true;
+        this.loadRestaurant(this.restaurantId);
+      }
     });
   }
 
-  // ── Load for Edit ─────────────────────────────────────────
   private loadRestaurant(id: number) {
-    this.service['http']
+    this.service.http
       .get<RestaurantDetailApiResponse>(`http://voyagoo.runasp.net/Restaurants/${id}`)
       .subscribe({
         next: (r: RestaurantDetailApiResponse) => {
@@ -97,23 +103,20 @@ export class ManageRestaurant implements OnInit {
             maxPrice:    r.maxPrice,
           };
 
-          // cuisineType string → id
           const found = this.cuisineTypes.find(
             c => c.name.toLowerCase() === r.cuisineType.toLowerCase()
           );
           this.selectedCuisineId = found?.id ?? null;
 
-          // features → ids
+          // ✅ الـ availableFeatures اتملت من الـ API في الـ ngOnInit
           this.selectedFeatureIds = r.features ? r.features.map(f => f.id) : [];
 
-          // ✅ images — بنحفظ id + url عشان نقدر نحذف
           this.images = r.images
             ? r.images
                 .sort((a, b) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0))
                 .map(img => ({ id: img.id, url: img.imageUrl }))
             : [];
 
-          // tables
           const for2  = r.tablesForTwo  ?? 0;
           const for4  = r.tablesForFour ?? 0;
           const for6  = r.tablesForSix  ?? 0;
@@ -128,8 +131,6 @@ export class ManageRestaurant implements OnInit {
         },
       });
   }
-
-  // ── Features helpers ──────────────────────────────────────
 
   getFeatureLabel(id: number): string {
     const found = this.availableFeatures.find(f => f.id === id);
@@ -149,21 +150,15 @@ export class ManageRestaurant implements OnInit {
 
   closeDropdown() { this.featuresDropdownOpen = false; }
 
-  // ── Tables ───────────────────────────────────────────────
-
   calcTotal() {
     this.tables.total = this.tables.for2 + this.tables.for4 + this.tables.for6;
   }
-
-  // ── Status ───────────────────────────────────────────────
 
   setStatus(id: number) { this.selectedStatusId = id; }
 
   get currentStatusName(): string {
     return this.statuses.find(s => s.id === this.selectedStatusId)?.name ?? 'Active';
   }
-
-  // ── Images ───────────────────────────────────────────────
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;
@@ -173,7 +168,6 @@ export class ManageRestaurant implements OnInit {
       const reader = new FileReader();
       reader.onload = (e) => {
         if (e.target?.result) {
-          // ✅ id = null للصور الجديدة
           this.images.push({ id: null, url: e.target.result as string });
         }
       };
@@ -186,8 +180,7 @@ export class ManageRestaurant implements OnInit {
     const slot = this.images[i];
 
     if (slot.id !== null && this.restaurantId !== null) {
-      // ✅ صورة موجودة على السيرفر → نكلم DELETE endpoint
-      this.service['http']
+      this.service.http
         .delete<void>(
           `http://voyagoo.runasp.net/admin/restaurants/${this.restaurantId}/images/${slot.id}`,
           { headers: { Authorization: `Bearer ${this.token}` } }
@@ -203,14 +196,11 @@ export class ManageRestaurant implements OnInit {
           },
         });
     } else {
-      // صورة جديدة لسه ما اترفعتش → نشيلها من الـ local arrays بس
       const newIndex = this.images.slice(0, i).filter(s => s.id === null).length;
       this.images.splice(i, 1);
       this.selectedFiles.splice(newIndex, 1);
     }
   }
-
-  // ── Toast ─────────────────────────────────────────────────
 
   showToast(msg: string, navigate = true, success = true) {
     this.toastMessage = msg;
@@ -221,8 +211,6 @@ export class ManageRestaurant implements OnInit {
       if (navigate) this.router.navigate(['/admin/restaurants']);
     }, 1800);
   }
-
-  // ── Validate ──────────────────────────────────────────────
 
   private validate(): boolean {
     if (!this.restaurant.name.trim()) {
@@ -245,8 +233,6 @@ export class ManageRestaurant implements OnInit {
     }
     return true;
   }
-
-  // ── Save ──────────────────────────────────────────────────
 
   save() {
     if (!this.validate() || this.isSaving) return;
@@ -310,17 +296,28 @@ export class ManageRestaurant implements OnInit {
       featureIds:    [...this.selectedFeatureIds],
     };
 
+    const statusName = this.currentStatusName.toLowerCase();
+
     this.service.updateRestaurantApi(this.restaurantId!, body, this.token).subscribe({
       next: () => {
-        if (this.selectedFiles.length > 0) {
-          this.service.uploadRestaurantImages(this.restaurantId!, this.selectedFiles, this.token).subscribe({
-            next:  () => { this.isSaving = false; this.showToast('Restaurant updated successfully!'); },
-            error: () => { this.isSaving = false; this.showToast('Updated, but new images failed to upload.'); },
-          });
-        } else {
-          this.isSaving = false;
-          this.showToast('Restaurant updated successfully!');
-        }
+        this.service.updateRestaurantStatus(this.restaurantId!, statusName, this.token).subscribe({
+          next: () => {
+            if (this.selectedFiles.length > 0) {
+              this.service.uploadRestaurantImages(this.restaurantId!, this.selectedFiles, this.token).subscribe({
+                next:  () => { this.isSaving = false; this.showToast('Restaurant updated successfully!'); },
+                error: () => { this.isSaving = false; this.showToast('Updated, but new images failed to upload.'); },
+              });
+            } else {
+              this.isSaving = false;
+              this.showToast('Restaurant updated successfully!');
+            }
+          },
+          error: (err) => {
+            console.error('Status update failed:', err);
+            this.isSaving = false;
+            this.showToast('Updated, but status failed to change.', false, false);
+          },
+        });
       },
       error: (err) => {
         this.isSaving = false;

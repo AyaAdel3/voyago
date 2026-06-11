@@ -32,7 +32,6 @@ export interface Restaurant {
   features?:   Feature[];
 }
 
-// ── API List Response (GET /Restaurants) ─────────────────
 export interface RestaurantApiResponse {
   id:           number;
   name:         string;
@@ -44,7 +43,6 @@ export interface RestaurantApiResponse {
   mainImageUrl: string;
 }
 
-// ── API Detail Response (GET /Restaurants/:id) ───────────
 export interface RestaurantImageApi {
   id:       number;
   imageUrl: string;
@@ -60,15 +58,14 @@ export interface RestaurantDetailApiResponse {
   cuisineType:   string;
   minPrice:      number;
   maxPrice:      number;
-  tablesForTwo:  number;   // ✅ مضاف
-  tablesForFour: number;   // ✅ مضاف
-  tablesForSix:  number;   // ✅ مضاف
+  tablesForTwo:  number;
+  tablesForFour: number;
+  tablesForSix:  number;
   images:        RestaurantImageApi[];
   features:      Feature[];
   comments:      RestaurantReview[];
 }
 
-// ── Admin API Response (GET /admin/restaurants/GetAllRestaurants) ──
 export interface AdminRestaurantApiItem {
   id:           number;
   name:         string;
@@ -87,7 +84,6 @@ export interface AdminRestaurantsApiResponse {
   restaurants:         AdminRestaurantApiItem[];
 }
 
-// ── Cuisine Enum ──────────────────────────────────────────
 export interface CuisineType {
   id:   number;
   name: string;
@@ -111,13 +107,11 @@ export const CUISINE_TYPES: CuisineType[] = [
   { id: 15, name: 'Vegetarian' },
 ];
 
-// ── Status Enum ───────────────────────────────────────────
 export const RESTAURANT_STATUSES = [
   { id: 1, name: 'Active'   },
   { id: 2, name: 'Inactive' },
 ];
 
-// ── Admin Add/Update Request Bodies ──────────────────────
 export interface AdminRestaurantAddRequest {
   name:          string;
   description:   string;
@@ -154,8 +148,7 @@ export interface RestaurantReview {
   userCountry:  string;
   userAvatar?:  string;
   rating:       number;
-  comment:      string;
-  content?:     string;
+  content:      string;
   date:         string;
 }
 
@@ -179,21 +172,13 @@ export interface ReservationData {
   totalAmount:       number;
 }
 
-export const MOCK_FEATURES: Feature[] = [
-  { id: 1, name: 'Parking',         icon: '🅿️' },
-  { id: 2, name: 'WiFi',            icon: '📶' },
-  { id: 3, name: 'Smoking Allowed', icon: '🚬' },
-  { id: 4, name: 'Outdoor Seating', icon: '🪑' },
-  { id: 5, name: 'Lake View',       icon: '🌊' },
-];
-
 export const MOCK_RESTAURANT_REVIEWS: RestaurantReview[] = [
-  { id:1, restaurantId:1, userName:'Yara Morad',    userCountry:'Egypt',  rating:5, comment:'Amazing food and atmosphere!', date:'2025-01-10' },
-  { id:2, restaurantId:1, userName:'Amad Dialo',    userCountry:'Garaa',  rating:4, comment:'Great experience overall.',     date:'2025-01-12' },
-  { id:3, restaurantId:1, userName:'Chae-min',      userCountry:'Korean', rating:4, comment:'Loved the Lebanese cuisine.',   date:'2025-01-15' },
-  { id:4, restaurantId:1, userName:'Mark Alec',     userCountry:'Italy',  rating:4, comment:'Will definitely come back.',   date:'2025-01-18' },
-  { id:5, restaurantId:1, userName:'Malak Mohamed', userCountry:'Egypt',  rating:5, comment:'Best restaurant in Cairo.',    date:'2025-01-20' },
-  { id:6, restaurantId:1, userName:'David Silva',   userCountry:'Kenya',  rating:4, comment:'Fantastic views and food.',    date:'2025-01-22' },
+  { id:1, restaurantId:1, userName:'Yara Morad',    userCountry:'Egypt',  rating:5, content:'Amazing food and atmosphere!', date:'2025-01-10' },
+  { id:2, restaurantId:1, userName:'Amad Dialo',    userCountry:'Garaa',  rating:4, content:'Great experience overall.',     date:'2025-01-12' },
+  { id:3, restaurantId:1, userName:'Chae-min',      userCountry:'Korean', rating:4, content:'Loved the Lebanese cuisine.',   date:'2025-01-15' },
+  { id:4, restaurantId:1, userName:'Mark Alec',     userCountry:'Italy',  rating:4, content:'Will definitely come back.',    date:'2025-01-18' },
+  { id:5, restaurantId:1, userName:'Malak Mohamed', userCountry:'Egypt',  rating:5, content:'Best restaurant in Cairo.',     date:'2025-01-20' },
+  { id:6, restaurantId:1, userName:'David Silva',   userCountry:'Kenya',  rating:4, content:'Fantastic views and food.',     date:'2025-01-22' },
 ];
 
 export const DEFAULT_TABLES: TableType[] = [
@@ -207,3 +192,18 @@ export const AVAILABLE_TIMES: string[] = [
   '16:00', '17:00', '18:00', '19:00',
   '20:00', '21:00', '22:00',
 ];
+
+export interface AdminReviewComment {
+  id:                number;
+  userName:          string;
+  profilePictureUrl: string | null;
+  content:           string;
+  rating:            number;
+  createdAt:         string;
+}
+
+export interface AdminReviewsApiResponse {
+  totalComments: number;
+  averageRating: number;
+  comments:      AdminReviewComment[];
+}
