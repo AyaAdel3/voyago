@@ -59,12 +59,12 @@ export class Details implements OnInit {
     return new Date().toISOString().split('T')[0];
   }
 
-  // ✅ تحقق Auth قبل أي تفاعل
+  // ✅ الأدمن → forceLogout + اقفل الـ popup + روح للهوم
   private checkAuthBeforeInteract(): boolean {
     if (this.authService.isAdmin()) {
-      this.authService.logout();
-      this.showLoginPrompt = true;
-      this.cdr.detectChanges();
+      this.authService.forceLogout();
+      this.closeDetails.emit();
+      this.router.navigate(['/home']);
       return false;
     }
     if (!this.authService.isLoggedIn()) {
@@ -75,7 +75,6 @@ export class Details implements OnInit {
     return true;
   }
 
-  // ✅ لما يغير الـ date
   onDateChange(): void {
     if (!this.checkAuthBeforeInteract()) {
       this.selectedDate = '';
@@ -84,14 +83,12 @@ export class Details implements OnInit {
     this.errorMessage = '';
   }
 
-  // ✅ لما يضغط +
   incrementDays(): void {
     if (!this.checkAuthBeforeInteract()) return;
     this.days++;
     this.errorMessage = '';
   }
 
-  // ✅ لما يضغط −
   decrementDays(): void {
     if (!this.checkAuthBeforeInteract()) return;
     if (this.days > 1) this.days--;

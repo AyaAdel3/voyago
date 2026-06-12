@@ -60,8 +60,10 @@ export class AdminLayout {
     return this.router.url.startsWith(path);
   }
 
-  logout(): void {
-    this.auth.logout();
-    this.router.navigate(['/home']);
-  }
+  // ✅ الصح
+logout(): void {
+  this.auth.logout().subscribe({
+    complete: () => this.router.navigate(['/home'])
+  });
+}
 }

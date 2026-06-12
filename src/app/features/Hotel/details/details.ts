@@ -39,7 +39,6 @@ export class Details implements OnInit {
   totalAmount    = 0;
   bookingError   = '';
 
-  // ✅ false من الأول — مش بيظهر غير لما يتفاعل
   showLoginPrompt = false;
   reviewToDelete: Review | null = null;
 
@@ -109,8 +108,6 @@ export class Details implements OnInit {
     });
   }
 
-  // ── Auth ──────────────────────────────────────────────
-
   get currentUserName(): string {
     return this.authService.getFullName() || 'Guest';
   }
@@ -120,12 +117,11 @@ export class Details implements OnInit {
     this.authModal.openLogin();
   }
 
-  // ✅ بيظهر الـ prompt بس لما اليوزر يتفاعل وهو مش مسجل
+  // ✅ الأدمن → forceLogout + روح للهوم
   checkAuthBeforeInteract(): boolean {
     if (this.authService.isAdmin()) {
-      this.authService.logout();
-      this.showLoginPrompt = true;
-      this.cdr.detectChanges();
+      this.authService.forceLogout();
+      this.router.navigate(['/home']);
       return false;
     }
     if (!this.authService.isLoggedIn()) {
@@ -135,8 +131,6 @@ export class Details implements OnInit {
     }
     return true;
   }
-
-  // ── Computed ──────────────────────────────────────────
 
   get totalRoomsSelected(): number {
     return this.selectedRooms.reduce((s, r) => s + r.quantity, 0);
@@ -160,15 +154,11 @@ export class Details implements OnInit {
     return BOARD_FEATURE_NAMES.includes(f.name);
   }
 
-  // ── Gallery ───────────────────────────────────────────
-
   setActiveImage(i: number): void { this.activeImage = i; }
   openLightbox(i: number): void   { this.lbIndex = i; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; }
   closeLightbox(): void           { this.lightboxOpen = false; document.body.style.overflow = ''; }
   lbPrev(): void { if (this.lbIndex > 0) this.lbIndex--; }
   lbNext(): void { if (this.lbIndex < this.hotel.images.length - 1) this.lbIndex++; }
-
-  // ── Price calculation ─────────────────────────────────
 
   recalc(): void {
     this.nights = calcNights(this.checkIn, this.checkOut);
@@ -197,8 +187,6 @@ export class Details implements OnInit {
       : 0;
   }
 
-  // ── Rooms ─────────────────────────────────────────────
-
   changeRoom(i: number, delta: number): void {
     if (!this.checkAuthBeforeInteract()) return;
 
@@ -223,8 +211,6 @@ export class Details implements OnInit {
     this.recalc();
   }
 
-  // ── Features ──────────────────────────────────────────
-
   canIncrement(f: HotelFeature): boolean {
     if (this.totalRoomsSelected === 0) return false;
     return this.isBoard(f)
@@ -243,8 +229,6 @@ export class Details implements OnInit {
     this.recalc();
   }
 
-  // ── Dates ─────────────────────────────────────────────
-
   onDateChange(): void {
     if (!this.checkAuthBeforeInteract()) {
       this.checkIn  = '';
@@ -254,8 +238,6 @@ export class Details implements OnInit {
     if (this.canClearError()) this.bookingError = '';
     this.recalc();
   }
-
-  // ── Validation ────────────────────────────────────────
 
   private canClearError(): boolean {
     return (
@@ -284,8 +266,6 @@ export class Details implements OnInit {
     this.hotelService.setBooking(bookingData);
     this.router.navigate(['/hotels/booking']);
   }
-
-  // ── Reviews ───────────────────────────────────────────
 
   isMyReview(review: Review): boolean {
     if (review.userName === 'You') return true;

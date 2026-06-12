@@ -120,6 +120,21 @@ export class Details implements OnInit {
     this.authModal.openLogin();
   }
 
+  // ✅ الأدمن → forceLogout + روح للهوم
+  private checkAuthBeforeInteract(): boolean {
+    if (this.authService.isAdmin()) {
+      this.authService.forceLogout();
+      this.router.navigate(['/home']);
+      return false;
+    }
+    if (!this.authService.isLoggedIn()) {
+      this.showLoginPrompt = true;
+      this.cdr.detectChanges();
+      return false;
+    }
+    return true;
+  }
+
   getFeatureLabel(id: number): Feature | null {
     return this.restaurant?.features?.find(f => f.id === id) ?? null;
   }
@@ -147,7 +162,32 @@ export class Details implements OnInit {
     if (this.lbIndex < this.restaurant.images.length - 1) this.lbIndex++;
   }
 
+  onDateChange(): void {
+    if (!this.checkAuthBeforeInteract()) {
+      this.selectedDate = '';
+      return;
+    }
+    this.resError = '';
+  }
+
+  onGuestNameChange(): void {
+    if (!this.checkAuthBeforeInteract()) {
+      this.guestName = '';
+      return;
+    }
+    this.resError = '';
+  }
+
+  onPhoneChange(): void {
+    if (!this.checkAuthBeforeInteract()) {
+      this.phone = '';
+      return;
+    }
+    this.resError = '';
+  }
+
   changeTable(i: number, delta: number): void {
+    if (!this.checkAuthBeforeInteract()) return;
     this.selectedTables[i].quantity = Math.max(0, this.selectedTables[i].quantity + delta);
     if (this.resError) this.tryCleanError();
   }
@@ -164,17 +204,8 @@ export class Details implements OnInit {
   }
 
   makeReservation(): void {
-    if (this.authService.isAdmin()) {
-      this.authService.logout();
-      this.showLoginPrompt = true;
-      this.cdr.detectChanges();
-      return;
-    }
-    if (!this.authService.isLoggedIn()) {
-      this.showLoginPrompt = true;
-      this.cdr.detectChanges();
-      return;
-    }
+    if (!this.checkAuthBeforeInteract()) return;
+
     if ((this.restaurant as any).status === 'Inactive') {
       this.resError = 'This restaurant is currently not available for reservations.';
       return;
@@ -251,31 +282,25 @@ export class Details implements OnInit {
     this.reviewToDelete = null;
   }
 
-  // ✅ ربط الحذف بالـ API
-confirmDeleteReview(): void {
-  if (!this.reviewToDelete) return;
+  confirmDeleteReview(): void {
+    if (!this.reviewToDelete) return;
 
-  const reviewId = this.reviewToDelete.id;
-  const token = localStorage.getItem('token') ?? '';
+    const reviewId = this.reviewToDelete.id;
+    const token = localStorage.getItem('token') ?? '';
 
-  console.log('Deleting review id:', reviewId);
-  console.log('Reviews before delete:', this.reviews.map(r => r.id));
-
-  this.restaurantService.deleteOwnReview(this.restaurant.id, reviewId, token).subscribe({
-    next: (res) => {
-      console.log('Delete success response:', res);
-      console.log('Reviews after filter:', this.reviews.filter(r => r.id !== reviewId).map(r => r.id));
-      this.reviews = this.reviews.filter(r => r.id !== reviewId);
-      this.reviewToDelete = null;
-      this.cdr.detectChanges();
-    },
-    error: (err) => {
-      console.error('Delete failed:', err);
-      this.reviewToDelete = null;
-      this.cdr.detectChanges();
-    },
-  });
-}
+    this.restaurantService.deleteOwnReview(this.restaurant.id, reviewId, token).subscribe({
+      next: () => {
+        this.reviews = this.reviews.filter(r => r.id !== reviewId);
+        this.reviewToDelete = null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Delete failed:', err);
+        this.reviewToDelete = null;
+        this.cdr.detectChanges();
+      },
+    });
+  }
 
   starsArray(n: number): number[] { return Array(n).fill(0); }
 
