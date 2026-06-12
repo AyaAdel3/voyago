@@ -23,6 +23,9 @@ export class PersonalInformation {
     phone: '01045983677'
     
   };
+  removeImage() {
+  this.auth.updateProfileImage('');
+}
 
   editData = {
     firstName: '',
@@ -33,9 +36,9 @@ export class PersonalInformation {
   phoneError = '';
 
   // ✅ بتاخد الصورة من AuthService مباشرة
-  get profileImage(): string {
-    return this.auth.currentUser()?.profileImage || '';
-  }
+get profileImage(): string {
+  return this.auth.currentUser()?.profileImage || '';
+}
 
   // ✅ لما اليوزر يختار صورة بتحدث الـ AuthService
   onImageSelected(event: Event) {

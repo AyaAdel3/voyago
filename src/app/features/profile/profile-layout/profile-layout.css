@@ -118,9 +118,7 @@
   z-index: 10;
 }
 
-.camera-btn:hover {
-  background: #2a4f7a;
-}
+.camera-btn:hover { background: #2a4f7a; }
 
 .remove-btn {
   position: absolute;
@@ -139,9 +137,7 @@
   z-index: 10;
 }
 
-.remove-btn:hover {
-  background: rgba(255, 80, 80, 1);
-}
+.remove-btn:hover { background: rgba(255, 80, 80, 1); }
 
 .profile-name {
   color: #ffffff;
@@ -172,10 +168,7 @@
   transition: background 0.2s, color 0.2s;
 }
 
-.profile-nav-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
-}
+.profile-nav-item:hover { background: rgba(255, 255, 255, 0.1); }
 
 .profile-nav-item.active {
   background: #0d1f33;
@@ -199,9 +192,7 @@
   margin-top: auto;
 }
 
-.profile-logout-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
-}
+.profile-logout-btn:hover { background: rgba(239, 68, 68, 0.1); }
 
 /* ── Main area ──────────────────────────────────────────── */
 .profile-main {
@@ -225,7 +216,8 @@
 
 .profile-topbar-left {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .profile-page-title {
@@ -253,6 +245,47 @@
   font-weight: 700;
 }
 
+/* ── Mobile Avatar in Topbar ────────────────────────────── */
+.mobile-avatar-wrap {
+  display: none;
+}
+
+.mobile-image-container {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+}
+
+.mobile-image-inner {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #0d1f33;
+  border: 2px solid #FFE194;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-camera-btn {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: #1e3a5a;
+  border: none;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+}
+
 /* ── Content ─────────────────────────────────────────────── */
 .profile-content {
   flex: 1;
@@ -262,34 +295,16 @@
 }
 
 /* ── Dark Mode ──────────────────────────────────────────── */
-.profile-shell.dark-profile {
-  background: #0b1929;
-}
-
-.profile-shell.dark-profile .profile-sidebar {
-  background: #0d1f33;
-}
-
+.profile-shell.dark-profile { background: #0b1929; }
+.profile-shell.dark-profile .profile-sidebar { background: #0d1f33; }
 .profile-shell.dark-profile .profile-topbar {
   background: #0d1f33;
   border-bottom-color: rgba(163, 196, 235, 0.1);
 }
-
-.profile-shell.dark-profile .profile-content {
-  background: #0b1929;
-}
-
-.profile-shell.dark-profile .profile-nav-item:hover {
-  background: rgba(163, 196, 235, 0.08);
-}
-
-.profile-shell.dark-profile .profile-nav-item.active {
-  background: #1e3a5a;
-}
-
-.profile-shell.dark-profile .profile-avatar {
-  background: #1e3a5a;
-}
+.profile-shell.dark-profile .profile-content { background: #0b1929; }
+.profile-shell.dark-profile .profile-nav-item:hover { background: rgba(163, 196, 235, 0.08); }
+.profile-shell.dark-profile .profile-nav-item.active { background: #1e3a5a; }
+.profile-shell.dark-profile .profile-avatar { background: #1e3a5a; }
 
 /* ── Crop Modal ──────────────────────────────────────────── */
 .crop-modal {
@@ -364,52 +379,22 @@
    RESPONSIVE
 ════════════════════════════════════════════════════════ */
 
-/* Large screens: 1200px فأقل */
 @media (max-width: 1200px) {
-  .profile-sidebar {
-    width: 200px;
-  }
-
-  .profile-content {
-    padding: 1.25rem 1.5rem;
-  }
+  .profile-sidebar { width: 200px; }
+  .profile-content { padding: 1.25rem 1.5rem; }
 }
 
-/* Tablet landscape: 1024px فأقل */
 @media (max-width: 1024px) {
-  .profile-sidebar {
-    width: 175px;
-    padding: 1rem 0.5rem;
-  }
-
-  .logo-text {
-    font-size: 0.85rem;
-  }
-
-  .profile-nav-item {
-    font-size: 0.8rem;
-    padding: 0.5rem 0.6rem;
-    gap: 0.5rem;
-  }
-
-  .profile-content {
-    padding: 1rem 1.25rem;
-  }
-
-  .profile-topbar {
-    padding: 0.75rem 1.25rem;
-  }
-
-  .profile-page-title {
-    font-size: 1.15rem;
-  }
+  .profile-sidebar { width: 175px; padding: 1rem 0.5rem; }
+  .logo-text { font-size: 0.85rem; }
+  .profile-nav-item { font-size: 0.8rem; padding: 0.5rem 0.6rem; gap: 0.5rem; }
+  .profile-content { padding: 1rem 1.25rem; }
+  .profile-topbar { padding: 0.75rem 1.25rem; }
+  .profile-page-title { font-size: 1.15rem; }
 }
 
-/* Tablet portrait + Mobile: 768px فأقل */
 @media (max-width: 768px) {
-  .profile-shell {
-    flex-direction: column;
-  }
+  .profile-shell { flex-direction: column; }
 
   .profile-sidebar {
     width: 100%;
@@ -426,25 +411,10 @@
     scrollbar-width: none;
   }
 
-  .profile-sidebar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .profile-logo {
-    padding: 0;
-    margin-right: auto;
-    flex-shrink: 0;
-  }
-
-  .profile-avatar-wrap {
-    display: none;
-  }
-
-  .profile-nav {
-    flex-direction: row;
-    gap: 0.25rem;
-    flex: none;
-  }
+  .profile-sidebar::-webkit-scrollbar { display: none; }
+  .profile-logo { padding: 0; margin-right: auto; flex-shrink: 0; }
+  .profile-avatar-wrap { display: none; }
+  .profile-nav { flex-direction: row; gap: 0.25rem; flex: none; }
 
   .profile-nav-item {
     flex-direction: column;
@@ -456,10 +426,7 @@
     flex-shrink: 0;
   }
 
-  .profile-nav-item svg {
-    width: 18px;
-    height: 18px;
-  }
+  .profile-nav-item svg { width: 18px; height: 18px; }
 
   .profile-logout-btn {
     margin-top: 0;
@@ -470,73 +437,36 @@
     flex-shrink: 0;
   }
 
-  .profile-logout-btn svg {
-    width: 18px;
-    height: 18px;
-  }
+  .profile-logout-btn svg { width: 18px; height: 18px; }
 
+  /* topbar يظهر في الموبايل */
   .profile-topbar {
-    display: none;
+    display: flex;
+    padding: 0.75rem 1rem;
   }
 
-  .profile-content {
-    padding: 1rem;
-  }
-
-  /* ✅ إضافة: منع الـ horizontal scroll */
-  .profile-main {
-    overflow-x: hidden;
-  }
-
-  /* ✅ إضافة: الـ crop modal على موبايل */
-  .crop-box {
-    width: 90vw;
-    padding: 1rem;
-  }
+  .profile-main { overflow-x: hidden; }
+  .crop-box { width: 90vw; padding: 1rem; }
 }
 
-/* Small Mobile: 480px فأقل */
 @media (max-width: 480px) {
-  .profile-sidebar {
-    padding: 0.5rem 0.75rem;
-  }
+  .profile-sidebar { padding: 0.5rem 0.75rem; }
 
   .profile-nav-item span,
-  .profile-logout-btn span {
-    display: none;
-  }
+  .profile-logout-btn span { display: none; }
 
-  .profile-nav-item {
-    padding: 0.4rem 0.5rem;
-  }
+  .profile-nav-item { padding: 0.4rem 0.5rem; }
+  .logo-text { font-size: 0.8rem; }
+  .profile-content { padding: 0.75rem; }
 
-  .logo-text {
-    font-size: 0.8rem;
-  }
-
-  .profile-content {
-    padding: 0.75rem;
-  }
+  .mobile-image-container { width: 36px; height: 36px; }
+  .mobile-image-inner { width: 36px; height: 36px; }
+  .mobile-camera-btn { width: 16px; height: 16px; }
 }
 
-/* Extra Small Mobile: 400px فأقل */
 @media (max-width: 400px) {
-  .profile-sidebar {
-    padding: 0.4rem 0.5rem;
-  }
-
-  .profile-content {
-    padding: 0.5rem;
-  }
-
-  .logo-icon {
-    width: 22px;
-    height: 22px;
-  }
-
-  /* ✅ إضافة: الـ crop modal على أصغر شاشة */
-  .crop-box {
-    width: 95vw;
-    padding: 0.75rem;
-  }
+  .profile-sidebar { padding: 0.4rem 0.5rem; }
+  .profile-content { padding: 0.5rem; }
+  .logo-icon { width: 22px; height: 22px; }
+  .crop-box { width: 95vw; padding: 0.75rem; }
 }

@@ -3,24 +3,34 @@
   font-family: 'Poppins', sans-serif;
 }
 
-.profile-layout {
-  display: flex;
-  background-color: #0A1128;
-  min-height: 100vh;
-  color: white;
-}
-
+/* ── Main Content ─────────────────────────────────── */
 .content {
   flex: 1;
   padding: 30px 40px;
 }
 
-/* ===== Profile Picture ===== */
-.profile-pic-wrapper {
+/* ── Mobile Profile Picture ───────────────────────── */
+.mobile-only {
+  display: none;
+}
+
+.image-container-mobile {
   position: relative;
-  width: 100px;
-  height: 100px;
-  margin-bottom: 16px;
+  width: 80px;
+  height: 80px;
+  margin-bottom: 20px;
+}
+
+.image-inner-mobile {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #0d1f33;
+  border: 2px solid #FFE194;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-img {
@@ -28,53 +38,51 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid #FFE194;
 }
 
-.camera-btn {
+.profile-img-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.mobile-remove-btn {
   position: absolute;
-  bottom: 5px;
-  right: 5px;
-  background: #1e2e40;
+  top: 0;
+  left: 0;
+  background: rgba(255, 80, 80, 0.9);
   border: none;
   border-radius: 50%;
-  width: 30px;
-  height: 30px;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   padding: 0;
+  z-index: 10;
 }
 
-/* ===== Header ===== */
-.info-header {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 30px;
-}
-
-.info-header h1 {
-  font-size: 32px;
-  font-weight: 600;
-  margin: 0;
-}
-
-/* ===== Buttons ===== */
-.edit-btn, .save-btn {
-  background-color: #FFE194;
-  color: #0A1128;
+.mobile-camera-btn {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  background: #1e3a5a;
   border: none;
-  padding: 8px 45px;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 16px;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  padding: 0;
+  z-index: 10;
 }
 
-/* ===== Details ===== */
+/* ── Details Container ────────────────────────────── */
 .details-container {
   display: flex;
   flex-direction: column;
@@ -87,6 +95,7 @@
   margin: 0;
 }
 
+/* ── Input ────────────────────────────────────────── */
 .profile-input {
   background: transparent;
   border: none;
@@ -111,63 +120,68 @@
   cursor: not-allowed;
 }
 
+/* ── Buttons ──────────────────────────────────────── */
+.edit-btn,
+.save-btn {
+  background-color: #FFE194;
+  color: #0A1128;
+  border: none;
+  padding: 8px 32px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+  width: fit-content;
+  display: block;
+}
+
+.edit-btn:hover,
+.save-btn:hover {
+  opacity: 0.85;
+}
+
 /* ════════════════════════════════════════════════════════
    RESPONSIVE
 ════════════════════════════════════════════════════════ */
 
 @media (max-width: 1200px) {
   .content { padding: 25px 35px; }
-  .info-header h1 { font-size: 28px; }
+  .data-value { font-size: 18px; }
 }
 
 @media (max-width: 1024px) {
   .content { padding: 20px 28px; }
-  .info-header h1 { font-size: 26px; }
-  .info-header { margin-bottom: 25px; }
   .data-value { font-size: 18px; }
   .profile-input { font-size: 18px; }
   .edit-btn, .save-btn { padding: 7px 35px; font-size: 15px; }
-  .profile-pic-wrapper { width: 85px; height: 85px; }
 }
 
 @media (max-width: 768px) {
+  .mobile-only { display: block; } /* ✅ الصورة تظهر في الموبايل */
   .content { padding: 20px 16px; }
-  .info-header { margin-bottom: 20px; }
-  .info-header h1 { font-size: 22px; }
-  .edit-btn, .save-btn { padding: 7px 28px; font-size: 14px; }
   .data-value { font-size: 16px; }
   .profile-input { font-size: 16px; max-width: 100%; }
   .details-container { gap: 20px; }
-  .profile-pic-wrapper { width: 80px; height: 80px; }
+  .edit-btn, .save-btn { padding: 7px 28px; font-size: 14px; }
 }
 
 @media (max-width: 480px) {
   .content { padding: 16px 12px; }
-  .info-header h1 { font-size: 18px; }
-  .info-header { margin-bottom: 16px; }
-  .edit-btn, .save-btn { padding: 6px 20px; font-size: 13px; }
   .data-value { font-size: 15px; }
   .profile-input { font-size: 15px; }
   .details-container { gap: 16px; }
-  .profile-pic-wrapper { width: 70px; height: 70px; }
-}
-
-@media (max-width: 400px) {
-  .content { padding: 12px 10px; }
-  .info-header {
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-  .info-header h1 { font-size: 16px; }
   .edit-btn, .save-btn {
     width: 100%;
     text-align: center;
     padding: 8px 0;
-    font-size: 13px;
+    font-size: 14px;
     border-radius: 12px;
   }
+}
+
+@media (max-width: 400px) {
+  .content { padding: 12px 10px; }
   .data-value { font-size: 14px; }
   .profile-input { font-size: 14px; }
   .details-container { gap: 14px; }
-  .profile-pic-wrapper { width: 65px; height: 65px; }
 }

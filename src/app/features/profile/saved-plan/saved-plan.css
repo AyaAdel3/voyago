@@ -5,17 +5,8 @@
 
 /* ─── Main Content ────────────────────────────────── */
 .content {
-  flex: 1;
   padding: 40px 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  overflow: hidden;
-  background-color: #0A1128;
-  min-height: 100vh;
-  color: white;
 }
-
 .info-header {
   display: flex;
   justify-content: space-between;

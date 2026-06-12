@@ -11,23 +11,27 @@
       <span class="section-count">{{ hotels.length }}</span>
     </div>
     @if (hotels.length > 0) {
-      <div class="plan-grid">
-        @for (item of hotels; track item.title) {
-          <div class="favorite-card">
-            <div class="card-image-wrapper">
-              <img [src]="item.image" class="card-img" />
-              <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
-            </div>
-            <div class="card-info">
-              <h3>{{ item.title }}</h3>
-              <div class="item-meta">
-                <span class="item-price">{{ item.price }}</span>
-                <span class="dot">•</span>
-                <span class="item-rating">⭐ {{ item.rating }}</span>
-              </div>
-            </div>
+      <!-- Slider Controls فوق الكارد -->
+      @if (hotels.length > 1) {
+        <div class="slider-nav">
+          <button class="arrow-btn" (click)="prev('hotels')" [disabled]="!canPrev('hotels')">❮</button>
+          <span class="slider-counter">{{ sliderIndex['hotels'] + 1 }} / {{ hotels.length }}</span>
+          <button class="arrow-btn" (click)="next('hotels')" [disabled]="!canNext('hotels')">❯</button>
+        </div>
+      }
+      <div class="favorite-card">
+        <div class="card-image-wrapper">
+          <img [src]="currentItem('hotels')!.image" class="card-img" />
+          <button class="remove-x-btn" (click)="deleteFav(currentItem('hotels')!)">✕</button>
+        </div>
+        <div class="card-info">
+          <h3>{{ currentItem('hotels')!.title }}</h3>
+          <div class="item-meta">
+            <span class="item-price">{{ currentItem('hotels')!.price }}</span>
+            <span class="dot">•</span>
+            <span class="item-rating">⭐ {{ currentItem('hotels')!.rating }}</span>
           </div>
-        }
+        </div>
       </div>
     } @else {
       <div class="empty-state">
@@ -45,23 +49,26 @@
       <span class="section-count">{{ restaurants.length }}</span>
     </div>
     @if (restaurants.length > 0) {
-      <div class="plan-grid">
-        @for (item of restaurants; track item.title) {
-          <div class="favorite-card">
-            <div class="card-image-wrapper">
-              <img [src]="item.image" class="card-img" />
-              <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
-            </div>
-            <div class="card-info">
-              <h3>{{ item.title }}</h3>
-              <div class="item-meta">
-                <span class="item-price">{{ item.price }}</span>
-                <span class="dot">•</span>
-                <span class="item-rating">⭐ {{ item.rating }}</span>
-              </div>
-            </div>
+      @if (restaurants.length > 1) {
+        <div class="slider-nav">
+          <button class="arrow-btn" (click)="prev('restaurants')" [disabled]="!canPrev('restaurants')">❮</button>
+          <span class="slider-counter">{{ sliderIndex['restaurants'] + 1 }} / {{ restaurants.length }}</span>
+          <button class="arrow-btn" (click)="next('restaurants')" [disabled]="!canNext('restaurants')">❯</button>
+        </div>
+      }
+      <div class="favorite-card">
+        <div class="card-image-wrapper">
+          <img [src]="currentItem('restaurants')!.image" class="card-img" />
+          <button class="remove-x-btn" (click)="deleteFav(currentItem('restaurants')!)">✕</button>
+        </div>
+        <div class="card-info">
+          <h3>{{ currentItem('restaurants')!.title }}</h3>
+          <div class="item-meta">
+            <span class="item-price">{{ currentItem('restaurants')!.price }}</span>
+            <span class="dot">•</span>
+            <span class="item-rating">⭐ {{ currentItem('restaurants')!.rating }}</span>
           </div>
-        }
+        </div>
       </div>
     } @else {
       <div class="empty-state">
@@ -79,23 +86,26 @@
       <span class="section-count">{{ tourGuides.length }}</span>
     </div>
     @if (tourGuides.length > 0) {
-      <div class="plan-grid">
-        @for (item of tourGuides; track item.title) {
-          <div class="favorite-card">
-            <div class="card-image-wrapper">
-              <img [src]="item.image" class="card-img" />
-              <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
-            </div>
-            <div class="card-info">
-              <h3>{{ item.title }}</h3>
-              <div class="item-meta">
-                <span class="item-price">{{ item.price }}</span>
-                <span class="dot">•</span>
-                <span class="item-rating">⭐ {{ item.rating }}</span>
-              </div>
-            </div>
+      @if (tourGuides.length > 1) {
+        <div class="slider-nav">
+          <button class="arrow-btn" (click)="prev('tourGuides')" [disabled]="!canPrev('tourGuides')">❮</button>
+          <span class="slider-counter">{{ sliderIndex['tourGuides'] + 1 }} / {{ tourGuides.length }}</span>
+          <button class="arrow-btn" (click)="next('tourGuides')" [disabled]="!canNext('tourGuides')">❯</button>
+        </div>
+      }
+      <div class="favorite-card">
+        <div class="card-image-wrapper">
+          <img [src]="currentItem('tourGuides')!.image" class="card-img" />
+          <button class="remove-x-btn" (click)="deleteFav(currentItem('tourGuides')!)">✕</button>
+        </div>
+        <div class="card-info">
+          <h3>{{ currentItem('tourGuides')!.title }}</h3>
+          <div class="item-meta">
+            <span class="item-price">{{ currentItem('tourGuides')!.price }}</span>
+            <span class="dot">•</span>
+            <span class="item-rating">⭐ {{ currentItem('tourGuides')!.rating }}</span>
           </div>
-        }
+        </div>
       </div>
     } @else {
       <div class="empty-state">
@@ -113,23 +123,26 @@
       <span class="section-count">{{ touristAttractions.length }}</span>
     </div>
     @if (touristAttractions.length > 0) {
-      <div class="plan-grid">
-        @for (item of touristAttractions; track item.title) {
-          <div class="favorite-card">
-            <div class="card-image-wrapper">
-              <img [src]="item.image" class="card-img" />
-              <button class="remove-x-btn" (click)="deleteFav(item)">✕</button>
-            </div>
-            <div class="card-info">
-              <h3>{{ item.title }}</h3>
-              <div class="item-meta">
-                <span class="item-price">{{ item.price }}</span>
-                <span class="dot">•</span>
-                <span class="item-rating">⭐ {{ item.rating }}</span>
-              </div>
-            </div>
+      @if (touristAttractions.length > 1) {
+        <div class="slider-nav">
+          <button class="arrow-btn" (click)="prev('touristAttractions')" [disabled]="!canPrev('touristAttractions')">❮</button>
+          <span class="slider-counter">{{ sliderIndex['touristAttractions'] + 1 }} / {{ touristAttractions.length }}</span>
+          <button class="arrow-btn" (click)="next('touristAttractions')" [disabled]="!canNext('touristAttractions')">❯</button>
+        </div>
+      }
+      <div class="favorite-card">
+        <div class="card-image-wrapper">
+          <img [src]="currentItem('touristAttractions')!.image" class="card-img" />
+          <button class="remove-x-btn" (click)="deleteFav(currentItem('touristAttractions')!)">✕</button>
+        </div>
+        <div class="card-info">
+          <h3>{{ currentItem('touristAttractions')!.title }}</h3>
+          <div class="item-meta">
+            <span class="item-price">{{ currentItem('touristAttractions')!.price }}</span>
+            <span class="dot">•</span>
+            <span class="item-rating">⭐ {{ currentItem('touristAttractions')!.rating }}</span>
           </div>
-        }
+        </div>
       </div>
     } @else {
       <div class="empty-state">
