@@ -188,31 +188,32 @@ export class RestaurantService {
     );
   }
 
-  submitReview(restaurantId: number, comment: string, rating: number): Observable<RestaurantReview> {
-    const body = { content: comment, rating };
-    return new Observable(observer => {
-      this.http.post(`${this.apiUrl}/${restaurantId}/comments`, body).subscribe({
-        next: () => {
-          const newReview: RestaurantReview = {
-            id:           Date.now(),
-            restaurantId,
-            userName:     'You',
-            userCountry:  'Egypt',
-            rating,
-            content:      comment,
-            date:         new Date().toISOString().split('T')[0],
-          };
-          observer.next(newReview);
-          observer.complete();
-        },
-        error: err => {
-          console.error('Failed to submit review:', err);
-          observer.error(err);
-        },
-      });
+ submitReview(restaurantId: number, comment: string, rating: number): Observable<RestaurantReview> {
+  const body = { content: comment, rating };
+  return new Observable(observer => {
+    this.http.post<{ id?: number; commentId?: number }>(
+      `${this.apiUrl}/${restaurantId}/comments`, body
+    ).subscribe({
+      next: (res) => {
+        const newReview: RestaurantReview = {
+          id:           res?.id ?? res?.commentId ?? 0,
+          restaurantId,
+          userName:     'You',
+          userCountry:  'Egypt',
+          rating,
+          content:      comment,
+          date:         new Date().toISOString().split('T')[0],
+        };
+        observer.next(newReview);
+        observer.complete();
+      },
+      error: err => {
+        console.error('Failed to submit review:', err);
+        observer.error(err);
+      },
     });
-  }
-
+  });
+}
   deleteOwnReview(restaurantId: number, commentId: number, token: string): Observable<void> {
     return this.http.delete<void>(
       `${this.apiUrl}/${restaurantId}/comments/${commentId}`,

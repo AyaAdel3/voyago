@@ -1,12 +1,13 @@
 <div class="hotelpage bg-[#021526]">
   <!-- Loading -->
   <div *ngIf="loading" class="loading-wrap">
+    <div class="spinner"></div>
     <p class="text-white text-xl">Loading...</p>
   </div>
 
   <!-- Hotels -->
   <div *ngIf="!loading" class="hotels-page">
-    <div *ngFor="let hotel of hotels" class="hotel-card" (click)="goToDetails(hotel.id)">
+    <div *ngFor="let hotel of pagedHotels" class="hotel-card" (click)="goToDetails(hotel.id)">
       <div class="card-img-wrap">
         <img [src]="hotel.images[0]" [alt]="hotel.name" class="card-img" loading="lazy" />
 
@@ -34,7 +35,6 @@
         <div class="card-header gap-[3px]">
           <div>
             <h3 class="hotel-name">{{ hotel.name }}</h3>
-
             <p class="hotel-price font-medium">{{ hotel.pricePerNight | number }} LE / night</p>
           </div>
 
@@ -46,14 +46,11 @@
                    6.91-1.01L12 2z"
               />
             </svg>
-
             <span>{{ hotel.rating }}</span>
           </div>
         </div>
 
-        <p class="hotel-desc font-normal">
-          {{ hotel.description }}
-        </p>
+        <p class="hotel-desc font-normal">{{ hotel.description }}</p>
 
         <div class="card-footer">
           <button class="btn-show" (click)="goToDetails(hotel.id); $event.stopPropagation()">
@@ -61,6 +58,17 @@
           </button>
         </div>
       </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">&#8249;</button>
+      <button *ngFor="let p of pagesArray" [class.active]="p === currentPage" (click)="goToPage(p)">
+        {{ p }}
+      </button>
+      <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        &#8250;
+      </button>
     </div>
   </div>
 </div>

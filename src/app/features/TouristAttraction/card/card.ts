@@ -30,6 +30,8 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
   attractions: Attraction[] = [];
   isLoading = true;
   error: string | null = null;
+  pageSize = 5;
+  currentPage = 1;
 
   fallbackImage =
     'https://images.unsplash.com/photo-1568322445389-f64ac2515020?w=800&h=500&fit=crop';
@@ -43,8 +45,27 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
+  get totalPages(): number {
+    return Math.ceil(this.attractions.length / this.pageSize);
+  }
 
+  get pagedAttractions(): Attraction[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.attractions.slice(start, start + this.pageSize);
+  }
+
+  get pagesArray(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  ngOnInit(): void {
     this.isLoading = true;
 
     this.sub = this.attractionService.getAll().pipe(
@@ -55,7 +76,6 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
       })
     ).subscribe({
       next: (data) => {
-
         this.attractions = data;
 
         data.forEach(a => {
@@ -64,13 +84,9 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
 
         this.cdr.detectChanges();
       },
-
       error: (err) => {
-
         console.error('Error fetching attractions:', err);
-
         this.error = 'Failed to load attractions. Please try again.';
-
         this.cdr.detectChanges();
       }
     });
@@ -89,15 +105,11 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
   }
 
   toggleFavorite(event: Event, attraction: Attraction): void {
-
     event.stopPropagation();
 
     if (this.isFavorite(attraction.name)) {
-
       this.favoritesService.removeFavorite(attraction.name);
-
     } else {
-
       this.favoritesService.addToFavorites({
         title: attraction.name,
         image: this.getImage(attraction),
@@ -105,7 +117,6 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
         rating: attraction.rating,
         type: 'attraction'
       });
-
     }
   }
 

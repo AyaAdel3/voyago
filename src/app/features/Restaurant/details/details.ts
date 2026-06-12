@@ -252,25 +252,30 @@ export class Details implements OnInit {
   }
 
   // ✅ ربط الحذف بالـ API
-  confirmDeleteReview(): void {
-    if (!this.reviewToDelete) return;
+confirmDeleteReview(): void {
+  if (!this.reviewToDelete) return;
 
-    const review = this.reviewToDelete;
-    const token  = localStorage.getItem('token') ?? '';
+  const reviewId = this.reviewToDelete.id;
+  const token = localStorage.getItem('token') ?? '';
 
-    this.restaurantService.deleteOwnReview(this.restaurant.id, review.id, token).subscribe({
-      next: () => {
-        this.reviews       = this.reviews.filter(r => r !== review);
-        this.reviewToDelete = null;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Failed to delete review:', err);
-        this.reviewToDelete = null;
-        this.cdr.detectChanges();
-      },
-    });
-  }
+  console.log('Deleting review id:', reviewId);
+  console.log('Reviews before delete:', this.reviews.map(r => r.id));
+
+  this.restaurantService.deleteOwnReview(this.restaurant.id, reviewId, token).subscribe({
+    next: (res) => {
+      console.log('Delete success response:', res);
+      console.log('Reviews after filter:', this.reviews.filter(r => r.id !== reviewId).map(r => r.id));
+      this.reviews = this.reviews.filter(r => r.id !== reviewId);
+      this.reviewToDelete = null;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error('Delete failed:', err);
+      this.reviewToDelete = null;
+      this.cdr.detectChanges();
+    },
+  });
+}
 
   starsArray(n: number): number[] { return Array(n).fill(0); }
 

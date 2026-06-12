@@ -26,7 +26,7 @@ export interface Restaurant {
   openTime:    string;
   closeTime:   string;
   isFavorite?: boolean;
-  status?:     'Active' | 'Inactive' | 'Blocked';
+  status?:     'Active' | 'Inactive'; // ✅
   tables?:     RestaurantTables;
   featureIds?: number[];
   features?:   Feature[];
@@ -64,6 +64,8 @@ export interface RestaurantDetailApiResponse {
   images:        RestaurantImageApi[];
   features:      Feature[];
   comments:      RestaurantReview[];
+  status?:       'Active' | 'Inactive'; // ✅
+  statusId?:     number;
 }
 
 export interface AdminRestaurantApiItem {
@@ -72,7 +74,7 @@ export interface AdminRestaurantApiItem {
   cuisineType:  string;
   rating:       number;
   priceRange:   string;
-  status:       'Active' | 'Inactive' | 'Blocked';
+  status:       'Active' | 'Inactive'; // ✅
   totalTables:  number;
   mainImageUrl: string | null;
 }

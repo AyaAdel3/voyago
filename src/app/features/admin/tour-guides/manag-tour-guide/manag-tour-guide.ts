@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TourGuideService, TourGuide } from '../../../../core/services/tour-guide.service';
 import { forkJoin } from 'rxjs';
+import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
 
 @Component({
   selector: 'app-manage-tour-guide',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ImageCropperComponent],
   templateUrl: './manag-tour-guide.html',
   styleUrls: ['../../admin-shared.css', './manag-tour-guide.css'],
 })
@@ -22,7 +23,12 @@ export class ManageTourGuide implements OnInit {
   toastSuccess = true;
   isLoading    = false;
 
-  // ✅ اللغات بتيجي من GET /admin/tour-guides/languages
+  // ✅ Crop
+  showCropper = false;
+  imageChangedEvent: Event | null = null;
+  croppedImage = '';
+  croppedFile: File | null = null;
+
   availableLanguages: { id: number; name: string }[] = [];
   selectedLanguageIds: number[] = [];
 
@@ -46,17 +52,14 @@ export class ManageTourGuide implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe(p => {
       if (p['id']) {
-        // ── EDIT MODE ──────────────────────────────────────
         this.isEdit = true;
         this.editId = +p['id'];
 
-        // ✅ بنجيب اللغات والـ guide data مع بعض بـ forkJoin
         forkJoin({
           langs: this.tourGuideService.adminGetLanguages(),
           guide: this.tourGuideService.getById_API(this.editId)
         }).subscribe({
           next: ({ langs, guide: existing }) => {
-            // ✅ حط اللغات المتاحة من الـ API
             this.availableLanguages = langs;
 
             this.guide = {
@@ -73,8 +76,6 @@ export class ManageTourGuide implements OnInit {
               ? [existing.profilePictureUrl]
               : existing.image ? [existing.image] : [];
 
-            // ✅ الـ languages بتيجي strings من الـ API
-            // بنعمل match بالاسم مع الـ availableLanguages عشان نجيب الـ ids
             if (Array.isArray(existing.languages) && existing.languages.length) {
               const guideLanguageNames = existing.languages.map(
                 (l: string) => l.toLowerCase().trim()
@@ -87,7 +88,6 @@ export class ManageTourGuide implements OnInit {
             this.cdr.detectChanges();
           },
           error: () => {
-            // Fallback: لو الـ API فشل، جيب اللغات لوحدها وخد الـ data من الـ cache
             this.tourGuideService.adminGetLanguages().subscribe({
               next: langs => {
                 this.availableLanguages = langs;
@@ -122,8 +122,6 @@ export class ManageTourGuide implements OnInit {
         });
 
       } else {
-        // ── ADD MODE ───────────────────────────────────────
-        // ✅ جيب اللغات من GET /admin/tour-guides/languages
         this.tourGuideService.adminGetLanguages().subscribe({
           next: langs => {
             this.availableLanguages = langs;
@@ -137,7 +135,6 @@ export class ManageTourGuide implements OnInit {
 
   setStatus(s: string) { this.guide.status = s; }
 
-  // ✅ toggle اختيار/إلغاء لغة
   toggleLanguage(id: number): void {
     const idx = this.selectedLanguageIds.indexOf(id);
     if (idx === -1) this.selectedLanguageIds.push(id);
@@ -151,6 +148,7 @@ export class ManageTourGuide implements OnInit {
   removeImage(i: number) {
     this.images.splice(i, 1);
     this.selectedFile = null;
+    this.croppedFile  = null;
   }
 
   onFileSelected(event: Event): void {
@@ -170,8 +168,52 @@ export class ManageTourGuide implements OnInit {
       return;
     }
 
-    this.selectedFile = file;
-    this.images = [URL.createObjectURL(this.selectedFile)];
+    this.imageChangedEvent = event;
+    this.showCropper = true;
+    this.cdr.detectChanges();
+  }
+
+  onImageCropped(event: ImageCroppedEvent): void {
+    if (event.base64) {
+      this.croppedImage = event.base64;
+      // ✅ نحول الـ base64 لـ File عشان نرفعه للـ API
+      const arr = event.base64.split(',');
+      const mime = arr[0].match(/:(.*?);/)![1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) u8arr[n] = bstr.charCodeAt(n);
+      this.croppedFile = new File([u8arr], 'tour-guide.jpg', { type: mime });
+    } else if (event.blob) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.croppedImage = reader.result as string;
+        this.cdr.detectChanges();
+      };
+      reader.readAsDataURL(event.blob);
+      this.croppedFile = new File([event.blob], 'tour-guide.jpg', { type: 'image/jpeg' });
+    }
+  }
+
+  saveCrop(): void {
+    if (this.croppedImage) {
+      this.images = [this.croppedImage];
+      if (this.croppedFile) {
+        this.selectedFile = this.croppedFile;
+      }
+    }
+    this.showCropper       = false;
+    this.croppedImage      = '';
+    this.croppedFile       = null;
+    this.imageChangedEvent = null;
+    this.cdr.detectChanges();
+  }
+
+  cancelCrop(): void {
+    this.showCropper       = false;
+    this.imageChangedEvent = null;
+    this.croppedImage      = '';
+    this.croppedFile       = null;
   }
 
   showToast(msg: string, navigate = true, success = true) {
@@ -187,7 +229,6 @@ export class ManageTourGuide implements OnInit {
   }
 
   save() {
-    // ── Validation ──────────────────────────────────────────
     if (!this.guide.name.trim()) {
       this.showToast('Full name is required.', false, false); return;
     }
@@ -212,13 +253,10 @@ export class ManageTourGuide implements OnInit {
     if (!this.guide.description.trim()) {
       this.showToast('Description is required.', false, false); return;
     }
-    // ✅ لازم يختار لغة واحدة على الأقل
     if (this.selectedLanguageIds.length === 0) {
       this.showToast('Please select at least one language.', false, false); return;
     }
 
-    // ── Payload — بيتبعت للـ API ────────────────────────────
-    // ✅ languages بيتبعت كـ number[] (ids) مش strings
     const payload = {
       name:        this.guide.name.trim(),
       email:       this.guide.email.trim(),
@@ -232,11 +270,9 @@ export class ManageTourGuide implements OnInit {
     this.isLoading = true;
 
     if (this.isEdit && this.editId) {
-      // ── PUT /admin/tour-guides/{id} ──────────────────────
       this.tourGuideService.adminUpdate(this.editId, payload).subscribe({
         next: () => {
           if (this.selectedFile) {
-            // ✅ POST /admin/tour-guides/{id}/image
             this.tourGuideService.adminUploadImage(this.editId!, this.selectedFile).subscribe({
               next: () => {
                 this.isLoading = false;
@@ -259,12 +295,10 @@ export class ManageTourGuide implements OnInit {
       });
 
     } else {
-      // ── POST /admin/tour-guides ──────────────────────────
       this.tourGuideService.adminAdd(payload).subscribe({
         next: (res: any) => {
           const newId = res?.id ?? res?.data?.id ?? (typeof res === 'number' ? res : null);
           if (this.selectedFile && newId) {
-            // ✅ POST /admin/tour-guides/{newId}/image
             this.tourGuideService.adminUploadImage(newId, this.selectedFile).subscribe({
               next: () => {
                 this.isLoading = false;
@@ -304,8 +338,9 @@ export class ManageTourGuide implements OnInit {
       name: '', email: '', phone: '',
       rating: '', description: '', pricePerDay: '', status: 'Active',
     };
-    this.images             = [];
-    this.selectedFile       = null;
+    this.images              = [];
+    this.selectedFile        = null;
+    this.croppedFile         = null;
     this.selectedLanguageIds = [];
   }
 }

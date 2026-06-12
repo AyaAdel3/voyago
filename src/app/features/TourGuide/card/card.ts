@@ -30,11 +30,11 @@ export type { TourGuide };
 export class Card implements OnInit, OnDestroy {
 
   guides: TourGuide[] = [];
-
   loading = true;
   error = '';
-
   selectedGuide: TourGuide | null = null;
+  pageSize = 5;
+  currentPage = 1;
 
   private sub!: Subscription;
 
@@ -44,8 +44,27 @@ export class Card implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
+  get totalPages(): number {
+    return Math.ceil(this.guides.length / this.pageSize);
+  }
 
+  get pagedGuides(): TourGuide[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.guides.slice(start, start + this.pageSize);
+  }
+
+  get pagesArray(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  ngOnInit(): void {
     this.loading = true;
 
     this.sub = this.tourGuideService.getAll().pipe(
@@ -55,27 +74,16 @@ export class Card implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       })
     ).subscribe({
-
       next: (data) => {
-
         this.guides = data;
-
         this.cdr.detectChanges();
       },
-
       error: (err) => {
-
         if (err?.name === 'TimeoutError') {
-
-          this.error =
-            'Request timed out. Please check your connection and try again.';
-
+          this.error = 'Request timed out. Please check your connection and try again.';
         } else {
-
-          this.error =
-            'Failed to load tour guides. Please try again.';
+          this.error = 'Failed to load tour guides. Please try again.';
         }
-
         this.cdr.detectChanges();
       }
     });
@@ -86,11 +94,8 @@ export class Card implements OnInit, OnDestroy {
   }
 
   onImgError(event: Event): void {
-
     const img = event.target as HTMLImageElement;
-
     img.onerror = null;
-
     img.src =
       `data:image/svg+xml;utf8,
       <svg xmlns='http://www.w3.org/2000/svg'
@@ -122,15 +127,11 @@ export class Card implements OnInit, OnDestroy {
   }
 
   toggleFav(event: MouseEvent, guide: TourGuide): void {
-
     event.stopPropagation();
 
     if (this.isGuideInFav(guide.name)) {
-
       this.favoritesService.removeFavorite(guide.name);
-
     } else {
-
       this.favoritesService.addToFavorites({
         title: guide.name,
         image: guide.image,

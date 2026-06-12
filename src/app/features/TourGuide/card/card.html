@@ -1,19 +1,18 @@
 <div class="guidepage bg-[#021526]">
+  <!-- Loading State -->
   <div *ngIf="loading" class="flex justify-center items-center min-h-screen">
     <p class="text-white text-xl">Loading...</p>
   </div>
 
+  <!-- Error State -->
   <div *ngIf="error" class="error-wrap">
     <p>{{ error }}</p>
   </div>
 
+  <!-- Data -->
   <div *ngIf="!loading && !error" class="guides-page">
-    <p>{{ error }}</p>
-  </div>
-
-  <div *ngIf="!error" class="guides-page">
     <div
-      *ngFor="let guide of guides; trackBy: trackById"
+      *ngFor="let guide of pagedGuides; trackBy: trackById"
       class="guide-card"
       (click)="openDetails(guide)"
     >
@@ -74,6 +73,17 @@
           </button>
         </div>
       </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">&#8249;</button>
+      <button *ngFor="let p of pagesArray" [class.active]="p === currentPage" (click)="goToPage(p)">
+        {{ p }}
+      </button>
+      <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        &#8250;
+      </button>
     </div>
   </div>
 

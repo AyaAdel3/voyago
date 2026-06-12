@@ -15,6 +15,8 @@ import { FavoritesService } from '../../../core/services/favorites.service';
 export class Card implements OnInit {
   hotels: Hotel[] = [];
   loading = false;
+  pageSize = 5;
+  currentPage = 1;
 
   constructor(
     public hotelService: HotelService,
@@ -22,6 +24,26 @@ export class Card implements OnInit {
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
+
+  get totalPages(): number {
+    return Math.ceil(this.hotels.length / this.pageSize);
+  }
+
+  get pagedHotels(): Hotel[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.hotels.slice(start, start + this.pageSize);
+  }
+
+  get pagesArray(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
 
   ngOnInit(): void {
     this.loading = true;

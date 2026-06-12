@@ -12,7 +12,7 @@
   <!-- Data -->
   <div *ngIf="!isLoading && !error" class="attractions-list">
     <div
-      *ngFor="let attraction of attractions"
+      *ngFor="let attraction of pagedAttractions"
       class="attraction-card"
       (click)="goToDetails(attraction.id)"
     >
@@ -45,6 +45,17 @@
           Show place
         </button>
       </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">&#8249;</button>
+      <button *ngFor="let p of pagesArray" [class.active]="p === currentPage" (click)="goToPage(p)">
+        {{ p }}
+      </button>
+      <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        &#8250;
+      </button>
     </div>
   </div>
 </div>

@@ -69,15 +69,12 @@ export class ManageRestaurant implements OnInit {
   ) {}
 
   ngOnInit() {
-    // ✅ جيب الـ features من الـ API دايماً — Add و Edit
     this.service.getFeatures(this.token).subscribe({
       next: features => {
         this.availableFeatures = features;
         this.cdr.detectChanges();
       },
-      error: () => {
-        console.error('Failed to load features');
-      },
+      error: () => console.error('Failed to load features'),
     });
 
     this.route.queryParams.subscribe(params => {
@@ -90,46 +87,50 @@ export class ManageRestaurant implements OnInit {
   }
 
   private loadRestaurant(id: number) {
+    // ✅ admin endpoint يرجع البيانات سواء active أو inactive
     this.service.http
-      .get<RestaurantDetailApiResponse>(`http://voyagoo.runasp.net/Restaurants/${id}`)
+      .get<RestaurantDetailApiResponse>(
+        `http://voyagoo.runasp.net/admin/restaurants/${id}`,
+        { headers: { Authorization: `Bearer ${this.token}` } }
+      )
       .subscribe({
-        next: (r: RestaurantDetailApiResponse) => {
-          this.restaurant = {
-            name:        r.name,
-            description: r.description,
-            address:     r.address,
-            rating:      r.rating,
-            minPrice:    r.minPrice,
-            maxPrice:    r.maxPrice,
-          };
-
-          const found = this.cuisineTypes.find(
-            c => c.name.toLowerCase() === r.cuisineType.toLowerCase()
-          );
-          this.selectedCuisineId = found?.id ?? null;
-
-          // ✅ الـ availableFeatures اتملت من الـ API في الـ ngOnInit
-          this.selectedFeatureIds = r.features ? r.features.map(f => f.id) : [];
-
-          this.images = r.images
-            ? r.images
-                .sort((a, b) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0))
-                .map(img => ({ id: img.id, url: img.imageUrl }))
-            : [];
-
-          const for2  = r.tablesForTwo  ?? 0;
-          const for4  = r.tablesForFour ?? 0;
-          const for6  = r.tablesForSix  ?? 0;
-          this.tables = { for2, for4, for6, total: for2 + for4 + for6 };
-
-          this.selectedStatusId = 1;
-          this.cdr.detectChanges();
-        },
-        error: (err: any) => {
+        next:  (r) => this.fillForm(r),
+        error: (err) => {
           console.error('Failed to load restaurant for edit:', err);
           this.showToast('Failed to load restaurant data.', false, false);
         },
       });
+  }
+
+  private fillForm(r: RestaurantDetailApiResponse) {
+    this.restaurant = {
+      name:        r.name,
+      description: r.description,
+      address:     r.address,
+      rating:      r.rating,
+      minPrice:    r.minPrice,
+      maxPrice:    r.maxPrice,
+    };
+
+    const found = this.cuisineTypes.find(
+      c => c.name.toLowerCase() === r.cuisineType.toLowerCase()
+    );
+    this.selectedCuisineId  = found?.id ?? null;
+    this.selectedFeatureIds = r.features ? r.features.map(f => f.id) : [];
+
+    this.images = r.images
+      ? r.images
+          .sort((a, b) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0))
+          .map(img => ({ id: img.id, url: img.imageUrl }))
+      : [];
+
+    const for2  = r.tablesForTwo  ?? 0;
+    const for4  = r.tablesForFour ?? 0;
+    const for6  = r.tablesForSix  ?? 0;
+    this.tables = { for2, for4, for6, total: for2 + for4 + for6 };
+
+    this.selectedStatusId = (r as any).status === 'Inactive' ? 2 : 1;
+    this.cdr.detectChanges();
   }
 
   getFeatureLabel(id: number): string {
