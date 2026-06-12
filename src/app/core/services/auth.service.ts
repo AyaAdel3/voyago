@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 export interface User {
@@ -86,14 +86,58 @@ export class AuthService {
       return throwError(() => new Error('No tokens available'));
     }
 
-    // ✅ الـ endpoint الصح
-    return this.http.post<AuthResponse>(`${BASE_URL}/Auth/refresh`, { token, refreshToken }).pipe(
+    return this.http.post<AuthResponse>(
+      `${BASE_URL}/Auth/refresh`,
+      { token, refreshToken }
+    ).pipe(
       map(res => {
         this._saveTokens(res);
         return res;
       }),
       catchError(err => throwError(() => err))
     );
+  }
+
+  // ✅ للـ profile logout — بيستنى الـ revoke
+  logout(): Observable<any> {
+    const token        = localStorage.getItem('voyago_token');
+    const refreshToken = localStorage.getItem('voyago_refresh_token');
+
+    if (token && refreshToken) {
+      return this.http.post(
+        `${BASE_URL}/Auth/revoke-refresh-token`,
+        { token, refreshToken }
+      ).pipe(
+        catchError(() => of(null)),
+        map(() => this._clearLocalStorage())
+      );
+    }
+
+    this._clearLocalStorage();
+    return of(null);
+  }
+
+  // ✅ للـ interceptor — بيمسح فوراً من غير ما يستنى
+  forceLogout(): void {
+    const token        = localStorage.getItem('voyago_token');
+    const refreshToken = localStorage.getItem('voyago_refresh_token');
+
+    if (token && refreshToken) {
+      this.http.post(
+        `${BASE_URL}/Auth/revoke-refresh-token`,
+        { token, refreshToken }
+      ).subscribe({ error: () => {} });
+    }
+
+    this._clearLocalStorage();
+  }
+
+  private _clearLocalStorage(): void {
+    localStorage.removeItem('voyago_current_user');
+    localStorage.removeItem('voyago_token');
+    localStorage.removeItem('voyago_refresh_token');
+    localStorage.removeItem('voyago_token_expires_at');
+    this.currentUser.set(null);
   }
 
   private _saveTokens(res: AuthResponse): void {
@@ -134,14 +178,6 @@ export class AuthService {
       { email: this.pendingEmail, newPassword, confirmNewPassword },
       { responseType: 'text' }
     ).pipe(catchError(err => throwError(() => err)));
-  }
-
-  logout(): void {
-    localStorage.removeItem('voyago_current_user');
-    localStorage.removeItem('voyago_token');
-    localStorage.removeItem('voyago_refresh_token');
-    localStorage.removeItem('voyago_token_expires_at');
-    this.currentUser.set(null);
   }
 
   private getLoggedInUser(): User | null {

@@ -65,43 +65,35 @@ export class ProfileLayout {
     return `${user.firstName?.charAt(0) ?? ''}${user.lastName?.charAt(0) ?? ''}`.toUpperCase();
   }
 
-
   onImageSelected(event: Event): void {
-  console.log('image selected!'); // ✅
-  this.imageChangedEvent = event;
-  this.showCropper = true;
-  this.cdr.detectChanges();
-}
-
-onImageCropped(event: ImageCroppedEvent): void {
-  console.log('full event:', event);
-  // بناخد الـ base64 أو نحوله من الـ blob
-  if (event.base64) {
-    this.croppedImage = event.base64;
-  } else if (event.blob) {
-    const reader = new FileReader();
-    reader.onload = () => {
-      this.croppedImage = reader.result as string;
-      console.log('croppedImage from blob:', this.croppedImage.substring(0, 30));
-    };
-    reader.readAsDataURL(event.blob);
+    this.imageChangedEvent = event;
+    this.showCropper = true;
+    this.cdr.detectChanges();
   }
-}
 
-saveCrop(): void {
-  const imageToSave = this.croppedImage; // ✅ بنحفظه في variable قبل ما نمسحه
-  
-  if (imageToSave) {
-    this.auth.updateProfileImage(imageToSave);
-    this.profileImage.set(imageToSave);
+  onImageCropped(event: ImageCroppedEvent): void {
+    if (event.base64) {
+      this.croppedImage = event.base64;
+    } else if (event.blob) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.croppedImage = reader.result as string;
+      };
+      reader.readAsDataURL(event.blob);
+    }
   }
-  
-  this.showCropper = false;
-  this.croppedImage = '';
-  this.imageChangedEvent = null;
-  this.cdr.detectChanges();
-}
- 
+
+  saveCrop(): void {
+    const imageToSave = this.croppedImage;
+    if (imageToSave) {
+      this.auth.updateProfileImage(imageToSave);
+      this.profileImage.set(imageToSave);
+    }
+    this.showCropper = false;
+    this.croppedImage = '';
+    this.imageChangedEvent = null;
+    this.cdr.detectChanges();
+  }
 
   cancelCrop(): void {
     this.showCropper = false;
@@ -115,8 +107,10 @@ saveCrop(): void {
     this.cdr.detectChanges();
   }
 
+  // ✅ استنى الـ revoke يخلص الأول، بعدين روح لـ home
   logout(): void {
-    this.auth.logout();
-    this.router.navigate(['/home']);
+    this.auth.logout().subscribe({
+      complete: () => this.router.navigate(['/home'])
+    });
   }
 }

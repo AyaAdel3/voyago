@@ -12,17 +12,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router      = inject(Router);
 
-  // ✅ الـ endpoint الصح
-  if (req.url.includes('/Auth/refresh')) {
+  if (req.url.includes('/Auth/refresh') || req.url.includes('/Auth/revoke-refresh-token')) {
     return next(req);
   }
 
   const token        = localStorage.getItem('voyago_token');
   const expiresAtStr = localStorage.getItem('voyago_token_expires_at');
   const expiresAt    = expiresAtStr ? parseInt(expiresAtStr) : null;
-  const isAboutToExpire = token && expiresAt && Date.now() > expiresAt - 60_000;
 
-  // ── Proactive refresh لو التوكن هينتهي قريباً ──
+  const isAboutToExpire = !!(token && expiresAt && Date.now() > expiresAt - 60_000);
+
   if (isAboutToExpire && !isRefreshing) {
     isRefreshing = true;
     refreshTokenSubject.next(null);
@@ -36,14 +35,16 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       catchError((err) => {
         isRefreshing = false;
         refreshTokenSubject.next(null);
-        authService.logout();
-        router.navigate(['/home']);
+        if (err.status === 401) {
+          // ✅ forceLogout بدل logout
+          authService.forceLogout();
+          router.navigate(['/home']);
+        }
         return throwError(() => err);
       })
     );
   }
 
-  // لو في refresh شغال دلوقتي، استنى
   if (isAboutToExpire && isRefreshing) {
     return refreshTokenSubject.pipe(
       filter((t) => t !== null),
@@ -52,7 +53,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     );
   }
 
-  // ── الـ request العادي ──
   return next(addToken(req, token)).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status !== 401) {
@@ -79,8 +79,11 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         catchError((refreshErr) => {
           isRefreshing = false;
           refreshTokenSubject.next(null);
-          authService.logout();
-          router.navigate(['/home']);
+          if (refreshErr.status === 401) {
+            // ✅ forceLogout بدل logout
+            authService.forceLogout();
+            router.navigate(['/home']);
+          }
           return throwError(() => refreshErr);
         })
       );
