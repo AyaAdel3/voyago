@@ -103,13 +103,19 @@ export class Details implements OnInit {
   }
 
   private loadReviews(id: number): void {
-    this.restaurantService.getReviews(id).subscribe({
-      next: (reviews: RestaurantReview[]) => {
-        this.reviews = reviews;
-        this.cdr.detectChanges();
-      }
-    });
-  }
+  this.restaurantService.getReviews(id).subscribe({
+    next: (reviews: RestaurantReview[]) => {
+
+      console.log('LOADED REVIEWS:', reviews);
+
+      this.reviews = reviews;
+      this.cdr.detectChanges();
+    },
+    error: (err) => {
+      console.error(err);
+    }
+  });
+}
 
   get currentUserName(): string {
     return this.authService.getFullName() || 'Guest';
@@ -246,34 +252,46 @@ export class Details implements OnInit {
   }
 
   submitReview(): void {
-    if (!this.authService.isLoggedIn()) {
-      this.authModal.openLogin();
-      return;
-    }
-    if (!this.newComment.trim() || this.newRating === 0) return;
-    if (this.isSubmittingReview) return;
+  if (!this.authService.isLoggedIn()) {
+    this.authModal.openLogin();
+    return;
+  }
 
-    this.isSubmittingReview = true;
+  if (!this.newComment.trim() || this.newRating === 0) {
+    return;
+  }
 
-    this.restaurantService.submitReview(this.restaurant.id, this.newComment, this.newRating).subscribe({
-      next: (review: RestaurantReview) => {
-        const myReview = {
-          ...review,
-          userName: this.authService.getFullName()?.trim() || review.userName,
-        };
-        this.reviews = [myReview, ...this.reviews];
+  if (this.isSubmittingReview) {
+    return;
+  }
+
+  this.isSubmittingReview = true;
+
+  this.restaurantService
+    .submitReview(
+      this.restaurant.id,
+      this.newComment,
+      this.newRating
+    )
+    .subscribe({
+      next: () => {
+
         this.newComment = '';
         this.newRating = 0;
+
+        // إعادة تحميل الكومنتات من الـ API
+        this.loadReviews(this.restaurant.id);
+
         this.isSubmittingReview = false;
         this.cdr.detectChanges();
       },
+
       error: () => {
         this.isSubmittingReview = false;
         this.cdr.detectChanges();
       },
     });
-  }
-
+}
   requestDeleteReview(review: RestaurantReview): void {
     this.reviewToDelete = review;
   }
@@ -282,25 +300,38 @@ export class Details implements OnInit {
     this.reviewToDelete = null;
   }
 
-  confirmDeleteReview(): void {
-    if (!this.reviewToDelete) return;
+confirmDeleteReview(): void {
 
-    const reviewId = this.reviewToDelete.id;
-    const token = localStorage.getItem('token') ?? '';
+  if (!this.reviewToDelete) return;
 
-    this.restaurantService.deleteOwnReview(this.restaurant.id, reviewId, token).subscribe({
-      next: () => {
-        this.reviews = this.reviews.filter(r => r.id !== reviewId);
-        this.reviewToDelete = null;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        console.error('Delete failed:', err);
-        this.reviewToDelete = null;
-        this.cdr.detectChanges();
-      },
-    });
-  }
+  const reviewId = this.reviewToDelete.id;
+  const token = localStorage.getItem('token') ?? '';
+
+  this.restaurantService.deleteOwnReview(
+    this.restaurant.id,
+    reviewId,
+    token
+  ).subscribe({
+    next: () => {
+
+      this.reviews = this.reviews.filter(
+        r => r.id !== reviewId
+      );
+
+      // ✅ اقفل الـ popup
+      this.reviewToDelete = null;
+
+      this.cdr.detectChanges();
+    },
+
+    error: (err) => {
+      console.error(err);
+
+      // اختياري: اقفله حتى لو حصل Error
+      this.reviewToDelete = null;
+    }
+  });
+}
 
   starsArray(n: number): number[] { return Array(n).fill(0); }
 

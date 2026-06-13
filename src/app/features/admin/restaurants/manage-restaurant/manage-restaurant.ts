@@ -2,12 +2,12 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { RestaurantService } from '../../../../core/services/resturant.service';
 import {
   RestaurantTables,
   Feature,
   CuisineType,
-  CUISINE_TYPES,
   RESTAURANT_STATUSES,
   AdminRestaurantAddRequest,
   AdminRestaurantUpdateRequest,
@@ -42,7 +42,7 @@ export class ManageRestaurant implements OnInit {
   selectedFeatureIds: number[]     = [];
   featuresDropdownOpen             = false;
 
-  cuisineTypes:      CuisineType[] = CUISINE_TYPES;
+  cuisineTypes:      CuisineType[] = [];      // ← هتتملى من الـ API
   selectedCuisineId: number | null = null;
 
   statuses         = RESTAURANT_STATUSES;
@@ -69,25 +69,31 @@ export class ManageRestaurant implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.service.getFeatures(this.token).subscribe({
-      next: features => {
+    // نجيب الـ features والـ cuisine types مع بعض
+    // وبعدين لو edit نجيب بيانات الـ restaurant عشان الـ match يشتغل صح
+    forkJoin({
+      features: this.service.getFeatures(this.token),
+      cuisines: this.service.getCuisineTypes(this.token),
+    }).subscribe({
+      next: ({ features, cuisines }) => {
         this.availableFeatures = features;
+        this.cuisineTypes      = cuisines;
         this.cdr.detectChanges();
-      },
-      error: () => console.error('Failed to load features'),
-    });
 
-    this.route.queryParams.subscribe(params => {
-      if (params['id']) {
-        this.restaurantId = +params['id'];
-        this.isEdit       = true;
-        this.loadRestaurant(this.restaurantId);
-      }
+        // بعد ما الـ lists اتحملت، نجيب بيانات الـ restaurant لو edit
+        this.route.queryParams.subscribe(params => {
+          if (params['id']) {
+            this.restaurantId = +params['id'];
+            this.isEdit       = true;
+            this.loadRestaurant(this.restaurantId);
+          }
+        });
+      },
+      error: () => console.error('Failed to load initial data'),
     });
   }
 
   private loadRestaurant(id: number) {
-    // ✅ admin endpoint يرجع البيانات سواء active أو inactive
     this.service.http
       .get<RestaurantDetailApiResponse>(
         `http://voyagoo.runasp.net/admin/restaurants/${id}`,
@@ -112,6 +118,7 @@ export class ManageRestaurant implements OnInit {
       maxPrice:    r.maxPrice,
     };
 
+    // الـ cuisineTypes مليانة دلوقتي فالـ match هيشتغل صح
     const found = this.cuisineTypes.find(
       c => c.name.toLowerCase() === r.cuisineType.toLowerCase()
     );

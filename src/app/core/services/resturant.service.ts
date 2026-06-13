@@ -10,12 +10,12 @@ import {
   TableType,
   ReservationData,
   Feature,
+  CuisineType,
   AdminRestaurantApiItem,
   AdminRestaurantsApiResponse,
   AdminRestaurantAddRequest,
   AdminRestaurantUpdateRequest,
   AdminReviewsApiResponse,
-  MOCK_RESTAURANT_REVIEWS,
   DEFAULT_TABLES,
 } from '../model/restaurant.model';
 
@@ -27,9 +27,6 @@ export class RestaurantService {
 
   private restaurantsSubject = new BehaviorSubject<Restaurant[]>([]);
   restaurants$ = this.restaurantsSubject.asObservable();
-
-  private reviewsSubject = new BehaviorSubject<RestaurantReview[]>([...MOCK_RESTAURANT_REVIEWS]);
-  reviews$ = this.reviewsSubject.asObservable();
 
   private favIds             = signal<Set<number>>(new Set());
   private currentReservation = signal<ReservationData | null>(null);
@@ -108,16 +105,32 @@ export class RestaurantService {
     );
   }
 
+  // ── REVIEWS من الـ API مباشرة ────────────────────────────
   getReviews(restaurantId: number): Observable<RestaurantReview[]> {
-    return this.http.get<RestaurantDetailApiResponse>(`${this.apiUrl}/${restaurantId}`).pipe(
-      map(r => r.comments ?? [])
-    );
-  }
+  return this.http.get<RestaurantDetailApiResponse>(
+    `${this.apiUrl}/${restaurantId}`
+  ).pipe(
+    map(r => {
 
-  // ── GET FEATURES من الـ API ───────────────────────────────
+      console.log('COMMENTS FROM API:', r.comments);
+
+      return r.comments ?? [];
+    })
+  );
+}
+
+  // ── GET FEATURES من الـ API ──────────────────────────────
   getFeatures(token: string): Observable<Feature[]> {
     return this.http.get<Feature[]>(
       'http://voyagoo.runasp.net/admin/features',
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  // ── GET CUISINE TYPES من الـ API ─────────────────────────
+  getCuisineTypes(token: string): Observable<CuisineType[]> {
+    return this.http.get<CuisineType[]>(
+      `${this.adminApiUrl}/cuisine-types`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
   }
@@ -188,32 +201,33 @@ export class RestaurantService {
     );
   }
 
- submitReview(restaurantId: number, comment: string, rating: number): Observable<RestaurantReview> {
-  const body = { content: comment, rating };
-  return new Observable(observer => {
-    this.http.post<{ id?: number; commentId?: number }>(
-      `${this.apiUrl}/${restaurantId}/comments`, body
-    ).subscribe({
-      next: (res) => {
-        const newReview: RestaurantReview = {
-          id:           res?.id ?? res?.commentId ?? 0,
-          restaurantId,
-          userName:     'You',
-          userCountry:  'Egypt',
-          rating,
-          content:      comment,
-          date:         new Date().toISOString().split('T')[0],
-        };
-        observer.next(newReview);
-        observer.complete();
-      },
-      error: err => {
-        console.error('Failed to submit review:', err);
-        observer.error(err);
-      },
+  submitReview(restaurantId: number, comment: string, rating: number): Observable<RestaurantReview> {
+    const body = { content: comment, rating };
+    return new Observable(observer => {
+      this.http.post<{ id?: number; commentId?: number }>(
+        `${this.apiUrl}/${restaurantId}/comments`, body
+      ).subscribe({
+        next: (res) => {
+          const newReview: RestaurantReview = {
+            id:           res?.id ?? res?.commentId ?? 0,
+            restaurantId,
+            userName:     'You',
+            userCountry:  'Egypt',
+            rating,
+            content:      comment,
+            date:         new Date().toISOString().split('T')[0],
+          };
+          observer.next(newReview);
+          observer.complete();
+        },
+        error: err => {
+          console.error('Failed to submit review:', err);
+          observer.error(err);
+        },
+      });
     });
-  });
-}
+  }
+
   deleteOwnReview(restaurantId: number, commentId: number, token: string): Observable<void> {
     return this.http.delete<void>(
       `${this.apiUrl}/${restaurantId}/comments/${commentId}`,
@@ -226,11 +240,6 @@ export class RestaurantService {
       `${this.adminApiUrl}/${restaurantId}/comments/${commentId}/DeleteComment`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
-  }
-
-  deleteReview(reviewId: number): void {
-    const current = this.reviewsSubject.getValue();
-    this.reviewsSubject.next(current.filter(r => r.id !== reviewId));
   }
 
   deleteRestaurant(id: number, token: string): Observable<void> {
