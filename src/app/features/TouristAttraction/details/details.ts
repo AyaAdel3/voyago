@@ -77,14 +77,13 @@ constructor(
     )
     .subscribe({
 
-      next: (data) => {
-
-        this.attraction = data;
-
-        this.activeImage = 0;
-
-        this.cdr.detectChanges();
-      },
+   next: (data) => {
+  this.attraction = data;
+  console.log('Images count:', data.images?.length); // ضيف السطر ده
+  console.log('Images:', data.images);               // وده
+  this.activeImage = 0;
+  this.cdr.detectChanges();
+},
 
       error: (err) => {
 
