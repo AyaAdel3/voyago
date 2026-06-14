@@ -24,6 +24,7 @@ export class RestaurantService {
 
   private readonly apiUrl      = 'http://voyagoo.runasp.net/Restaurants';
   private readonly adminApiUrl = 'http://voyagoo.runasp.net/admin/restaurants';
+  private readonly favApiUrl   = 'http://voyagoo.runasp.net/Favorites/restaurants';
 
   private restaurantsSubject = new BehaviorSubject<Restaurant[]>([]);
   restaurants$ = this.restaurantsSubject.asObservable();
@@ -105,21 +106,17 @@ export class RestaurantService {
     );
   }
 
-  // ── REVIEWS من الـ API مباشرة ────────────────────────────
   getReviews(restaurantId: number): Observable<RestaurantReview[]> {
-  return this.http.get<RestaurantDetailApiResponse>(
-    `${this.apiUrl}/${restaurantId}`
-  ).pipe(
-    map(r => {
+    return this.http.get<RestaurantDetailApiResponse>(
+      `${this.apiUrl}/${restaurantId}`
+    ).pipe(
+      map(r => {
+        console.log('COMMENTS FROM API:', r.comments);
+        return r.comments ?? [];
+      })
+    );
+  }
 
-      console.log('COMMENTS FROM API:', r.comments);
-
-      return r.comments ?? [];
-    })
-  );
-}
-
-  // ── GET FEATURES من الـ API ──────────────────────────────
   getFeatures(token: string): Observable<Feature[]> {
     return this.http.get<Feature[]>(
       'http://voyagoo.runasp.net/admin/features',
@@ -127,7 +124,6 @@ export class RestaurantService {
     );
   }
 
-  // ── GET CUISINE TYPES من الـ API ─────────────────────────
   getCuisineTypes(token: string): Observable<CuisineType[]> {
     return this.http.get<CuisineType[]>(
       `${this.adminApiUrl}/cuisine-types`,
@@ -246,6 +242,14 @@ export class RestaurantService {
     return this.http.delete<void>(
       `${this.adminApiUrl}/${id}`,
       { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  // ── FAVORITES API ────────────────────────────────────────
+  toggleFavoriteApi(restaurantId: number): Observable<void> {
+    return this.http.post<void>(
+      `${this.favApiUrl}/${restaurantId}/toggle`,
+      {}
     );
   }
 

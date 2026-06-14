@@ -63,8 +63,9 @@ export interface AdminAttractionPayload {
 })
 export class AttractionService {
 
-  private apiUrl = '/api/Attractions';
+  private apiUrl   = '/api/Attractions';
   private adminUrl = '/api/admin/attractions';
+  private favUrl   = 'http://voyagoo.runasp.net/Favorites/attractions';
 
   private _cache: Attraction[] | null = null;
 
@@ -73,81 +74,62 @@ export class AttractionService {
   // ───────────────── Public ─────────────────
 
   getAll(): Observable<Attraction[]> {
-
     if (this._cache) {
       return of(this._cache);
     }
-
     return this.http.get<Attraction[]>(this.apiUrl).pipe(
       tap(data => this._cache = data)
     );
   }
 
   getById(id: number): Observable<AttractionDetails> {
+    return this.http.get<AttractionDetails>(`${this.apiUrl}/${id}`);
+  }
 
-    return this.http.get<AttractionDetails>(
-      `${this.apiUrl}/${id}`
+  // ── FAVORITES API ────────────────────────────────────────
+  toggleFavoriteApi(attractionId: number): Observable<void> {
+    return this.http.post<void>(
+      `${this.favUrl}/${attractionId}/toggle`,
+      {}
     );
   }
 
   // ───────────────── Admin ─────────────────
 
   adminGetCategories(): Observable<{ id: number; name: string }[]> {
-
     return this.http.get<{ id: number; name: string }[]>(
       `${this.adminUrl}/GetAllCategories`
     );
   }
 
   adminGetAll(): Observable<AdminAttractionsResponse> {
-
     return this.http.get<AdminAttractionsResponse>(
       `${this.adminUrl}/GetAllAttractions`
     );
   }
 
   adminAdd(payload: AdminAttractionPayload): Observable<any> {
-
     this._cache = null;
-
     return this.http.post(this.adminUrl, payload);
   }
 
   adminUpdate(id: number, payload: AdminAttractionPayload): Observable<any> {
-
     this._cache = null;
-
     return this.http.put(`${this.adminUrl}/${id}`, payload);
   }
 
   adminAddImages(id: number, files: File[]): Observable<any> {
-
     const formData = new FormData();
-
-    files.forEach(file => {
-      formData.append('images', file);
-    });
-
-    return this.http.post(
-      `${this.adminUrl}/${id}/images`,
-      formData
-    );
+    files.forEach(file => formData.append('images', file));
+    return this.http.post(`${this.adminUrl}/${id}/images`, formData);
   }
 
   adminDelete(id: number): Observable<any> {
-
     this._cache = null;
-
     return this.http.delete(`${this.adminUrl}/${id}`);
   }
 
-  adminDeleteImage(
-    attractionId: number,
-    imageId: number
-  ): Observable<any> {
-
-    return this.http.delete(
-      `${this.adminUrl}/${attractionId}/images/${imageId}`
-    );
+  adminDeleteImage(attractionId: number, imageId: number): Observable<any> {
+    return this.http.delete(`${this.adminUrl}/${attractionId}/images/${imageId}`);
   }
 }

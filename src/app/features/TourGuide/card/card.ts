@@ -129,17 +129,23 @@ export class Card implements OnInit, OnDestroy {
   toggleFav(event: MouseEvent, guide: TourGuide): void {
     event.stopPropagation();
 
-    if (this.isGuideInFav(guide.name)) {
-      this.favoritesService.removeFavorite(guide.name);
-    } else {
-      this.favoritesService.addToFavorites({
-        title: guide.name,
-        image: guide.image,
-        price: guide.pricePerDay + ' LE / day',
-        rating: guide.rating,
-        type: 'tourGuide'
-      });
-    }
+    this.tourGuideService.toggleFavoriteApi(guide.id).subscribe({
+      next: () => {
+        if (this.isGuideInFav(guide.name)) {
+          this.favoritesService.removeFavorite(guide.name);
+        } else {
+          this.favoritesService.addToFavorites({
+            title:  guide.name,
+            image:  guide.image,
+            price:  guide.pricePerDay + ' LE / day',
+            rating: guide.rating,
+            type:   'tourGuide'
+          });
+        }
+        this.cdr.detectChanges();
+      },
+      error: err => console.error('Failed to toggle favorite:', err),
+    });
   }
 
   openDetails(guide: TourGuide): void {

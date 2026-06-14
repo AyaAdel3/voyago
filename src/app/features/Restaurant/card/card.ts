@@ -73,17 +73,24 @@ export class Card implements OnInit {
 
   toggleFav(event: MouseEvent, r: Restaurant): void {
     event.stopPropagation();
-    this.restaurantService.toggleFavorite(r.id);
-    if (this.isRestaurantInFav(r.name)) {
-      this.favoritesService.removeFavorite(r.name);
-    } else {
-      this.favoritesService.addToFavorites({
-        title:  r.name,
-        image:  r.images[0],
-        price:  r.cuisine + ' • ' + this.getPriceRange(r),
-        rating: r.rating,
-        type:   'restaurant'
-      });
-    }
+
+    this.restaurantService.toggleFavoriteApi(r.id).subscribe({
+      next: () => {
+        this.restaurantService.toggleFavorite(r.id);
+        if (this.isRestaurantInFav(r.name)) {
+          this.favoritesService.removeFavorite(r.name);
+        } else {
+          this.favoritesService.addToFavorites({
+            title:  r.name,
+            image:  r.images[0],
+            price:  r.cuisine + ' • ' + this.getPriceRange(r),
+            rating: r.rating,
+            type:   'restaurant'
+          });
+        }
+        this.cdr.detectChanges();
+      },
+      error: err => console.error('Failed to toggle favorite:', err),
+    });
   }
 }

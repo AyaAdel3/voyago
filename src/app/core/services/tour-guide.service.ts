@@ -15,7 +15,7 @@ export type TourGuide = {
   phoneNumber?: string;
   phone?: string;
   languages?: string[];
-  languagesRaw?: string;   // ✅ الـ string الأصلي من الـ API
+  languagesRaw?: string;
   tours?: number;
   status?: string;
   liked?: boolean;
@@ -32,7 +32,6 @@ export class TourGuideService {
   private _guides: TourGuide[] = [];
   private _cache: TourGuide[] | null = null;
 
-  // ✅ بنحتفظ بالـ stats من الـ admin API response
   adminStats = { total: 0, active: 0, inactive: 0 };
 
   constructor(private http: HttpClient) {}
@@ -53,13 +52,9 @@ export class TourGuideService {
     );
   }
 
-  // ✅ الـ API بيرجع:
-  // { totalTourGuides, activeTourGuides, inactiveTourGuides, tourGuides: [...] }
-  // كل guide فيه languages كـ string: "Arabic, English +3"
   adminGetAll(): Observable<TourGuide[]> {
     return this.http.get<any>(`${BASE_URL}/admin/tour-guides/GetAllTourGuides`).pipe(
       map(res => {
-        // ✅ احفظ الـ stats من الـ response مباشرة
         this.adminStats = {
           total:    res?.totalTourGuides    ?? 0,
           active:   res?.activeTourGuides   ?? 0,
@@ -71,7 +66,6 @@ export class TourGuideService {
           ...g,
           image:        g.profilePictureUrl ?? g.image ?? '',
           languagesRaw: typeof g.languages === 'string' ? g.languages : '',
-          // ✅ حوّل الـ string لـ array وامسح الـ "+N" منه
           languages: typeof g.languages === 'string'
             ? g.languages
                 .split(',')
@@ -135,6 +129,14 @@ export class TourGuideService {
   adminGetStatuses(): Observable<{ id: number; name: string }[]> {
     return this.http.get<{ id: number; name: string }[]>(
       `${BASE_URL}/admin/tour-guides/statuses`
+    ).pipe(catchError(err => throwError(() => err)));
+  }
+
+  // ── FAVORITES API ────────────────────────────────────────
+  toggleFavoriteApi(guideId: number): Observable<void> {
+    return this.http.post<void>(
+      `${BASE_URL}/Favorites/tour-guides/${guideId}/toggle`,
+      {}
     ).pipe(catchError(err => throwError(() => err)));
   }
 

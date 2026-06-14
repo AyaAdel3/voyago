@@ -77,11 +77,9 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
     ).subscribe({
       next: (data) => {
         this.attractions = data;
-
         data.forEach(a => {
           this.attractionService.getById(a.id).subscribe();
         });
-
         this.cdr.detectChanges();
       },
       error: (err) => {
@@ -107,17 +105,23 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
   toggleFavorite(event: Event, attraction: Attraction): void {
     event.stopPropagation();
 
-    if (this.isFavorite(attraction.name)) {
-      this.favoritesService.removeFavorite(attraction.name);
-    } else {
-      this.favoritesService.addToFavorites({
-        title: attraction.name,
-        image: this.getImage(attraction),
-        price: 'N/A',
-        rating: attraction.rating,
-        type: 'attraction'
-      });
-    }
+    this.attractionService.toggleFavoriteApi(attraction.id).subscribe({
+      next: () => {
+        if (this.isFavorite(attraction.name)) {
+          this.favoritesService.removeFavorite(attraction.name);
+        } else {
+          this.favoritesService.addToFavorites({
+            title:  attraction.name,
+            image:  this.getImage(attraction),
+            price:  'N/A',
+            rating: attraction.rating,
+            type:   'attraction'
+          });
+        }
+        this.cdr.detectChanges();
+      },
+      error: err => console.error('Failed to toggle favorite:', err),
+    });
   }
 
   goToDetails(id: number): void {
