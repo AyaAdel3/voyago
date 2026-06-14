@@ -292,6 +292,10 @@ export class Details implements OnInit {
       },
     });
 }
+
+get currentUserAvatar(): string {
+  return this.authService.currentUser()?.profileImage || '';
+}
   requestDeleteReview(review: RestaurantReview): void {
     this.reviewToDelete = review;
   }

@@ -27,7 +27,7 @@
   border-radius: 50%;
   overflow: hidden;
   background-color: #0d1f33;
-  border: 2px solid #FFE194;
+  border: 2px solid #ffe194;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,7 +48,7 @@
   height: 100%;
 }
 
-.mobile-remove-btn {
+/* .mobile-remove-btn {
   position: absolute;
   top: 0;
   left: 0;
@@ -63,7 +63,7 @@
   cursor: pointer;
   padding: 0;
   z-index: 10;
-}
+} */
 
 .mobile-camera-btn {
   position: absolute;
@@ -99,7 +99,7 @@
 .profile-input {
   background: transparent;
   border: none;
-  border-bottom: 1px solid #FFE194;
+  border-bottom: 1px solid #ffe194;
   color: #7a9cc6;
   font-size: 20px;
   width: 100%;
@@ -123,8 +123,8 @@
 /* ── Buttons ──────────────────────────────────────── */
 .edit-btn,
 .save-btn {
-  background-color: #FFE194;
-  color: #0A1128;
+  background-color: #ffe194;
+  color: #0a1128;
   border: none;
   padding: 8px 32px;
   border-radius: 20px;
@@ -145,32 +145,70 @@
 ════════════════════════════════════════════════════════ */
 
 @media (max-width: 1200px) {
-  .content { padding: 25px 35px; }
-  .data-value { font-size: 18px; }
+  .content {
+    padding: 25px 35px;
+  }
+  .data-value {
+    font-size: 18px;
+  }
 }
 
 @media (max-width: 1024px) {
-  .content { padding: 20px 28px; }
-  .data-value { font-size: 18px; }
-  .profile-input { font-size: 18px; }
-  .edit-btn, .save-btn { padding: 7px 35px; font-size: 15px; }
+  .content {
+    padding: 20px 28px;
+  }
+  .data-value {
+    font-size: 18px;
+  }
+  .profile-input {
+    font-size: 18px;
+  }
+  .edit-btn,
+  .save-btn {
+    padding: 7px 35px;
+    font-size: 15px;
+  }
 }
 
 @media (max-width: 768px) {
-  .mobile-only { display: block; } /* ✅ الصورة تظهر في الموبايل */
-  .content { padding: 20px 16px; }
-  .data-value { font-size: 16px; }
-  .profile-input { font-size: 16px; max-width: 100%; }
-  .details-container { gap: 20px; }
-  .edit-btn, .save-btn { padding: 7px 28px; font-size: 14px; }
+  .mobile-only {
+    display: block;
+  } /* ✅ الصورة تظهر في الموبايل */
+  .content {
+    padding: 20px 16px;
+  }
+  .data-value {
+    font-size: 16px;
+  }
+  .profile-input {
+    font-size: 16px;
+    max-width: 100%;
+  }
+  .details-container {
+    gap: 20px;
+  }
+  .edit-btn,
+  .save-btn {
+    padding: 7px 28px;
+    font-size: 14px;
+  }
 }
 
 @media (max-width: 480px) {
-  .content { padding: 16px 12px; }
-  .data-value { font-size: 15px; }
-  .profile-input { font-size: 15px; }
-  .details-container { gap: 16px; }
-  .edit-btn, .save-btn {
+  .content {
+    padding: 16px 12px;
+  }
+  .data-value {
+    font-size: 15px;
+  }
+  .profile-input {
+    font-size: 15px;
+  }
+  .details-container {
+    gap: 16px;
+  }
+  .edit-btn,
+  .save-btn {
     width: 100%;
     text-align: center;
     padding: 8px 0;
@@ -180,8 +218,16 @@
 }
 
 @media (max-width: 400px) {
-  .content { padding: 12px 10px; }
-  .data-value { font-size: 14px; }
-  .profile-input { font-size: 14px; }
-  .details-container { gap: 14px; }
+  .content {
+    padding: 12px 10px;
+  }
+  .data-value {
+    font-size: 14px;
+  }
+  .profile-input {
+    font-size: 14px;
+  }
+  .details-container {
+    gap: 14px;
+  }
 }

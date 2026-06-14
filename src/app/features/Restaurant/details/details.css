@@ -16,6 +16,30 @@
   }
 }
 
+.host-avatar {
+  width: 42px;
+  height: 42px;
+  background: #ffde70;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.host-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.host-avatar span {
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
 /* ── Page ───────────────────────────────────────────────── */
 .rest-page {
   background: #021526;
