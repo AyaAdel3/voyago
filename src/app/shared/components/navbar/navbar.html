@@ -60,6 +60,7 @@
         <ng-container *ngIf="auth.isLoggedIn()">
           <button class="profile-btn" (click)="goToProfile()" [title]="auth.getFullName()">
             <img *ngIf="profileImage" [src]="profileImage" alt="profile" class="profile-avatar" />
+
             <svg
               *ngIf="!profileImage"
               width="22"

@@ -62,32 +62,19 @@ export class Navbar implements OnInit {
   ) {}
 
   ngOnInit(): void {
-  // لو اليوزر logged in، جيب البيانات من الـ API
-  if (this.auth.isLoggedIn()) {
-    this.auth.getProfile().subscribe({
-      next: (user) => {
-        this.profileImage = user.profileImage || '';
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        // fallback على الـ localStorage
-        this.profileImage = this.auth.currentUser()?.profileImage || '';
-        this.cdr.detectChanges();
-      }
-    });
-  } else {
-    this.profileImage = this.auth.currentUser()?.profileImage || '';
-  }
+
+  this.profileImage = this.auth.currentUser()?.profileImage || '';
 
   effect(() => {
     const img = this.auth.currentUser()?.profileImage || '';
+
     if (this.profileImage !== img) {
       this.profileImage = img;
       this.cdr.detectChanges();
     }
   }, { injector: this.injector });
-}
 
+}
   @HostListener('window:resize')
   onResize(): void {
     this.isMobile = window.innerWidth <= 768;

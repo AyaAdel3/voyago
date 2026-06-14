@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
-import { map, catchError, tap } from 'rxjs/operators';
+import { switchMap, map, catchError, tap } from 'rxjs/operators';
 
 export interface User {
   firstName:    string;
@@ -58,25 +58,36 @@ export class AuthService {
     );
   }
 
-  login(email: string, password: string): Observable<{ success: boolean; message: string }> {
-    return this.http.post<AuthResponse>(`${BASE_URL}/Auth`, { email, password }).pipe(
-      map(res => {
-        this._saveTokens(res);
-        const user: User = {
-          firstName:    res.firstName,
-          lastName:     res.lastName,
-          email:        res.email,
-          phone:        '',
-          profileImage: '',
-          roles:        res.roles ?? [],
-        };
-        localStorage.setItem('voyago_current_user', JSON.stringify(user));
-        this.currentUser.set(user);
-        return { success: true, message: 'Welcome back!' };
-      }),
-      catchError(err => throwError(() => err))
-    );
-  }
+ login(email: string, password: string): Observable<{ success: boolean; message: string }> {
+  return this.http.post<AuthResponse>(`${BASE_URL}/Auth`, { email, password }).pipe(
+    tap(res => this._saveTokens(res)),
+
+    switchMap(res =>
+      this.http.get<any>(`${BASE_URL}/Account/profile`).pipe(
+        map(profile => {
+          const user: User = {
+            firstName: res.firstName,
+            lastName: res.lastName,
+            email: res.email,
+            phone: profile.phoneNumber || '',
+            profileImage: profile.profilePictureUrl || '',
+            roles: res.roles ?? [],
+          };
+
+          localStorage.setItem('voyago_current_user', JSON.stringify(user));
+          this.currentUser.set({ ...user });
+
+          return {
+            success: true,
+            message: 'Welcome back!'
+          };
+        })
+      )
+    ),
+
+    catchError(err => throwError(() => err))
+  );
+}
 
   refreshToken(): Observable<AuthResponse> {
     const token        = localStorage.getItem('voyago_token');
