@@ -11,18 +11,33 @@
       <span class="section-count">{{ hotels.length }}</span>
     </div>
     @if (hotels.length > 0) {
-      <!-- Slider Controls فوق الكارد -->
       @if (hotels.length > 1) {
         <div class="slider-nav">
-          <button class="arrow-btn" (click)="prev('hotels')" [disabled]="!canPrev('hotels')">❮</button>
+          <button class="arrow-btn" (click)="prev('hotels')" [disabled]="!canPrev('hotels')">
+            ❮
+          </button>
           <span class="slider-counter">{{ sliderIndex['hotels'] + 1 }} / {{ hotels.length }}</span>
-          <button class="arrow-btn" (click)="next('hotels')" [disabled]="!canNext('hotels')">❯</button>
+          <button class="arrow-btn" (click)="next('hotels')" [disabled]="!canNext('hotels')">
+            ❯
+          </button>
         </div>
       }
       <div class="favorite-card">
         <div class="card-image-wrapper">
           <img [src]="currentItem('hotels')!.image" class="card-img" />
-          <button class="remove-x-btn" (click)="deleteFav(currentItem('hotels')!)">✕</button>
+          <button class="heart-btn" (click)="deleteFav(currentItem('hotels')!)">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                   2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                   C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
+                   c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                fill="#FFDE70"
+                stroke="#FFDE70"
+                stroke-width="2"
+              />
+            </svg>
+          </button>
         </div>
         <div class="card-info">
           <h3>{{ currentItem('hotels')!.title }}</h3>
@@ -51,15 +66,41 @@
     @if (restaurants.length > 0) {
       @if (restaurants.length > 1) {
         <div class="slider-nav">
-          <button class="arrow-btn" (click)="prev('restaurants')" [disabled]="!canPrev('restaurants')">❮</button>
-          <span class="slider-counter">{{ sliderIndex['restaurants'] + 1 }} / {{ restaurants.length }}</span>
-          <button class="arrow-btn" (click)="next('restaurants')" [disabled]="!canNext('restaurants')">❯</button>
+          <button
+            class="arrow-btn"
+            (click)="prev('restaurants')"
+            [disabled]="!canPrev('restaurants')"
+          >
+            ❮
+          </button>
+          <span class="slider-counter"
+            >{{ sliderIndex['restaurants'] + 1 }} / {{ restaurants.length }}</span
+          >
+          <button
+            class="arrow-btn"
+            (click)="next('restaurants')"
+            [disabled]="!canNext('restaurants')"
+          >
+            ❯
+          </button>
         </div>
       }
       <div class="favorite-card">
         <div class="card-image-wrapper">
           <img [src]="currentItem('restaurants')!.image" class="card-img" />
-          <button class="remove-x-btn" (click)="deleteFav(currentItem('restaurants')!)">✕</button>
+          <button class="heart-btn" (click)="deleteFav(currentItem('restaurants')!)">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                   2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                   C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
+                   c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                fill="#FFDE70"
+                stroke="#FFDE70"
+                stroke-width="2"
+              />
+            </svg>
+          </button>
         </div>
         <div class="card-info">
           <h3>{{ currentItem('restaurants')!.title }}</h3>
@@ -88,15 +129,41 @@
     @if (tourGuides.length > 0) {
       @if (tourGuides.length > 1) {
         <div class="slider-nav">
-          <button class="arrow-btn" (click)="prev('tourGuides')" [disabled]="!canPrev('tourGuides')">❮</button>
-          <span class="slider-counter">{{ sliderIndex['tourGuides'] + 1 }} / {{ tourGuides.length }}</span>
-          <button class="arrow-btn" (click)="next('tourGuides')" [disabled]="!canNext('tourGuides')">❯</button>
+          <button
+            class="arrow-btn"
+            (click)="prev('tourGuides')"
+            [disabled]="!canPrev('tourGuides')"
+          >
+            ❮
+          </button>
+          <span class="slider-counter"
+            >{{ sliderIndex['tourGuides'] + 1 }} / {{ tourGuides.length }}</span
+          >
+          <button
+            class="arrow-btn"
+            (click)="next('tourGuides')"
+            [disabled]="!canNext('tourGuides')"
+          >
+            ❯
+          </button>
         </div>
       }
       <div class="favorite-card">
         <div class="card-image-wrapper">
           <img [src]="currentItem('tourGuides')!.image" class="card-img" />
-          <button class="remove-x-btn" (click)="deleteFav(currentItem('tourGuides')!)">✕</button>
+          <button class="heart-btn" (click)="deleteFav(currentItem('tourGuides')!)">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                   2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                   C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
+                   c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                fill="#FFDE70"
+                stroke="#FFDE70"
+                stroke-width="2"
+              />
+            </svg>
+          </button>
         </div>
         <div class="card-info">
           <h3>{{ currentItem('tourGuides')!.title }}</h3>
@@ -125,15 +192,41 @@
     @if (touristAttractions.length > 0) {
       @if (touristAttractions.length > 1) {
         <div class="slider-nav">
-          <button class="arrow-btn" (click)="prev('touristAttractions')" [disabled]="!canPrev('touristAttractions')">❮</button>
-          <span class="slider-counter">{{ sliderIndex['touristAttractions'] + 1 }} / {{ touristAttractions.length }}</span>
-          <button class="arrow-btn" (click)="next('touristAttractions')" [disabled]="!canNext('touristAttractions')">❯</button>
+          <button
+            class="arrow-btn"
+            (click)="prev('touristAttractions')"
+            [disabled]="!canPrev('touristAttractions')"
+          >
+            ❮
+          </button>
+          <span class="slider-counter"
+            >{{ sliderIndex['touristAttractions'] + 1 }} / {{ touristAttractions.length }}</span
+          >
+          <button
+            class="arrow-btn"
+            (click)="next('touristAttractions')"
+            [disabled]="!canNext('touristAttractions')"
+          >
+            ❯
+          </button>
         </div>
       }
       <div class="favorite-card">
         <div class="card-image-wrapper">
           <img [src]="currentItem('touristAttractions')!.image" class="card-img" />
-          <button class="remove-x-btn" (click)="deleteFav(currentItem('touristAttractions')!)">✕</button>
+          <button class="heart-btn" (click)="deleteFav(currentItem('touristAttractions')!)">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+              <path
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                   2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
+                   C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
+                   c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                fill="#FFDE70"
+                stroke="#FFDE70"
+                stroke-width="2"
+              />
+            </svg>
+          </button>
         </div>
         <div class="card-info">
           <h3>{{ currentItem('touristAttractions')!.title }}</h3>

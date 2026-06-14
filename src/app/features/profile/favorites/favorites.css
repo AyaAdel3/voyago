@@ -78,7 +78,7 @@
 
 .arrow-btn:hover:not(:disabled) {
   background: rgba(255, 225, 148, 0.3);
-  color: #FFE194;
+  color: #ffe194;
 }
 
 .arrow-btn:disabled {
@@ -180,27 +180,77 @@
 ════════════════════════════════════════════════════════ */
 
 @media (max-width: 1200px) {
-  .content { padding: 40px 60px; }
+  .content {
+    padding: 40px 60px;
+  }
 }
 
 @media (max-width: 1024px) {
-  .content { padding: 30px 40px; }
+  .content {
+    padding: 30px 40px;
+  }
 }
 
 @media (max-width: 768px) {
-  .content { padding: 20px 16px; }
-  .info-header h1 { font-size: 26px; }
-  .fav-section { max-width: 100%; }
+  .content {
+    padding: 20px 16px;
+  }
+  .info-header h1 {
+    font-size: 26px;
+  }
+  .fav-section {
+    max-width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
-  .content { padding: 16px 12px; }
-  .info-header h1 { font-size: 22px; }
-  .card-info h3 { font-size: 16px; }
-  .item-meta { font-size: 13px; }
+  .content {
+    padding: 16px 12px;
+  }
+  .info-header h1 {
+    font-size: 22px;
+  }
+  .card-info h3 {
+    font-size: 16px;
+  }
+  .item-meta {
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 400px) {
-  .content { padding: 12px 10px; }
-  .info-header h1 { font-size: 20px; }
+  .content {
+    padding: 12px 10px;
+  }
+  .info-header h1 {
+    font-size: 20px;
+  }
+}
+
+.heart-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    transform 0.2s,
+    background 0.2s;
+}
+
+.heart-btn:active {
+  transform: scale(1.15);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.heart-btn:hover {
+  background: rgba(255, 222, 112, 0.2);
 }

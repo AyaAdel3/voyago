@@ -1,78 +1,127 @@
 <main class="content">
+  <div *ngIf="isLoading" class="flex justify-center items-center py-10">
+    <p class="text-gray-400">Loading...</p>
+  </div>
 
-  <div class="profile-pic-wrapper mobile-only">
-    <div class="image-container-mobile">
-      <div class="image-inner-mobile">
+  <ng-container *ngIf="!isLoading">
+    <div class="profile-pic-wrapper mobile-only">
+      <div class="image-container-mobile">
+        <div class="image-inner-mobile">
+          @if (profileImage) {
+            <img [src]="profileImage" class="profile-img" alt="Profile" />
+          } @else {
+            <div class="profile-img-placeholder">
+              <svg
+                width="40"
+                height="40"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#ccc"
+                stroke-width="1.5"
+              >
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
+          }
+        </div>
+
         @if (profileImage) {
-          <img [src]="profileImage" class="profile-img" alt="Profile" />
-        } @else {
-          <div class="profile-img-placeholder">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none"
-                 stroke="#ccc" stroke-width="1.5">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
+          <button class="mobile-remove-btn" (click)="removeImage()">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
             </svg>
-          </div>
+          </button>
         }
-      </div>
 
-      @if (profileImage) {
-        <button class="mobile-remove-btn" (click)="removeImage()">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
-               stroke="white" stroke-width="2.5"
-               stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+        <label class="mobile-camera-btn">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="white"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+            ></path>
+            <circle cx="12" cy="13" r="4"></circle>
           </svg>
-        </button>
-      }
-
-      <label class="mobile-camera-btn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-             stroke="white" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round">
-          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-          <circle cx="12" cy="13" r="4"></circle>
-        </svg>
-        <input type="file" accept="image/*" style="display:none"
-               (change)="onImageSelected($event)" />
-      </label>
+          <input
+            type="file"
+            accept="image/*"
+            style="display: none"
+            (change)="onImageSelected($event)"
+          />
+        </label>
+      </div>
     </div>
-  </div>
 
-  <div class="details-container">
-    <ng-container *ngIf="!isEditing">
-      <div class="info-row">
-        <p class="data-value">{{ user.firstName }} {{ user.lastName }}</p>
-      </div>
-      <div class="info-row">
-        <p class="data-value">{{ user.email }}</p>
-      </div>
-      <div class="info-row">
-        <p class="data-value">{{ user.phone }}</p>
-      </div>
-      <button class="edit-btn" (click)="onEdit()">Edit</button>
-    </ng-container>
+    <div class="details-container">
+      <ng-container *ngIf="!isEditing">
+        <div class="info-row">
+          <p class="data-value">{{ user.firstName }} {{ user.lastName }}</p>
+        </div>
+        <div class="info-row">
+          <p class="data-value">{{ user.email }}</p>
+        </div>
+        <div class="info-row">
+          <p class="data-value">{{ user.phone }}</p>
+        </div>
+        <button class="edit-btn" (click)="onEdit()">Edit</button>
+      </ng-container>
 
-    <ng-container *ngIf="isEditing">
-      <div class="edit-row">
-        <input type="text" [(ngModel)]="editData.firstName"
-               class="profile-input" placeholder="First Name" />
-      </div>
-      <div class="edit-row">
-        <input type="text" [(ngModel)]="editData.lastName"
-               class="profile-input" placeholder="Last Name" />
-      </div>
-      <div class="edit-row">
-        <input type="email" [value]="user.email"
-               class="profile-input disabled-input" placeholder="Email" disabled />
-      </div>
-      <div class="edit-row">
-        <input type="text" [(ngModel)]="editData.phone"
-               class="profile-input" placeholder="Phone" (blur)="validatePhone()" />
-        <span class="error-msg" *ngIf="phoneError">{{ phoneError }}</span>
-      </div>
-      <button class="save-btn" (click)="onSave()">Save</button>
-    </ng-container>
-  </div>
+      <ng-container *ngIf="isEditing">
+        <div class="edit-row">
+          <input
+            type="text"
+            [(ngModel)]="editData.firstName"
+            class="profile-input"
+            placeholder="First Name"
+          />
+        </div>
+        <div class="edit-row">
+          <input
+            type="text"
+            [(ngModel)]="editData.lastName"
+            class="profile-input"
+            placeholder="Last Name"
+          />
+        </div>
+        <div class="edit-row">
+          <input
+            type="email"
+            [value]="user.email"
+            class="profile-input disabled-input"
+            placeholder="Email"
+            disabled
+          />
+        </div>
+        <div class="edit-row">
+          <input
+            type="text"
+            [(ngModel)]="editData.phone"
+            class="profile-input"
+            placeholder="Phone"
+            (blur)="validatePhone()"
+          />
+          <span class="error-msg" *ngIf="phoneError">{{ phoneError }}</span>
+        </div>
+        <button class="save-btn" (click)="onSave()">Save</button>
+      </ng-container>
+    </div>
+  </ng-container>
 </main>

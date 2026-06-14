@@ -77,39 +77,72 @@ export class AuthService {
       catchError(err => throwError(() => err))
     );
   }
-refreshToken(): Observable<AuthResponse> {
-  const token = localStorage.getItem('voyago_token');
-  const refreshToken = localStorage.getItem('voyago_refresh_token');
 
-  console.log('========== REFRESH REQUEST ==========');
-  console.log('Access Token:', token);
-  console.log('Refresh Token:', refreshToken);
+  refreshToken(): Observable<AuthResponse> {
+    const token        = localStorage.getItem('voyago_token');
+    const refreshToken = localStorage.getItem('voyago_refresh_token');
 
-  if (!token || !refreshToken) {
-    console.error('No tokens found');
-    return throwError(() => new Error('No tokens available'));
+    if (!token || !refreshToken) {
+      return throwError(() => new Error('No tokens available'));
+    }
+
+    return this.http.post<AuthResponse>(
+      `${BASE_URL}/Auth/refresh`,
+      { token, refreshToken }
+    ).pipe(
+      map(res => {
+        this._saveTokens(res);
+        return res;
+      }),
+      catchError(err => throwError(() => err))
+    );
   }
 
-  return this.http.post<AuthResponse>(
-    `${BASE_URL}/Auth/refresh`,
-    { token, refreshToken }
-  ).pipe(
-    tap(res => {
-      console.log('✅ Refresh Success:', res);
-    }),
-    map(res => {
-      this._saveTokens(res);
-      return res;
-    }),
-    catchError(err => {
-      console.error('❌ Refresh Status:', err.status);
-      console.error('❌ Refresh Error:', err.error);
-      return throwError(() => err);
-    })
-  );
-}
+  getProfile(): Observable<User> {
+    return this.http.get<any>(`${BASE_URL}/Account/profile`).pipe(
+      map(res => {
+        const current = this.currentUser();
+        return {
+          firstName:    res.firstName,
+          lastName:     res.lastName,
+          email:        res.email,
+          phone:        res.phoneNumber,
+          profileImage: res.profilePictureUrl || current?.profileImage || '',
+          roles:        current?.roles ?? [],
+        };
+      }),
+      tap(user => {
+        localStorage.setItem('voyago_current_user', JSON.stringify(user));
+        this.currentUser.set({ ...user }); // ← spread عشان Angular يحس بالتغيير
+      }),
+      catchError(err => throwError(() => err))
+    );
+  }
 
-  // ✅ للـ profile logout — بيستنى الـ revoke
+  updateProfile(data: { firstName: string; lastName: string; PhoneNumber: string }): Observable<void> {
+    return this.http.put<void>(
+      `${BASE_URL}/Account/profile-update`,
+      data
+    ).pipe(catchError(err => throwError(() => err)));
+  }
+
+  updateLocalUser(data: { firstName: string; lastName: string; phone: string }): void {
+    const current = this.currentUser();
+    if (!current) return;
+    const updated = { ...current, ...data };
+    localStorage.setItem('voyago_current_user', JSON.stringify(updated));
+    this.currentUser.set({ ...updated });
+  }
+
+  uploadProfilePicture(file: File): Observable<void> {
+    const formData = new FormData();
+    formData.append('image', file);
+    return this.http.put<void>(
+      `${BASE_URL}/Account/profile-picture-update`,
+      formData
+    ).pipe(catchError(err => throwError(() => err)));
+  }
+
   logout(): Observable<any> {
     const token        = localStorage.getItem('voyago_token');
     const refreshToken = localStorage.getItem('voyago_refresh_token');
@@ -128,7 +161,6 @@ refreshToken(): Observable<AuthResponse> {
     return of(null);
   }
 
-  // ✅ للـ interceptor — بيمسح فوراً من غير ما يستنى
   forceLogout(): void {
     const token        = localStorage.getItem('voyago_token');
     const refreshToken = localStorage.getItem('voyago_refresh_token');
@@ -158,12 +190,12 @@ refreshToken(): Observable<AuthResponse> {
     localStorage.setItem('voyago_token_expires_at', expiresAt.toString());
   }
 
-  updateProfileImage(imageBase64: string): void {
+  updateProfileImage(imageUrl: string): void {
     const user = this.currentUser();
     if (!user) return;
-    const updated = { ...user, profileImage: imageBase64 };
+    const updated = { ...user, profileImage: imageUrl };
     localStorage.setItem('voyago_current_user', JSON.stringify(updated));
-    this.currentUser.set(updated);
+    this.currentUser.set({ ...updated }); // ← spread عشان Angular يحس بالتغيير
   }
 
   forgotPassword(email: string): Observable<any> {
@@ -192,8 +224,13 @@ refreshToken(): Observable<AuthResponse> {
   }
 
   private getLoggedInUser(): User | null {
-    const data = localStorage.getItem('voyago_current_user');
-    return data ? JSON.parse(data) : null;
+    try {
+      const data = localStorage.getItem('voyago_current_user');
+      if (!data) return null;
+      return JSON.parse(data) as User;
+    } catch {
+      return null;
+    }
   }
 
   isLoggedIn(): boolean { return this.currentUser() !== null; }

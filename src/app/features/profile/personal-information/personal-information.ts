@@ -1,4 +1,4 @@
-import { Component, inject, effect, signal } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -11,51 +11,85 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './personal-information.html',
   styleUrl: './personal-information.css'
 })
-export class PersonalInformation {
+export class PersonalInformation implements OnInit {
   private auth = inject(AuthService);
 
   isEditing = false;
+  isLoading = true;
+  error = '';
 
   user = {
-    firstName: 'Mariam',
-    lastName: 'Yousif',
-    email: 'Mariammyousiff9@gmail.com',
-    phone: '01045983677'
-    
+    firstName: '',
+    lastName:  '',
+    email:     '',
+    phone:     ''
   };
-  removeImage() {
-  this.auth.updateProfileImage('');
-}
 
   editData = {
     firstName: '',
-    lastName: '',
-    phone: ''
+    lastName:  '',
+    phone:     ''
   };
 
   phoneError = '';
 
-  // ✅ بتاخد الصورة من AuthService مباشرة
-get profileImage(): string {
-  return this.auth.currentUser()?.profileImage || '';
-}
+  get profileImage(): string {
+    return this.auth.currentUser()?.profileImage || '';
+  }
 
-  // ✅ لما اليوزر يختار صورة بتحدث الـ AuthService
-  onImageSelected(event: Event) {
+  ngOnInit(): void {
+    this.auth.getProfile().subscribe({
+      next: (user) => {
+        this.user = {
+          firstName: user.firstName,
+          lastName:  user.lastName,
+          email:     user.email,
+          phone:     user.phone,
+        };
+        this.isLoading = false;
+      },
+      error: () => {
+        const cached = this.auth.currentUser();
+        if (cached) {
+          this.user = {
+            firstName: cached.firstName,
+            lastName:  cached.lastName,
+            email:     cached.email,
+            phone:     cached.phone,
+          };
+        }
+        this.isLoading = false;
+      }
+    });
+  }
+
+  removeImage(): void {
+    this.auth.updateProfileImage('');
+  }
+
+  onImageSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
+
     const reader = new FileReader();
     reader.onload = () => {
       this.auth.updateProfileImage(reader.result as string);
     };
     reader.readAsDataURL(file);
+
+    this.auth.uploadProfilePicture(file).subscribe({
+      next: () => {
+        this.auth.getProfile().subscribe();
+      },
+      error: err => console.error('Failed to upload profile picture:', err)
+    });
   }
 
-  onEdit() {
+  onEdit(): void {
     this.editData = {
       firstName: this.user.firstName,
-      lastName: this.user.lastName,
-      phone: this.user.phone,
+      lastName:  this.user.lastName,
+      phone:     this.user.phone,
     };
     this.phoneError = '';
     this.isEditing = true;
@@ -71,11 +105,30 @@ get profileImage(): string {
     return true;
   }
 
-  onSave() {
+  onSave(): void {
     if (!this.validatePhone()) return;
-    if (this.editData.firstName.trim()) this.user.firstName = this.editData.firstName;
-    if (this.editData.lastName.trim()) this.user.lastName = this.editData.lastName;
-    this.user.phone = this.editData.phone;
-    this.isEditing = false;
+
+    const newData = {
+      firstName:   this.editData.firstName.trim() || this.user.firstName,
+      lastName:    this.editData.lastName.trim()  || this.user.lastName,
+      PhoneNumber: this.editData.phone,
+    };
+
+    this.auth.updateProfile(newData).subscribe({
+      next: () => {
+        this.user.firstName = newData.firstName;
+        this.user.lastName  = newData.lastName;
+        this.user.phone     = newData.PhoneNumber;
+
+        this.auth.updateLocalUser({
+          firstName: newData.firstName,
+          lastName:  newData.lastName,
+          phone:     newData.PhoneNumber,
+        });
+
+        this.isEditing = false;
+      },
+      error: err => console.error('Failed to update profile:', err)
+    });
   }
 }

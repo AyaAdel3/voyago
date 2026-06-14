@@ -5,6 +5,7 @@ import { filter } from 'rxjs/operators';
 import { DarkModeService } from '../../../core/services/dark-mode.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ImageCropperComponent, ImageCroppedEvent } from 'ngx-image-cropper';
+import { NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-profile-layout',
@@ -84,16 +85,31 @@ export class ProfileLayout {
   }
 
   saveCrop(): void {
-    const imageToSave = this.croppedImage;
-    if (imageToSave) {
-      this.auth.updateProfileImage(imageToSave);
-      this.profileImage.set(imageToSave);
-    }
-    this.showCropper = false;
-    this.croppedImage = '';
-    this.imageChangedEvent = null;
-    this.cdr.detectChanges();
+  const imageToSave = this.croppedImage;
+  if (imageToSave) {
+    // عرض محلي فوري
+    this.auth.updateProfileImage(imageToSave);
+    this.profileImage.set(imageToSave);
+
+    // حوّل base64 لـ File وابعته للـ API
+    fetch(imageToSave)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], 'profile.jpg', { type: 'image/jpeg' });
+        this.auth.uploadProfilePicture(file).subscribe({
+          next: () => {
+            this.auth.getProfile().subscribe();
+          },
+          error: err => console.error('Failed to upload profile picture:', err)
+        });
+      });
   }
+
+  this.showCropper = false;
+  this.croppedImage = '';
+  this.imageChangedEvent = null;
+  this.cdr.detectChanges();
+}
 
   cancelCrop(): void {
     this.showCropper = false;
