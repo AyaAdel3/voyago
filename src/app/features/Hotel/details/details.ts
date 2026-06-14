@@ -43,9 +43,10 @@ export class Details implements OnInit {
   showLoginPrompt = false;
   reviewToDelete: HotelApiComment | null = null;
 
-  newComment = '';
-  newRating  = 0;
-  submitting = false;
+  newComment  = '';
+  newRating   = 0;
+  submitting  = false;
+  reviewError = '';
 
   activeImage  = 0;
   lightboxOpen = false;
@@ -84,9 +85,9 @@ export class Details implements OnInit {
     this.hotelService.getHotelApiById(id).subscribe({
       next: (hotel) => {
         this.hotel   = hotel;
+        // ✅ نجيب الـ comments من الـ detail response مباشرة في أول load
         this.reviews = hotel.comments ?? [];
 
-        // بناء الـ rooms من الـ API مباشرة
         this.selectedRooms = [
           { type: 'Single', price: hotel.singlePrice, quantity: 0 },
           { type: 'Double', price: hotel.doublePrice, quantity: 0 },
@@ -104,6 +105,20 @@ export class Details implements OnInit {
         this.loading = false;
         this.error   = true;
         this.cdr.detectChanges();
+      },
+    });
+  }
+
+  // ✅ زي الريستورنت بالظبط: reload الـ comments من الـ API بعد add أو أي تغيير
+  private loadReviews(id: number): void {
+    this.hotelService.getComments(id).subscribe({
+      next: (reviews: HotelApiComment[]) => {
+        console.log('LOADED REVIEWS:', reviews);
+        this.reviews = reviews;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to load reviews:', err);
       },
     });
   }
@@ -259,41 +274,64 @@ export class Details implements OnInit {
   // ── Reviews ───────────────────────────────────────────────
 
   isMyReview(review: HotelApiComment): boolean {
-    if ((review as any).userName === 'You') return true;
     const fullName = this.authService.getFullName()?.trim();
     return !!fullName && review.userName?.trim() === fullName;
   }
 
+  // ✅ زي الريستورنت بالظبط:
+  //    1. POST لإضافة الـ comment
+  //    2. بعد النجاح → loadReviews من الـ API علشان نجيب الـ id الصح والبيانات الكاملة
   submitReview(): void {
     if (!this.authService.isLoggedIn()) {
       this.authModal.openLogin();
       return;
     }
     if (!this.newComment.trim() || this.newRating === 0 || this.submitting) return;
-    this.submitting = true;
 
-    const newReview: HotelApiComment = {
-      id:       Date.now(),
-      userName: this.authService.getFullName() || 'You',
-      rating:   this.newRating,
-      comment:  this.newComment,
-      date:     new Date().toISOString().split('T')[0],
-    };
-    this.reviews    = [newReview, ...this.reviews];
-    this.newComment = '';
-    this.newRating  = 0;
-    this.submitting = false;
-    this.cdr.detectChanges();
+    this.submitting  = true;
+    this.reviewError = '';
+
+    this.hotelService.addComment(this.hotel.id, this.newComment.trim(), this.newRating)
+      .subscribe({
+        next: () => {
+          this.newComment = '';
+          this.newRating  = 0;
+          // ✅ reload من الـ API علشان الـ review يظهر بـ id صح ويتعمله delete
+          this.loadReviews(this.hotel.id);
+          this.submitting = false;
+          this.cdr.detectChanges();
+        },
+        error: () => {
+          this.submitting  = false;
+          this.reviewError = 'Failed to submit review. Please try again.';
+          this.cdr.detectChanges();
+        },
+      });
   }
 
   requestDeleteReview(review: HotelApiComment): void { this.reviewToDelete = review; }
   cancelDelete(): void { this.reviewToDelete = null; }
 
+  // ✅ زي الريستورنت بالظبط:
+  //    1. DELETE request للـ API
+  //    2. بعد النجاح → filter محلي بدون API call تاني
   confirmDeleteReview(): void {
     if (!this.reviewToDelete) return;
-    this.reviews = this.reviews.filter(r => r.id !== this.reviewToDelete!.id);
-    this.reviewToDelete = null;
-    this.cdr.detectChanges();
+
+    const commentId = this.reviewToDelete.id;
+
+    this.hotelService.deleteComment(this.hotel.id, commentId).subscribe({
+      next: () => {
+        // ✅ filter محلي — مش محتاجين نعمل reload كامل
+        this.reviews        = this.reviews.filter(r => r.id !== commentId);
+        this.reviewToDelete = null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to delete review:', err);
+        this.reviewToDelete = null;
+      },
+    });
   }
 
   starsArray(n: number): number[] { return Array(n).fill(0); }

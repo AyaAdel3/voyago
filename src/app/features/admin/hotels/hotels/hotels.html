@@ -11,148 +11,145 @@
     </div>
   </div>
 
-  <!-- Toolbar -->
-  <div class="toolbar">
-    <div class="toolbar-search">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="#4a6a88">
-        <path
-          d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-        />
-      </svg>
-      <input
-        type="text"
-        placeholder="Search Hotels..."
-        [(ngModel)]="searchQuery"
-        (ngModelChange)="onSearch()"
-      />
-    </div>
-    <a class="btn-add" [routerLink]="'/admin/hotels/manage'">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-        <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
-      </svg>
-      Add Hotel
-    </a>
+  <!-- Loading -->
+  <div *ngIf="loadingHotels" class="empty-state">Loading hotels...</div>
+
+  <!-- Error -->
+  <div *ngIf="loadError && !loadingHotels" class="empty-state" style="color:#ef4444;">
+    Failed to load hotels. Please refresh and try again.
   </div>
 
-  <!-- Table -->
-  <div class="admin-table">
-    <div class="table-header hotels-grid">
-      <span>Hotel Name</span>
-      <span>Location</span>
-      <span>Rating</span>
-      <span>Rooms</span>
-      <span>Price/Night</span>
-      <span>Status</span>
-      <span>Actions</span>
-    </div>
+  <!-- Content -->
+  <ng-container *ngIf="!loadingHotels && !loadError">
 
-    <div *ngFor="let h of filtered" class="table-row hotels-grid">
-      <!-- Name + thumbnail -->
-      <div class="hotel-name-cell">
-        <img [src]="h.images[0]" [alt]="h.name" class="hotel-thumb" />
-        <span class="cell-name">{{ h.name }}</span>
-      </div>
-
-      <!-- Location -->
-      <span class="cell-muted">{{ h.location }}</span>
-
-      <!-- Rating -->
-      <span class="rating-cell">
-        <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
-          <path
-            d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
-          />
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="toolbar-search">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="#4a6a88">
+          <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
         </svg>
-        {{ h.rating }}
-      </span>
-
-      <!-- Rooms -->
-      <div class="rooms-cell" *ngIf="h.rooms; else noRooms">
-        <span class="rooms-total">{{ h.rooms.total }} rooms</span>
+        <input
+          type="text"
+          placeholder="Search Hotels..."
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+        />
       </div>
-      <ng-template #noRooms>
-        <span class="cell-muted">—</span>
-      </ng-template>
-
-      <!-- Price/Night -->
-      <span class="price-cell">{{ h.pricePerNight | number }}LE</span>
-
-      <!-- Status -->
-      <span>
-        <span class="status-badge" [ngClass]="'status-' + h.status.toLowerCase()">
-          {{ h.status }}
-        </span>
-      </span>
-
-      <!-- Actions -->
-      <div class="actions-cell">
-        <button class="btn-view-site" (click)="viewOnSite(h)">
-          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
-            <path
-              d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
-            />
-          </svg>
-          View
-        </button>
-        <button class="btn-reviews" (click)="openReviews(h)" title="Manage Reviews">
-          <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
-            <path
-              d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"
-            />
-          </svg>
-          Reviews
-        </button>
-        <button class="btn-icon btn-edit" (click)="edit(h)">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <path
-              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-            />
-          </svg>
-        </button>
-        <button class="btn-icon btn-delete" (click)="delete(h)">
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <path
-              d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-            />
-          </svg>
-        </button>
-      </div>
+      <a class="btn-add" [routerLink]="'/admin/hotels/manage'">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </svg>
+        Add Hotel
+      </a>
     </div>
 
-    <!-- Empty state -->
-    <div *ngIf="filtered.length === 0" class="empty-state">No hotels found.</div>
-  </div>
+    <!-- Table -->
+    <div class="admin-table">
+      <div class="table-header hotels-grid">
+        <span>Hotel Name</span>
+        <span>Location</span>
+        <span>Rating</span>
+        <span>Rooms</span>
+        <span>Price Range</span>
+        <span>Status</span>
+        <span>Actions</span>
+      </div>
 
-  <!-- Pagination -->
-  <div class="pagination" *ngIf="totalPages.length > 1">
-    <button
-      class="page-btn arrow"
-      [disabled]="currentPage === 1"
-      (click)="currentPage = currentPage - 1"
-    >
-      ‹
-    </button>
+      <div *ngFor="let h of filtered" class="table-row hotels-grid">
 
-    <button
-      *ngFor="let p of totalPages"
-      class="page-btn"
-      [class.active]="p === currentPage"
-      (click)="currentPage = p"
-    >
-      {{ p }}
-    </button>
+        <!-- Name + thumbnail -->
+        <div class="hotel-name-cell">
+          <img
+            [src]="h.mainImageUrl || 'assets/placeholder-hotel.jpg'"
+            [alt]="h.name"
+            class="hotel-thumb"
+          />
+          <span class="cell-name">{{ h.name }}</span>
+        </div>
 
-    <button
-      class="page-btn arrow"
-      [disabled]="currentPage === totalPages.length"
-      (click)="currentPage = currentPage + 1"
-    >
-      ›
-    </button>
-  </div>
+        <!-- Location -->
+        <span class="cell-muted">{{ h.location }}</span>
+
+        <!-- Rating -->
+        <span class="rating-cell">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+          </svg>
+          {{ h.rating }}
+        </span>
+
+        <!-- Rooms -->
+        <span class="cell-muted">{{ h.totalRooms }} rooms</span>
+
+        <!-- Price Range -->
+        <span class="price-cell">{{ h.priceRange }}</span>
+
+        <!-- Status -->
+        <span>
+          <span class="status-badge" [ngClass]="'status-' + h.status.toLowerCase()">
+            {{ h.status }}
+          </span>
+        </span>
+
+        <!-- Actions -->
+        <div class="actions-cell">
+          <button class="btn-view-site" (click)="viewOnSite(h)">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+            View
+          </button>
+          <button class="btn-reviews" (click)="openReviews(h)" title="Manage Reviews">
+            <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+            </svg>
+            Reviews
+          </button>
+          <button class="btn-icon btn-edit" (click)="edit(h)">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+              <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+            </svg>
+          </button>
+          <button class="btn-icon btn-delete" (click)="delete(h)">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="filtered.length === 0" class="empty-state">No hotels found.</div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages.length > 1">
+      <button
+        class="page-btn arrow"
+        [disabled]="currentPage === 1"
+        (click)="currentPage = currentPage - 1"
+      >‹</button>
+
+      <button
+        *ngFor="let p of totalPages"
+        class="page-btn"
+        [class.active]="p === currentPage"
+        (click)="currentPage = p"
+      >{{ p }}</button>
+
+      <button
+        class="page-btn arrow"
+        [disabled]="currentPage === totalPages.length"
+        (click)="currentPage = currentPage + 1"
+      >›</button>
+    </div>
+
+  </ng-container>
 </div>
 
-<!-- ── Reviews Modal ── -->
+<!-- ══════════════════════════════════════
+     Reviews Modal
+═══════════════════════════════════════ -->
 <div class="modal-overlay" *ngIf="reviewsModalVisible" (click)="closeReviewsModal()">
   <div class="reviews-modal" (click)="$event.stopPropagation()">
     <div class="reviews-modal-header">
@@ -164,54 +161,107 @@
     </div>
 
     <div class="reviews-modal-body">
-      <!-- Empty -->
       <div *ngIf="selectedHotelReviews.length === 0" class="reviews-empty">
         <svg viewBox="0 0 24 24" width="36" height="36" fill="#4a6a88">
-          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+          <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
         </svg>
         <p>No reviews for this hotel yet.</p>
       </div>
 
-      <!-- Review cards -->
       <div *ngFor="let r of selectedHotelReviews" class="review-card">
         <div class="review-card-top">
           <div class="review-avatar">{{ r.userName.charAt(0) }}</div>
           <div class="review-meta">
             <span class="review-username">{{ r.userName }}</span>
-            <span class="review-country">{{ r.userCountry }}</span>
           </div>
           <div class="review-stars">
             <svg
-              *ngFor="let s of [1, 2, 3, 4, 5]"
+              *ngFor="let s of [1,2,3,4,5]"
               viewBox="0 0 24 24"
-              width="13"
-              height="13"
+              width="13" height="13"
               [attr.fill]="s <= r.rating ? '#f5c518' : '#2a4a6a'"
             >
-              <path
-                d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
-              />
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
             </svg>
           </div>
-          <span class="review-date">{{ r.date }}</span>
-          <button class="review-delete-btn" (click)="deleteReview(r)" title="Remove review">
+          <span class="review-date">{{ r.date | date: 'MMM d, y' }}</span>
+          <button class="review-delete-btn" (click)="requestDeleteReview(r)" title="Remove review">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-              <path
-                d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-              />
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
             </svg>
           </button>
         </div>
-        <p class="review-comment">{{ r.comment }}</p>
+        <p class="review-comment">{{ r.content }}</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── Delete Toast ── -->
-<div class="toast toast-delete" *ngIf="deleteToastVisible">
-  <svg viewBox="0 0 24 24" width="18" height="18" fill="#ef4444">
-    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+<!-- ══════════════════════════════════════
+     Confirm Delete Review Modal
+═══════════════════════════════════════ -->
+<div class="modal-overlay confirm-overlay" *ngIf="reviewToDelete" (click)="cancelDeleteReview()">
+  <div class="confirm-modal" (click)="$event.stopPropagation()">
+    <div class="confirm-icon">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
+        stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="3 6 5 6 21 6"/>
+        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+        <path d="M10 11v6M14 11v6"/>
+        <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+      </svg>
+    </div>
+    <h3>Delete Review</h3>
+    <p>
+      Are you sure you want to delete the review by
+      <strong>{{ reviewToDelete!.userName }}</strong>?<br/>
+      This action cannot be undone.
+    </p>
+    <div class="confirm-actions">
+      <button class="btn-cancel-modal" (click)="cancelDeleteReview()">Cancel</button>
+      <button class="btn-confirm-delete" (click)="confirmDeleteReview()">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     Confirm Delete Hotel Modal
+═══════════════════════════════════════ -->
+<div class="modal-overlay confirm-overlay" *ngIf="confirmDeleteVisible" (click)="cancelDelete()">
+  <div class="confirm-modal" (click)="$event.stopPropagation()">
+    <div class="confirm-icon">
+      <svg viewBox="0 0 24 24" width="32" height="32" fill="#ef4444">
+        <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+      </svg>
+    </div>
+    <h3>Delete Hotel</h3>
+    <p>
+      Are you sure you want to delete
+      <strong>{{ hotelToDelete?.name }}</strong>?<br/>
+      This action cannot be undone.
+    </p>
+    <div class="confirm-actions">
+      <button class="btn-cancel-modal" (click)="cancelDelete()" [disabled]="deletingHotel">Cancel</button>
+      <button class="btn-confirm-delete" (click)="confirmDelete()" [disabled]="deletingHotel">
+        {{ deletingHotel ? 'Deleting...' : 'Yes, Delete' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     Toast
+═══════════════════════════════════════ -->
+<div
+  class="toast"
+  *ngIf="deleteToastVisible"
+  [ngClass]="deleteToastSuccess ? 'toast-delete-success' : 'toast-delete'"
+>
+  <svg *ngIf="deleteToastSuccess" viewBox="0 0 24 24" width="18" height="18" fill="#22c55e">
+    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+  </svg>
+  <svg *ngIf="!deleteToastSuccess" viewBox="0 0 24 24" width="18" height="18" fill="#ef4444">
+    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
   </svg>
   <span style="flex: 1">{{ deleteToastMessage }}</span>
   <button class="toast-close" (click)="deleteToastVisible = false">✕</button>

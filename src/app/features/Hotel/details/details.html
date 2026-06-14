@@ -114,6 +114,10 @@
               </button>
             </div>
           </div>
+          <!-- Submit error -->
+          <p *ngIf="reviewError" class="booking-error-msg" style="margin-top:.5rem;">
+            {{ reviewError }}
+          </p>
         </div>
       </div>
 
@@ -188,7 +192,7 @@
   </div>
 
   <!-- REVIEWS GRID -->
-  <div class="comment">
+  <div class="comment" *ngIf="reviews && reviews.length > 0">
     <div class="show-review text-[#F6FAFF]">
       <h2 class="section-title">Customer Reviews</h2>
       <div class="reviews-grid">
@@ -202,6 +206,7 @@
             title="Delete your review">✕</button>
 
           <div class="reviewer-info">
+            <!-- ✅ charAt(0) على userName مباشرة لأنه string مش nullable -->
             <div class="reviewer-avatar">{{ review.userName.charAt(0) }}</div>
             <div class="reviewer-meta">
               <p class="reviewer-name">{{ review.userName }}</p>
@@ -214,12 +219,8 @@
               <p class="review-date">{{ formatReviewDate(review.date) }}</p>
             </div>
           </div>
-          <p class="review-comment">{{ review.comment }}</p>
-        </div>
-
-        <div *ngIf="reviews.length === 0" class="review-card"
-             style="color:#7a9cbf; text-align:center; padding: 2rem;">
-          No reviews yet. Be the first to review!
+          <!-- ✅ content مش comment — ده الـ field الصح في الـ API -->
+          <p class="review-comment">{{ review.content }}</p>
         </div>
       </div>
     </div>

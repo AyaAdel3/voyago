@@ -90,9 +90,7 @@ export interface BookingData {
 }
 
 export const BOARD_FEATURE_NAMES = ['Full Board', 'Half Board'];
-
 export const FIXED_BOOKING_FEATURE_NAMES: string[] = ['Full Board', 'Half Board'];
-
 export const FIXED_BOOKING_FEATURES: BookingFeatureDef[] = [
   { name: 'Full Board', price: 0 },
   { name: 'Half Board', price: 0 },
@@ -254,8 +252,6 @@ export const MOCK_REVIEWS: Review[] = [
   { id: 6, hotelId: 2, userName: 'David Silva',   userAvatar: '', userCountry: 'Kenya',  rating: 4, comment: 'Amazing stay!', date: '2025-09-30' },
 ];
 
-// ── API Interfaces ────────────────────────────────────────
-
 export interface HotelApiImage {
   id: number;
   imageUrl: string;
@@ -269,11 +265,11 @@ export interface HotelApiFeature {
 }
 
 export interface HotelApiComment {
-  id: number;
+  id:       number;
   userName: string;
-  rating: number;
-  comment: string;
-  date: string;
+  rating:   number;
+  content:  string;
+  date:     string;
 }
 
 export interface HotelApiDetail {
@@ -290,7 +286,52 @@ export interface HotelApiDetail {
   triplePrice: number;
   suiteRooms: number;
   suitePrice: number;
-  images: HotelApiImage[];
+  images:   HotelApiImage[];
   features: HotelApiFeature[];
   comments: HotelApiComment[];
+}
+
+export interface AdminHotelApiItem {
+  id:           number;
+  name:         string;
+  location:     string;
+  rating:       number;
+  priceRange:   string;
+  status:       'Active' | 'Inactive';
+  totalRooms:   number;
+  mainImageUrl: string | null;
+}
+
+export interface AdminHotelsApiResponse {
+  totalHotels:    number;
+  activeHotels:   number;
+  inactiveHotels: number;
+  hotels:         AdminHotelApiItem[];
+}
+
+// ── Admin Reviews Interfaces (جديد) ──────────────────────
+
+export interface AdminHotelReviewComment {
+  id:                number;
+  userName:          string;
+  profilePictureUrl: string | null;
+  content:           string;
+  rating:            number;
+  createdAt:         string;
+}
+
+export interface AdminHotelReviewsApiResponse {
+  totalComments: number;
+  averageRating: number;
+  comments:      AdminHotelReviewComment[];
+}
+
+export interface HotelReview {
+  id:          number;
+  hotelId:     number;
+  userName:    string;
+  userAvatar?: string;
+  rating:      number;
+  content:     string;
+  date:        string;
 }

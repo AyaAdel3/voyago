@@ -6,13 +6,17 @@ import {
   Hotel, Review, RoomType, HotelFeature, HotelFeatureDef, BookingData,
   BookingFeatureDef, FIXED_BOOKING_FEATURES,
   MOCK_HOTELS, MOCK_REVIEWS, MOCK_HOTEL_FEATURES, MOCK_DISPLAY_FEATURES,
-  buildDefaultRooms, HotelRoomPrices, HotelApiDetail,
+  buildDefaultRooms, HotelRoomPrices, HotelApiDetail, HotelApiComment,
+  AdminHotelApiItem, AdminHotelsApiResponse,
+  AdminHotelReviewsApiResponse, HotelReview,
 } from '../model/hotel.model';
 
 @Injectable({ providedIn: 'root' })
 export class HotelService {
 
-  private readonly apiBase = 'http://voyagoo.runasp.net/hotels';
+  private readonly apiBase     = 'http://voyagoo.runasp.net/hotels';
+  private readonly apiBaseCase = 'http://voyagoo.runasp.net/Hotels';
+  private readonly adminApiUrl = 'http://voyagoo.runasp.net/admin/hotels';
 
   private hotelsSubject  = new BehaviorSubject<Hotel[]>([...MOCK_HOTELS]);
   hotels$                = this.hotelsSubject.asObservable();
@@ -24,8 +28,6 @@ export class HotelService {
   private currentBooking = signal<BookingData | null>(null);
 
   constructor(private http: HttpClient) {}
-
-  // ── READ (mock — للـ admin) ───────────────────────────────
 
   getHotels(): Observable<Hotel[]> { return this.hotels$; }
 
@@ -47,10 +49,69 @@ export class HotelService {
     return of(MOCK_DISPLAY_FEATURES);
   }
 
-  // ── READ (API — للـ details page) ────────────────────────
-
   getHotelApiById(id: number): Observable<HotelApiDetail> {
     return this.http.get<HotelApiDetail>(`${this.apiBase}/${id}`);
+  }
+
+  getAdminHotels(token: string): Observable<AdminHotelsApiResponse> {
+    return this.http.get<AdminHotelsApiResponse>(
+      `${this.adminApiUrl}/GetAllHotels`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  getComments(hotelId: number): Observable<HotelApiComment[]> {
+    return this.http.get<HotelApiDetail>(`${this.apiBase}/${hotelId}`).pipe(
+      map(r => r.comments ?? [])
+    );
+  }
+
+  addComment(hotelId: number, content: string, rating: number): Observable<any> {
+    return this.http.post(
+      `${this.apiBaseCase}/${hotelId}/comments`,
+      { content, rating }
+    );
+  }
+
+  deleteComment(hotelId: number, commentId: number): Observable<any> {
+    return this.http.delete(
+      `${this.apiBaseCase}/${hotelId}/comments/${commentId}`
+    );
+  }
+
+  // ── Admin Hotels ──────────────────────────────────────
+
+  deleteHotelAdmin(hotelId: number, token: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.adminApiUrl}/${hotelId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  // ── Admin Reviews (جديد) ──────────────────────────────
+
+  getAdminReviews(hotelId: number, token: string): Observable<HotelReview[]> {
+    return this.http.get<AdminHotelReviewsApiResponse>(
+      `${this.adminApiUrl}/${hotelId}/GetAllComments`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    ).pipe(
+      map(res => res.comments.map(c => ({
+        id:       c.id,
+        hotelId:  hotelId,
+        userName: c.userName,
+        userAvatar: c.profilePictureUrl ?? undefined,
+        rating:   c.rating,
+        content:  c.content,
+        date:     c.createdAt,
+      } as HotelReview)))
+    );
+  }
+
+  deleteReviewAdmin(hotelId: number, commentId: number, token: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.adminApiUrl}/${hotelId}/comments/${commentId}/DeleteComment`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
   }
 
   // ── WRITE ────────────────────────────────────────────────
@@ -74,8 +135,6 @@ export class HotelService {
     this.hotelsSubject.next(current.filter(h => h.id !== id));
   }
 
-  // ── Reviews ──────────────────────────────────────────────
-
   submitReview(hotelId: number, comment: string, rating: number): Observable<Review> {
     const newReview: Review = {
       id:          Date.now(),
@@ -97,8 +156,6 @@ export class HotelService {
     this.reviewsSubject.next(current.filter(r => r.id !== reviewId));
   }
 
-  // ── Favorites ────────────────────────────────────────────
-
   isFavorite(id: number): boolean { return this.favIds().has(id); }
 
   toggleFavorite(id: number): void {
@@ -106,8 +163,6 @@ export class HotelService {
     current.has(id) ? current.delete(id) : current.add(id);
     this.favIds.set(current);
   }
-
-  // ── Booking ──────────────────────────────────────────────
 
   setBooking(data: BookingData): void  { this.currentBooking.set(data); }
   getBooking(): BookingData | null     { return this.currentBooking(); }

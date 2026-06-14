@@ -13,14 +13,6 @@
   align-items: center;
 }
 
-/* ⭐ توسيط أعمدة معينة */
-.hotels-grid > *:nth-child(3),
-.hotels-grid > *:nth-child(4),
-.hotels-grid > *:nth-child(5) {
-  justify-self: center;
-  text-align: center;
-}
-
 /* ── Hotel name + thumbnail ───────────── */
 .hotel-name-cell {
   display: flex;
@@ -120,6 +112,12 @@
   border: 1px solid rgba(239, 68, 68, 0.35);
 }
 
+.toast-delete-success {
+  border: 1px solid #bbf7d0;
+  background: #0d1f33;
+  color: #22c55e;
+}
+
 .toast-close {
   background: none;
   border: none;
@@ -183,15 +181,11 @@
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
-/* ── Modal Box ───────────────────────────────────────────── */
+/* ── Reviews Modal Box ───────────────────────────────────── */
 .reviews-modal {
   background: #0d1f33;
   border: 1px solid rgba(163, 196, 235, 0.15);
@@ -363,13 +357,15 @@
   padding-right: 0.25rem;
 }
 
+/* ── Section Title ───────────────────────────────────────── */
 .section-title,
 h2.section-title {
   color: #ffffff !important;
   opacity: 1 !important;
   visibility: visible !important;
 }
-/* Header */
+
+/* ── Table Header ─────────────────────── */
 .table-header {
   width: 100%;
   direction: ltr;
@@ -377,16 +373,117 @@ h2.section-title {
 }
 
 .table-header.hotels-grid {
-  justify-items: start !important;
+  justify-items: center !important;
 }
 
 .table-header span {
+  text-align: center !important;
+  justify-self: center !important;
+}
+
+.table-header span:first-child {
+  text-align: left !important;
+  justify-self: start !important;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+/* ── Table Row ────────────────────────── */
+.table-row.hotels-grid {
+  direction: ltr;
+}
+
+.table-row.hotels-grid > * {
+  text-align: center !important;
+  justify-self: center !important;
+}
+
+.table-row.hotels-grid > *:first-child {
   text-align: left !important;
   justify-self: start !important;
 }
 
-/* خلي أول عمود يبدأ من أقصى الشمال */
-.table-header span:first-child {
-  padding-left: 0;
-  margin-left: 0;
+/* ── Confirm Delete Modal ─────────────────────────────────── */
+.confirm-modal {
+  background: #0d1f33;
+  border: 1px solid rgba(163, 196, 235, 0.15);
+  border-radius: 16px;
+  padding: 2rem 2.2rem;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.25s ease;
+}
+
+.confirm-icon {
+  width: 56px;
+  height: 56px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1.5px solid rgba(239, 68, 68, 0.3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.confirm-modal h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #e2edf7;
+}
+
+.confirm-modal p {
+  font-size: 0.88rem;
+  color: #7a9cbf;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.confirm-modal p strong {
+  color: #c8dff0;
+  font-weight: 700;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.btn-cancel-modal {
+  padding: 0.55rem 1.6rem;
+  border-radius: 10px;
+  border: 1.5px solid rgba(163, 196, 235, 0.2);
+  background: #162a40;
+  color: #7a9cbf;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-cancel-modal:hover {
+  background: #1e3a5a;
+  color: #c8dff0;
+}
+
+.btn-confirm-delete {
+  padding: 0.55rem 1.6rem;
+  border-radius: 10px;
+  border: none;
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-confirm-delete:hover {
+  background: #dc2626;
+}
+.confirm-overlay {
+  z-index: 1100;
 }

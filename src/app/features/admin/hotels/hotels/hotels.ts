@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HotelService } from '../../../../core/services/hotel.service';
-import { Hotel, Review } from '../../../../core/model/hotel.model';
+import { AdminHotelApiItem, HotelReview } from '../../../../core/model/hotel.model';
 
 @Component({
   selector: 'app-admin-hotels',
@@ -17,62 +17,83 @@ export class AdminHotels implements OnInit {
   currentPage = 1;
   readonly pageSize = 4;
 
-  hotels: (Hotel & { status: string })[] = [];
+  hotels: AdminHotelApiItem[] = [];
+  loadingHotels = true;
+  loadError     = false;
 
+  // ── Toast ──────────────────────────────────
   deleteToastVisible = false;
+  deleteToastSuccess = true;
   deleteToastMessage = '';
 
-  // ── Reviews Modal ──────────────────────────
-  reviewsModalVisible = false;
-  selectedHotelName   = '';
-  selectedHotelReviews: Review[] = [];
+  // ── Confirm Delete Hotel Modal ──────────────
+  confirmDeleteVisible = false;
+  hotelToDelete: AdminHotelApiItem | null = null;
+  deletingHotel = false;
+
+  // ── Reviews Modal ───────────────────────────
+  reviewsModalVisible        = false;
+  selectedHotelName          = '';
+  selectedHotelReviews: HotelReview[] = [];
   selectedHotelId: number | null = null;
 
-stats = [
-  { label: 'Total Hotels', value: 0, icon: '🏨', type: 'total'    },
-  { label: 'Active',       value: 0, icon: '✓',  type: 'active'   },
-  { label: 'Inactive',     value: 0, icon: '⊘',  type: 'inactive' },
-];
+  // ── Confirm Delete Review Modal ─────────────
+  reviewToDelete: HotelReview | null = null;
+
+  stats = [
+    { label: 'Total Hotels',  value: 0, icon: '🏨', type: 'total'    },
+    { label: 'Active',        value: 0, icon: '✓',  type: 'active'   },
+    { label: 'Inactive',      value: 0, icon: '⊘',  type: 'inactive' },
+  ];
 
   constructor(
-    private router: Router,
+    private router:       Router,
     private hotelService: HotelService,
-    private cdr: ChangeDetectorRef,
+    private cdr:          ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    this.hotelService.getHotels().subscribe(hotels => {
-      this.hotels = hotels.map(h => ({
-        ...h,
-        status: (h as any).status ?? 'Active',
-      }));
-      this.currentPage = 1;
-      this.updateStats();
-      this.cdr.detectChanges();
+    this.loadHotels();
+  }
+
+  private loadHotels(): void {
+    const token = localStorage.getItem('token') ?? '';
+    this.loadingHotels = true;
+    this.loadError     = false;
+
+    this.hotelService.getAdminHotels(token).subscribe({
+      next: (res) => {
+        this.hotels         = res.hotels;
+        this.stats[0].value = res.totalHotels;
+        this.stats[1].value = res.activeHotels;
+        this.stats[2].value = res.inactiveHotels;
+        this.loadingHotels  = false;
+        this.currentPage    = 1;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.loadingHotels = false;
+        this.loadError     = true;
+        this.cdr.detectChanges();
+      },
     });
   }
 
-updateStats(): void {
-  this.stats[0].value = this.hotels.length;
-  this.stats[1].value = this.hotels.filter(h => h.status === 'Active').length;
-  this.stats[2].value = this.hotels.filter(h => h.status === 'Inactive').length;
-}
+  // ── Search & Pagination ───────────────────────────────────
 
-  // ── كل البيانات المفلترة (بدون pagination) ──
-  get filteredAll() {
+  get filteredAll(): AdminHotelApiItem[] {
     if (!this.searchQuery.trim()) return this.hotels;
     return this.hotels.filter(h =>
-      h.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      h.name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+      h.location.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
   }
 
-  // ── الصفحة الحالية فقط ──
-  get filtered() {
+  get filtered(): AdminHotelApiItem[] {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.filteredAll.slice(start, start + this.pageSize);
   }
 
-  // ── عدد الصفحات ──
   get totalPages(): number[] {
     return Array.from(
       { length: Math.ceil(this.filteredAll.length / this.pageSize) },
@@ -80,53 +101,136 @@ updateStats(): void {
     );
   }
 
-  onSearch(): void {
-    this.currentPage = 1;
-  }
+  onSearch(): void { this.currentPage = 1; }
 
-  showDeleteToast(msg: string) {
+  // ── Toast ───────────────────────────────────
+
+  showToast(success: boolean, msg: string): void {
+    this.deleteToastSuccess = success;
     this.deleteToastMessage = msg;
-    this.deleteToastVisible = true;
+    this.deleteToastVisible  = true;
     setTimeout(() => {
       this.deleteToastVisible = false;
       this.cdr.detectChanges();
-    }, 6000);
+    }, 4000);
   }
 
-  viewOnSite(hotel: Hotel) {
+  // ── Actions ───────────────────────────────────────────────
+
+  viewOnSite(hotel: AdminHotelApiItem): void {
     window.open(`/hotels/details/${hotel.id}`, '_blank');
   }
 
-  edit(hotel: Hotel) {
+  edit(hotel: AdminHotelApiItem): void {
     this.router.navigate(['/admin/hotels/manage'], { queryParams: { id: hotel.id } });
   }
 
-  delete(hotel: Hotel) {
-    this.hotelService.deleteHotel(hotel.id);
-    this.showDeleteToast(`"${hotel.name}" deleted successfully.`);
+  // ── Delete Hotel Flow ────────────────────────
+
+  delete(hotel: AdminHotelApiItem): void {
+    this.hotelToDelete       = hotel;
+    this.confirmDeleteVisible = true;
   }
 
-  // ── Reviews Modal ──────────────────────────────────────
+  cancelDelete(): void {
+    if (this.deletingHotel) return;
+    this.confirmDeleteVisible = false;
+    this.hotelToDelete        = null;
+  }
 
-  openReviews(hotel: Hotel) {
-    this.selectedHotelId   = hotel.id;
-    this.selectedHotelName = hotel.name;
-    this.hotelService.getReviews(hotel.id).subscribe(reviews => {
-      this.selectedHotelReviews = reviews;
-      this.cdr.detectChanges();
+  confirmDelete(): void {
+    if (!this.hotelToDelete || this.deletingHotel) return;
+
+    const hotel = this.hotelToDelete;
+    const token = localStorage.getItem('token') ?? '';
+    this.deletingHotel = true;
+
+    this.hotelService.deleteHotelAdmin(hotel.id, token).subscribe({
+      next: () => {
+        this.hotels = this.hotels.filter(h => h.id !== hotel.id);
+        this.stats[0].value = this.hotels.length;
+        this.stats[1].value = this.hotels.filter(h => h.status === 'Active').length;
+        this.stats[2].value = this.hotels.filter(h => h.status === 'Inactive').length;
+
+        const newTotalPages = Math.ceil(this.filteredAll.length / this.pageSize) || 1;
+        if (this.currentPage > newTotalPages) this.currentPage = newTotalPages;
+
+        this.deletingHotel        = false;
+        this.confirmDeleteVisible = false;
+        this.hotelToDelete        = null;
+
+        this.showToast(true, `"${hotel.name}" deleted successfully.`);
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.deletingHotel        = false;
+        this.confirmDeleteVisible = false;
+        this.hotelToDelete        = null;
+
+        this.showToast(false, `Failed to delete "${hotel.name}". Please try again.`);
+        this.cdr.detectChanges();
+      },
     });
-    this.reviewsModalVisible = true;
   }
 
-  closeReviewsModal() {
+  // ── Reviews Modal ───────────────────────────
+
+  openReviews(hotel: AdminHotelApiItem): void {
+    this.selectedHotelId     = hotel.id;
+    this.selectedHotelName   = hotel.name;
+    this.reviewsModalVisible = true;
+
+    const token = localStorage.getItem('token') ?? '';
+
+    this.hotelService.getAdminReviews(hotel.id, token).subscribe({
+      next: reviews => {
+        this.selectedHotelReviews = reviews;
+        this.cdr.detectChanges();
+      },
+      error: err => console.error('Failed to load reviews:', err),
+    });
+  }
+
+  closeReviewsModal(): void {
     this.reviewsModalVisible  = false;
     this.selectedHotelId      = null;
     this.selectedHotelReviews = [];
+    this.reviewToDelete       = null;
   }
 
-  deleteReview(review: Review) {
-    this.hotelService.deleteReview(review.id);
-    this.selectedHotelReviews = this.selectedHotelReviews.filter(r => r.id !== review.id);
-    this.showDeleteToast(`Review by "${review.userName}" removed.`);
+  // ── Delete Review Flow ───────────────────────
+
+  requestDeleteReview(review: HotelReview): void {
+    this.reviewToDelete = review;
+  }
+
+  cancelDeleteReview(): void {
+    this.reviewToDelete = null;
+  }
+
+  confirmDeleteReview(): void {
+    if (!this.reviewToDelete) return;
+
+    const review = this.reviewToDelete;
+    const token  = localStorage.getItem('token') ?? '';
+
+    this.hotelService.deleteReviewAdmin(
+      this.selectedHotelId!,
+      review.id,
+      token
+    ).subscribe({
+      next: () => {
+        this.selectedHotelReviews =
+          this.selectedHotelReviews.filter(r => r.id !== review.id);
+        this.reviewToDelete = null;
+        this.showToast(true, `Review by "${review.userName}" removed.`);
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.reviewToDelete = null;
+        this.showToast(false, `Failed to remove review. Please try again.`);
+        this.cdr.detectChanges();
+      },
+    });
   }
 }
