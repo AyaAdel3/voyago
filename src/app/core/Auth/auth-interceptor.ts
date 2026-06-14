@@ -10,60 +10,76 @@ let refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
-  const router      = inject(Router);
+  const router = inject(Router);
 
-  if (req.url.includes('/Auth/refresh') || req.url.includes('/Auth/revoke-refresh-token')) {
+  // تجاهل refresh و revoke
+  if (
+    req.url.includes('/Auth/refresh') ||
+    req.url.includes('/Auth/revoke-refresh-token')
+  ) {
     return next(req);
   }
 
-  const token        = localStorage.getItem('voyago_token');
+  const token = localStorage.getItem('voyago_token');
   const expiresAtStr = localStorage.getItem('voyago_token_expires_at');
-  const expiresAt    = expiresAtStr ? parseInt(expiresAtStr) : null;
+  const expiresAt = expiresAtStr ? parseInt(expiresAtStr) : null;
 
-  const isAboutToExpire = !!(token && expiresAt && Date.now() > expiresAt - 60_000);
+  // ✅ refresh فقط عند انتهاء فعلي
+  const isAboutToExpire =
+    !!(token && expiresAt && Date.now() >= expiresAt);
 
-  if (isAboutToExpire && !isRefreshing) {
+  // =========================
+  // 🔥 CASE 1: token expired
+  // =========================
+  if (isAboutToExpire) {
+
+    // لو refresh شغال بالفعل
+    if (isRefreshing) {
+      return refreshTokenSubject.pipe(
+        filter(t => t !== null),
+        take(1),
+        switchMap(newToken => next(addToken(req, newToken)))
+      );
+    }
+
     isRefreshing = true;
     refreshTokenSubject.next(null);
 
     return authService.refreshToken().pipe(
-      switchMap((res) => {
+      switchMap(res => {
         isRefreshing = false;
         refreshTokenSubject.next(res.token);
+
         return next(addToken(req, res.token));
       }),
-      catchError((err) => {
+      catchError(err => {
         isRefreshing = false;
         refreshTokenSubject.next(null);
-        if (err.status === 401) {
-          // ✅ forceLogout بدل logout
-          authService.forceLogout();
-          router.navigate(['/home']);
-        }
+
+        authService.forceLogout();
+        router.navigate(['/home']);
+
         return throwError(() => err);
       })
     );
   }
 
-  if (isAboutToExpire && isRefreshing) {
-    return refreshTokenSubject.pipe(
-      filter((t) => t !== null),
-      take(1),
-      switchMap((newToken) => next(addToken(req, newToken)))
-    );
-  }
-
+  // =========================
+  // 🔥 CASE 2: normal request
+  // =========================
   return next(addToken(req, token)).pipe(
     catchError((error: HttpErrorResponse) => {
+
       if (error.status !== 401) {
         return throwError(() => error);
       }
 
+      // لو فيه refresh شغال
       if (isRefreshing) {
         return refreshTokenSubject.pipe(
-          filter((t) => t !== null),
+          filter(t => t !== null),
           take(1),
-          switchMap((newToken) => next(addToken(req, newToken)))
+          switchMap(newToken => next(addToken(req, newToken)))
         );
       }
 
@@ -71,19 +87,19 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       refreshTokenSubject.next(null);
 
       return authService.refreshToken().pipe(
-        switchMap((res) => {
+        switchMap(res => {
           isRefreshing = false;
           refreshTokenSubject.next(res.token);
+
           return next(addToken(req, res.token));
         }),
-        catchError((refreshErr) => {
+        catchError(refreshErr => {
           isRefreshing = false;
           refreshTokenSubject.next(null);
-          if (refreshErr.status === 401) {
-            // ✅ forceLogout بدل logout
-            authService.forceLogout();
-            router.navigate(['/home']);
-          }
+
+          authService.forceLogout();
+          router.navigate(['/home']);
+
           return throwError(() => refreshErr);
         })
       );
@@ -93,6 +109,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
 function addToken(req: any, token: string | null) {
   return token
-    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    ? req.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      })
     : req;
 }

@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, catchError, tap } from 'rxjs/operators';
 
 export interface User {
   firstName:    string;
@@ -77,26 +77,37 @@ export class AuthService {
       catchError(err => throwError(() => err))
     );
   }
+refreshToken(): Observable<AuthResponse> {
+  const token = localStorage.getItem('voyago_token');
+  const refreshToken = localStorage.getItem('voyago_refresh_token');
 
-  refreshToken(): Observable<AuthResponse> {
-    const token        = localStorage.getItem('voyago_token');
-    const refreshToken = localStorage.getItem('voyago_refresh_token');
+  console.log('========== REFRESH REQUEST ==========');
+  console.log('Access Token:', token);
+  console.log('Refresh Token:', refreshToken);
 
-    if (!token || !refreshToken) {
-      return throwError(() => new Error('No tokens available'));
-    }
-
-    return this.http.post<AuthResponse>(
-      `${BASE_URL}/Auth/refresh`,
-      { token, refreshToken }
-    ).pipe(
-      map(res => {
-        this._saveTokens(res);
-        return res;
-      }),
-      catchError(err => throwError(() => err))
-    );
+  if (!token || !refreshToken) {
+    console.error('No tokens found');
+    return throwError(() => new Error('No tokens available'));
   }
+
+  return this.http.post<AuthResponse>(
+    `${BASE_URL}/Auth/refresh`,
+    { token, refreshToken }
+  ).pipe(
+    tap(res => {
+      console.log('✅ Refresh Success:', res);
+    }),
+    map(res => {
+      this._saveTokens(res);
+      return res;
+    }),
+    catchError(err => {
+      console.error('❌ Refresh Status:', err.status);
+      console.error('❌ Refresh Error:', err.error);
+      return throwError(() => err);
+    })
+  );
+}
 
   // ✅ للـ profile logout — بيستنى الـ revoke
   logout(): Observable<any> {
