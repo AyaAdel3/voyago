@@ -85,7 +85,6 @@ export class Details implements OnInit {
     this.hotelService.getHotelApiById(id).subscribe({
       next: (hotel) => {
         this.hotel   = hotel;
-        // ✅ نجيب الـ comments من الـ detail response مباشرة في أول load
         this.reviews = hotel.comments ?? [];
 
         this.selectedRooms = [
@@ -109,7 +108,6 @@ export class Details implements OnInit {
     });
   }
 
-  // ✅ زي الريستورنت بالظبط: reload الـ comments من الـ API بعد add أو أي تغيير
   private loadReviews(id: number): void {
     this.hotelService.getComments(id).subscribe({
       next: (reviews: HotelApiComment[]) => {
@@ -133,6 +131,10 @@ export class Details implements OnInit {
 
   get currentUserName(): string {
     return this.authService.getFullName() || 'Guest';
+  }
+
+  get currentUserAvatar(): string {
+    return this.authService.currentUser()?.profileImage || '';
   }
 
   goToLogin(): void {
@@ -278,9 +280,6 @@ export class Details implements OnInit {
     return !!fullName && review.userName?.trim() === fullName;
   }
 
-  // ✅ زي الريستورنت بالظبط:
-  //    1. POST لإضافة الـ comment
-  //    2. بعد النجاح → loadReviews من الـ API علشان نجيب الـ id الصح والبيانات الكاملة
   submitReview(): void {
     if (!this.authService.isLoggedIn()) {
       this.authModal.openLogin();
@@ -296,7 +295,6 @@ export class Details implements OnInit {
         next: () => {
           this.newComment = '';
           this.newRating  = 0;
-          // ✅ reload من الـ API علشان الـ review يظهر بـ id صح ويتعمله delete
           this.loadReviews(this.hotel.id);
           this.submitting = false;
           this.cdr.detectChanges();
@@ -312,9 +310,6 @@ export class Details implements OnInit {
   requestDeleteReview(review: HotelApiComment): void { this.reviewToDelete = review; }
   cancelDelete(): void { this.reviewToDelete = null; }
 
-  // ✅ زي الريستورنت بالظبط:
-  //    1. DELETE request للـ API
-  //    2. بعد النجاح → filter محلي بدون API call تاني
   confirmDeleteReview(): void {
     if (!this.reviewToDelete) return;
 
@@ -322,7 +317,6 @@ export class Details implements OnInit {
 
     this.hotelService.deleteComment(this.hotel.id, commentId).subscribe({
       next: () => {
-        // ✅ filter محلي — مش محتاجين نعمل reload كامل
         this.reviews        = this.reviews.filter(r => r.id !== commentId);
         this.reviewToDelete = null;
         this.cdr.detectChanges();

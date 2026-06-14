@@ -32,24 +32,23 @@ export class Home implements OnInit, OnDestroy {
   ];
 
   recommended = [
-    { name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=3', liked: false },
-    { name: 'Qaroun lake hotel', price: '182le for 3 nights', rating: 4.8, image: 'https://picsum.photos/300/200?random=4', liked: false },
-    { name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=5', liked: false },
-    { name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=6', liked: false },
-    { name: 'Qaroun lake hotel', price: '182le for 3 nights', rating: 4.8, image: 'https://picsum.photos/300/200?random=11', liked: false },
-    { name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=12', liked: false },
+    { id: 1, name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=3', liked: false },
+    { id: 2, name: 'Qaroun lake hotel', price: '182le for 3 nights', rating: 4.8, image: 'https://picsum.photos/300/200?random=4', liked: false },
+    { id: 3, name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=5', liked: false },
+    { id: 4, name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=6', liked: false },
+    { id: 5, name: 'Qaroun lake hotel', price: '182le for 3 nights', rating: 4.8, image: 'https://picsum.photos/300/200?random=11', liked: false },
+    { id: 6, name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=12', liked: false },
   ];
 
   availableThisWeek = [
-    { name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=7', liked: false },
-    { name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=8', liked: false },
-    { name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=9', liked: false },
-    { name: 'Qaroun lake hotel', price: '182le for 3 nights', rating: 4.8, image: 'https://picsum.photos/300/200?random=10', liked: false },
-    { name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=13', liked: false },
-    { name: 'Qaroun lake hotel', price: '182le for 3 nights', rating: 4.8, image: 'https://picsum.photos/300/200?random=14', liked: false },
+    { id: 7,  name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=7', liked: false },
+    { id: 8,  name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=8', liked: false },
+    { id: 9,  name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=9', liked: false },
+    { id: 10, name: 'Qaroun lake hotel', price: '182le for 3 nights', rating: 4.8, image: 'https://picsum.photos/300/200?random=10', liked: false },
+    { id: 11, name: 'House in tunis village', price: '1425le for 1 night', rating: 4.8, image: 'https://picsum.photos/300/200?random=13', liked: false },
+    { id: 12, name: 'Qaroun lake hotel', price: '182le for 3 nights', rating: 4.8, image: 'https://picsum.photos/300/200?random=14', liked: false },
   ];
 
-  // ══ Offers — بيجيب 2 كروت في كل مرة ══
   get visibleOffers() {
     const len = this.offers.length;
     return [
@@ -58,18 +57,15 @@ export class Home implements OnInit, OnDestroy {
     ];
   }
 
-  // ══ Recommended — بيجيب 4 كروت بناءً على الـ index ══
   get visibleRecommended() {
     return this.recommended.slice(this.recommendedIndex, this.recommendedIndex + 4);
   }
 
-  // ══ Available — بيجيب 4 كروت بناءً على الـ index ══
   get visibleAvailable() {
     return this.availableThisWeek.slice(this.availableIndex, this.availableIndex + 4);
   }
 
   ngOnInit() {
-    // ✅ بيتحرك أوتوماتيك كل 3 ثواني
     this.autoSlideInterval = setInterval(() => {
       this.currentOfferIndex = (this.currentOfferIndex + 2) % this.offers.length;
       this.cdr.markForCheck();
@@ -83,7 +79,6 @@ export class Home implements OnInit, OnDestroy {
     clearInterval(this.autoSlideInterval);
   }
 
-  // ══ Offers controls ══
   nextOffer() {
     this.currentOfferIndex = (this.currentOfferIndex + 2) % this.offers.length;
     this.cdr.detectChanges();
@@ -93,7 +88,6 @@ export class Home implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  // ══ Recommended controls ══
   nextRecommended() {
     if (this.recommendedIndex + 4 < this.recommended.length) this.recommendedIndex++;
   }
@@ -101,7 +95,6 @@ export class Home implements OnInit, OnDestroy {
     if (this.recommendedIndex > 0) this.recommendedIndex--;
   }
 
-  // ══ Available controls ══
   nextAvailable() {
     if (this.availableIndex + 4 < this.availableThisWeek.length) this.availableIndex++;
   }
@@ -109,7 +102,6 @@ export class Home implements OnInit, OnDestroy {
     if (this.availableIndex > 0) this.availableIndex--;
   }
 
-  // ══ Favorites ══
   toggleLike(item: any) {
     item.liked = !item.liked;
     if (item.liked) {

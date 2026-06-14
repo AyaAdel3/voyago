@@ -71,7 +71,7 @@
           <p class="about-text">{{ hotel.description }}</p>
         </div>
 
-        <!-- Features من الـ API -->
+        <!-- Features -->
         <div class="section-block" *ngIf="hotel.features && hotel.features.length">
           <h2 class="section-title font-bold">Great for your stay</h2>
           <div class="amenities-row">
@@ -89,9 +89,15 @@
         <div class="write-review">
           <div class="host-row">
             <div class="host-avatar">
-              <svg viewBox="0 0 24 24" width="28" height="28" fill="#fff">
-                <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
-              </svg>
+              <img
+                *ngIf="currentUserAvatar"
+                [src]="currentUserAvatar"
+                [alt]="currentUserName"
+                class="host-avatar-img"
+              />
+              <span *ngIf="!currentUserAvatar">
+                {{ currentUserName.charAt(0) }}
+              </span>
             </div>
             <span class="host-name font-medium">{{ currentUserName }}</span>
           </div>
@@ -114,7 +120,6 @@
               </button>
             </div>
           </div>
-          <!-- Submit error -->
           <p *ngIf="reviewError" class="booking-error-msg" style="margin-top:.5rem;">
             {{ reviewError }}
           </p>
@@ -206,8 +211,17 @@
             title="Delete your review">✕</button>
 
           <div class="reviewer-info">
-            <!-- ✅ charAt(0) على userName مباشرة لأنه string مش nullable -->
-            <div class="reviewer-avatar">{{ review.userName.charAt(0) }}</div>
+            <div class="reviewer-avatar">
+  <img
+    *ngIf="isMyReview(review) && currentUserAvatar"
+    [src]="currentUserAvatar"
+    [alt]="review.userName"
+    class="host-avatar-img"
+  />
+  <span *ngIf="!(isMyReview(review) && currentUserAvatar)">
+    {{ review.userName.charAt(0) }}
+  </span>
+</div>
             <div class="reviewer-meta">
               <p class="reviewer-name">{{ review.userName }}</p>
               <div class="review-stars">
@@ -219,7 +233,6 @@
               <p class="review-date">{{ formatReviewDate(review.date) }}</p>
             </div>
           </div>
-          <!-- ✅ content مش comment — ده الـ field الصح في الـ API -->
           <p class="review-comment">{{ review.content }}</p>
         </div>
       </div>

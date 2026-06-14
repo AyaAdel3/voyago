@@ -880,3 +880,44 @@
   color: #173b64;
   font-weight: 600;
 }
+.host-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #3a5070;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.host-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.reviewer-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #3a5070;
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.host-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
