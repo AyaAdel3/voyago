@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  Hotel, Review, RoomType, HotelFeature, BookingData, BOARD_FEATURE_NAMES,
+  RoomType, HotelFeature, BookingData, BOARD_FEATURE_NAMES,
+  HotelApiDetail, HotelApiComment,
 } from '../../../core/model/hotel.model';
 import { HotelService } from '../../../core/services/hotel.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -23,8 +24,8 @@ function calcNights(checkIn: string, checkOut: string): number {
   styleUrl: './details.css',
 })
 export class Details implements OnInit {
-  hotel!: Hotel;
-  reviews: Review[] = [];
+  hotel!: HotelApiDetail;
+  reviews: HotelApiComment[] = [];
   loading = true;
   error   = false;
 
@@ -40,23 +41,23 @@ export class Details implements OnInit {
   bookingError   = '';
 
   showLoginPrompt = false;
-  reviewToDelete: Review | null = null;
+  reviewToDelete: HotelApiComment | null = null;
 
-  newComment  = '';
-  newRating   = 0;
-  submitting  = false;
+  newComment = '';
+  newRating  = 0;
+  submitting = false;
 
   activeImage  = 0;
   lightboxOpen = false;
   lbIndex      = 0;
 
   constructor(
-    private route: ActivatedRoute,
-    public  router: Router,
+    private route:        ActivatedRoute,
+    public  router:       Router,
     private hotelService: HotelService,
-    private authService: AuthService,
-    private authModal: AuthModalService,
-    private cdr: ChangeDetectorRef,
+    private authService:  AuthService,
+    private authModal:    AuthModalService,
+    private cdr:          ChangeDetectorRef,
   ) {}
 
   @HostListener('document:keydown', ['$event'])
@@ -76,37 +77,44 @@ export class Details implements OnInit {
       this.hotel   = null!;
       this.cdr.detectChanges();
       this.loadHotel(id);
-      this.loadReviews(id);
     });
   }
 
   private loadHotel(id: number): void {
-    this.hotelService.getHotelById(id).subscribe({
-      next: (hotel: Hotel | undefined) => {
-        if (!hotel) { this.router.navigate(['/hotels']); return; }
-        this.hotel         = hotel;
-        this.selectedRooms = this.hotelService.getDefaultRooms(hotel);
+    this.hotelService.getHotelApiById(id).subscribe({
+      next: (hotel) => {
+        this.hotel   = hotel;
+        this.reviews = hotel.comments ?? [];
 
-        this.hotelService.getFeatures().subscribe(allFeatures => {
-          this.selectedFeatures = this.hotelService.getHotelFeatures(hotel, allFeatures);
-          this.recalc();
-          this.cdr.detectChanges();
-        });
+        // بناء الـ rooms من الـ API مباشرة
+        this.selectedRooms = [
+          { type: 'Single', price: hotel.singlePrice, quantity: 0 },
+          { type: 'Double', price: hotel.doublePrice, quantity: 0 },
+          { type: 'Triple', price: hotel.triplePrice, quantity: 0 },
+          { type: 'Suite',  price: hotel.suitePrice,  quantity: 0 },
+        ];
 
+        this.selectedFeatures = [];
         this.loading = false;
         this.error   = false;
-        this.cdr.detectChanges();
         this.recalc();
+        this.cdr.detectChanges();
       },
-      error: () => { this.loading = false; this.error = true; this.cdr.detectChanges(); }
+      error: () => {
+        this.loading = false;
+        this.error   = true;
+        this.cdr.detectChanges();
+      },
     });
   }
 
-  private loadReviews(id: number): void {
-    this.hotelService.getReviews(id).subscribe({
-      next: (reviews: Review[]) => { this.reviews = reviews; this.cdr.detectChanges(); }
-    });
+  // ── Images ────────────────────────────────────────────────
+
+  get hotelImages(): string[] {
+    return this.hotel?.images?.map(img => img.imageUrl) ?? [];
   }
+
+  // ── Auth ──────────────────────────────────────────────────
 
   get currentUserName(): string {
     return this.authService.getFullName() || 'Guest';
@@ -117,7 +125,6 @@ export class Details implements OnInit {
     this.authModal.openLogin();
   }
 
-  // ✅ الأدمن → forceLogout + روح للهوم
   checkAuthBeforeInteract(): boolean {
     if (this.authService.isAdmin()) {
       this.authService.forceLogout();
@@ -132,6 +139,8 @@ export class Details implements OnInit {
     return true;
   }
 
+  // ── Booking helpers ───────────────────────────────────────
+
   get totalRoomsSelected(): number {
     return this.selectedRooms.reduce((s, r) => s + r.quantity, 0);
   }
@@ -142,85 +151,60 @@ export class Details implements OnInit {
       .reduce((s, f) => s + f.quantity, 0);
   }
 
-  get hotelDiscount(): number {
-    return this.hotel?.discount ?? 0;
-  }
+  get hotelDiscount(): number         { return 0; }
+  get hotelServiceChargePct(): number { return 0; }
 
-  get hotelServiceChargePct(): number {
-    return this.hotel?.serviceChargePct ?? 0;
-  }
-
-  private isBoard(f: HotelFeature): boolean {
-    return BOARD_FEATURE_NAMES.includes(f.name);
-  }
+  // ── Gallery ───────────────────────────────────────────────
 
   setActiveImage(i: number): void { this.activeImage = i; }
-  openLightbox(i: number): void   { this.lbIndex = i; this.lightboxOpen = true; document.body.style.overflow = 'hidden'; }
-  closeLightbox(): void           { this.lightboxOpen = false; document.body.style.overflow = ''; }
+
+  openLightbox(i: number): void {
+    this.lbIndex = i;
+    this.lightboxOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  closeLightbox(): void {
+    this.lightboxOpen = false;
+    document.body.style.overflow = '';
+  }
+
   lbPrev(): void { if (this.lbIndex > 0) this.lbIndex--; }
-  lbNext(): void { if (this.lbIndex < this.hotel.images.length - 1) this.lbIndex++; }
+  lbNext(): void { if (this.lbIndex < this.hotelImages.length - 1) this.lbIndex++; }
+
+  // ── Price calc ────────────────────────────────────────────
 
   recalc(): void {
     this.nights = calcNights(this.checkIn, this.checkOut);
-
     const hasDate = !!this.checkIn && !!this.checkOut &&
       new Date(this.checkOut) > new Date(this.checkIn);
 
     const roomsCost    = this.selectedRooms.reduce((s, r) => s + r.price * r.quantity, 0);
     const featuresCost = this.selectedFeatures.reduce((s, f) => s + f.price * f.quantity, 0);
 
-    this.basePrice = hasDate ? roomsCost * this.nights : 0;
-    const subtotal = this.basePrice + (hasDate ? featuresCost : 0);
-
-    const svcPct          = this.hotelServiceChargePct;
-    this.serviceCharge    = hasDate && svcPct > 0
-      ? Math.round(subtotal * (svcPct / 100))
-      : 0;
-
-    const discountPct    = this.hotelDiscount;
-    this.discountAmount  = hasDate && discountPct > 0
-      ? Math.round(subtotal * (discountPct / 100))
-      : 0;
-
-    this.totalAmount = hasDate
-      ? subtotal + this.serviceCharge - this.discountAmount
-      : 0;
+    this.basePrice      = hasDate ? roomsCost * this.nights : 0;
+    const subtotal      = this.basePrice + (hasDate ? featuresCost : 0);
+    this.serviceCharge  = 0;
+    this.discountAmount = 0;
+    this.totalAmount    = hasDate ? subtotal : 0;
   }
 
   changeRoom(i: number, delta: number): void {
     if (!this.checkAuthBeforeInteract()) return;
-
     this.selectedRooms[i].quantity = Math.max(0, this.selectedRooms[i].quantity + delta);
-    const max = this.totalRoomsSelected;
-
-    let boardOverflow = this.totalBoardSelected - max;
-    if (boardOverflow > 0) {
-      for (let j = this.selectedFeatures.length - 1; j >= 0 && boardOverflow > 0; j--) {
-        if (!this.isBoard(this.selectedFeatures[j])) continue;
-        const remove = Math.min(this.selectedFeatures[j].quantity, boardOverflow);
-        this.selectedFeatures[j].quantity -= remove;
-        boardOverflow -= remove;
-      }
-    }
-    for (const f of this.selectedFeatures) {
-      if (this.isBoard(f)) continue;
-      if (f.quantity > max) f.quantity = max;
-    }
-
     if (this.canClearError()) this.bookingError = '';
     this.recalc();
   }
 
   canIncrement(f: HotelFeature): boolean {
     if (this.totalRoomsSelected === 0) return false;
-    return this.isBoard(f)
+    return BOARD_FEATURE_NAMES.includes(f.name)
       ? this.totalBoardSelected < this.totalRoomsSelected
       : f.quantity < this.totalRoomsSelected;
   }
 
   changeFeature(i: number, delta: number): void {
     if (!this.checkAuthBeforeInteract()) return;
-
     const f      = this.selectedFeatures[i];
     const newVal = f.quantity + delta;
     if (newVal < 0) return;
@@ -251,24 +235,31 @@ export class Details implements OnInit {
     if (!this.checkAuthBeforeInteract()) return;
 
     const selectedRooms = this.selectedRooms.filter(r => r.quantity > 0);
-    if (selectedRooms.length === 0)                         { this.bookingError = 'Please select at least one room to continue.'; return; }
-    if (!this.checkIn || !this.checkOut)                    { this.bookingError = 'Please select check-in and check-out dates.'; return; }
-    if (new Date(this.checkOut) <= new Date(this.checkIn))  { this.bookingError = 'Check-out date must be after check-in date.'; return; }
+    if (selectedRooms.length === 0)                        { this.bookingError = 'Please select at least one room to continue.'; return; }
+    if (!this.checkIn || !this.checkOut)                   { this.bookingError = 'Please select check-in and check-out dates.'; return; }
+    if (new Date(this.checkOut) <= new Date(this.checkIn)) { this.bookingError = 'Check-out date must be after check-in date.'; return; }
 
     this.bookingError = '';
     const bookingData: BookingData = {
-      hotelId: this.hotel.id, hotelName: this.hotel.name,
-      checkIn: this.checkIn,  checkOut: this.checkOut,
-      rooms: selectedRooms,   features: this.selectedFeatures,
-      totalNights: this.nights, discount: this.hotelDiscount,
-      serviceCharge: this.serviceCharge, totalAmount: this.totalAmount,
+      hotelId:       this.hotel.id,
+      hotelName:     this.hotel.name,
+      checkIn:       this.checkIn,
+      checkOut:      this.checkOut,
+      rooms:         selectedRooms,
+      features:      this.selectedFeatures,
+      totalNights:   this.nights,
+      discount:      0,
+      serviceCharge: 0,
+      totalAmount:   this.totalAmount,
     };
     this.hotelService.setBooking(bookingData);
     this.router.navigate(['/hotels/booking']);
   }
 
-  isMyReview(review: Review): boolean {
-    if (review.userName === 'You') return true;
+  // ── Reviews ───────────────────────────────────────────────
+
+  isMyReview(review: HotelApiComment): boolean {
+    if ((review as any).userName === 'You') return true;
     const fullName = this.authService.getFullName()?.trim();
     return !!fullName && review.userName?.trim() === fullName;
   }
@@ -278,36 +269,29 @@ export class Details implements OnInit {
       this.authModal.openLogin();
       return;
     }
-
     if (!this.newComment.trim() || this.newRating === 0 || this.submitting) return;
     this.submitting = true;
 
-    this.hotelService.submitReview(this.hotel.id, this.newComment, this.newRating)
-      .subscribe({
-        next: () => {
-          this.newComment = '';
-          this.newRating  = 0;
-          this.submitting = false;
-          this.cdr.detectChanges();
-        },
-        error: () => {
-          this.submitting = false;
-          this.cdr.detectChanges();
-        },
-      });
+    const newReview: HotelApiComment = {
+      id:       Date.now(),
+      userName: this.authService.getFullName() || 'You',
+      rating:   this.newRating,
+      comment:  this.newComment,
+      date:     new Date().toISOString().split('T')[0],
+    };
+    this.reviews    = [newReview, ...this.reviews];
+    this.newComment = '';
+    this.newRating  = 0;
+    this.submitting = false;
+    this.cdr.detectChanges();
   }
 
-  requestDeleteReview(review: Review): void {
-    this.reviewToDelete = review;
-  }
-
-  cancelDelete(): void {
-    this.reviewToDelete = null;
-  }
+  requestDeleteReview(review: HotelApiComment): void { this.reviewToDelete = review; }
+  cancelDelete(): void { this.reviewToDelete = null; }
 
   confirmDeleteReview(): void {
     if (!this.reviewToDelete) return;
-    this.hotelService.deleteReview(this.reviewToDelete.id);
+    this.reviews = this.reviews.filter(r => r.id !== this.reviewToDelete!.id);
     this.reviewToDelete = null;
     this.cdr.detectChanges();
   }

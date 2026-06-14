@@ -6,10 +6,10 @@
   </div>
 
   <!-- Error -->
-  <div *ngIf="!loading && error" class="loading-wrap" style="color:white; flex-direction:column; gap:1rem;">
+  <div *ngIf="!loading && error" class="loading-wrap"
+       style="color:white; flex-direction:column; gap:1rem;">
     <p>Failed to load hotel. Please try again.</p>
-    <button
-      (click)="router.navigate(['/hotels'])"
+    <button (click)="router.navigate(['/hotels'])"
       style="background:#f5c518;border:none;padding:.5rem 1.5rem;border-radius:8px;cursor:pointer;font-weight:700;">
       Back to Hotels
     </button>
@@ -24,7 +24,7 @@
       <!-- GALLERY -->
       <div class="gallery">
         <div class="gallery-main" (click)="openLightbox(activeImage)">
-          <img [src]="hotel.images[activeImage]" [alt]="hotel.name" />
+          <img [src]="hotelImages[activeImage]" [alt]="hotel.name" />
           <div class="main-overlay">
             <svg viewBox="0 0 24 24" width="28" height="28" fill="white" style="opacity:.7">
               <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
@@ -34,16 +34,16 @@
 
         <div class="gallery-thumbs">
           <div
-            *ngFor="let img of hotel.images.slice(0, 3); let i = index"
+            *ngFor="let img of hotelImages.slice(0, 3); let i = index"
             class="gallery-thumb"
             [class.active-thumb]="activeImage === i"
             (click)="setActiveImage(i)">
             <img [src]="img" [alt]="hotel.name + ' ' + (i+1)" />
             <div
-              *ngIf="i === 2 && hotel.images.length > 3"
+              *ngIf="i === 2 && hotelImages.length > 3"
               class="more-photos"
               (click)="openLightbox(i); $event.stopPropagation()">
-              +{{ hotel.images.length - 3 }} photos
+              +{{ hotelImages.length - 3 }} photos
             </div>
           </div>
         </div>
@@ -71,10 +71,11 @@
           <p class="about-text">{{ hotel.description }}</p>
         </div>
 
-        <div class="section-block" *ngIf="hotel.displayFeatures && hotel.displayFeatures.length">
+        <!-- Features من الـ API -->
+        <div class="section-block" *ngIf="hotel.features && hotel.features.length">
           <h2 class="section-title font-bold">Great for your stay</h2>
           <div class="amenities-row">
-            <div *ngFor="let f of hotel.displayFeatures" class="amenity-chip">
+            <div *ngFor="let f of hotel.features" class="amenity-chip">
               <span>{{ f.icon }}</span>
               {{ f.name }}
             </div>
@@ -95,7 +96,8 @@
             <span class="host-name font-medium">{{ currentUserName }}</span>
           </div>
           <div class="review-form-row">
-            <input type="text" placeholder="Write your comment..." [(ngModel)]="newComment" class="review-input" />
+            <input type="text" placeholder="Write your comment..."
+                   [(ngModel)]="newComment" class="review-input" />
             <div class="review-form-actions">
               <div class="star-picker">
                 <svg
@@ -120,7 +122,6 @@
     <!-- RIGHT: Booking Widget -->
     <div class="booking-widget">
 
-      <!-- ✅ Login Prompt — بيظهر بس لما يتفاعل مع الـ widget وهو مش مسجل -->
       <div class="login-prompt-res" *ngIf="showLoginPrompt">
         <div class="login-prompt-icon">🔒</div>
         <p class="login-prompt-title">Sign in required</p>
@@ -129,32 +130,25 @@
         <button class="btn-dismiss" (click)="showLoginPrompt = false">Cancel</button>
       </div>
 
-      <!-- ✅ Booking Form — بيظهر دايماً إلا لو الـ login prompt شغال -->
       <ng-container *ngIf="!showLoginPrompt">
 
         <!-- Dates -->
         <div class="dates-row">
           <div class="date-field">
             <label>Check in</label>
-            <input
-              type="date"
-              [(ngModel)]="checkIn"
-              (change)="onDateChange()"
-              class="date-input"
-              [class.input-date-error]="bookingError && !checkIn" />
+            <input type="date" [(ngModel)]="checkIn" (change)="onDateChange()"
+                   class="date-input"
+                   [class.input-date-error]="bookingError && !checkIn" />
           </div>
           <div class="date-field">
             <label>Check out</label>
-            <input
-              type="date"
-              [(ngModel)]="checkOut"
-              (change)="onDateChange()"
-              class="date-input"
-              [class.input-date-error]="bookingError && !checkOut" />
+            <input type="date" [(ngModel)]="checkOut" (change)="onDateChange()"
+                   class="date-input"
+                   [class.input-date-error]="bookingError && !checkOut" />
           </div>
         </div>
 
-        <!-- ROOM section -->
+        <!-- ROOMS -->
         <div class="widget-section">
           <h4 class="widget-label">Room</h4>
           <div *ngFor="let r of selectedRooms; let i = index" class="option-row">
@@ -170,27 +164,7 @@
           </div>
         </div>
 
-        <!-- FEATURES section -->
-        <div class="widget-section">
-          <h4 class="widget-label">Features</h4>
-          <p *ngIf="totalRoomsSelected === 0" class="features-hint">Select rooms first to add features</p>
-          <ng-container *ngIf="selectedFeatures.length === 0 && totalRoomsSelected > 0">
-            <p class="features-hint">No bookable features for this hotel</p>
-          </ng-container>
-          <div *ngFor="let f of selectedFeatures; let i = index" class="option-row">
-            <span class="option-name">{{ f.name }}</span>
-            <div class="option-right">
-              <span class="option-price">{{ f.price | number }}LE</span>
-              <div class="qty-ctrl">
-                <button (click)="changeFeature(i, -1)" [disabled]="f.quantity === 0">−</button>
-                <span class="qty-val">{{ f.quantity }}</span>
-                <button (click)="changeFeature(i, 1)" [disabled]="!canIncrement(f)">+</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- PRICE section -->
+        <!-- PRICE -->
         <div class="widget-section">
           <h4 class="widget-label">Price</h4>
           <div class="price-summary">
@@ -198,24 +172,10 @@
               <span>{{ nights }} Night{{ nights !== 1 ? 's' : '' }}</span>
               <span>{{ basePrice | number }}LE</span>
             </div>
-            <ng-container *ngFor="let f of selectedFeatures">
-              <div *ngIf="f.quantity > 0" class="s-row">
-                <span>{{ f.name }} × {{ f.quantity }}</span>
-                <span>{{ f.price * f.quantity | number }}LE</span>
-              </div>
-            </ng-container>
-
-            <div class="s-row" *ngIf="hotelServiceChargePct > 0">
-              <span>Service ({{ hotelServiceChargePct }}%)</span>
-              <span>{{ serviceCharge | number }}LE</span>
+            <div class="s-row s-total">
+              <span>Total</span>
+              <span>{{ totalAmount | number }}LE</span>
             </div>
-
-            <div class="s-row s-discount" *ngIf="hotelDiscount > 0">
-              <span>Discount ({{ hotelDiscount }}%)</span>
-              <span>-{{ discountAmount | number }}LE</span>
-            </div>
-
-            <div class="s-row s-total"><span>Total</span><span>{{ totalAmount | number }}LE</span></div>
           </div>
         </div>
 
@@ -232,15 +192,14 @@
     <div class="show-review text-[#F6FAFF]">
       <h2 class="section-title">Customer Reviews</h2>
       <div class="reviews-grid">
-        <div *ngFor="let review of reviews" class="review-card" [class.my-review]="isMyReview(review)">
+        <div *ngFor="let review of reviews" class="review-card"
+             [class.my-review]="isMyReview(review)">
 
           <button
             *ngIf="isMyReview(review)"
             class="delete-review-btn"
             (click)="requestDeleteReview(review)"
-            title="Delete your review">
-            ✕
-          </button>
+            title="Delete your review">✕</button>
 
           <div class="reviewer-info">
             <div class="reviewer-avatar">{{ review.userName.charAt(0) }}</div>
@@ -257,11 +216,16 @@
           </div>
           <p class="review-comment">{{ review.comment }}</p>
         </div>
+
+        <div *ngIf="reviews.length === 0" class="review-card"
+             style="color:#7a9cbf; text-align:center; padding: 2rem;">
+          No reviews yet. Be the first to review!
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- CONFIRM DELETE DIALOG -->
+  <!-- CONFIRM DELETE -->
   <div class="confirm-overlay" *ngIf="reviewToDelete" (click)="cancelDelete()">
     <div class="confirm-card" (click)="$event.stopPropagation()">
       <div class="confirm-icon">
@@ -291,16 +255,17 @@
           <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
         </svg>
       </button>
-      <img [src]="hotel.images[lbIndex]" [alt]="hotel.name" class="lb-img" />
-      <button class="lb-arrow lb-next" (click)="lbNext()" [disabled]="lbIndex === hotel.images.length - 1">
+      <img [src]="hotelImages[lbIndex]" [alt]="hotel.name" class="lb-img" />
+      <button class="lb-arrow lb-next" (click)="lbNext()"
+              [disabled]="lbIndex === hotelImages.length - 1">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
           <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
         </svg>
       </button>
-      <div class="lb-counter">{{ lbIndex + 1 }} / {{ hotel.images.length }}</div>
+      <div class="lb-counter">{{ lbIndex + 1 }} / {{ hotelImages.length }}</div>
       <div class="lb-dots">
         <span
-          *ngFor="let img of hotel.images; let i = index"
+          *ngFor="let img of hotelImages; let i = index"
           class="lb-dot"
           [class.active]="i === lbIndex"
           (click)="lbIndex = i"></span>

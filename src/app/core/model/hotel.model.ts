@@ -36,8 +36,8 @@ export interface Hotel {
   amenities: string[];
   stars: number;
   status?: 'Active' | 'Inactive' | 'Blocked';
-  discount?: number;          // 0-100 percentage, 0 = no discount
-  serviceChargePct?: number;  // 0-100 percentage, 0 = no service charge
+  discount?: number;
+  serviceChargePct?: number;
   rooms?: HotelRooms;
   roomPrices?: HotelRoomPrices;
   displayFeatures?: HotelDisplayFeature[];
@@ -144,7 +144,6 @@ export const DEFAULT_FEATURES: HotelFeature[] = [
 
 export const MOCK_HOTELS: Hotel[] = [
   {
-    // Hotel 1: discount 15% + service 5%
     id: 1,
     name: 'House in tunis village',
     location: 'Tunis Village, 29000 Fayoum, Egypt',
@@ -178,7 +177,6 @@ export const MOCK_HOTELS: Hotel[] = [
     rooms: { total: 20, single: 8, double: 6, triple: 4, suite: 2 },
   },
   {
-    // Hotel 2: no discount + no service charge
     id: 2,
     name: 'Tzila Lodge',
     location: 'Tunis Village, 29000 Fayoum, Egypt',
@@ -214,7 +212,6 @@ export const MOCK_HOTELS: Hotel[] = [
     rooms: { total: 15, single: 5, double: 6, triple: 3, suite: 1 },
   },
   {
-    // Hotel 3: no discount + service 10%
     id: 3,
     name: 'Desert Rose Resort',
     location: 'Qarun Lake, Fayoum, Egypt',
@@ -224,8 +221,7 @@ export const MOCK_HOTELS: Hotel[] = [
     status: 'Active',
     discount: 0,
     serviceChargePct: 10,
-    description:
-      'Luxury desert retreat overlooking the enchanting Qarun Lake.',
+    description: 'Luxury desert retreat overlooking the enchanting Qarun Lake.',
     images: [
       'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=800',
       'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
@@ -257,3 +253,44 @@ export const MOCK_REVIEWS: Review[] = [
   { id: 5, hotelId: 2, userName: 'Malak Mohamed', userAvatar: '', userCountry: 'Egypt',  rating: 4, comment: 'Amazing stay!', date: '2025-10-05' },
   { id: 6, hotelId: 2, userName: 'David Silva',   userAvatar: '', userCountry: 'Kenya',  rating: 4, comment: 'Amazing stay!', date: '2025-09-30' },
 ];
+
+// ── API Interfaces ────────────────────────────────────────
+
+export interface HotelApiImage {
+  id: number;
+  imageUrl: string;
+  isMain: boolean;
+}
+
+export interface HotelApiFeature {
+  id: number;
+  name: string;
+  icon: string;
+}
+
+export interface HotelApiComment {
+  id: number;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
+
+export interface HotelApiDetail {
+  id: number;
+  name: string;
+  description: string;
+  location: string;
+  rating: number;
+  singleRooms: number;
+  singlePrice: number;
+  doubleRooms: number;
+  doublePrice: number;
+  tripleRooms: number;
+  triplePrice: number;
+  suiteRooms: number;
+  suitePrice: number;
+  images: HotelApiImage[];
+  features: HotelApiFeature[];
+  comments: HotelApiComment[];
+}

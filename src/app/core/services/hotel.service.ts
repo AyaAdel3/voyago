@@ -1,15 +1,18 @@
 import { Injectable, signal } from '@angular/core';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
 import {
   Hotel, Review, RoomType, HotelFeature, HotelFeatureDef, BookingData,
   BookingFeatureDef, FIXED_BOOKING_FEATURES,
   MOCK_HOTELS, MOCK_REVIEWS, MOCK_HOTEL_FEATURES, MOCK_DISPLAY_FEATURES,
-  buildDefaultRooms, DEFAULT_ROOM_PRICES, HotelRoomPrices,
+  buildDefaultRooms, HotelRoomPrices, HotelApiDetail,
 } from '../model/hotel.model';
 
 @Injectable({ providedIn: 'root' })
 export class HotelService {
+
+  private readonly apiBase = 'http://voyagoo.runasp.net/hotels';
 
   private hotelsSubject  = new BehaviorSubject<Hotel[]>([...MOCK_HOTELS]);
   hotels$                = this.hotelsSubject.asObservable();
@@ -20,7 +23,9 @@ export class HotelService {
   private favIds         = signal<Set<number>>(new Set());
   private currentBooking = signal<BookingData | null>(null);
 
-  // ── READ ─────────────────────────────────────────────────
+  constructor(private http: HttpClient) {}
+
+  // ── READ (mock — للـ admin) ───────────────────────────────
 
   getHotels(): Observable<Hotel[]> { return this.hotels$; }
 
@@ -40,6 +45,12 @@ export class HotelService {
 
   getDisplayFeatures(): Observable<HotelFeatureDef[]> {
     return of(MOCK_DISPLAY_FEATURES);
+  }
+
+  // ── READ (API — للـ details page) ────────────────────────
+
+  getHotelApiById(id: number): Observable<HotelApiDetail> {
+    return this.http.get<HotelApiDetail>(`${this.apiBase}/${id}`);
   }
 
   // ── WRITE ────────────────────────────────────────────────
@@ -76,12 +87,8 @@ export class HotelService {
       comment,
       date:        new Date().toISOString().split('T')[0],
     };
-
-    // نضيف في reviewsSubject — وده بيعمل emit تلقائي على getReviews()
     const current = this.reviewsSubject.getValue();
     this.reviewsSubject.next([newReview, ...current]);
-
-    // نرجع of() مش BehaviorSubject عشان يعمل emit مرة واحدة بس وينتهي
     return of(newReview);
   }
 
@@ -128,7 +135,6 @@ export class HotelService {
     }));
   }
 
-  /** Legacy — kept for backward compatibility */
   getHotelFeatures(hotel: Hotel, allFeatures: HotelFeatureDef[]): HotelFeature[] {
     return this.getHotelBookingFeatures(hotel);
   }

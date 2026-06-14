@@ -1,9 +1,19 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { Hotel } from '../../../core/model/hotel.model';
-import { HotelService } from '../../../core/services/hotel.service';
+import { HttpClient } from '@angular/common/http';
 import { FavoritesService } from '../../../core/services/favorites.service';
+
+export interface HotelApiItem {
+  id: number;
+  name: string;
+  description: string;
+  location: string;
+  rating: number;
+  minPrice: number;
+  maxPrice: number;
+  mainImageUrl: string;
+}
 
 @Component({
   selector: 'app-hotel-card',
@@ -13,13 +23,15 @@ import { FavoritesService } from '../../../core/services/favorites.service';
   styleUrls: ['./card.css'],
 })
 export class Card implements OnInit {
-  hotels: Hotel[] = [];
+  hotels: HotelApiItem[] = [];
   loading = false;
   pageSize = 5;
   currentPage = 1;
 
+  private readonly apiUrl = 'http://voyagoo.runasp.net/hotels';
+
   constructor(
-    public hotelService: HotelService,
+    private http: HttpClient,
     private favoritesService: FavoritesService,
     private router: Router,
     private cdr: ChangeDetectorRef,
@@ -29,7 +41,7 @@ export class Card implements OnInit {
     return Math.ceil(this.hotels.length / this.pageSize);
   }
 
-  get pagedHotels(): Hotel[] {
+  get pagedHotels(): HotelApiItem[] {
     const start = (this.currentPage - 1) * this.pageSize;
     return this.hotels.slice(start, start + this.pageSize);
   }
@@ -47,8 +59,7 @@ export class Card implements OnInit {
 
   ngOnInit(): void {
     this.loading = true;
-
-    this.hotelService.getHotels().subscribe({
+    this.http.get<HotelApiItem[]>(this.apiUrl).subscribe({
       next: (data) => {
         this.hotels = data;
         this.loading = false;
@@ -69,7 +80,7 @@ export class Card implements OnInit {
     this.router.navigate(['/hotels/details', id]);
   }
 
-  toggleFav(event: MouseEvent, hotel: any): void {
+  toggleFav(event: MouseEvent, hotel: HotelApiItem): void {
     event.stopPropagation();
 
     if (this.isHotelInFav(hotel.name)) {
@@ -77,11 +88,15 @@ export class Card implements OnInit {
     } else {
       this.favoritesService.addToFavorites({
         title: hotel.name,
-        image: hotel.images[0],
-        price: hotel.pricePerNight + 'le for 1 night',
+        image: hotel.mainImageUrl,
+        price: hotel.minPrice + ' LE / night',
         rating: hotel.rating,
         type: 'hotel',
       });
     }
+  }
+
+  getPriceRange(hotel: HotelApiItem): string {
+    return `${hotel.minPrice.toLocaleString()} – ${hotel.maxPrice.toLocaleString()} LE / night`;
   }
 }

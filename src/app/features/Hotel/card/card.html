@@ -9,7 +9,7 @@
   <div *ngIf="!loading" class="hotels-page">
     <div *ngFor="let hotel of pagedHotels" class="hotel-card" (click)="goToDetails(hotel.id)">
       <div class="card-img-wrap">
-        <img [src]="hotel.images[0]" [alt]="hotel.name" class="card-img" loading="lazy" />
+        <img [src]="hotel.mainImageUrl" [alt]="hotel.name" class="card-img" loading="lazy" />
 
         <button
           class="fav-btn"
@@ -35,7 +35,7 @@
         <div class="card-header gap-[3px]">
           <div>
             <h3 class="hotel-name">{{ hotel.name }}</h3>
-            <p class="hotel-price font-medium">{{ hotel.pricePerNight | number }} LE / night</p>
+            <p class="hotel-price font-medium">{{ getPriceRange(hotel) }}</p>
           </div>
 
           <div class="rating-badge">
