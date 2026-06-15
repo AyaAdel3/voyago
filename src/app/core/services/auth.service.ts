@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { switchMap, map, catchError, tap } from 'rxjs/operators';
 
@@ -58,36 +58,29 @@ export class AuthService {
     );
   }
 
- login(email: string, password: string): Observable<{ success: boolean; message: string }> {
-  return this.http.post<AuthResponse>(`${BASE_URL}/Auth`, { email, password }).pipe(
-    tap(res => this._saveTokens(res)),
-
-    switchMap(res =>
-      this.http.get<any>(`${BASE_URL}/Account/profile`).pipe(
-        map(profile => {
-          const user: User = {
-            firstName: res.firstName,
-            lastName: res.lastName,
-            email: res.email,
-            phone: profile.phoneNumber || '',
-            profileImage: profile.profilePictureUrl || '',
-            roles: res.roles ?? [],
-          };
-
-          localStorage.setItem('voyago_current_user', JSON.stringify(user));
-          this.currentUser.set({ ...user });
-
-          return {
-            success: true,
-            message: 'Welcome back!'
-          };
-        })
-      )
-    ),
-
-    catchError(err => throwError(() => err))
-  );
-}
+  login(email: string, password: string): Observable<{ success: boolean; message: string }> {
+    return this.http.post<AuthResponse>(`${BASE_URL}/Auth`, { email, password }).pipe(
+      tap(res => this._saveTokens(res)),
+      switchMap(res =>
+        this.http.get<any>(`${BASE_URL}/Account/profile`).pipe(
+          map(profile => {
+            const user: User = {
+              firstName:    res.firstName,
+              lastName:     res.lastName,
+              email:        res.email,
+              phone:        profile.phoneNumber || '',
+              profileImage: profile.profilePictureUrl || '',
+              roles:        res.roles ?? [],
+            };
+            localStorage.setItem('voyago_current_user', JSON.stringify(user));
+            this.currentUser.set({ ...user });
+            return { success: true, message: 'Welcome back!' };
+          })
+        )
+      ),
+      catchError(err => throwError(() => err))
+    );
+  }
 
   refreshToken(): Observable<AuthResponse> {
     const token        = localStorage.getItem('voyago_token');
@@ -99,7 +92,8 @@ export class AuthService {
 
     return this.http.post<AuthResponse>(
       `${BASE_URL}/Auth/refresh`,
-      { token, refreshToken }
+      { token, refreshToken },
+      { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
     ).pipe(
       map(res => {
         this._saveTokens(res);
@@ -124,7 +118,7 @@ export class AuthService {
       }),
       tap(user => {
         localStorage.setItem('voyago_current_user', JSON.stringify(user));
-        this.currentUser.set({ ...user }); // ← spread عشان Angular يحس بالتغيير
+        this.currentUser.set({ ...user });
       }),
       catchError(err => throwError(() => err))
     );
@@ -161,7 +155,8 @@ export class AuthService {
     if (token && refreshToken) {
       return this.http.post(
         `${BASE_URL}/Auth/revoke-refresh-token`,
-        { token, refreshToken }
+        { token, refreshToken },
+        { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
       ).pipe(
         catchError(() => of(null)),
         map(() => this._clearLocalStorage())
@@ -179,7 +174,8 @@ export class AuthService {
     if (token && refreshToken) {
       this.http.post(
         `${BASE_URL}/Auth/revoke-refresh-token`,
-        { token, refreshToken }
+        { token, refreshToken },
+        { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
       ).subscribe({ error: () => {} });
     }
 
@@ -207,7 +203,7 @@ export class AuthService {
     if (!user) return;
     const updated = { ...user, profileImage: imageUrl };
     localStorage.setItem('voyago_current_user', JSON.stringify(updated));
-    this.currentUser.set({ ...updated }); // ← spread عشان Angular يحس بالتغيير
+    this.currentUser.set({ ...updated });
   }
 
   forgotPassword(email: string): Observable<any> {
