@@ -38,10 +38,10 @@ export class ManageHotel implements OnInit {
   images:        ImageSlot[] = [];
   selectedFiles: File[]      = [];
 
-  toastMessage = '';
-  toastVisible = false;
-  toastSuccess = true;
-  isSaving     = false;
+  toastMessage  = '';
+  toastVisible  = false;
+  toastSuccess  = true;
+  isSaving      = false;
   isLoadingData = false;
 
   hotel = {
@@ -74,8 +74,14 @@ export class ManageHotel implements OnInit {
   newBookingFeaturePrice = 0;
   bookingDropdownOpen    = false;
 
+  // ── Auth token — tries all common storage keys ──────────
   private get authToken(): string {
-    return localStorage.getItem('token') ?? sessionStorage.getItem('token') ?? '';
+    return localStorage.getItem('token')
+      ?? localStorage.getItem('authToken')
+      ?? localStorage.getItem('access_token')
+      ?? sessionStorage.getItem('token')
+      ?? sessionStorage.getItem('authToken')
+      ?? '';
   }
 
   constructor(
@@ -88,10 +94,18 @@ export class ManageHotel implements OnInit {
   ngOnInit() {
     const token = this.authToken;
 
+    // ── Set isEdit & hotelId IMMEDIATELY from URL ──────────
+    // This makes the title show "Manage" right away, before any API call
+    const params = this.route.snapshot.queryParams;
+    if (params['id']) {
+      this.hotelId = +params['id'];
+      this.isEdit  = true;
+    }
+
     this.featuresLoading        = true;
     this.bookingFeaturesLoading = true;
 
-    // ── Step 1: load both feature lists together ──
+    // Load both feature lists first, then load hotel data (for edit)
     forkJoin({
       displayFeatures: this.hotelService.getHotelFeaturesFromApi(token),
       bookingFeatures: this.hotelService.getBookingFeaturesFromApi(token),
@@ -104,10 +118,9 @@ export class ManageHotel implements OnInit {
           f => f.id !== FULL_BOARD_API_ID && f.id !== HALF_BOARD_API_ID
         );
         this.bookingFeaturesLoading = false;
-
         this.cdr.detectChanges();
 
-        // ── Step 2: THEN load hotel data (lists are ready → mapping works) ──
+        // Load hotel data after feature lists are ready
         this.route.queryParams.subscribe(params => {
           if (params['id']) {
             this.hotelId = +params['id'];
@@ -134,13 +147,17 @@ export class ManageHotel implements OnInit {
     });
   }
 
+  // ── GET /admin/hotels/{id} ─────────────────────────────────
   private loadHotel(id: number) {
     this.isLoadingData = true;
     const token = this.authToken;
 
     this.hotelService.getAdminHotelById(id, token).subscribe({
       next: (h: any) => {
+        console.log('✅ Hotel loaded:', h);
+
         // Basic info
+        // Note: GET returns "serviceCharge" (not "serviceChargePct")
         this.hotel = {
           name:             h.name          ?? '',
           rating:           h.rating        ?? '',
@@ -157,8 +174,8 @@ export class ManageHotel implements OnInit {
           double: h.doubleRooms ?? 0,
           triple: h.tripleRooms ?? 0,
           suite:  h.suiteRooms  ?? 0,
-          total:  (h.singleRooms ?? 0) + (h.doubleRooms ?? 0) +
-                  (h.tripleRooms ?? 0) + (h.suiteRooms  ?? 0),
+          total: (h.singleRooms ?? 0) + (h.doubleRooms ?? 0)
+               + (h.tripleRooms ?? 0) + (h.suiteRooms  ?? 0),
         };
 
         // Room prices
@@ -169,25 +186,24 @@ export class ManageHotel implements OnInit {
           suite:    h.suitePrice  ?? 0,
         };
 
-        // Images — keep id for delete
-        this.images = (h.images ?? [])
-          .sort((a: any, b: any) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0))
-          .map((img: any) => ({
-            id:  img.id       ?? null,
-            url: img.imageUrl ?? img,
-          }))
-          .filter((s: ImageSlot) => !!s.url);
-
-        // Display features
-        this.selectedDisplayFeatureIds = (h.features ?? []).map(
-          (f: any) => (typeof f === 'number' ? f : f.id)
-        );
-
-        // Fixed booking features
+        // Fixed board prices
         this.fullBoardPrice = h.fullBoardPrice ?? 0;
         this.halfBoardPrice = h.halfBoardPrice ?? 0;
 
+        // Display feature IDs
+        // GET returns featureIds: [1, 2]
+        if (Array.isArray(h.featureIds) && h.featureIds.length > 0) {
+          this.selectedDisplayFeatureIds = [...h.featureIds];
+        } else if (Array.isArray(h.features) && h.features.length > 0) {
+          this.selectedDisplayFeatureIds = h.features.map(
+            (f: any) => (typeof f === 'number' ? f : f.id)
+          );
+        } else {
+          this.selectedDisplayFeatureIds = [];
+        }
+
         // Extra booking features
+        // GET returns bookingFeatures: [{ bookingFeatureId: 3, price: 250 }]
         const extras = (h.bookingFeatures ?? []).filter((f: any) => {
           const fid = f.bookingFeatureId ?? f.id ?? 0;
           return fid !== FULL_BOARD_API_ID && fid !== HALF_BOARD_API_ID;
@@ -198,17 +214,28 @@ export class ManageHotel implements OnInit {
           const match = this.availableBookingFeatures.find(af => af.id === apiId);
           return {
             apiId,
-            name:  f.name  ?? match?.name ?? '',
-            icon:  f.icon  ?? match?.icon ?? '⭐',
+            name:  match?.name ?? f.name ?? '',
+            icon:  match?.icon ?? f.icon ?? '⭐',
             price: f.price ?? 0,
           };
         });
+
+        // Images
+        if (Array.isArray(h.images) && h.images.length > 0) {
+          this.images = h.images
+            .sort((a: any, b: any) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0))
+            .map((img: any) => ({
+              id:  img.id ?? null,
+              url: img.imageUrl ?? (typeof img === 'string' ? img : ''),
+            }))
+            .filter((s: ImageSlot) => !!s.url);
+        }
 
         this.isLoadingData = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Failed to load hotel for edit:', err);
+        console.error('❌ Failed to load hotel:', err?.error ?? err);
         this.isLoadingData = false;
         this.showToast('Failed to load hotel data. Please try again.', false, false);
         this.cdr.detectChanges();
@@ -220,7 +247,7 @@ export class ManageHotel implements OnInit {
     this.featuresLoading = true;
     this.featuresError   = false;
     this.hotelService.getHotelFeaturesFromApi(this.authToken).subscribe({
-      next: f => { this.availableDisplayFeatures = f; this.featuresLoading = false; this.cdr.detectChanges(); },
+      next: f  => { this.availableDisplayFeatures = f; this.featuresLoading = false; this.cdr.detectChanges(); },
       error: () => { this.featuresLoading = false; this.featuresError = true; this.cdr.detectChanges(); },
     });
   }
@@ -315,20 +342,12 @@ export class ManageHotel implements OnInit {
 
   removeImage(i: number) {
     const slot = this.images[i];
-
     if (slot.id !== null && this.hotelId !== null) {
-      // Existing API image → DELETE first
       this.hotelService.deleteHotelImage(this.hotelId, slot.id, this.authToken).subscribe({
-        next: () => {
-          this.images.splice(i, 1);
-          this.cdr.detectChanges();
-        },
-        error: () => {
-          this.showToast('Failed to delete image. Please try again.', false, false);
-        },
+        next: () => { this.images.splice(i, 1); this.cdr.detectChanges(); },
+        error: () => { this.showToast('Failed to delete image. Please try again.', false, false); },
       });
     } else {
-      // New file — remove locally
       const newIndex = this.images.slice(0, i).filter(s => s.id === null).length;
       this.images.splice(i, 1);
       this.selectedFiles.splice(newIndex, 1);
@@ -353,7 +372,7 @@ export class ManageHotel implements OnInit {
       .filter(f => f.apiId > 0)
       .map(f => ({ bookingFeatureId: f.apiId, price: Number(f.price) || 0 }));
 
-    return {
+    const payload: AdminAddHotelRequest = {
       name:           this.hotel.name.trim(),
       description:    this.hotel.description.trim(),
       location:       this.hotel.location.trim(),
@@ -373,6 +392,9 @@ export class ManageHotel implements OnInit {
       featureIds:     [...this.selectedDisplayFeatureIds],
       bookingFeatures,
     };
+
+    console.log('📦 Payload:', JSON.stringify(payload, null, 2));
+    return payload;
   }
 
   private validate(): string | null {
@@ -404,7 +426,8 @@ export class ManageHotel implements OnInit {
   private doAdd(payload: AdminAddHotelRequest, token: string) {
     this.hotelService.addHotelAdmin(payload, [], token).subscribe({
       next: (response) => {
-        const newId = response.id;
+        console.log('✅ Hotel added, id:', response.id);
+        const newId   = response.id;
         const newUrls = this.images.filter(s => s.id === null).map(s => s.url);
 
         if (newId && newUrls.length > 0) {
@@ -418,6 +441,7 @@ export class ManageHotel implements OnInit {
         }
       },
       error: (err) => {
+        console.error('❌ Add failed:', err?.error);
         this.isSaving = false;
         const msg = err?.error?.message ?? err?.error ?? 'Failed to add hotel.';
         this.showToast(typeof msg === 'string' ? msg : 'Failed to add hotel.', false, false);
@@ -430,14 +454,15 @@ export class ManageHotel implements OnInit {
 
     this.hotelService.updateHotelAdmin(hotelId, payload, [], token).subscribe({
       next: () => {
-        // PATCH status
-        const statusName = this.hotel.status.toLowerCase();
-        this.hotelService.updateHotelStatus(hotelId, statusName, token).subscribe({
+        console.log('✅ Hotel updated');
+        // PATCH status after PUT — continue even if status update fails
+        this.hotelService.updateHotelStatus(hotelId, this.hotel.status, token).subscribe({
           next:  () => this.uploadNewImagesIfAny(hotelId, token),
-          error: () => this.uploadNewImagesIfAny(hotelId, token), // continue even if status fails
+          error: () => this.uploadNewImagesIfAny(hotelId, token),
         });
       },
       error: (err) => {
+        console.error('❌ Update failed:', err?.error);
         this.isSaving = false;
         const msg = err?.error?.message ?? err?.error ?? 'Failed to update hotel.';
         this.showToast(typeof msg === 'string' ? msg : 'Failed to update hotel.', false, false);
@@ -452,15 +477,8 @@ export class ManageHotel implements OnInit {
 
     if (newDataUrls.length > 0) {
       this.hotelService.uploadHotelImages(hotelId, newDataUrls, token).subscribe({
-        next: () => { this.isSaving = false; this.showToast('Hotel updated successfully!'); },
-        error: () => {
-          this.isSaving = false;
-          this.showToast('Hotel updated, but image upload failed.', false, false);
-          setTimeout(() => {
-            this.toastVisible = false;
-            this.router.navigate(['/admin/hotels']);
-          }, 2500);
-        },
+        next:  () => { this.isSaving = false; this.showToast('Hotel updated successfully!'); },
+        error: () => { this.isSaving = false; this.showToast('Hotel updated, but image upload failed.'); },
       });
     } else {
       this.isSaving = false;

@@ -53,6 +53,10 @@ export class HotelService {
     return of(MOCK_DISPLAY_FEATURES);
   }
 
+  /**
+   * GET /admin/hotel-features
+   * Display features (Great for your stay) — shown as amenity tags on the hotel card.
+   */
   getHotelFeaturesFromApi(token: string): Observable<HotelFeatureDef[]> {
     return this.http
       .get<HotelFeatureApiItem[]>(
@@ -71,6 +75,12 @@ export class HotelService {
       );
   }
 
+  /**
+   * GET /admin/booking-features
+   * Booking features the admin can assign to a hotel.
+   * Full Board (id:1001) and Half Board (id:1002) are always shown as fixed fields.
+   * The rest appear in the "Add extra feature" dropdown.
+   */
   getBookingFeaturesFromApi(token: string): Observable<BookingFeatureApiItem[]> {
     return this.http.get<BookingFeatureApiItem[]>(
       this.adminBookingFeatUrl,
@@ -85,14 +95,6 @@ export class HotelService {
   getAdminHotels(token: string): Observable<AdminHotelsApiResponse> {
     return this.http.get<AdminHotelsApiResponse>(
       `${this.adminApiUrl}/GetAllHotels`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-  }
-
-  // ── NEW: GET /admin/hotels/{id} ───────────────────────────
-  getAdminHotelById(hotelId: number, token: string): Observable<any> {
-    return this.http.get<any>(
-      `${this.adminApiUrl}/${hotelId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
   }
@@ -125,16 +127,19 @@ export class HotelService {
     );
   }
 
-  
   /**
    * POST /admin/hotels
-   * Sends JSON body only — images uploaded separately after creation.
+   * Sends JSON body — images are NOT included in this request.
+   * The API accepts: name, description, location, rating, rooms, prices,
+   * discount, serviceCharge, fullBoardPrice, halfBoardPrice, featureIds, bookingFeatures
    */
   addHotelAdmin(
     payload: AdminAddHotelRequest,
-    images:  string[],
+    images:  string[],   // kept for signature compatibility — not sent to this endpoint
     token:   string
   ): Observable<AdminAddHotelResponse> {
+    console.log('📤 POST /admin/hotels payload:', JSON.stringify(payload, null, 2));
+
     return this.http.post<AdminAddHotelResponse>(
       this.adminApiUrl,
       payload,
@@ -149,14 +154,16 @@ export class HotelService {
 
   /**
    * PUT /admin/hotels/{id}
-   * Sends JSON body only — images uploaded separately.
+   * Sends JSON body — same structure as POST.
    */
   updateHotelAdmin(
     hotelId: number,
     payload: AdminAddHotelRequest,
-    images:  string[],
+    images:  string[],   // kept for signature compatibility — not sent to this endpoint
     token:   string
   ): Observable<any> {
+    console.log(`📤 PUT /admin/hotels/${hotelId} payload:`, JSON.stringify(payload, null, 2));
+
     return this.http.put(
       `${this.adminApiUrl}/${hotelId}`,
       payload,
@@ -168,28 +175,49 @@ export class HotelService {
       }
     );
   }
-updateHotelStatus(hotelId: number, status: string, token: string): Observable<any> {
-  return this.http.patch(
-    `${this.adminApiUrl}/${hotelId}/status`,
-    { status },
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-}
+
+  /**
+   * PATCH /admin/hotels/{id}/status
+   * Body: { "status": "active" } or { "status": "inactive" }
+   */
+  updateHotelStatus(hotelId: number, status: string, token: string): Observable<any> {
+    return this.http.patch(
+      `${this.adminApiUrl}/${hotelId}/status`,
+      { status: status.toLowerCase() },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type':  'application/json',
+        }
+      }
+    );
+  }
+
+  /**
+   * GET /admin/hotels/{id}
+   * Returns full hotel details for edit form.
+   */
+  getAdminHotelById(hotelId: number, token: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.adminApiUrl}/${hotelId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
   // ── Admin Hotel Images ────────────────────────────────────
 
   /**
    * POST /admin/hotels/{id}/images
-   * Uploads images as multipart/form-data after hotel is created/updated.
+   * Uploads new images as multipart/form-data.
+   * Field name must be "images" (plural).
    */
-  uploadHotelImages(hotelId: number, images: string[], token: string): Observable<any> {
+  uploadHotelImages(hotelId: number, dataUrls: string[], token: string): Observable<any> {
     const formData = new FormData();
-
-    images.forEach((img, i) => {
-      const blob = this.dataUrlToBlob(img);
+    dataUrls.forEach((dataUrl, i) => {
+      const blob = this.dataUrlToBlob(dataUrl);
       const ext  = blob.type.split('/')[1] || 'jpg';
       formData.append('images', blob, `image_${Date.now()}_${i}.${ext}`);
     });
-
     return this.http.post(
       `${this.adminApiUrl}/${hotelId}/images`,
       formData,

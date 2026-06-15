@@ -1,21 +1,10 @@
 <div class="manage-page">
   <h2 class="section-title">{{ isEdit ? 'Manage' : 'Add' }} <strong>Hotels</strong></h2>
 
-  <!-- ── Loading overlay ── -->
-  <div *ngIf="isLoadingData" class="loading-overlay">
-    <svg class="spin" viewBox="0 0 24 24" width="36" height="36" fill="none"
-         stroke="#4a6a88" stroke-width="2.5">
-      <circle cx="12" cy="12" r="10" stroke-opacity="0.25"/>
-      <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
-    </svg>
-    <span>Loading hotel data...</span>
-  </div>
-
   <!-- ── Photos ── -->
   <label class="form-label">Hotel Photos <span class="req">*</span></label>
   <div class="photos-area">
     <div class="photos-grid-inner" *ngIf="images.length">
-      <!-- ✅ FIX: img.url instead of img -->
       <div *ngFor="let img of images; let i = index" class="photo-slot">
         <img [src]="img.url" [alt]="'photo-' + i" />
         <button class="photo-remove" (click)="removeImage(i)" type="button">✕</button>
@@ -374,14 +363,15 @@
     <button class="btn-clear" (click)="clear()" type="button" [disabled]="isSaving">Clear</button>
   </div>
 
-  <!-- ── Toast ── -->
-  <div class="toast" *ngIf="toastVisible" [class.toast-error]="!toastSuccess">
-    <svg *ngIf="toastSuccess" viewBox="0 0 24 24" width="18" height="18" fill="#22c55e">
-      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-    </svg>
-    <svg *ngIf="!toastSuccess" viewBox="0 0 24 24" width="18" height="18" fill="#ef4444">
-      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-    </svg>
-    {{ toastMessage }}
-  </div>
+</div>
+
+<!-- ── Toast ── -->
+<div class="toast" *ngIf="toastVisible" [class.toast-error]="!toastSuccess">
+  <svg *ngIf="toastSuccess" viewBox="0 0 24 24" width="18" height="18" fill="#22c55e">
+    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+  </svg>
+  <svg *ngIf="!toastSuccess" viewBox="0 0 24 24" width="18" height="18" fill="#ef4444">
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+  </svg>
+  {{ toastMessage }}
 </div>
