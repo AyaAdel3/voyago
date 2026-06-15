@@ -86,8 +86,19 @@ export class AuthService {
     const token        = localStorage.getItem('voyago_token');
     const refreshToken = localStorage.getItem('voyago_refresh_token');
 
+    // ✅ Guard: لو مفيش tokens، لا تبعتش request
     if (!token || !refreshToken) {
       return throwError(() => new Error('No tokens available'));
+    }
+
+    // ✅ Guard: لو الـ refreshToken expiration فات، لا تحاول
+    const refreshExpStr = localStorage.getItem('voyago_refresh_token_expiration');
+    if (refreshExpStr) {
+      const refreshExp = new Date(refreshExpStr).getTime();
+      if (Date.now() >= refreshExp) {
+        this._clearLocalStorage();
+        return throwError(() => new Error('Refresh token expired'));
+      }
     }
 
     return this.http.post<AuthResponse>(
@@ -187,6 +198,7 @@ export class AuthService {
     localStorage.removeItem('voyago_token');
     localStorage.removeItem('voyago_refresh_token');
     localStorage.removeItem('voyago_token_expires_at');
+    localStorage.removeItem('voyago_refresh_token_expiration'); // ✅ جديد
     localStorage.removeItem('voyago_favorites');
     this.currentUser.set(null);
   }
@@ -196,6 +208,10 @@ export class AuthService {
     localStorage.setItem('voyago_refresh_token', res.refreshToken);
     const expiresAt = Date.now() + (res.expiresIn * 1000);
     localStorage.setItem('voyago_token_expires_at', expiresAt.toString());
+    // ✅ احفظ refresh token expiration
+    if (res.refreshTokenExpiration) {
+      localStorage.setItem('voyago_refresh_token_expiration', res.refreshTokenExpiration);
+    }
   }
 
   updateProfileImage(imageUrl: string): void {
@@ -258,6 +274,6 @@ export class AuthService {
   }
 
   getDashboardData(): Observable<any> {
-  return this.http.get<any>(`${BASE_URL}/admin/dashboard`);
-}
+    return this.http.get<any>(`${BASE_URL}/admin/dashboard`);
+  }
 }
