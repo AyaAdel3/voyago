@@ -91,10 +91,10 @@
         <a [routerLink]="'/admin/restaurants'" class="view-all-btn">View All →</a>
       </div>
       <div class="mini-table">
-        <div class="mini-header">
+        <div class="mini-header rest-header">
           <span>Restaurant</span><span>Cuisine</span><span>Rating</span><span>Status</span>
         </div>
-        <div *ngFor="let r of recentRestaurants" class="mini-row">
+        <div *ngFor="let r of recentRestaurants" class="mini-row rest-row">
           <span class="mini-name">{{ r.name }}</span>
           <span class="mini-muted">{{ r.cuisine }}</span>
           <span class="mini-rating">
@@ -146,11 +146,11 @@
             {{ a.rating }}
           </span>
           <div class="mini-actions">
-            <span
+            <!-- <span
               class="status-badge"
               [ngClass]="'status-' + (a.status ?? 'active').toLowerCase()"
               >{{ a.status ?? 'Active' }}</span
-            >
+            > -->
             <button class="btn-view-site" (click)="viewItem('attraction', a.id)">
               <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
                 <path
