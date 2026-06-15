@@ -256,4 +256,8 @@ export class AuthService {
     const user = this.currentUser();
     return user ? `${user.firstName} ${user.lastName}` : '';
   }
+
+  getDashboardData(): Observable<any> {
+  return this.http.get<any>(`${BASE_URL}/admin/dashboard`);
+}
 }
