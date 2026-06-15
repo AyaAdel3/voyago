@@ -96,12 +96,16 @@ export const FIXED_BOOKING_FEATURES: BookingFeatureDef[] = [
   { name: 'Half Board', price: 0 },
 ];
 
+// IDs الثابتة للـ Full Board و Half Board في الـ API
+export const FULL_BOARD_API_ID  = 1001;
+export const HALF_BOARD_API_ID  = 1002;
+
 export const MOCK_HOTEL_FEATURES: HotelFeatureDef[] = [
-  { id: 1, name: 'Full Board',       icon: '🍽️', price: 150 },
-  { id: 2, name: 'Half Board',       icon: '🥗',  price: 75  },
-  { id: 3, name: 'Spa',              icon: '💆',  price: 50  },
-  { id: 4, name: 'gym',              icon: '💪',  price: 100 },
-  { id: 5, name: 'Airport Transfer', icon: '✈️',  price: 120 },
+  { id: 1,    name: 'Full Board',       icon: '🍽️', price: 150 },
+  { id: 2,    name: 'Half Board',       icon: '🥗',  price: 75  },
+  { id: 3,    name: 'Spa',              icon: '💆',  price: 50  },
+  { id: 4,    name: 'gym',              icon: '💪',  price: 100 },
+  { id: 5,    name: 'Airport Transfer', icon: '✈️',  price: 120 },
 ];
 
 export const MOCK_DISPLAY_FEATURES: HotelFeatureDef[] = [
@@ -309,7 +313,7 @@ export interface AdminHotelsApiResponse {
   hotels:         AdminHotelApiItem[];
 }
 
-// ── Admin Reviews Interfaces (جديد) ──────────────────────
+// ── Admin Reviews Interfaces ──────────────────────────────
 
 export interface AdminHotelReviewComment {
   id:                number;
@@ -334,4 +338,61 @@ export interface HotelReview {
   rating:      number;
   content:     string;
   date:        string;
+}
+
+// ── Admin Hotel Features API (/admin/hotel-features) ─────
+
+/** Single item returned by GET /admin/hotel-features */
+export interface HotelFeatureApiItem {
+  id:   number;
+  name: string;
+  icon: string;
+}
+
+// ── Admin Booking Features API (/admin/booking-features) ─
+
+/**
+ * Single item returned by GET /admin/booking-features
+ * Full Board (id:1001) and Half Board (id:1002) are fixed features.
+ * All other IDs are optional extras the admin can add.
+ */
+export interface BookingFeatureApiItem {
+  id:   number;
+  name: string;
+  icon: string;
+}
+
+// ── Admin Add/Update Hotel API Interfaces ─────────────────
+
+export interface AdminBookingFeaturePayload {
+  bookingFeatureId: number;
+  price:            number;
+}
+
+export interface AdminAddHotelRequest {
+  name:            string;
+  description:     string;
+  location:        string;
+  rating:          number;
+  singleRooms:     number;
+  singlePrice:     number;
+  doubleRooms:     number;
+  doublePrice:     number;
+  tripleRooms:     number;
+  triplePrice:     number;
+  suiteRooms:      number;
+  suitePrice:      number;
+  discount:        number;
+  serviceCharge:   number;
+  fullBoardPrice:  number;
+  halfBoardPrice:  number;
+  featureIds:      number[];
+  bookingFeatures: AdminBookingFeaturePayload[];
+}
+
+/** Response body returned by POST /admin/hotels */
+export interface AdminAddHotelResponse {
+  id:      number;
+  message?: string;
+  [key: string]: any;
 }

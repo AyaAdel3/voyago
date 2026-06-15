@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {
   Hotel, Review, RoomType, HotelFeature, HotelFeatureDef, BookingData,
   BookingFeatureDef, FIXED_BOOKING_FEATURES,
@@ -9,14 +9,18 @@ import {
   buildDefaultRooms, HotelRoomPrices, HotelApiDetail, HotelApiComment,
   AdminHotelApiItem, AdminHotelsApiResponse,
   AdminHotelReviewsApiResponse, HotelReview,
+  AdminAddHotelRequest, AdminAddHotelResponse,
+  HotelFeatureApiItem, BookingFeatureApiItem,
 } from '../model/hotel.model';
 
 @Injectable({ providedIn: 'root' })
 export class HotelService {
 
-  private readonly apiBase     = 'http://voyagoo.runasp.net/hotels';
-  private readonly apiBaseCase = 'http://voyagoo.runasp.net/Hotels';
-  private readonly adminApiUrl = 'http://voyagoo.runasp.net/admin/hotels';
+  private readonly apiBase             = 'http://voyagoo.runasp.net/hotels';
+  private readonly apiBaseCase         = 'http://voyagoo.runasp.net/Hotels';
+  private readonly adminApiUrl         = 'http://voyagoo.runasp.net/admin/hotels';
+  private readonly adminFeaturesUrl    = 'http://voyagoo.runasp.net/admin/hotel-features';
+  private readonly adminBookingFeatUrl = 'http://voyagoo.runasp.net/admin/booking-features';
 
   private hotelsSubject  = new BehaviorSubject<Hotel[]>([...MOCK_HOTELS]);
   hotels$                = this.hotelsSubject.asObservable();
@@ -49,6 +53,31 @@ export class HotelService {
     return of(MOCK_DISPLAY_FEATURES);
   }
 
+  getHotelFeaturesFromApi(token: string): Observable<HotelFeatureDef[]> {
+    return this.http
+      .get<HotelFeatureApiItem[]>(
+        this.adminFeaturesUrl,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .pipe(
+        map(items =>
+          items.map(item => ({
+            id:    item.id,
+            name:  item.name,
+            icon:  item.icon,
+            price: 0,
+          } as HotelFeatureDef))
+        )
+      );
+  }
+
+  getBookingFeaturesFromApi(token: string): Observable<BookingFeatureApiItem[]> {
+    return this.http.get<BookingFeatureApiItem[]>(
+      this.adminBookingFeatUrl,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
   getHotelApiById(id: number): Observable<HotelApiDetail> {
     return this.http.get<HotelApiDetail>(`${this.apiBase}/${id}`);
   }
@@ -56,6 +85,14 @@ export class HotelService {
   getAdminHotels(token: string): Observable<AdminHotelsApiResponse> {
     return this.http.get<AdminHotelsApiResponse>(
       `${this.adminApiUrl}/GetAllHotels`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  // ── NEW: GET /admin/hotels/{id} ───────────────────────────
+  getAdminHotelById(hotelId: number, token: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.adminApiUrl}/${hotelId}`,
       { headers: { Authorization: `Bearer ${token}` } }
     );
   }
@@ -79,7 +116,7 @@ export class HotelService {
     );
   }
 
-  // ── Admin Hotels ──────────────────────────────────────
+  // ── Admin Hotels ──────────────────────────────────────────
 
   deleteHotelAdmin(hotelId: number, token: string): Observable<void> {
     return this.http.delete<void>(
@@ -88,7 +125,89 @@ export class HotelService {
     );
   }
 
-  // ── Admin Reviews (جديد) ──────────────────────────────
+  
+  /**
+   * POST /admin/hotels
+   * Sends JSON body only — images uploaded separately after creation.
+   */
+  addHotelAdmin(
+    payload: AdminAddHotelRequest,
+    images:  string[],
+    token:   string
+  ): Observable<AdminAddHotelResponse> {
+    return this.http.post<AdminAddHotelResponse>(
+      this.adminApiUrl,
+      payload,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type':  'application/json',
+        }
+      }
+    );
+  }
+
+  /**
+   * PUT /admin/hotels/{id}
+   * Sends JSON body only — images uploaded separately.
+   */
+  updateHotelAdmin(
+    hotelId: number,
+    payload: AdminAddHotelRequest,
+    images:  string[],
+    token:   string
+  ): Observable<any> {
+    return this.http.put(
+      `${this.adminApiUrl}/${hotelId}`,
+      payload,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type':  'application/json',
+        }
+      }
+    );
+  }
+updateHotelStatus(hotelId: number, status: string, token: string): Observable<any> {
+  return this.http.patch(
+    `${this.adminApiUrl}/${hotelId}/status`,
+    { status },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+}
+  // ── Admin Hotel Images ────────────────────────────────────
+
+  /**
+   * POST /admin/hotels/{id}/images
+   * Uploads images as multipart/form-data after hotel is created/updated.
+   */
+  uploadHotelImages(hotelId: number, images: string[], token: string): Observable<any> {
+    const formData = new FormData();
+
+    images.forEach((img, i) => {
+      const blob = this.dataUrlToBlob(img);
+      const ext  = blob.type.split('/')[1] || 'jpg';
+      formData.append('images', blob, `image_${Date.now()}_${i}.${ext}`);
+    });
+
+    return this.http.post(
+      `${this.adminApiUrl}/${hotelId}/images`,
+      formData,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  /**
+   * DELETE /admin/hotels/{hotelId}/images/{imageId}
+   */
+  deleteHotelImage(hotelId: number, imageId: number, token: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.adminApiUrl}/${hotelId}/images/${imageId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  }
+
+  // ── Admin Reviews ─────────────────────────────────────────
 
   getAdminReviews(hotelId: number, token: string): Observable<HotelReview[]> {
     return this.http.get<AdminHotelReviewsApiResponse>(
@@ -96,13 +215,13 @@ export class HotelService {
       { headers: { Authorization: `Bearer ${token}` } }
     ).pipe(
       map(res => res.comments.map(c => ({
-        id:       c.id,
-        hotelId:  hotelId,
-        userName: c.userName,
+        id:         c.id,
+        hotelId:    hotelId,
+        userName:   c.userName,
         userAvatar: c.profilePictureUrl ?? undefined,
-        rating:   c.rating,
-        content:  c.content,
-        date:     c.createdAt,
+        rating:     c.rating,
+        content:    c.content,
+        date:       c.createdAt,
       } as HotelReview)))
     );
   }
@@ -114,7 +233,7 @@ export class HotelService {
     );
   }
 
-  // ── WRITE ────────────────────────────────────────────────
+  // ── LOCAL WRITE (mock / optimistic) ──────────────────────
 
   addHotel(hotel: Hotel): void {
     const current = this.hotelsSubject.getValue();
@@ -200,5 +319,18 @@ export class HotelService {
       chars[Math.floor(Math.random() * chars.length)]
     ).join('');
     return of({ bookingId: `BK-${rand}` });
+  }
+
+  // ── Helpers ───────────────────────────────────────────────
+
+  private dataUrlToBlob(dataUrl: string): Blob {
+    const [header, base64] = dataUrl.split(',');
+    const mime = header.match(/:(.*?);/)?.[1] ?? 'image/jpeg';
+    const binary = atob(base64);
+    const bytes  = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return new Blob([bytes], { type: mime });
   }
 }
