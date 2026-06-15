@@ -150,7 +150,15 @@
 
       <div *ngFor="let rv of selectedRestaurantReviews" class="review-card">
         <div class="review-card-top">
-          <div class="review-avatar">{{ rv.userName.charAt(0) }}</div>
+          <div class="reviewer-avatar">
+            <img
+              *ngIf="rv.userAvatar"
+              [src]="rv.userAvatar"
+              [alt]="rv.userName"
+              class="avatar-img"
+            />
+            <span *ngIf="!rv.userAvatar">{{ rv.userName.charAt(0) }}</span>
+          </div>
           <div class="review-meta">
             <span class="review-username">{{ rv.userName }}</span>
           </div>

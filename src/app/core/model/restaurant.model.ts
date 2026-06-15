@@ -126,14 +126,14 @@ export interface AdminRestaurantUpdateRequest {
 }
 
 export interface RestaurantReview {
-  id:           number;
+  id: number;
   restaurantId: number;
-  userName:     string;
-  userCountry:  string;
-  userAvatar?:  string;
-  rating:       number;
-  content:      string;
-  date:         string;
+  userName: string;
+  userCountry: string;
+  userAvatar?: string;
+  rating: number;
+  content: string;
+  date: string;
 }
 
 export interface TableType {

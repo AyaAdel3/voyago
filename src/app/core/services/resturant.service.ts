@@ -106,17 +106,26 @@ export class RestaurantService {
     );
   }
 
-  getReviews(restaurantId: number): Observable<RestaurantReview[]> {
-    return this.http.get<RestaurantDetailApiResponse>(
+ getReviews(restaurantId: number): Observable<RestaurantReview[]> {
+  return this.http
+    .get<RestaurantDetailApiResponse>(
       `${this.apiUrl}/${restaurantId}`
-    ).pipe(
-      map(r => {
-        console.log('COMMENTS FROM API:', r.comments);
-        return r.comments ?? [];
-      })
+    )
+    .pipe(
+      map(r =>
+        (r.comments ?? []).map((c: any) => ({
+          id: c.id,
+          restaurantId,
+          userName: c.userName,
+          userCountry: '',
+          userAvatar: c.profilePictureUrl,
+          rating: c.rating,
+          content: c.content,
+          date: c.createdAt
+        }))
+      )
     );
-  }
-
+}
   getFeatures(token: string): Observable<Feature[]> {
     return this.http.get<Feature[]>(
       'http://voyagoo.runasp.net/admin/features',
