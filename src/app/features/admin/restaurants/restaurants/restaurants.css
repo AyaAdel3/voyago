@@ -551,3 +551,96 @@ h2.section-title {
 .btn-confirm-delete:hover {
   background: #dc2626;
 }
+@media (max-width: 768px) {
+  .table-header.rest-grid {
+    display: none;
+  }
+
+  .table-row.rest-grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.75rem;
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 0.65rem;
+    border: 1px solid #e2e8f0;
+    font-size: 0.78rem;
+  }
+
+  .hotel-name-cell {
+    width: 100%;
+    font-weight: 700;
+    font-size: 0.88rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .table-row.rest-grid .cell-muted,
+  .table-row.rest-grid .rating-cell,
+  .table-row.rest-grid .price-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: #475569;
+    font-size: 0.75rem;
+  }
+
+  .table-row.rest-grid .cell-muted::after,
+  .table-row.rest-grid .rating-cell::after {
+    content: "•";
+    margin-left: 0.4rem;
+    color: #cbd5e1;
+  }
+
+  .rooms-cell {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.75rem;
+  }
+
+  .rooms-cell::after {
+    content: "•";
+    margin-left: 0.4rem;
+    color: #cbd5e1;
+  }
+
+  .rooms-total {
+    font-size: 0.75rem;
+  }
+
+  /* الـ badge والأزرار في سطر واحد */
+  .actions-cell {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .table-row.rest-grid > span:has(.status-badge) {
+    order: 9;
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  .actions-cell {
+    order: 10;
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+    width: auto;
+  }
+
+  /* wrapper للسطر الأخير يجمع الـ badge والأزرار */
+  .table-row.rest-grid > span:has(.status-badge),
+  .actions-cell {
+    display: flex;
+    align-items: center;
+  }
+}
