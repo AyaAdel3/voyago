@@ -1037,66 +1037,56 @@ body:not(.dark-mode) .profile-layout .delete-plan-btn {
 }
 
 /* ── Favourites — Light Mode ── */
-body:not(.dark-mode) .info-header h1 {
-  color: #173b64 !important;
-}
-
-body:not(.dark-mode) .section-header {
-  border-bottom-color: #d0dce8 !important;
-}
-
-body:not(.dark-mode) .section-header h3 {
-  color: #173b64 !important;
-}
-
-body:not(.dark-mode) .section-count {
-  background: #e2eaf4 !important;
-  color: #1e6ab0 !important;
-}
-
-body:not(.dark-mode) .arrow-btn {
-  background: #e2eaf4 !important;
-  color: #173b64 !important;
-  border: none !important;
-}
-
-body:not(.dark-mode) .arrow-btn:hover:not(:disabled) {
-  background: #d0dce8 !important;
+body:not(.dark-mode) .info-header h1,
+body:not(.dark-mode) .col-title {
   color: #0d1b2a !important;
 }
-
-body:not(.dark-mode) .arrow-btn:disabled {
-  opacity: 0.3 !important;
-}
-
-body:not(.dark-mode) .slider-counter {
-  color: #5a6a7a !important;
-}
-
-body:not(.dark-mode) .card-info h3 {
-  color: #0d1b2a !important;
-}
-
-body:not(.dark-mode) .item-meta {
-  color: #5a6a7a !important;
-}
-
-body:not(.dark-mode) .item-price {
-  color: #173b64 !important;
-}
-
-body:not(.dark-mode) .empty-state {
-  background: #ffffff !important;
-  border-color: #a3c4eb !important;
-  color: #5a6a7a !important;
-}
-
-body:not(.dark-mode) .favorite-card {
+body:not(.dark-mode) .fav-col {
   background: #ffffff !important;
   border: 0.5px solid #d0dce8 !important;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
 }
 
+body:not(.dark-mode) .col-header {
+  border-bottom-color: #e8f0f8 !important;
+  color: #0d1b2a !important;
+}
+
+body:not(.dark-mode) .col-badge {
+  background: #e2eaf4 !important;
+  color: #1e6ab0 !important;
+}
+
+body:not(.dark-mode) .col-name {
+  color: #0d1b2a !important;
+}
+
+body:not(.dark-mode) .col-meta {
+  color: #5a6a7a !important;
+}
+
+body:not(.dark-mode) .col-footer {
+  border-top-color: #e8f0f8 !important;
+}
+
+body:not(.dark-mode) .nav-btn {
+  background: #e2eaf4 !important;
+  color: #173b64 !important;
+}
+
+body:not(.dark-mode) .nav-counter {
+  color: #5a6a7a !important;
+}
+
+body:not(.dark-mode) .heart-btn {
+  background: #ffffff !important;
+}
+body:not(.dark-mode) .heart-btn:hover {
+  background: #e2eaf4 !important;
+}
+body:not(.dark-mode) .empty-col {
+  color: #8899bb !important;
+}
 /************************/
 body:not(.dark-mode) .card-footer-home {
   background-color: #173b64 !important;
