@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { Details } from '../details/details';
 
 import { FavoritesService } from '../../../core/services/favorites.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 import {
   TourGuideService,
@@ -40,6 +41,7 @@ export class Card implements OnInit, OnDestroy {
 
   constructor(
     private favoritesService: FavoritesService,
+    private authService: AuthService,
     private tourGuideService: TourGuideService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -66,6 +68,16 @@ export class Card implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.loading = true;
+
+    if (this.authService.isLoggedIn()) {
+      this.favoritesService.getAllFavoritesFromApi().subscribe({
+        next: (res) => {
+          const items = this.favoritesService.mapApiToFavoriteItems(res);
+          this.favoritesService.saveFavorites(items);
+          this.cdr.detectChanges();
+        }
+      });
+    }
 
     this.sub = this.tourGuideService.getAll().pipe(
       timeout(8000),
@@ -129,9 +141,11 @@ export class Card implements OnInit, OnDestroy {
   toggleFav(event: MouseEvent, guide: TourGuide): void {
     event.stopPropagation();
 
+    const isFav = this.isGuideInFav(guide.name);
+
     this.tourGuideService.toggleFavoriteApi(guide.id).subscribe({
       next: () => {
-        if (this.isGuideInFav(guide.name)) {
+        if (isFav) {
           this.favoritesService.removeFavorite(guide.name);
         } else {
           this.favoritesService.addToFavorites({

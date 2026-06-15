@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FavoritesService } from '../../../core/services/favorites.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 export interface HotelApiItem {
   id: number;
@@ -33,6 +34,7 @@ export class Card implements OnInit {
   constructor(
     private http: HttpClient,
     private favoritesService: FavoritesService,
+    private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
@@ -59,6 +61,17 @@ export class Card implements OnInit {
 
   ngOnInit(): void {
     this.loading = true;
+
+    if (this.authService.isLoggedIn()) {
+      this.favoritesService.getAllFavoritesFromApi().subscribe({
+        next: (res) => {
+          const items = this.favoritesService.mapApiToFavoriteItems(res);
+          this.favoritesService.saveFavorites(items);
+          this.cdr.detectChanges();
+        }
+      });
+    }
+
     this.http.get<HotelApiItem[]>(this.apiUrl).subscribe({
       next: (data) => {
         this.hotels = data;
@@ -83,7 +96,9 @@ export class Card implements OnInit {
   toggleFav(event: MouseEvent, hotel: HotelApiItem): void {
     event.stopPropagation();
 
-    if (this.isHotelInFav(hotel.name)) {
+    const isFav = this.isHotelInFav(hotel.name);
+
+    if (isFav) {
       this.favoritesService.removeFavorite(hotel.name);
     } else {
       this.favoritesService.addToFavorites({
@@ -94,6 +109,7 @@ export class Card implements OnInit {
         type: 'hotel',
       });
     }
+    this.cdr.detectChanges();
   }
 
   getPriceRange(hotel: HotelApiItem): string {

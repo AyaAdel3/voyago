@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Restaurant } from '../../../core/model/restaurant.model';
 import { RestaurantService } from '../../../core/services/resturant.service';
 import { FavoritesService } from '../../../core/services/favorites.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-restaurant-card',
@@ -34,11 +35,22 @@ export class Card implements OnInit {
   constructor(
     public restaurantService: RestaurantService,
     private favoritesService: FavoritesService,
+    private authService: AuthService,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.favoritesService.getAllFavoritesFromApi().subscribe({
+        next: (res) => {
+          const items = this.favoritesService.mapApiToFavoriteItems(res);
+          this.favoritesService.saveFavorites(items);
+          this.cdr.detectChanges();
+        }
+      });
+    }
+
     this.restaurantService.getRestaurants().subscribe({
       next: data => {
         this.restaurants = data;
@@ -74,10 +86,12 @@ export class Card implements OnInit {
   toggleFav(event: MouseEvent, r: Restaurant): void {
     event.stopPropagation();
 
+    const isFav = this.isRestaurantInFav(r.name);
+
     this.restaurantService.toggleFavoriteApi(r.id).subscribe({
       next: () => {
         this.restaurantService.toggleFavorite(r.id);
-        if (this.isRestaurantInFav(r.name)) {
+        if (isFav) {
           this.favoritesService.removeFavorite(r.name);
         } else {
           this.favoritesService.addToFavorites({

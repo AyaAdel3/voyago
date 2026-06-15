@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 import { timeout, finalize } from 'rxjs/operators';
 
 import { FavoritesService } from '../../../core/services/favorites.service';
+import { AuthService } from '../../../core/services/auth.service';
 import {
   AttractionService,
   Attraction
@@ -41,6 +42,7 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private favoritesService: FavoritesService,
+    private authService: AuthService,
     private attractionService: AttractionService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -67,6 +69,16 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.isLoading = true;
+
+    if (this.authService.isLoggedIn()) {
+      this.favoritesService.getAllFavoritesFromApi().subscribe({
+        next: (res) => {
+          const items = this.favoritesService.mapApiToFavoriteItems(res);
+          this.favoritesService.saveFavorites(items);
+          this.cdr.detectChanges();
+        }
+      });
+    }
 
     this.sub = this.attractionService.getAll().pipe(
       timeout(8000),
@@ -105,9 +117,11 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
   toggleFavorite(event: Event, attraction: Attraction): void {
     event.stopPropagation();
 
+    const isFav = this.isFavorite(attraction.name);
+
     this.attractionService.toggleFavoriteApi(attraction.id).subscribe({
       next: () => {
-        if (this.isFavorite(attraction.name)) {
+        if (isFav) {
           this.favoritesService.removeFavorite(attraction.name);
         } else {
           this.favoritesService.addToFavorites({

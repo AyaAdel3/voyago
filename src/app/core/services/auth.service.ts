@@ -191,6 +191,7 @@ export class AuthService {
     localStorage.removeItem('voyago_token');
     localStorage.removeItem('voyago_refresh_token');
     localStorage.removeItem('voyago_token_expires_at');
+    localStorage.removeItem('voyago_favorites');
     this.currentUser.set(null);
   }
 
