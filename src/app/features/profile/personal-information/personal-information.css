@@ -3,13 +3,136 @@
   font-family: 'Poppins', sans-serif;
 }
 
-/* ── Main Content ─────────────────────────────────── */
 .content {
   flex: 1;
   padding: 30px 40px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
-/* ── Mobile Profile Picture ───────────────────────── */
+.pi-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 620px;
+  margin-top: 40px;
+}
+
+.pi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.pi-title {
+  font-size: 22px;
+  font-weight: 500;
+  margin: 0;
+  color: #e0eaf7;
+}
+
+.pi-subtitle {
+  font-size: 14px;
+  color: #7a9cc6;
+  margin: 5px 0 0;
+}
+
+.pi-divider {
+  border: none;
+  border-top: 0.5px solid rgba(255, 255, 255, 0.1);
+  margin: 0 0 1rem;
+}
+
+.pi-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 0;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.07);
+}
+
+.pi-row:last-child {
+  border-bottom: none;
+}
+
+.pi-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #7a9cc6;
+}
+
+.pi-label {
+  font-size: 12px;
+  color: #7a9cc6;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pi-value {
+  font-size: 18px;
+  color: #e0eaf7;
+  margin: 0;
+  font-weight: 400;
+}
+
+.pi-input-group {
+  flex: 1;
+}
+
+.edit-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #ffde70;
+  color: #0a1128;
+  border: none;
+  border-radius: 20px;
+  padding: 9px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.edit-btn:hover {
+  opacity: 0.88;
+}
+
+.profile-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #ffe194;
+  color: #7a9cc6;
+  font-size: 17px;
+  width: 100%;
+  padding: 5px 0;
+  outline: none;
+}
+
+.error-msg {
+  color: #ff4d4d;
+  font-size: 12px;
+  display: block;
+  margin-top: 5px;
+}
+
+.disabled-input {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Mobile ───────────────────────── */
 .mobile-only {
   display: none;
 }
@@ -18,7 +141,7 @@
   position: relative;
   width: 80px;
   height: 80px;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .image-inner-mobile {
@@ -48,23 +171,6 @@
   height: 100%;
 }
 
-/* .mobile-remove-btn {
-  position: absolute;
-  top: 0;
-  left: 0;
-  background: rgba(255, 80, 80, 0.9);
-  border: none;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  z-index: 10;
-} */
-
 .mobile-camera-btn {
   position: absolute;
   bottom: 2px;
@@ -82,152 +188,83 @@
   z-index: 10;
 }
 
-/* ── Details Container ────────────────────────────── */
-.details-container {
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.data-value {
-  font-size: 20px;
-  color: #7a9cc6;
-  margin: 0;
-}
-
-/* ── Input ────────────────────────────────────────── */
-.profile-input {
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid #ffe194;
-  color: #7a9cc6;
-  font-size: 20px;
-  width: 100%;
-  max-width: 400px;
-  padding: 5px 0;
-  outline: none;
-}
-
-.error-msg {
-  color: #ff4d4d;
-  font-size: 12px;
-  display: block;
-  margin-top: 5px;
-}
-
-.disabled-input {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ── Buttons ──────────────────────────────────────── */
-.edit-btn,
-.save-btn {
-  background-color: #ffe194;
-  color: #0a1128;
-  border: none;
-  padding: 8px 32px;
-  border-radius: 20px;
-  font-weight: bold;
-  font-size: 15px;
-  cursor: pointer;
-  width: fit-content;
-  display: block;
-}
-
-.edit-btn:hover,
-.save-btn:hover {
-  opacity: 0.85;
-}
-
-/* ════════════════════════════════════════════════════════
-   RESPONSIVE
-════════════════════════════════════════════════════════ */
-
-@media (max-width: 1200px) {
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
   .content {
-    padding: 25px 35px;
+    padding: 20px 16px;
   }
-  .data-value {
+  .pi-card {
+    padding: 1.5rem;
+  }
+  .pi-value {
+    font-size: 16px;
+  }
+  .pi-title {
     font-size: 18px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .content {
-    padding: 20px 28px;
-  }
-  .data-value {
-    font-size: 18px;
-  }
-  .profile-input {
-    font-size: 18px;
-  }
-  .edit-btn,
-  .save-btn {
-    padding: 7px 35px;
-    font-size: 15px;
   }
 }
 
 @media (max-width: 768px) {
   .mobile-only {
     display: block;
-  } /* ✅ الصورة تظهر في الموبايل */
+  }
   .content {
-    padding: 20px 16px;
+    padding: 16px;
+    flex-direction: column;
+    align-items: stretch;
   }
-  .data-value {
-    font-size: 16px;
+  .pi-card {
+    padding: 1.5rem;
   }
-  .profile-input {
-    font-size: 16px;
-    max-width: 100%;
+  .pi-header {
+    flex-wrap: wrap;
+    gap: 12px;
   }
-  .details-container {
-    gap: 20px;
+  .pi-header > div:first-child {
+    flex: 1;
+    min-width: 0;
   }
-  .edit-btn,
-  .save-btn {
-    padding: 7px 28px;
+  .pi-title {
+    font-size: 17px;
+  }
+  .pi-subtitle {
+    font-size: 13px;
+  }
+  .pi-value {
+    font-size: 15px;
+  }
+  .edit-btn {
+    padding: 8px 18px;
     font-size: 14px;
+  }
+  .pi-icon {
+    width: 40px;
+    height: 40px;
+  }
+  .pi-row {
+    padding: 14px 0;
+    gap: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .content {
-    padding: 16px 12px;
+    padding: 12px;
   }
-  .data-value {
-    font-size: 15px;
+  .pi-card {
+    padding: 1rem;
   }
-  .profile-input {
-    font-size: 15px;
+  .pi-title {
+    font-size: 16px;
   }
-  .details-container {
-    gap: 16px;
-  }
-  .edit-btn,
-  .save-btn {
-    width: 100%;
-    text-align: center;
-    padding: 8px 0;
+  .pi-value {
     font-size: 14px;
+  }
+  .edit-btn {
+    width: fit-content;
+    justify-content: center;
     border-radius: 12px;
-  }
-}
-
-@media (max-width: 400px) {
-  .content {
-    padding: 12px 10px;
-  }
-  .data-value {
-    font-size: 14px;
-  }
-  .profile-input {
-    font-size: 14px;
-  }
-  .details-container {
-    gap: 14px;
   }
 }

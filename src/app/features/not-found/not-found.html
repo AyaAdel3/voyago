@@ -1,23 +1,39 @@
-<div class="nf-content">
-  <div class="nf-404-wrap">
-    <span class="nf-4 nf-4-left">4</span>
-    <span class="nf-0">0</span>
-    <span class="nf-4 nf-4-right">4</span>
+<div class="nf-page">
+  <div class="particles">
+    @for (p of particles; track $index) {
+      <span
+        class="particle"
+        [style.left.%]="p.x"
+        [style.top.%]="p.y"
+        [style.width.px]="p.size"
+        [style.height.px]="p.size"
+        [style.animation-delay]="p.delay"
+        [style.animation-duration]="p.duration"
+      ></span>
+    }
   </div>
 
-  <div class="nf-divider">
-    <span class="nf-divider-line"></span>
-    <span class="nf-divider-icon">✦</span>
-    <span class="nf-divider-line"></span>
+  <div class="nf-content">
+    <div class="nf-404-wrap">
+      <span class="nf-4 nf-4-left">4</span>
+      <span class="nf-0">0</span>
+      <span class="nf-4 nf-4-right">4</span>
+    </div>
+
+    <div class="nf-divider">
+      <span class="nf-divider-line"></span>
+      <span class="nf-divider-icon">✦</span>
+      <span class="nf-divider-line"></span>
+    </div>
+
+    <h2 class="nf-title">{{ lang.t('notFound.title') }}</h2>
+    <p class="nf-sub">{{ lang.t('notFound.sub') }}</p>
+
+    <button class="nf-btn" (click)="goHome()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+      </svg>
+      {{ lang.t('notFound.btn') }}
+    </button>
   </div>
-
-  <h2 class="nf-title">{{ lang.t('notFound.title') }}</h2>
-  <p class="nf-sub">{{ lang.t('notFound.sub') }}</p>
-
-  <button class="nf-btn" (click)="goHome()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
-    </svg>
-    {{ lang.t('notFound.btn') }}
-  </button>
 </div>

@@ -12,6 +12,7 @@ import { timeout, finalize } from 'rxjs/operators';
 
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
 import {
   AttractionService,
   Attraction
@@ -43,6 +44,7 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
     private router: Router,
     private favoritesService: FavoritesService,
     private authService: AuthService,
+    private authModal: AuthModalService,
     private attractionService: AttractionService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -116,6 +118,11 @@ export class TouristAttractionCard implements OnInit, OnDestroy {
 
   toggleFavorite(event: Event, attraction: Attraction): void {
     event.stopPropagation();
+
+    if (!this.authService.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
 
     const isFav = this.isFavorite(attraction.name);
 

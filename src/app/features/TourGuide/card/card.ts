@@ -10,6 +10,7 @@ import { Details } from '../details/details';
 
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
 
 import {
   TourGuideService,
@@ -42,6 +43,7 @@ export class Card implements OnInit, OnDestroy {
   constructor(
     private favoritesService: FavoritesService,
     private authService: AuthService,
+    private authModal: AuthModalService,
     private tourGuideService: TourGuideService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -140,6 +142,11 @@ export class Card implements OnInit, OnDestroy {
 
   toggleFav(event: MouseEvent, guide: TourGuide): void {
     event.stopPropagation();
+
+    if (!this.authService.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
 
     const isFav = this.isGuideInFav(guide.name);
 

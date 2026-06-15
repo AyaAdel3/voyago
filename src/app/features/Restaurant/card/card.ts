@@ -5,6 +5,7 @@ import { Restaurant } from '../../../core/model/restaurant.model';
 import { RestaurantService } from '../../../core/services/resturant.service';
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
 
 @Component({
   selector: 'app-restaurant-card',
@@ -36,6 +37,7 @@ export class Card implements OnInit {
     public restaurantService: RestaurantService,
     private favoritesService: FavoritesService,
     private authService: AuthService,
+    private authModal: AuthModalService,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
@@ -85,6 +87,11 @@ export class Card implements OnInit {
 
   toggleFav(event: MouseEvent, r: Restaurant): void {
     event.stopPropagation();
+
+    if (!this.authService.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
 
     const isFav = this.isRestaurantInFav(r.name);
 

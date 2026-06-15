@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
 
 export interface HotelApiItem {
   id: number;
@@ -35,6 +36,7 @@ export class Card implements OnInit {
     private http: HttpClient,
     private favoritesService: FavoritesService,
     private authService: AuthService,
+    private authModal: AuthModalService,
     private router: Router,
     private cdr: ChangeDetectorRef,
   ) {}
@@ -95,6 +97,11 @@ export class Card implements OnInit {
 
   toggleFav(event: MouseEvent, hotel: HotelApiItem): void {
     event.stopPropagation();
+
+    if (!this.authService.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
+    }
 
     const isFav = this.isHotelInFav(hotel.name);
 

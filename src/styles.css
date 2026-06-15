@@ -905,20 +905,49 @@ body:not(.dark-mode) .profile-layout .info-header h1 {
   color: #0d1b2a !important;
 }
 
-/* ── Personal info ── */
-body:not(.dark-mode) .profile-layout .data-value {
+/* ── Personal info card (pi-card) ── */
+body:not(.dark-mode) .pi-card {
+  background: #ffffff !important;
+  border: 0.5px solid #d0dce8 !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+body:not(.dark-mode) .pi-title {
+  color: #0d1b2a !important;
+}
+
+body:not(.dark-mode) .pi-subtitle {
   color: #5a6a7a !important;
 }
 
-body:not(.dark-mode) .profile-layout .profile-input {
-  color: #0d1b2a !important;
-  border-bottom-color: #173b64 !important;
+body:not(.dark-mode) .pi-divider {
+  border-top-color: #d0dce8 !important;
 }
 
-body:not(.dark-mode) .profile-layout .edit-btn,
-body:not(.dark-mode) .profile-layout .save-btn {
-  background-color: #ffe194 !important;
-  color: #0a1128 !important;
+body:not(.dark-mode) .pi-row {
+  border-bottom-color: #e8f0f8 !important;
+}
+
+body:not(.dark-mode) .pi-icon {
+  background: #e2eaf4 !important;
+  color: #173b64 !important;
+}
+
+body:not(.dark-mode) .pi-icon svg {
+  stroke: #173b64 !important;
+}
+
+body:not(.dark-mode).pi-label {
+  color: #5a6a7a !important;
+}
+
+body:not(.dark-mode) .pi-value {
+  color: #0d1b2a !important;
+}
+
+body:not(.dark-mode) .profile-input {
+  color: #0d1b2a !important;
+  border-bottom-color: #173b64 !important;
 }
 
 /* ── Plan columns ── */
@@ -952,33 +981,9 @@ body:not(.dark-mode) .profile-layout .section-count {
 body:not(.dark-mode) .profile-layout {
   background: #f6faff !important;
 }
-body:not(.dark-mode) .fav-section h3,
-body:not(.dark-mode) .info-header h1 {
-  color: #173b64 !important;
-}
-body:not(.dark-mode) .fav-section span {
-  color: #173b64 !important;
-}
-
-body:not(.dark-mode) .fav-section p,
-body:not(.dark-mode) .details-container p,
-body:not(.dark-mode) .empty-state p {
-  color: #1e6ab0 !important;
-}
-
-body:not(.dark-mode) .empty-state {
-  background: #e2eaf4 !important;
-  border-color: #1e6ab0 !important;
-}
-body:not(.dark-mode) .fav-section .favorite-card {
-  background: #e2eaf4 !important;
-  border-radius: 25px;
-  margin-bottom: 15px;
-  padding: 0 5px 15px;
-}
 
 body:not(.dark-mode) .plan-column {
-  background-color: #e2eaf4;
+  background-color: #ffffff;
 }
 body:not(.dark-mode) .plans-row .actual-card {
   background-color: #173b64 !important;
@@ -1030,6 +1035,69 @@ body:not(.dark-mode) .profile-layout .delete-plan-btn {
   border-color: rgba(239, 68, 68, 0.25) !important;
   color: #ef4444 !important;
 }
+
+/* ── Favourites — Light Mode ── */
+body:not(.dark-mode) .info-header h1 {
+  color: #173b64 !important;
+}
+
+body:not(.dark-mode) .section-header {
+  border-bottom-color: #d0dce8 !important;
+}
+
+body:not(.dark-mode) .section-header h3 {
+  color: #173b64 !important;
+}
+
+body:not(.dark-mode) .section-count {
+  background: #e2eaf4 !important;
+  color: #1e6ab0 !important;
+}
+
+body:not(.dark-mode) .arrow-btn {
+  background: #e2eaf4 !important;
+  color: #173b64 !important;
+  border: none !important;
+}
+
+body:not(.dark-mode) .arrow-btn:hover:not(:disabled) {
+  background: #d0dce8 !important;
+  color: #0d1b2a !important;
+}
+
+body:not(.dark-mode) .arrow-btn:disabled {
+  opacity: 0.3 !important;
+}
+
+body:not(.dark-mode) .slider-counter {
+  color: #5a6a7a !important;
+}
+
+body:not(.dark-mode) .card-info h3 {
+  color: #0d1b2a !important;
+}
+
+body:not(.dark-mode) .item-meta {
+  color: #5a6a7a !important;
+}
+
+body:not(.dark-mode) .item-price {
+  color: #173b64 !important;
+}
+
+body:not(.dark-mode) .empty-state {
+  background: #ffffff !important;
+  border-color: #a3c4eb !important;
+  color: #5a6a7a !important;
+}
+
+body:not(.dark-mode) .favorite-card {
+  background: #ffffff !important;
+  border: 0.5px solid #d0dce8 !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+/************************/
 body:not(.dark-mode) .card-footer-home {
   background-color: #173b64 !important;
 }

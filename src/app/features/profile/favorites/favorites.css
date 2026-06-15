@@ -97,6 +97,10 @@
 .favorite-card {
   display: flex;
   flex-direction: column;
+  background: rgba(255, 255, 255, 0.03);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 1rem;
 }
 
 .card-image-wrapper {

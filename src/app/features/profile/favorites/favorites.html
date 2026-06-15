@@ -23,15 +23,19 @@
         </div>
       }
       <div class="favorite-card">
-        <div class="card-image-wrapper">
+        <div
+          class="card-image-wrapper"
+          (click)="navigateToItem(currentItem('hotels')!)"
+          style="cursor: pointer"
+        >
           <img [src]="currentItem('hotels')!.image" class="card-img" />
-          <button class="heart-btn" (click)="deleteFav(currentItem('hotels')!)">
+          <button
+            class="heart-btn"
+            (click)="$event.stopPropagation(); deleteFav(currentItem('hotels')!)"
+          >
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path
-                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-                   2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
-                   C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
-                   c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
                 fill="#FFDE70"
                 stroke="#FFDE70"
                 stroke-width="2"
@@ -39,7 +43,11 @@
             </svg>
           </button>
         </div>
-        <div class="card-info">
+        <div
+          class="card-info"
+          (click)="navigateToItem(currentItem('hotels')!)"
+          style="cursor: pointer"
+        >
           <h3>{{ currentItem('hotels')!.title }}</h3>
           <div class="item-meta">
             <span class="item-price">{{ currentItem('hotels')!.price }}</span>
@@ -86,15 +94,19 @@
         </div>
       }
       <div class="favorite-card">
-        <div class="card-image-wrapper">
+        <div
+          class="card-image-wrapper"
+          (click)="navigateToItem(currentItem('restaurants')!)"
+          style="cursor: pointer"
+        >
           <img [src]="currentItem('restaurants')!.image" class="card-img" />
-          <button class="heart-btn" (click)="deleteFav(currentItem('restaurants')!)">
+          <button
+            class="heart-btn"
+            (click)="$event.stopPropagation(); deleteFav(currentItem('restaurants')!)"
+          >
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path
-                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-                   2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
-                   C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
-                   c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
                 fill="#FFDE70"
                 stroke="#FFDE70"
                 stroke-width="2"
@@ -102,7 +114,11 @@
             </svg>
           </button>
         </div>
-        <div class="card-info">
+        <div
+          class="card-info"
+          (click)="navigateToItem(currentItem('restaurants')!)"
+          style="cursor: pointer"
+        >
           <h3>{{ currentItem('restaurants')!.title }}</h3>
           <div class="item-meta">
             <span class="item-price">{{ currentItem('restaurants')!.price }}</span>
@@ -149,15 +165,19 @@
         </div>
       }
       <div class="favorite-card">
-        <div class="card-image-wrapper">
+        <div
+          class="card-image-wrapper"
+          (click)="navigateToItem(currentItem('tourGuides')!)"
+          style="cursor: pointer"
+        >
           <img [src]="currentItem('tourGuides')!.image" class="card-img" />
-          <button class="heart-btn" (click)="deleteFav(currentItem('tourGuides')!)">
+          <button
+            class="heart-btn"
+            (click)="$event.stopPropagation(); deleteFav(currentItem('tourGuides')!)"
+          >
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path
-                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-                   2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
-                   C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
-                   c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
                 fill="#FFDE70"
                 stroke="#FFDE70"
                 stroke-width="2"
@@ -165,7 +185,11 @@
             </svg>
           </button>
         </div>
-        <div class="card-info">
+        <div
+          class="card-info"
+          (click)="navigateToItem(currentItem('tourGuides')!)"
+          style="cursor: pointer"
+        >
           <h3>{{ currentItem('tourGuides')!.title }}</h3>
           <div class="item-meta">
             <span class="item-price">{{ currentItem('tourGuides')!.price }}</span>
@@ -212,15 +236,19 @@
         </div>
       }
       <div class="favorite-card">
-        <div class="card-image-wrapper">
+        <div
+          class="card-image-wrapper"
+          (click)="navigateToItem(currentItem('touristAttractions')!)"
+          style="cursor: pointer"
+        >
           <img [src]="currentItem('touristAttractions')!.image" class="card-img" />
-          <button class="heart-btn" (click)="deleteFav(currentItem('touristAttractions')!)">
+          <button
+            class="heart-btn"
+            (click)="$event.stopPropagation(); deleteFav(currentItem('touristAttractions')!)"
+          >
             <svg viewBox="0 0 24 24" width="20" height="20">
               <path
-                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-                   2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09
-                   C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5
-                   c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
                 fill="#FFDE70"
                 stroke="#FFDE70"
                 stroke-width="2"
@@ -228,7 +256,11 @@
             </svg>
           </button>
         </div>
-        <div class="card-info">
+        <div
+          class="card-info"
+          (click)="navigateToItem(currentItem('touristAttractions')!)"
+          style="cursor: pointer"
+        >
           <h3>{{ currentItem('touristAttractions')!.title }}</h3>
           <div class="item-meta">
             <span class="item-price">{{ currentItem('touristAttractions')!.price }}</span>
@@ -244,4 +276,8 @@
       </div>
     }
   </section>
+  <!-- Tour Guide Details Popup -->
+  @if (selectedGuide) {
+    <app-tour-guide-details [guide]="selectedGuide" (closeDetails)="closeGuideDetails()" />
+  }
 </main>

@@ -1,12 +1,14 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FavoritesService, FavoriteItem } from '../../../core/services/favorites.service';
+import { Details } from '../../TourGuide/details/details';
+import { TourGuide, TourGuideService } from '../../../core/services/tour-guide.service';
 
 @Component({
   selector: 'app-favorites',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Details],
   templateUrl: './favorites.html',
   styleUrl: './favorites.css'
 })
@@ -18,6 +20,7 @@ export class FavoritesComponent implements OnInit {
   touristAttractions: FavoriteItem[] = [];
 
   isLoading = true;
+  selectedGuide: TourGuide | null = null;
 
   sliderIndex: { [key: string]: number } = {
     hotels:             0,
@@ -28,6 +31,8 @@ export class FavoritesComponent implements OnInit {
 
   constructor(
     private favoritesService: FavoritesService,
+    private tourGuideService: TourGuideService,
+    private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -57,9 +62,40 @@ export class FavoritesComponent implements OnInit {
     this.touristAttractions = items.filter(f => f.type === 'attraction');
   }
 
+  navigateToItem(item: FavoriteItem): void {
+    if (item.type === 'tourGuide') {
+      const cached = this.tourGuideService.getById(item.id!);
+      if (cached) {
+        this.selectedGuide = cached;
+      } else if (item.id) {
+        this.tourGuideService.getById_API(item.id).subscribe({
+          next: (guide) => {
+            this.selectedGuide = guide;
+            this.cdr.detectChanges();
+          }
+        });
+      }
+      return;
+    }
+
+    const routeMap: Record<string, string> = {
+      hotel:      '/hotels/details',
+      restaurant: '/restaurant/details',
+      attraction: '/tourist-attraction/details',
+    };
+
+    const route = routeMap[item.type];
+    if (route && item.id) {
+      this.router.navigate([route, item.id]);
+    }
+  }
+
+  closeGuideDetails(): void {
+    this.selectedGuide = null;
+  }
+
   deleteFav(item: FavoriteItem): void {
     if (!item.id) {
-      // fallback لو مفيش id
       this.favoritesService.removeFavorite(item.title);
       this.splitItems(this.favoritesService.getFavorites());
       this.fixSliderIndexes();
