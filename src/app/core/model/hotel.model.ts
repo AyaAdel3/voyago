@@ -70,7 +70,9 @@ export interface HotelFeatureDef {
 }
 
 export interface HotelFeature {
+  id?: number;
   name: string;
+  icon?: string;
   price: number;
   selected: boolean;
   quantity: number;
@@ -262,10 +264,12 @@ export interface HotelApiImage {
   isMain: boolean;
 }
 
+// ── تعديل: ضفنا price? عشان لو الـ API بيبعته نستخدمه ──────
 export interface HotelApiFeature {
-  id: number;
-  name: string;
-  icon: string;
+  id:     number;
+  name:   string;
+  icon:   string;
+  price?: number;   // optional — قد يُرسَل من الـ API أو لا
 }
 
 export interface HotelApiComment {
@@ -276,20 +280,23 @@ export interface HotelApiComment {
   date:     string;
 }
 
+// ── تعديل: ضفنا discount و serviceCharge ──────────────────
 export interface HotelApiDetail {
-  id: number;
-  name: string;
-  description: string;
-  location: string;
-  rating: number;
-  singleRooms: number;
-  singlePrice: number;
-  doubleRooms: number;
-  doublePrice: number;
-  tripleRooms: number;
-  triplePrice: number;
-  suiteRooms: number;
-  suitePrice: number;
+  id:           number;
+  name:         string;
+  description:  string;
+  location:     string;
+  rating:       number;
+  singleRooms:  number;
+  singlePrice:  number;
+  doubleRooms:  number;
+  doublePrice:  number;
+  tripleRooms:  number;
+  triplePrice:  number;
+  suiteRooms:   number;
+  suitePrice:   number;
+  discount:     number;       // ← جديد
+  serviceCharge: number;      // ← جديد
   images:   HotelApiImage[];
   features: HotelApiFeature[];
   comments: HotelApiComment[];
@@ -395,4 +402,78 @@ export interface AdminAddHotelResponse {
   id:      number;
   message?: string;
   [key: string]: any;
+}
+
+// ════════════════════════════════════════════════════════
+// ── Booking Endpoint: POST /hotels/{id}/bookings ─────────
+// ════════════════════════════════════════════════════════
+
+/** يطابق enum RoomType في الباك إند (Voyagoo.Entities.Hotels) */
+export enum RoomTypeEnum {
+  Single = 1,
+  Double = 2,
+  Triple = 3,
+  Suite  = 4,
+}
+
+/** خريطة من اسم الغرفة المعروض (string) إلى رقمها في الـ API */
+export const ROOM_TYPE_MAP: Record<string, RoomTypeEnum> = {
+  Single: RoomTypeEnum.Single,
+  Double: RoomTypeEnum.Double,
+  Triple: RoomTypeEnum.Triple,
+  Suite:  RoomTypeEnum.Suite,
+};
+
+export interface BookingRoomRequest {
+  roomType: number;
+  quantity: number;
+}
+
+export interface BookingExtraFeatureRequest {
+  bookingFeatureId: number;
+  roomsCount:       number;
+}
+
+export interface CreateBookingRequest {
+  checkIn:        string; // 'YYYY-MM-DD'
+  checkOut:       string; // 'YYYY-MM-DD'
+  rooms:          BookingRoomRequest[];
+  fullBoardRooms: number;
+  halfBoardRooms: number;
+  extraFeatures:  BookingExtraFeatureRequest[];
+}
+
+export interface BookingResponseRoom {
+  roomType:      string;
+  quantity:      number;
+  pricePerNight: number;
+  total:         number;
+}
+
+export interface BookingResponseFeature {
+  bookingFeatureId: number;
+  name:             string;
+  icon:             string;
+  roomsCount:       number;
+  pricePerNight:    number;
+  total:            number;
+}
+
+export interface CreateBookingResponse {
+  bookingId:               number;
+  hotelName:                string;
+  checkIn:                  string;
+  checkOut:                 string;
+  nights:                   number;
+  rooms:                    BookingResponseRoom[];
+  features:                 BookingResponseFeature[];
+  roomsTotal:               number;
+  boardsTotal:              number;
+  extrasTotal:              number;
+  subtotal:                 number;
+  discountPercentage:       number;
+  discountAmount:           number;
+  serviceChargePercentage:  number;
+  serviceChargeAmount:      number;
+  totalPrice:               number;
 }

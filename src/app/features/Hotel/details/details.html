@@ -173,6 +173,23 @@
           </div>
         </div>
 
+        <!-- FEATURES -->
+        <div class="widget-section" *ngIf="selectedFeatures && selectedFeatures.length">
+          <h4 class="widget-label">Features</h4>
+          <p class="features-hint" *ngIf="totalRoomsSelected === 0">Select rooms first to add features</p>
+          <div *ngFor="let f of selectedFeatures; let i = index" class="option-row">
+            <span class="option-name">{{ f.name }}</span>
+            <div class="option-right">
+              <span class="option-price">{{ f.price | number }}LE</span>
+              <div class="qty-ctrl">
+                <button (click)="changeFeature(i, -1)" [disabled]="f.quantity === 0">−</button>
+                <span class="qty-val">{{ f.quantity }}</span>
+                <button (click)="changeFeature(i, 1)" [disabled]="!canIncrement(f)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- PRICE -->
         <div class="widget-section">
           <h4 class="widget-label">Price</h4>
@@ -180,6 +197,14 @@
             <div class="s-row">
               <span>{{ nights }} Night{{ nights !== 1 ? 's' : '' }}</span>
               <span>{{ basePrice | number }}LE</span>
+            </div>
+            <div class="s-row" *ngIf="hotelServiceChargePct > 0">
+              <span>Service ({{ hotelServiceChargePct }}%)</span>
+              <span>{{ serviceCharge | number }}LE</span>
+            </div>
+            <div class="s-row s-discount" *ngIf="hotelDiscount > 0">
+              <span>Discount ({{ hotelDiscount }}%)</span>
+              <span>-{{ discountAmount | number }}LE</span>
             </div>
             <div class="s-row s-total">
               <span>Total</span>
@@ -189,7 +214,9 @@
         </div>
 
         <p *ngIf="bookingError" class="booking-error-msg">{{ bookingError }}</p>
-        <button class="btn-book" (click)="bookNow()">Book now</button>
+        <button class="btn-book" (click)="bookNow()" [disabled]="bookingSubmitting">
+          {{ bookingSubmitting ? 'Booking...' : 'Book now' }}
+        </button>
 
       </ng-container>
     </div>
@@ -212,16 +239,16 @@
 
           <div class="reviewer-info">
             <div class="reviewer-avatar">
-  <img
-    *ngIf="isMyReview(review) && currentUserAvatar"
-    [src]="currentUserAvatar"
-    [alt]="review.userName"
-    class="host-avatar-img"
-  />
-  <span *ngIf="!(isMyReview(review) && currentUserAvatar)">
-    {{ review.userName.charAt(0) }}
-  </span>
-</div>
+              <img
+                *ngIf="isMyReview(review) && currentUserAvatar"
+                [src]="currentUserAvatar"
+                [alt]="review.userName"
+                class="host-avatar-img"
+              />
+              <span *ngIf="!(isMyReview(review) && currentUserAvatar)">
+                {{ review.userName.charAt(0) }}
+              </span>
+            </div>
             <div class="reviewer-meta">
               <p class="reviewer-name">{{ review.userName }}</p>
               <div class="review-stars">
@@ -283,6 +310,72 @@
           class="lb-dot"
           [class.active]="i === lbIndex"
           (click)="lbIndex = i"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKING CONFIRMATION MODAL -->
+  <div class="confirm-overlay" *ngIf="showBookingConfirm && bookingResult" (click)="closeBookingConfirm()">
+    <div class="confirm-card" style="max-width:420px; text-align:left;" (click)="$event.stopPropagation()">
+
+      <div class="confirm-icon" style="background:rgba(34,197,94,.15);">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
+          stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+        </svg>
+      </div>
+
+      <p class="confirm-title" style="text-align:center;">Booking Confirmed!</p>
+      <p class="confirm-text" style="text-align:center; margin-bottom:1rem;">
+        Booking #{{ bookingResult.bookingId }} — {{ bookingResult.hotelName }}
+      </p>
+
+      <div style="font-size:.9rem; line-height:1.6; color:#dbe7f5;">
+        <div style="display:flex; justify-content:space-between;">
+          <span>Check-in</span><span>{{ bookingResult.checkIn }}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+          <span>Check-out</span><span>{{ bookingResult.checkOut }}</span>
+        </div>
+        <div style="display:flex; justify-content:space-between;">
+          <span>Nights</span><span>{{ bookingResult.nights }}</span>
+        </div>
+
+        <hr style="border-color:rgba(255,255,255,.1); margin:.6rem 0;" />
+
+        <div *ngFor="let r of bookingResult.rooms" style="display:flex; justify-content:space-between;">
+          <span>{{ r.quantity }}x {{ r.roomType }}</span>
+          <span>{{ r.total | number }}LE</span>
+        </div>
+
+        <div *ngFor="let f of bookingResult.features" style="display:flex; justify-content:space-between;">
+          <span>{{ f.icon }} {{ f.name }} ({{ f.roomsCount }})</span>
+          <span>{{ f.total | number }}LE</span>
+        </div>
+
+        <hr style="border-color:rgba(255,255,255,.1); margin:.6rem 0;" />
+
+        <div style="display:flex; justify-content:space-between;">
+          <span>Subtotal</span><span>{{ bookingResult.subtotal | number }}LE</span>
+        </div>
+        <div *ngIf="bookingResult.discountAmount > 0" style="display:flex; justify-content:space-between; color:#4ade80;">
+          <span>Discount ({{ bookingResult.discountPercentage }}%)</span>
+          <span>-{{ bookingResult.discountAmount | number }}LE</span>
+        </div>
+        <div *ngIf="bookingResult.serviceChargeAmount > 0" style="display:flex; justify-content:space-between;">
+          <span>Service Charge ({{ bookingResult.serviceChargePercentage }}%)</span>
+          <span>{{ bookingResult.serviceChargeAmount | number }}LE</span>
+        </div>
+
+        <hr style="border-color:rgba(255,255,255,.1); margin:.6rem 0;" />
+
+        <div style="display:flex; justify-content:space-between; font-weight:800; font-size:1.05rem;">
+          <span>Total</span><span>{{ bookingResult.totalPrice | number }}LE</span>
+        </div>
+      </div>
+
+      <div class="confirm-actions" style="margin-top:1.2rem;">
+        <button class="btn-confirm-delete" style="background:#22c55e;" (click)="closeBookingConfirm()">Done</button>
       </div>
     </div>
   </div>

@@ -492,6 +492,10 @@
   font-weight: 400;
   color: #173b64;
 }
+.qty-ctrl button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
 .qty-ctrl input[type='checkbox'] {
   width: 13px;
   height: 13px;
@@ -521,6 +525,10 @@
   border-top: 1px solid #173b64;
   margin-top: 0.3rem;
   padding-top: 0.3rem;
+}
+.s-discount {
+  color: #173b64;
+  font-weight: 600;
 }
 
 /* Book button */
@@ -876,10 +884,8 @@
   }
   .btn-submit { width: 100%; text-align: center; }
 }
-.s-discount {
-  color: #173b64;
-  font-weight: 600;
-}
+
+/* ── Avatar ───────────────────────────────────────────── */
 .host-avatar {
   width: 40px;
   height: 40px;
@@ -900,6 +906,7 @@
   object-fit: cover;
   border-radius: 50%;
 }
+
 .reviewer-avatar {
   width: 36px;
   height: 36px;
@@ -913,11 +920,4 @@
   font-weight: 600;
   font-size: 14px;
   flex-shrink: 0;
-}
-
-.host-avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
 }

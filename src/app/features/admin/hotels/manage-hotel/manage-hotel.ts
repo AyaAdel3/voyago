@@ -16,7 +16,7 @@ interface BookingFeatureRow {
   apiId:  number;
   name:   string;
   icon:   string;
-  price:  number;
+  price:  number | null;
 }
 
 interface ImageSlot {
@@ -50,12 +50,12 @@ export class ManageHotel implements OnInit {
     description:      '',
     location:         '',
     status:           'Active' as 'Active' | 'Inactive' | 'Blocked',
-    discount:         0,
-    serviceChargePct: 0,
+    discount:         null as number | null,
+    serviceChargePct: null as number | null,
   };
 
-  roomPrices: HotelRoomPrices = { standard: 0, double: 0, triple: 0, suite: 0 };
-  rooms: HotelRooms           = { total: 0, single: 0, double: 0, triple: 0, suite: 0 };
+  roomPrices = { standard: null as number | null, double: null as number | null, triple: null as number | null, suite: null as number | null };
+  rooms      = { total: 0, single: null as number | null, double: null as number | null, triple: null as number | null, suite: null as number | null };
 
   availableDisplayFeatures: HotelFeatureDef[] = [];
   featuresLoading = false;
@@ -63,18 +63,17 @@ export class ManageHotel implements OnInit {
   selectedDisplayFeatureIds: number[] = [];
   displayDropdownOpen = false;
 
-  fullBoardPrice = 0;
-  halfBoardPrice = 0;
+  fullBoardPrice: number | null = null;
+  halfBoardPrice: number | null = null;
 
   availableBookingFeatures: BookingFeatureApiItem[] = [];
   bookingFeaturesLoading = false;
   bookingFeaturesError   = false;
   extraBookingFeatures: BookingFeatureRow[] = [];
   selectedBookingFeatureId: number | null = null;
-  newBookingFeaturePrice = 0;
-  bookingDropdownOpen    = false;
+  newBookingFeaturePrice: number | null = null;
+  bookingDropdownOpen = false;
 
-  // ── Auth token — tries all common storage keys ──────────
   private get authToken(): string {
     return localStorage.getItem('token')
       ?? localStorage.getItem('authToken')
@@ -94,8 +93,6 @@ export class ManageHotel implements OnInit {
   ngOnInit() {
     const token = this.authToken;
 
-    // ── Set isEdit & hotelId IMMEDIATELY from URL ──────────
-    // This makes the title show "Manage" right away, before any API call
     const params = this.route.snapshot.queryParams;
     if (params['id']) {
       this.hotelId = +params['id'];
@@ -105,7 +102,6 @@ export class ManageHotel implements OnInit {
     this.featuresLoading        = true;
     this.bookingFeaturesLoading = true;
 
-    // Load both feature lists first, then load hotel data (for edit)
     forkJoin({
       displayFeatures: this.hotelService.getHotelFeaturesFromApi(token),
       bookingFeatures: this.hotelService.getBookingFeaturesFromApi(token),
@@ -120,7 +116,6 @@ export class ManageHotel implements OnInit {
         this.bookingFeaturesLoading = false;
         this.cdr.detectChanges();
 
-        // Load hotel data after feature lists are ready
         this.route.queryParams.subscribe(params => {
           if (params['id']) {
             this.hotelId = +params['id'];
@@ -147,63 +142,49 @@ export class ManageHotel implements OnInit {
     });
   }
 
-  // ── GET /admin/hotels/{id} ─────────────────────────────────
   private loadHotel(id: number) {
     this.isLoadingData = true;
     const token = this.authToken;
 
     this.hotelService.getAdminHotelById(id, token).subscribe({
       next: (h: any) => {
-
-        // ── Basic info ──────────────────────────────────────
         this.hotel = {
           name:             h.name          ?? '',
           rating:           h.rating        ?? '',
           description:      h.description   ?? '',
           location:         h.location      ?? '',
           status:           h.status        ?? 'Active',
-          discount:         h.discount      ?? 0,
-          serviceChargePct: h.serviceCharge ?? 0,  // API returns "serviceCharge"
+          discount:         h.discount      ?? null,
+          serviceChargePct: h.serviceCharge ?? null,
         };
 
-        // ── Rooms count ─────────────────────────────────────
         this.rooms = {
-          single: h.singleRooms ?? 0,
-          double: h.doubleRooms ?? 0,
-          triple: h.tripleRooms ?? 0,
-          suite:  h.suiteRooms  ?? 0,
+          single: h.singleRooms ?? null,
+          double: h.doubleRooms ?? null,
+          triple: h.tripleRooms ?? null,
+          suite:  h.suiteRooms  ?? null,
           total: (h.singleRooms ?? 0) + (h.doubleRooms ?? 0)
                + (h.tripleRooms ?? 0) + (h.suiteRooms  ?? 0),
         };
 
-        // ── Room prices ─────────────────────────────────────
         this.roomPrices = {
-          standard: h.singlePrice ?? 0,
-          double:   h.doublePrice ?? 0,
-          triple:   h.triplePrice ?? 0,
-          suite:    h.suitePrice  ?? 0,
+          standard: h.singlePrice ?? null,
+          double:   h.doublePrice ?? null,
+          triple:   h.triplePrice ?? null,
+          suite:    h.suitePrice  ?? null,
         };
 
-        // ── Display features ────────────────────────────────
-        // API returns: features: [{ id, name, icon }]
         this.selectedDisplayFeatureIds = Array.isArray(h.features)
           ? h.features.map((f: any) => f.id)
           : [];
 
-        // ── Booking features ────────────────────────────────
-        // API returns: bookingFeatures: [{ id, name, icon, price, isFixed }]
-        // isFixed=true  → Full Board (1001) / Half Board (1002)
-        // isFixed=false → extra features chosen by admin
-
         const allBooking: any[] = h.bookingFeatures ?? [];
 
-        // Fixed: extract fullBoardPrice & halfBoardPrice
-        const fullBoard = allBooking.find((f: any) => f.id === FULL_BOARD_API_ID || f.isFixed && f.name?.toLowerCase().includes('full'));
-        const halfBoard = allBooking.find((f: any) => f.id === HALF_BOARD_API_ID || f.isFixed && f.name?.toLowerCase().includes('half'));
-        this.fullBoardPrice = fullBoard?.price ?? 0;
-        this.halfBoardPrice = halfBoard?.price ?? 0;
+        const fullBoard = allBooking.find((f: any) => f.id === FULL_BOARD_API_ID || (f.isFixed && f.name?.toLowerCase().includes('full')));
+        const halfBoard = allBooking.find((f: any) => f.id === HALF_BOARD_API_ID || (f.isFixed && f.name?.toLowerCase().includes('half')));
+        this.fullBoardPrice = fullBoard?.price ?? null;
+        this.halfBoardPrice = halfBoard?.price ?? null;
 
-        // Extras: isFixed=false only
         this.extraBookingFeatures = allBooking
           .filter((f: any) => !f.isFixed)
           .map((f: any) => {
@@ -212,12 +193,10 @@ export class ManageHotel implements OnInit {
               apiId: f.id,
               name:  f.name  ?? match?.name ?? '',
               icon:  f.icon  ?? match?.icon ?? '⭐',
-              price: f.price ?? 0,
+              price: f.price ?? null,
             };
           });
 
-        // ── Images ──────────────────────────────────────────
-        // API returns: images: [{ id, imageUrl, isMain }]
         this.images = Array.isArray(h.images) && h.images.length > 0
           ? h.images
               .sort((a: any, b: any) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0))
@@ -231,7 +210,7 @@ export class ManageHotel implements OnInit {
         this.isLoadingData = false;
         this.cdr.detectChanges();
       },
-      error: (err) => {
+      error: () => {
         this.isLoadingData = false;
         this.showToast('Failed to load hotel data. Please try again.', false, false);
         this.cdr.detectChanges();
@@ -264,7 +243,7 @@ export class ManageHotel implements OnInit {
   }
 
   calcTotal() {
-    this.rooms.total = this.rooms.single + this.rooms.double + this.rooms.triple + this.rooms.suite;
+    this.rooms.total = (this.rooms.single ?? 0) + (this.rooms.double ?? 0) + (this.rooms.triple ?? 0) + (this.rooms.suite ?? 0);
   }
 
   setStatus(s: 'Active' | 'Inactive' | 'Blocked') { this.hotel.status = s; }
@@ -287,6 +266,14 @@ export class ManageHotel implements OnInit {
 
   closeDisplayDropdown() { this.displayDropdownOpen = false; }
 
+  toggleDisplayDropdown() {
+    this.displayDropdownOpen = !this.displayDropdownOpen;
+  }
+
+  toggleBookingDropdown() {
+    this.bookingDropdownOpen = !this.bookingDropdownOpen;
+  }
+
   get remainingBookingFeatures(): BookingFeatureApiItem[] {
     const usedIds = this.extraBookingFeatures.map(f => f.apiId);
     return this.availableBookingFeatures.filter(f => !usedIds.includes(f.id));
@@ -308,10 +295,10 @@ export class ManageHotel implements OnInit {
 
     this.extraBookingFeatures = [
       ...this.extraBookingFeatures,
-      { apiId: feature.id, name: feature.name, icon: feature.icon, price: this.newBookingFeaturePrice ?? 0 },
+      { apiId: feature.id, name: feature.name, icon: feature.icon, price: this.newBookingFeaturePrice ?? null },
     ];
     this.selectedBookingFeatureId = null;
-    this.newBookingFeaturePrice   = 0;
+    this.newBookingFeaturePrice   = null;
     this.bookingDropdownOpen      = false;
   }
 
@@ -400,6 +387,10 @@ export class ManageHotel implements OnInit {
     if (Number(this.hotel.rating) < 0 || Number(this.hotel.rating) > 5)
                                         return 'Rating must be between 0 and 5.';
     if (!this.roomPrices.standard)      return 'Standard room price is required.';
+    if (!this.fullBoardPrice || Number(this.fullBoardPrice) <= 0)
+                                        return 'Full Board price is required.';
+    if (!this.halfBoardPrice || Number(this.halfBoardPrice) <= 0)
+                                        return 'Half Board price is required.';
     return null;
   }
 
@@ -447,7 +438,6 @@ export class ManageHotel implements OnInit {
 
     this.hotelService.updateHotelAdmin(hotelId, payload, [], token).subscribe({
       next: () => {
-        // Fire-and-forget status update — continues regardless of result
         this.hotelService.updateHotelStatus(hotelId, this.hotel.status, token)
           .subscribe({ next: () => {}, error: () => {} });
         this.uploadNewImagesIfAny(hotelId, token);
@@ -477,17 +467,18 @@ export class ManageHotel implements OnInit {
   }
 
   clear() {
-    this.hotel                     = { name: '', rating: '', description: '', location: '', status: 'Active', discount: 0, serviceChargePct: 0 };
-    this.roomPrices                = { standard: 0, double: 0, triple: 0, suite: 0 };
-    this.rooms                     = { total: 0, single: 0, double: 0, triple: 0, suite: 0 };
+    this.hotel                     = { name: '', rating: '', description: '', location: '', status: 'Active', discount: null, serviceChargePct: null };
+    this.roomPrices                = { standard: null, double: null, triple: null, suite: null };
+    this.rooms                     = { total: 0, single: null, double: null, triple: null, suite: null };
     this.images                    = [];
     this.selectedFiles             = [];
     this.selectedDisplayFeatureIds = [];
-    this.fullBoardPrice            = 0;
-    this.halfBoardPrice            = 0;
+    this.fullBoardPrice            = null;
+    this.halfBoardPrice            = null;
     this.extraBookingFeatures      = [];
     this.selectedBookingFeatureId  = null;
-    this.newBookingFeaturePrice    = 0;
+    this.newBookingFeaturePrice    = null;
     this.bookingDropdownOpen       = false;
+    this.displayDropdownOpen       = false;
   }
 }

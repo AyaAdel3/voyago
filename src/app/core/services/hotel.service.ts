@@ -11,6 +11,7 @@ import {
   AdminHotelReviewsApiResponse, HotelReview,
   AdminAddHotelRequest, AdminAddHotelResponse,
   HotelFeatureApiItem, BookingFeatureApiItem,
+  CreateBookingRequest, CreateBookingResponse,
 } from '../model/hotel.model';
 
 @Injectable({ providedIn: 'root' })
@@ -115,6 +116,28 @@ export class HotelService {
   deleteComment(hotelId: number, commentId: number): Observable<any> {
     return this.http.delete(
       `${this.apiBaseCase}/${hotelId}/comments/${commentId}`
+    );
+  }
+
+  /**
+   * POST /hotels/{id}/bookings
+   * بيبعت طلب حجز جديد ويرجع تفاصيل الحجز كاملة مع الأسعار المحسوبة من السيرفر
+   * (الغرف، البورد، الإكسترا فيتشرز، الخصم، رسوم الخدمة، والإجمالي النهائي).
+   */
+  createBooking(
+    hotelId: number,
+    payload: CreateBookingRequest,
+    token:   string,
+  ): Observable<CreateBookingResponse> {
+    return this.http.post<CreateBookingResponse>(
+      `${this.apiBase}/${hotelId}/bookings`,
+      payload,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type':  'application/json',
+        },
+      }
     );
   }
 

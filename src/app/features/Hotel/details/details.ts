@@ -5,6 +5,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {
   RoomType, HotelFeature, BookingData, BOARD_FEATURE_NAMES,
   HotelApiDetail, HotelApiComment,
+  CreateBookingRequest, CreateBookingResponse,
+  BookingRoomRequest, ROOM_TYPE_MAP,
 } from '../../../core/model/hotel.model';
 import { HotelService } from '../../../core/services/hotel.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -52,6 +54,11 @@ export class Details implements OnInit {
   lightboxOpen = false;
   lbIndex      = 0;
 
+  // ── Booking submit / confirmation ──────────────────────────
+  bookingSubmitting = false;
+  bookingResult: CreateBookingResponse | null = null;
+  showBookingConfirm = false;
+
   constructor(
     private route:        ActivatedRoute,
     public  router:       Router,
@@ -94,7 +101,14 @@ export class Details implements OnInit {
           { type: 'Suite',  price: hotel.suitePrice,  quantity: 0 },
         ];
 
-        this.selectedFeatures = [];
+        // ── بناء الـ features من الـ API ─────────────────────
+        // hotel.features بتيجي من الـ API وبتحتوي على
+        // { id, name, icon, price } — بنضيف quantity = 0 لكل واحدة
+        this.selectedFeatures = (hotel.features ?? []).map((f: any) => ({
+          ...f,
+          quantity: 0,
+        }));
+
         this.loading = false;
         this.error   = false;
         this.recalc();
@@ -111,7 +125,6 @@ export class Details implements OnInit {
   private loadReviews(id: number): void {
     this.hotelService.getComments(id).subscribe({
       next: (reviews: HotelApiComment[]) => {
-        console.log('LOADED REVIEWS:', reviews);
         this.reviews = reviews;
         this.cdr.detectChanges();
       },
@@ -168,8 +181,14 @@ export class Details implements OnInit {
       .reduce((s, f) => s + f.quantity, 0);
   }
 
-  get hotelDiscount(): number         { return 0; }
-  get hotelServiceChargePct(): number { return 0; }
+  // ── Service charge & discount من الـ hotel object ────────
+  get hotelDiscount(): number {
+    return this.hotel?.discount ?? 0;
+  }
+
+  get hotelServiceChargePct(): number {
+    return this.hotel?.serviceCharge ?? 0;
+  }
 
   // ── Gallery ───────────────────────────────────────────────
 
@@ -190,6 +209,8 @@ export class Details implements OnInit {
   lbNext(): void { if (this.lbIndex < this.hotelImages.length - 1) this.lbIndex++; }
 
   // ── Price calc ────────────────────────────────────────────
+  // ملحوظة: ده حساب تقديري للعرض فقط (Client-side preview).
+  // السعر النهائي الفعلي بيرجع من السيرفر في bookingResult بعد الـ submit.
 
   recalc(): void {
     this.nights = calcNights(this.checkIn, this.checkOut);
@@ -199,16 +220,22 @@ export class Details implements OnInit {
     const roomsCost    = this.selectedRooms.reduce((s, r) => s + r.price * r.quantity, 0);
     const featuresCost = this.selectedFeatures.reduce((s, f) => s + f.price * f.quantity, 0);
 
-    this.basePrice      = hasDate ? roomsCost * this.nights : 0;
-    const subtotal      = this.basePrice + (hasDate ? featuresCost : 0);
-    this.serviceCharge  = 0;
-    this.discountAmount = 0;
-    this.totalAmount    = hasDate ? subtotal : 0;
+    this.basePrice = hasDate ? (roomsCost + featuresCost) * this.nights : 0;
+
+    const subtotal         = this.basePrice;
+    this.discountAmount    = hasDate ? Math.round(subtotal * this.hotelDiscount / 100) : 0;
+    const afterDiscount    = subtotal - this.discountAmount;
+    this.serviceCharge     = hasDate ? Math.round(afterDiscount * this.hotelServiceChargePct / 100) : 0;
+    this.totalAmount       = hasDate ? afterDiscount + this.serviceCharge : 0;
   }
 
   changeRoom(i: number, delta: number): void {
     if (!this.checkAuthBeforeInteract()) return;
     this.selectedRooms[i].quantity = Math.max(0, this.selectedRooms[i].quantity + delta);
+
+    // لو قل عدد الغرف عن عدد الـ features، نقلل الـ features تلقائيًا
+    this.clampFeaturesToRooms();
+
     if (this.canClearError()) this.bookingError = '';
     this.recalc();
   }
@@ -230,6 +257,26 @@ export class Details implements OnInit {
     this.recalc();
   }
 
+  private clampFeaturesToRooms(): void {
+    const total = this.totalRoomsSelected;
+    this.selectedFeatures.forEach(f => {
+      if (f.quantity > total) f.quantity = total;
+    });
+    // كمان نتأكد إن Full Board + Half Board مش أكتر من الغرف
+    const boardTotal = this.totalBoardSelected;
+    if (boardTotal > total) {
+      // نقلل من آخر board feature أضيفت
+      for (let i = this.selectedFeatures.length - 1; i >= 0; i--) {
+        const f = this.selectedFeatures[i];
+        if (BOARD_FEATURE_NAMES.includes(f.name) && f.quantity > 0) {
+          const excess = boardTotal - total;
+          f.quantity = Math.max(0, f.quantity - excess);
+          break;
+        }
+      }
+    }
+  }
+
   onDateChange(): void {
     if (!this.checkAuthBeforeInteract()) {
       this.checkIn  = '';
@@ -248,8 +295,11 @@ export class Details implements OnInit {
     );
   }
 
+  // ── Book Now ──────────────────────────────────────────────
+
   bookNow(): void {
     if (!this.checkAuthBeforeInteract()) return;
+    if (this.bookingSubmitting) return;
 
     const selectedRooms = this.selectedRooms.filter(r => r.quantity > 0);
     if (selectedRooms.length === 0)                        { this.bookingError = 'Please select at least one room to continue.'; return; }
@@ -257,20 +307,58 @@ export class Details implements OnInit {
     if (new Date(this.checkOut) <= new Date(this.checkIn)) { this.bookingError = 'Check-out date must be after check-in date.'; return; }
 
     this.bookingError = '';
-    const bookingData: BookingData = {
-      hotelId:       this.hotel.id,
-      hotelName:     this.hotel.name,
-      checkIn:       this.checkIn,
-      checkOut:      this.checkOut,
-      rooms:         selectedRooms,
-      features:      this.selectedFeatures,
-      totalNights:   this.nights,
-      discount:      0,
-      serviceCharge: 0,
-      totalAmount:   this.totalAmount,
+
+    const roomsPayload: BookingRoomRequest[] = selectedRooms.map(r => ({
+      roomType: ROOM_TYPE_MAP[r.type],
+      quantity: r.quantity,
+    }));
+
+    const fullBoardRooms = this.selectedFeatures
+      .filter(f => f.name === 'Full Board')
+      .reduce((s, f) => s + f.quantity, 0);
+
+    const halfBoardRooms = this.selectedFeatures
+      .filter(f => f.name === 'Half Board')
+      .reduce((s, f) => s + f.quantity, 0);
+
+    const extraFeatures = this.selectedFeatures
+      .filter(f => !BOARD_FEATURE_NAMES.includes(f.name) && f.quantity > 0)
+      .map(f => ({
+        bookingFeatureId: (f as any).id ?? 0,
+        roomsCount: f.quantity,
+      }));
+
+    const payload: CreateBookingRequest = {
+      checkIn:        this.checkIn,
+      checkOut:       this.checkOut,
+      rooms:          roomsPayload,
+      fullBoardRooms,
+      halfBoardRooms,
+      extraFeatures,
     };
-    this.hotelService.setBooking(bookingData);
-    this.router.navigate(['/hotels/booking']);
+
+    const token = localStorage.getItem('voyago_token') ?? '';
+
+    this.bookingSubmitting = true;
+    this.hotelService.createBooking(this.hotel.id, payload, token).subscribe({
+      next: (res) => {
+        this.bookingResult      = res;
+        this.showBookingConfirm = true;
+        this.bookingSubmitting  = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Booking failed:', err);
+        this.bookingSubmitting = false;
+        this.bookingError = err?.error?.message || 'Failed to create booking. Please try again.';
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  closeBookingConfirm(): void {
+    this.showBookingConfirm = false;
+    this.bookingResult = null;
   }
 
   // ── Reviews ───────────────────────────────────────────────
