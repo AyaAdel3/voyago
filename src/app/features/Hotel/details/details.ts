@@ -95,7 +95,7 @@ export class Details implements OnInit {
     });
   }
 
-  private loadHotel(id: number): void {
+ private loadHotel(id: number): void {
     this.hotelService.getHotelApiById(id).subscribe({
       next: (hotel) => {
         this.hotel   = hotel;
@@ -109,14 +109,14 @@ export class Details implements OnInit {
         ];
 
         // بناء selectedFeatures من hotel.bookingFeatures
-        // Full Board (1001) → fullBoardRooms في الـ payload
-        // Half Board (1002) → halfBoardRooms في الـ payload
-        // الباقي           → extraFeatures في الـ payload
+        // Full Board (id: 1001) → fullBoardRooms في الـ payload
+        // Half Board (id: 1002) → halfBoardRooms في الـ payload
+        // الباقي                → extraFeatures في الـ payload
         this.selectedFeatures = (hotel.bookingFeatures ?? []).map((f: HotelApiBookingFeature) => ({
-          id:       f.bookingFeatureId,
+          id:       f.id,
           name:     f.name,
           icon:     f.icon,
-          price:    f.pricePerNight,
+          price:    f.price,
           selected: false,
           quantity: 0,
         }));

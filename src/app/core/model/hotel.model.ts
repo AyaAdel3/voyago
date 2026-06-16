@@ -273,11 +273,14 @@ export interface HotelApiFeature {
 
 // ── Booking Feature كما بتيجي في GET /hotels/{id} ──────────
 // دي الـ features اللي بتتعرض في الـ widget وبتتبعت في الـ booking request
+// ── Booking Feature كما بترجع فعليًا من GET /hotels/{id} ──
+// الـ API بيرجع: id, name, icon, price, isFixed
 export interface HotelApiBookingFeature {
-  bookingFeatureId: number;   // الـ id اللي بيتبعت في extraFeatures / fullBoardRooms
-  name:             string;
-  icon:             string;
-  pricePerNight:    number;   // السعر الحقيقي من السيرفر
+  id:      number;   // الـ id اللي بيتبعت في extraFeatures / fullBoardRooms
+  name:    string;
+  icon:    string;
+  price:   number;   // السعر الحقيقي من السيرفر (للغرفة الواحدة في الليلة)
+  isFixed: boolean;  // true لـ Full Board (1001) و Half Board (1002)
 }
 
 export interface HotelApiComment {
