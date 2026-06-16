@@ -154,10 +154,8 @@ export class ManageHotel implements OnInit {
 
     this.hotelService.getAdminHotelById(id, token).subscribe({
       next: (h: any) => {
-        console.log('✅ Hotel loaded:', h);
 
-        // Basic info
-        // Note: GET returns "serviceCharge" (not "serviceChargePct")
+        // ── Basic info ──────────────────────────────────────
         this.hotel = {
           name:             h.name          ?? '',
           rating:           h.rating        ?? '',
@@ -165,10 +163,10 @@ export class ManageHotel implements OnInit {
           location:         h.location      ?? '',
           status:           h.status        ?? 'Active',
           discount:         h.discount      ?? 0,
-          serviceChargePct: h.serviceCharge ?? h.serviceChargePct ?? 0,
+          serviceChargePct: h.serviceCharge ?? 0,  // API returns "serviceCharge"
         };
 
-        // Rooms count
+        // ── Rooms count ─────────────────────────────────────
         this.rooms = {
           single: h.singleRooms ?? 0,
           double: h.doubleRooms ?? 0,
@@ -178,7 +176,7 @@ export class ManageHotel implements OnInit {
                + (h.tripleRooms ?? 0) + (h.suiteRooms  ?? 0),
         };
 
-        // Room prices
+        // ── Room prices ─────────────────────────────────────
         this.roomPrices = {
           standard: h.singlePrice ?? 0,
           double:   h.doublePrice ?? 0,
@@ -186,56 +184,54 @@ export class ManageHotel implements OnInit {
           suite:    h.suitePrice  ?? 0,
         };
 
-        // Fixed board prices
-        this.fullBoardPrice = h.fullBoardPrice ?? 0;
-        this.halfBoardPrice = h.halfBoardPrice ?? 0;
+        // ── Display features ────────────────────────────────
+        // API returns: features: [{ id, name, icon }]
+        this.selectedDisplayFeatureIds = Array.isArray(h.features)
+          ? h.features.map((f: any) => f.id)
+          : [];
 
-        // Display feature IDs
-        // GET returns featureIds: [1, 2]
-        if (Array.isArray(h.featureIds) && h.featureIds.length > 0) {
-          this.selectedDisplayFeatureIds = [...h.featureIds];
-        } else if (Array.isArray(h.features) && h.features.length > 0) {
-          this.selectedDisplayFeatureIds = h.features.map(
-            (f: any) => (typeof f === 'number' ? f : f.id)
-          );
-        } else {
-          this.selectedDisplayFeatureIds = [];
-        }
+        // ── Booking features ────────────────────────────────
+        // API returns: bookingFeatures: [{ id, name, icon, price, isFixed }]
+        // isFixed=true  → Full Board (1001) / Half Board (1002)
+        // isFixed=false → extra features chosen by admin
 
-        // Extra booking features
-        // GET returns bookingFeatures: [{ bookingFeatureId: 3, price: 250 }]
-        const extras = (h.bookingFeatures ?? []).filter((f: any) => {
-          const fid = f.bookingFeatureId ?? f.id ?? 0;
-          return fid !== FULL_BOARD_API_ID && fid !== HALF_BOARD_API_ID;
-        });
+        const allBooking: any[] = h.bookingFeatures ?? [];
 
-        this.extraBookingFeatures = extras.map((f: any) => {
-          const apiId = f.bookingFeatureId ?? f.id ?? 0;
-          const match = this.availableBookingFeatures.find(af => af.id === apiId);
-          return {
-            apiId,
-            name:  match?.name ?? f.name ?? '',
-            icon:  match?.icon ?? f.icon ?? '⭐',
-            price: f.price ?? 0,
-          };
-        });
+        // Fixed: extract fullBoardPrice & halfBoardPrice
+        const fullBoard = allBooking.find((f: any) => f.id === FULL_BOARD_API_ID || f.isFixed && f.name?.toLowerCase().includes('full'));
+        const halfBoard = allBooking.find((f: any) => f.id === HALF_BOARD_API_ID || f.isFixed && f.name?.toLowerCase().includes('half'));
+        this.fullBoardPrice = fullBoard?.price ?? 0;
+        this.halfBoardPrice = halfBoard?.price ?? 0;
 
-        // Images
-        if (Array.isArray(h.images) && h.images.length > 0) {
-          this.images = h.images
-            .sort((a: any, b: any) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0))
-            .map((img: any) => ({
-              id:  img.id ?? null,
-              url: img.imageUrl ?? (typeof img === 'string' ? img : ''),
-            }))
-            .filter((s: ImageSlot) => !!s.url);
-        }
+        // Extras: isFixed=false only
+        this.extraBookingFeatures = allBooking
+          .filter((f: any) => !f.isFixed)
+          .map((f: any) => {
+            const match = this.availableBookingFeatures.find(af => af.id === f.id);
+            return {
+              apiId: f.id,
+              name:  f.name  ?? match?.name ?? '',
+              icon:  f.icon  ?? match?.icon ?? '⭐',
+              price: f.price ?? 0,
+            };
+          });
+
+        // ── Images ──────────────────────────────────────────
+        // API returns: images: [{ id, imageUrl, isMain }]
+        this.images = Array.isArray(h.images) && h.images.length > 0
+          ? h.images
+              .sort((a: any, b: any) => (b.isMain ? 1 : 0) - (a.isMain ? 1 : 0))
+              .map((img: any) => ({
+                id:  img.id       ?? null,
+                url: img.imageUrl ?? '',
+              }))
+              .filter((s: ImageSlot) => !!s.url)
+          : [];
 
         this.isLoadingData = false;
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('❌ Failed to load hotel:', err?.error ?? err);
         this.isLoadingData = false;
         this.showToast('Failed to load hotel data. Please try again.', false, false);
         this.cdr.detectChanges();
@@ -393,7 +389,6 @@ export class ManageHotel implements OnInit {
       bookingFeatures,
     };
 
-    console.log('📦 Payload:', JSON.stringify(payload, null, 2));
     return payload;
   }
 
@@ -426,7 +421,6 @@ export class ManageHotel implements OnInit {
   private doAdd(payload: AdminAddHotelRequest, token: string) {
     this.hotelService.addHotelAdmin(payload, [], token).subscribe({
       next: (response) => {
-        console.log('✅ Hotel added, id:', response.id);
         const newId   = response.id;
         const newUrls = this.images.filter(s => s.id === null).map(s => s.url);
 
@@ -441,7 +435,6 @@ export class ManageHotel implements OnInit {
         }
       },
       error: (err) => {
-        console.error('❌ Add failed:', err?.error);
         this.isSaving = false;
         const msg = err?.error?.message ?? err?.error ?? 'Failed to add hotel.';
         this.showToast(typeof msg === 'string' ? msg : 'Failed to add hotel.', false, false);
@@ -454,15 +447,12 @@ export class ManageHotel implements OnInit {
 
     this.hotelService.updateHotelAdmin(hotelId, payload, [], token).subscribe({
       next: () => {
-        console.log('✅ Hotel updated');
-        // PATCH status after PUT — continue even if status update fails
-        this.hotelService.updateHotelStatus(hotelId, this.hotel.status, token).subscribe({
-          next:  () => this.uploadNewImagesIfAny(hotelId, token),
-          error: () => this.uploadNewImagesIfAny(hotelId, token),
-        });
+        // Fire-and-forget status update — continues regardless of result
+        this.hotelService.updateHotelStatus(hotelId, this.hotel.status, token)
+          .subscribe({ next: () => {}, error: () => {} });
+        this.uploadNewImagesIfAny(hotelId, token);
       },
       error: (err) => {
-        console.error('❌ Update failed:', err?.error);
         this.isSaving = false;
         const msg = err?.error?.message ?? err?.error ?? 'Failed to update hotel.';
         this.showToast(typeof msg === 'string' ? msg : 'Failed to update hotel.', false, false);
