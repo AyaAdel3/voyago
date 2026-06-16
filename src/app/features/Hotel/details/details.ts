@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   RoomType, HotelFeature, BookingData, BOARD_FEATURE_NAMES,
-  HotelApiDetail, HotelApiComment,
+  HotelApiDetail, HotelApiComment, HotelApiBookingFeature,
   CreateBookingRequest, CreateBookingResponse,
   BookingRoomRequest, ROOM_TYPE_MAP,
 } from '../../../core/model/hotel.model';
@@ -16,6 +16,12 @@ function calcNights(checkIn: string, checkOut: string): number {
   if (!checkIn || !checkOut) return 0;
   const diff = new Date(checkOut).getTime() - new Date(checkIn).getTime();
   return Math.max(0, Math.ceil(diff / 86_400_000));
+}
+
+// سطر واحد في الـ Price breakdown
+export interface PriceLine {
+  label:  string;
+  amount: number;
 }
 
 @Component({
@@ -36,7 +42,9 @@ export class Details implements OnInit {
   nights   = 0;
   selectedRooms: RoomType[]        = [];
   selectedFeatures: HotelFeature[] = [];
-  basePrice      = 0;
+
+  // Price breakdown lines (للعرض في الـ widget)
+  priceLines:    PriceLine[] = [];
   serviceCharge  = 0;
   discountAmount = 0;
   totalAmount    = 0;
@@ -54,7 +62,6 @@ export class Details implements OnInit {
   lightboxOpen = false;
   lbIndex      = 0;
 
-  // ── Booking submit / confirmation ──────────────────────────
   bookingSubmitting = false;
   bookingResult: CreateBookingResponse | null = null;
   showBookingConfirm = false;
@@ -101,11 +108,16 @@ export class Details implements OnInit {
           { type: 'Suite',  price: hotel.suitePrice,  quantity: 0 },
         ];
 
-        // ── بناء الـ features من الـ API ─────────────────────
-        // hotel.features بتيجي من الـ API وبتحتوي على
-        // { id, name, icon, price } — بنضيف quantity = 0 لكل واحدة
-        this.selectedFeatures = (hotel.features ?? []).map((f: any) => ({
-          ...f,
+        // بناء selectedFeatures من hotel.bookingFeatures
+        // Full Board (1001) → fullBoardRooms في الـ payload
+        // Half Board (1002) → halfBoardRooms في الـ payload
+        // الباقي           → extraFeatures في الـ payload
+        this.selectedFeatures = (hotel.bookingFeatures ?? []).map((f: HotelApiBookingFeature) => ({
+          id:       f.bookingFeatureId,
+          name:     f.name,
+          icon:     f.icon,
+          price:    f.pricePerNight,
+          selected: false,
           quantity: 0,
         }));
 
@@ -128,9 +140,7 @@ export class Details implements OnInit {
         this.reviews = reviews;
         this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Failed to load reviews:', err);
-      },
+      error: (err) => console.error('Failed to load reviews:', err),
     });
   }
 
@@ -181,7 +191,6 @@ export class Details implements OnInit {
       .reduce((s, f) => s + f.quantity, 0);
   }
 
-  // ── Service charge & discount من الـ hotel object ────────
   get hotelDiscount(): number {
     return this.hotel?.discount ?? 0;
   }
@@ -209,33 +218,66 @@ export class Details implements OnInit {
   lbNext(): void { if (this.lbIndex < this.hotelImages.length - 1) this.lbIndex++; }
 
   // ── Price calc ────────────────────────────────────────────
-  // ملحوظة: ده حساب تقديري للعرض فقط (Client-side preview).
-  // السعر النهائي الفعلي بيرجع من السيرفر في bookingResult بعد الـ submit.
+  // بيحسب كل line item على حدة ويبنيهم في priceLines
+  // عشان يتعرضوا في الـ widget زي الصورة
 
   recalc(): void {
     this.nights = calcNights(this.checkIn, this.checkOut);
     const hasDate = !!this.checkIn && !!this.checkOut &&
       new Date(this.checkOut) > new Date(this.checkIn);
 
-    const roomsCost    = this.selectedRooms.reduce((s, r) => s + r.price * r.quantity, 0);
-    const featuresCost = this.selectedFeatures.reduce((s, f) => s + f.price * f.quantity, 0);
+    this.priceLines    = [];
+    this.serviceCharge  = 0;
+    this.discountAmount = 0;
+    this.totalAmount    = 0;
 
-    this.basePrice = hasDate ? (roomsCost + featuresCost) * this.nights : 0;
+    if (!hasDate) return;
 
-    const subtotal         = this.basePrice;
-    this.discountAmount    = hasDate ? Math.round(subtotal * this.hotelDiscount / 100) : 0;
-    const afterDiscount    = subtotal - this.discountAmount;
-    this.serviceCharge     = hasDate ? Math.round(afterDiscount * this.hotelServiceChargePct / 100) : 0;
-    this.totalAmount       = hasDate ? afterDiscount + this.serviceCharge : 0;
+    // ── Rooms line: "N Night(s) — XLE" ───────────────────
+    const roomsCostPerNight = this.selectedRooms.reduce((s, r) => s + r.price * r.quantity, 0);
+    const roomsTotal        = roomsCostPerNight * this.nights;
+
+    if (roomsTotal > 0) {
+      this.priceLines.push({
+        label:  `${this.nights} Night${this.nights !== 1 ? 's' : ''}`,
+        amount: roomsTotal,
+      });
+    }
+
+    // ── Feature lines: "FeatureName × qty — XLE" ─────────
+    let featuresTotal = 0;
+    for (const f of this.selectedFeatures) {
+      if (f.quantity > 0 && f.price > 0) {
+        const lineAmount = f.price * f.quantity * this.nights;
+        featuresTotal   += lineAmount;
+        this.priceLines.push({
+          label:  `${f.name} × ${f.quantity}`,
+          amount: lineAmount,
+        });
+      }
+    }
+
+    const subtotal = roomsTotal + featuresTotal;
+
+    // ── Discount ──────────────────────────────────────────
+    this.discountAmount = this.hotelDiscount > 0
+      ? Math.round(subtotal * this.hotelDiscount / 100)
+      : 0;
+
+    const afterDiscount = subtotal - this.discountAmount;
+
+    // ── Service charge ────────────────────────────────────
+    this.serviceCharge = this.hotelServiceChargePct > 0
+      ? Math.round(afterDiscount * this.hotelServiceChargePct / 100)
+      : 0;
+
+    this.totalAmount = afterDiscount + this.serviceCharge;
   }
 
   changeRoom(i: number, delta: number): void {
     if (!this.checkAuthBeforeInteract()) return;
     this.selectedRooms[i].quantity = Math.max(0, this.selectedRooms[i].quantity + delta);
-
-    // لو قل عدد الغرف عن عدد الـ features، نقلل الـ features تلقائيًا
     this.clampFeaturesToRooms();
-
     if (this.canClearError()) this.bookingError = '';
     this.recalc();
   }
@@ -262,15 +304,12 @@ export class Details implements OnInit {
     this.selectedFeatures.forEach(f => {
       if (f.quantity > total) f.quantity = total;
     });
-    // كمان نتأكد إن Full Board + Half Board مش أكتر من الغرف
     const boardTotal = this.totalBoardSelected;
     if (boardTotal > total) {
-      // نقلل من آخر board feature أضيفت
       for (let i = this.selectedFeatures.length - 1; i >= 0; i--) {
         const f = this.selectedFeatures[i];
         if (BOARD_FEATURE_NAMES.includes(f.name) && f.quantity > 0) {
-          const excess = boardTotal - total;
-          f.quantity = Math.max(0, f.quantity - excess);
+          f.quantity = Math.max(0, f.quantity - (boardTotal - total));
           break;
         }
       }
@@ -324,8 +363,8 @@ export class Details implements OnInit {
     const extraFeatures = this.selectedFeatures
       .filter(f => !BOARD_FEATURE_NAMES.includes(f.name) && f.quantity > 0)
       .map(f => ({
-        bookingFeatureId: (f as any).id ?? 0,
-        roomsCount: f.quantity,
+        bookingFeatureId: f.id ?? 0,
+        roomsCount:       f.quantity,
       }));
 
     const payload: CreateBookingRequest = {
@@ -400,9 +439,7 @@ export class Details implements OnInit {
 
   confirmDeleteReview(): void {
     if (!this.reviewToDelete) return;
-
     const commentId = this.reviewToDelete.id;
-
     this.hotelService.deleteComment(this.hotel.id, commentId).subscribe({
       next: () => {
         this.reviews        = this.reviews.filter(r => r.id !== commentId);

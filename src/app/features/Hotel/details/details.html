@@ -194,22 +194,31 @@
         <div class="widget-section">
           <h4 class="widget-label">Price</h4>
           <div class="price-summary">
-            <div class="s-row">
-              <span>{{ nights }} Night{{ nights !== 1 ? 's' : '' }}</span>
-              <span>{{ basePrice | number }}LE</span>
+
+            <!-- Line items: "N Nights", "Feature × qty" — بيظهروا بس لو فيه dates -->
+            <div *ngFor="let line of priceLines" class="s-row">
+              <span>{{ line.label }}</span>
+              <span>{{ line.amount | number }}LE</span>
             </div>
-            <div class="s-row" *ngIf="hotelServiceChargePct > 0">
+
+            <!-- Service charge -->
+            <div class="s-row" *ngIf="hotelServiceChargePct > 0 && totalAmount > 0">
               <span>Service ({{ hotelServiceChargePct }}%)</span>
               <span>{{ serviceCharge | number }}LE</span>
             </div>
-            <div class="s-row s-discount" *ngIf="hotelDiscount > 0">
+
+            <!-- Discount -->
+            <div class="s-row s-discount" *ngIf="hotelDiscount > 0 && totalAmount > 0">
               <span>Discount ({{ hotelDiscount }}%)</span>
               <span>-{{ discountAmount | number }}LE</span>
             </div>
+
+            <!-- Total -->
             <div class="s-row s-total">
               <span>Total</span>
               <span>{{ totalAmount | number }}LE</span>
             </div>
+
           </div>
         </div>
 

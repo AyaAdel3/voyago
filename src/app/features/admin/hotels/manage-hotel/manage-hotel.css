@@ -67,7 +67,6 @@
   background: rgba(163,196,235,0.04);
 }
 
-/* ── Discount + Service Charge Row ──────────────────────── */
 /* ── Rating + Discount + Service Charge Row ─────────────── */
 .rating-discount-row {
   display: flex;
@@ -164,7 +163,7 @@
   margin-left: 0.3rem;
 }
 
-/* ── Display Features (Great for your stay) ─────────────── */
+/* ── Display Features ────────────────────────────────────── */
 .features-tags {
   display: flex; flex-wrap: wrap; gap: 0.5rem;
   margin-bottom: 0.65rem;
@@ -188,7 +187,9 @@
 }
 .feature-tag-remove:hover { background: rgba(239,68,68,0.15); color: #ef4444; }
 
-.features-dropdown-wrap { position: relative; }
+.features-dropdown-wrap {
+  position: relative;
+}
 
 .features-trigger {
   width: 100%;
@@ -207,25 +208,28 @@
 }
 .features-trigger svg { transition: transform 0.25s ease; flex-shrink: 0; color: #4a6a88; }
 
+/* ── Dropdown (shared base) ──────────────────────────────── */
 .features-dropdown {
   position: absolute;
-  bottom: calc(100% + 6px);
-  top: auto;
+  top: calc(100% + 6px);
+  bottom: auto;
   left: 0;
-  width: 100%;
+  right: 0;
+  box-sizing: border-box;
   background: #0d1f33;
   border: 1px solid rgba(163,196,235,0.15);
   border-radius: 12px;
   padding: 0.5rem;
   z-index: 9999;
-  box-shadow: 0 -12px 32px rgba(0,0,0,0.45);
-  animation: fadeUp 0.2s ease;
-  max-height: 320px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.45);
+  animation: fadeDown 0.2s ease;
+  max-height: 260px;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(6px); }
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
@@ -317,7 +321,6 @@
   align-items: center;
 }
 
-.bf-input-name  {}
 .bf-input-price { text-align: center; }
 
 .bf-add-btn {
@@ -401,6 +404,13 @@
   width: 100%;
 }
 
+/* scroll من جوا الـ booking dropdown ─────────────────────── */
+.bf-dropdown-row .features-dropdown {
+  max-height: 260px !important;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+}
+
 .service-preview {
   display: inline-flex;
   align-items: center;
@@ -432,4 +442,22 @@
   opacity: 0.6;
   cursor: not-allowed;
   pointer-events: none;
+}
+
+/* ── منع الـ horizontal scroll على الـ page ─────────────── */
+.manage-page {
+  overflow-x: hidden;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.bf-dropdown-row {
+  position: relative;
+  overflow: visible;
+  max-width: 100%;
+}
+
+.bf-dropdown-row .features-dropdown-wrap {
+  min-width: 0;
+  overflow: visible;
 }

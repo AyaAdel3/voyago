@@ -264,12 +264,20 @@ export interface HotelApiImage {
   isMain: boolean;
 }
 
-// ── تعديل: ضفنا price? عشان لو الـ API بيبعته نستخدمه ──────
 export interface HotelApiFeature {
   id:     number;
   name:   string;
   icon:   string;
-  price?: number;   // optional — قد يُرسَل من الـ API أو لا
+  price?: number;
+}
+
+// ── Booking Feature كما بتيجي في GET /hotels/{id} ──────────
+// دي الـ features اللي بتتعرض في الـ widget وبتتبعت في الـ booking request
+export interface HotelApiBookingFeature {
+  bookingFeatureId: number;   // الـ id اللي بيتبعت في extraFeatures / fullBoardRooms
+  name:             string;
+  icon:             string;
+  pricePerNight:    number;   // السعر الحقيقي من السيرفر
 }
 
 export interface HotelApiComment {
@@ -280,26 +288,26 @@ export interface HotelApiComment {
   date:     string;
 }
 
-// ── تعديل: ضفنا discount و serviceCharge ──────────────────
 export interface HotelApiDetail {
-  id:           number;
-  name:         string;
-  description:  string;
-  location:     string;
-  rating:       number;
-  singleRooms:  number;
-  singlePrice:  number;
-  doubleRooms:  number;
-  doublePrice:  number;
-  tripleRooms:  number;
-  triplePrice:  number;
-  suiteRooms:   number;
-  suitePrice:   number;
-  discount:     number;       // ← جديد
-  serviceCharge: number;      // ← جديد
-  images:   HotelApiImage[];
-  features: HotelApiFeature[];
-  comments: HotelApiComment[];
+  id:              number;
+  name:            string;
+  description:     string;
+  location:        string;
+  rating:          number;
+  singleRooms:     number;
+  singlePrice:     number;
+  doubleRooms:     number;
+  doublePrice:     number;
+  tripleRooms:     number;
+  triplePrice:     number;
+  suiteRooms:      number;
+  suitePrice:      number;
+  discount:        number;
+  serviceCharge:   number;
+  images:          HotelApiImage[];
+  features:        HotelApiFeature[];           // display features (Great for your stay)
+  bookingFeatures: HotelApiBookingFeature[];    // ← جديد: الـ booking features بالأسعار
+  comments:        HotelApiComment[];
 }
 
 export interface AdminHotelApiItem {
@@ -349,7 +357,6 @@ export interface HotelReview {
 
 // ── Admin Hotel Features API (/admin/hotel-features) ─────
 
-/** Single item returned by GET /admin/hotel-features */
 export interface HotelFeatureApiItem {
   id:   number;
   name: string;
@@ -358,11 +365,6 @@ export interface HotelFeatureApiItem {
 
 // ── Admin Booking Features API (/admin/booking-features) ─
 
-/**
- * Single item returned by GET /admin/booking-features
- * Full Board (id:1001) and Half Board (id:1002) are fixed features.
- * All other IDs are optional extras the admin can add.
- */
 export interface BookingFeatureApiItem {
   id:   number;
   name: string;
@@ -397,7 +399,6 @@ export interface AdminAddHotelRequest {
   bookingFeatures: AdminBookingFeaturePayload[];
 }
 
-/** Response body returned by POST /admin/hotels */
 export interface AdminAddHotelResponse {
   id:      number;
   message?: string;
@@ -408,7 +409,6 @@ export interface AdminAddHotelResponse {
 // ── Booking Endpoint: POST /hotels/{id}/bookings ─────────
 // ════════════════════════════════════════════════════════
 
-/** يطابق enum RoomType في الباك إند (Voyagoo.Entities.Hotels) */
 export enum RoomTypeEnum {
   Single = 1,
   Double = 2,
@@ -416,7 +416,6 @@ export enum RoomTypeEnum {
   Suite  = 4,
 }
 
-/** خريطة من اسم الغرفة المعروض (string) إلى رقمها في الـ API */
 export const ROOM_TYPE_MAP: Record<string, RoomTypeEnum> = {
   Single: RoomTypeEnum.Single,
   Double: RoomTypeEnum.Double,
@@ -435,8 +434,8 @@ export interface BookingExtraFeatureRequest {
 }
 
 export interface CreateBookingRequest {
-  checkIn:        string; // 'YYYY-MM-DD'
-  checkOut:       string; // 'YYYY-MM-DD'
+  checkIn:        string;
+  checkOut:       string;
   rooms:          BookingRoomRequest[];
   fullBoardRooms: number;
   halfBoardRooms: number;
@@ -461,19 +460,19 @@ export interface BookingResponseFeature {
 
 export interface CreateBookingResponse {
   bookingId:               number;
-  hotelName:                string;
-  checkIn:                  string;
-  checkOut:                 string;
-  nights:                   number;
-  rooms:                    BookingResponseRoom[];
-  features:                 BookingResponseFeature[];
-  roomsTotal:               number;
-  boardsTotal:              number;
-  extrasTotal:              number;
-  subtotal:                 number;
-  discountPercentage:       number;
-  discountAmount:           number;
-  serviceChargePercentage:  number;
-  serviceChargeAmount:      number;
-  totalPrice:               number;
+  hotelName:               string;
+  checkIn:                 string;
+  checkOut:                string;
+  nights:                  number;
+  rooms:                   BookingResponseRoom[];
+  features:                BookingResponseFeature[];
+  roomsTotal:              number;
+  boardsTotal:             number;
+  extrasTotal:             number;
+  subtotal:                number;
+  discountPercentage:      number;
+  discountAmount:          number;
+  serviceChargePercentage: number;
+  serviceChargeAmount:     number;
+  totalPrice:              number;
 }
