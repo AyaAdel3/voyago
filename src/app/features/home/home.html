@@ -60,7 +60,10 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       @for (item of visibleRecommended; track item.id) {
-        <div class="card-footer-home bg-[#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer">
+        <div
+          class="card-footer-home bg-[#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer"
+          [routerLink]="getDetailsRoute(item)"
+        >
           <div class="relative w-full">
             <img [src]="item.image" alt="place" class="w-full h-[160px] sm:h-[180px] object-cover" />
             <button
@@ -94,7 +97,10 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       @for (item of visibleAvailable; track item.id) {
-        <div class="card-footer-home bg-[#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer">
+        <div
+          class="card-footer-home bg-[#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer"
+          [routerLink]="getDetailsRoute(item)"
+        >
           <div class="relative w-full">
             <img [src]="item.image" alt="place" class="w-full h-[160px] sm:h-[180px] object-cover" />
             <button
