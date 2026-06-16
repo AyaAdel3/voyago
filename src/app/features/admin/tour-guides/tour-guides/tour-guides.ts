@@ -107,12 +107,15 @@ export class AdminTourGuides implements OnInit {
 
   onSearch(): void { this.currentPage = 1; }
 
-  changeStatus(g: TourGuide, statusId: number): void {
-    this.tourGuideService.adminUpdateStatus(g.id, statusId).subscribe({
-      next: () => { this.loadGuides(); },
-      error: () => {}
-    });
-  }
+ changeStatus(g: TourGuide, statusId: number): void {
+  const statusObj  = this.availableStatuses.find(s => s.id === statusId);
+  const statusName = statusObj?.name ?? (g.status === 'Active' ? 'Inactive' : 'Active');
+
+  this.tourGuideService.adminUpdateStatus(g.id, statusName).subscribe({
+    next: () => { this.loadGuides(); },
+    error: () => {}
+  });
+}
 
   view(g: TourGuide)  { this.selectedGuide = g; }
   closeDetails()      { this.selectedGuide = null; }

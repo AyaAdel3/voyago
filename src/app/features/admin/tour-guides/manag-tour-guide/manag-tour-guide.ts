@@ -57,7 +57,7 @@ export class ManageTourGuide implements OnInit {
 
         forkJoin({
           langs: this.tourGuideService.adminGetLanguages(),
-          guide: this.tourGuideService.getById_API(this.editId)
+          guide: this.tourGuideService.adminGetById(this.editId)   // ✅ استخدام admin endpoint عشان البيانات تيجي كاملة
         }).subscribe({
           next: ({ langs, guide: existing }) => {
             this.availableLanguages = langs;
@@ -272,21 +272,14 @@ export class ManageTourGuide implements OnInit {
     if (this.isEdit && this.editId) {
       this.tourGuideService.adminUpdate(this.editId, payload).subscribe({
         next: () => {
-          if (this.selectedFile) {
-            this.tourGuideService.adminUploadImage(this.editId!, this.selectedFile).subscribe({
-              next: () => {
-                this.isLoading = false;
-                this.showToast('Tour Guide updated successfully!', true, true);
-              },
-              error: () => {
-                this.isLoading = false;
-                this.showToast('Tour Guide updated, but image upload failed.', true, true);
-              }
-            });
-          } else {
-            this.isLoading = false;
-            this.showToast('Tour Guide updated successfully!', true, true);
-          }
+          // ✅ بعد نجاح تحديث البيانات الأساسية، نبعت تحديث الـ status لوحده
+          this.tourGuideService.adminUpdateStatus(this.editId!, this.guide.status).subscribe({
+            next: () => this.finishEditSave(),
+            error: () => {
+              this.isLoading = false;
+              this.showToast('Tour Guide updated, but status update failed.', true, true);
+            }
+          });
         },
         error: (err) => {
           this.isLoading = false;
@@ -319,6 +312,25 @@ export class ManageTourGuide implements OnInit {
           this.handleApiError(err);
         }
       });
+    }
+  }
+
+  // ✅ بتكمل عملية الحفظ بعد ما الـ status يتحدث بنجاح (رفع الصورة لو موجودة)
+  private finishEditSave(): void {
+    if (this.selectedFile) {
+      this.tourGuideService.adminUploadImage(this.editId!, this.selectedFile).subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.showToast('Tour Guide updated successfully!', true, true);
+        },
+        error: () => {
+          this.isLoading = false;
+          this.showToast('Tour Guide updated, but image upload failed.', true, true);
+        }
+      });
+    } else {
+      this.isLoading = false;
+      this.showToast('Tour Guide updated successfully!', true, true);
     }
   }
 

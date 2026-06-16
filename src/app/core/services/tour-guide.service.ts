@@ -51,6 +51,12 @@ export class TourGuideService {
       catchError(err => throwError(() => err))
     );
   }
+adminGetById(id: number): Observable<TourGuide> {
+  return this.http.get<TourGuide>(`${BASE_URL}/admin/tour-guides/${id}`).pipe(
+    map(g => ({ ...g, image: g.profilePictureUrl })),
+    catchError(err => throwError(() => err))
+  );
+}
 
   adminGetAll(): Observable<TourGuide[]> {
     return this.http.get<any>(`${BASE_URL}/admin/tour-guides/GetAllTourGuides`).pipe(
@@ -112,13 +118,12 @@ export class TourGuideService {
     );
   }
 
-  adminUpdateStatus(id: number, statusId: number): Observable<any> {
-    return this.http.patch<any>(
-      `${BASE_URL}/admin/tour-guides/${id}/status`,
-      statusId,
-      { headers: { 'Content-Type': 'application/json' } }
-    ).pipe(catchError(err => throwError(() => err)));
-  }
+adminUpdateStatus(id: number, status: string): Observable<any> {
+  return this.http.patch<any>(
+    `${BASE_URL}/admin/tour-guides/${id}/status`,
+    { status: status.toLowerCase() }
+  ).pipe(catchError(err => throwError(() => err)));
+}
 
   adminGetLanguages(): Observable<{ id: number; name: string }[]> {
     return this.http.get<{ id: number; name: string }[]>(

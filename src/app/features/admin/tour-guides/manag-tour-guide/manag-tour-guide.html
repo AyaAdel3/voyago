@@ -128,6 +128,14 @@
   <!-- Status — Edit فقط -->
   <div class="status-section" *ngIf="isEdit">
     <h4>Tour Guide Status <span class="req">*</span></h4>
+
+    <div class="inactive-notice" *ngIf="guide.status === 'Inactive'">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="#fbbf24">
+        <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
+      </svg>
+      When set to Inactive, the tour guide card on the site will show a "Not available" notice.
+    </div>
+
     <div class="status-btns">
       <button
         class="btn-status btn-status-active"
