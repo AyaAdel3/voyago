@@ -239,16 +239,16 @@
 
           <div class="reviewer-info">
             <div class="reviewer-avatar">
-              <img
-                *ngIf="isMyReview(review) && currentUserAvatar"
-                [src]="currentUserAvatar"
-                [alt]="review.userName"
-                class="host-avatar-img"
-              />
-              <span *ngIf="!(isMyReview(review) && currentUserAvatar)">
-                {{ review.userName.charAt(0) }}
-              </span>
-            </div>
+  <img
+    *ngIf="review.profilePictureUrl || (isMyReview(review) && currentUserAvatar)"
+    [src]="review.profilePictureUrl || currentUserAvatar"
+    [alt]="review.userName"
+    class="host-avatar-img"
+  />
+  <span *ngIf="!review.profilePictureUrl && !(isMyReview(review) && currentUserAvatar)">
+    {{ review.userName.charAt(0) }}
+  </span>
+</div>
             <div class="reviewer-meta">
               <p class="reviewer-name">{{ review.userName }}</p>
               <div class="review-stars">

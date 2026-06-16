@@ -100,11 +100,18 @@ export class HotelService {
     );
   }
 
-  getComments(hotelId: number): Observable<HotelApiComment[]> {
-    return this.http.get<HotelApiDetail>(`${this.apiBase}/${hotelId}`).pipe(
-      map(r => r.comments ?? [])
-    );
-  }
+getComments(hotelId: number): Observable<HotelApiComment[]> {
+  return this.http.get<HotelApiDetail>(`${this.apiBase}/${hotelId}`).pipe(
+    map(r => (r.comments ?? []).map((c: any) => ({
+      id:                c.id,
+      userName:          c.userName,
+      rating:            c.rating,
+      content:           c.content,
+      date:              c.date ?? c.createdAt,
+      profilePictureUrl: c.profilePictureUrl ?? null,
+    })))
+  );
+}
 
   addComment(hotelId: number, content: string, rating: number): Observable<any> {
     return this.http.post(

@@ -310,8 +310,6 @@ export class Details implements OnInit {
     );
   }
 
-  // ── Book Now ──────────────────────────────────────────────
-
   bookNow(): void {
     if (!this.checkAuthBeforeInteract()) return;
     if (this.bookingSubmitting) return;
@@ -352,6 +350,9 @@ export class Details implements OnInit {
       extraFeatures,
     };
 
+    console.log('📤 Payload:', JSON.stringify(payload, null, 2));
+    console.log('📋 Selected features:', JSON.stringify(this.selectedFeatures, null, 2));
+
     const token = localStorage.getItem('voyago_token') ?? '';
 
     this.bookingSubmitting = true;
@@ -359,18 +360,19 @@ export class Details implements OnInit {
       next: (res) => {
         this.bookingSubmitting = false;
 
-        // ── بنبني الـ BookingData ونبعتها للـ service ──
         const bookingData: BookingData = {
-          hotelId:      this.hotel.id,
-          hotelName:    res.hotelName,
-          checkIn:      res.checkIn,
-          checkOut:     res.checkOut,
-          rooms:        this.selectedRooms.filter(r => r.quantity > 0),
-          features:     this.selectedFeatures.filter(f => f.quantity > 0),
-          totalNights:  res.nights,
-          discount:     res.discountPercentage,
-          serviceCharge: res.serviceChargeAmount,
-          totalAmount:  res.totalPrice,
+          hotelId:        this.hotel.id,
+          hotelName:      res.hotelName,
+          checkIn:        res.checkIn,
+          checkOut:       res.checkOut,
+          rooms:          this.selectedRooms.filter(r => r.quantity > 0),
+          features:       this.selectedFeatures.filter(f => f.quantity > 0),
+          totalNights:    res.nights,
+          discount:       res.discountPercentage,
+          discountAmount: res.discountAmount,
+          serviceCharge:  res.serviceChargeAmount,
+          subtotal:       res.subtotal,
+          totalAmount:    res.totalPrice,
         };
 
         this.hotelService.setBooking(bookingData);
@@ -379,14 +381,14 @@ export class Details implements OnInit {
       },
       error: (err) => {
         console.error('Booking failed:', err);
+        console.error('Error status:', err.status);
+        console.error('Error body:', JSON.stringify(err.error, null, 2));
         this.bookingSubmitting = false;
         this.bookingError = err?.error?.message || 'Failed to create booking. Please try again.';
         this.cdr.detectChanges();
       },
     });
   }
-
-  // ── Reviews ───────────────────────────────────────────────
 
   isMyReview(review: HotelApiComment): boolean {
     const fullName = this.authService.getFullName()?.trim();

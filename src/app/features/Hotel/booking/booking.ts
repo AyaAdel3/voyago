@@ -46,13 +46,13 @@ export class Booking implements OnInit {
   }
 
   private resetFields(): void {
-    this.cardNumber  = '';
-    this.expiryDate  = '';
-    this.cvv         = '';
+    this.cardNumber   = '';
+    this.expiryDate   = '';
+    this.cvv          = '';
     this.cvvInputType = 'text';
-    this.cardError   = '';
-    this.expiryError = '';
-    this.cvvError    = '';
+    this.cardError    = '';
+    this.expiryError  = '';
+    this.cvvError     = '';
   }
 
   formatCard(): void {
@@ -118,7 +118,7 @@ export class Booking implements OnInit {
 
     if (!this.isValidCard())   { this.cardError   = 'Please enter a valid card number.'; hasError = true; }
     if (!this.isValidExpiry()) { this.expiryError = 'Please enter a valid expiry date.'; hasError = true; }
-    if (!this.isValidCvv())    { this.cvvError    = 'Please enter a valid CVV.';          hasError = true; }
+    if (!this.isValidCvv())    { this.cvvError    = 'Please enter a valid CVV.';         hasError = true; }
 
     if (hasError) return;
 

@@ -367,16 +367,17 @@
   margin-bottom: 0.5rem;
 }
 .reviewer-avatar {
-  width: 32px;
-  height: 32px;
-  background: #e6d0a1;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #f6faff;
+  background: #e6d0a1;    /* ← زي الريستورانت */
+  color: #5a3e2b;          /* ← زي الريستورانت */
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 14px;
   flex-shrink: 0;
 }
 .reviewer-meta  { display: flex; flex-direction: column; gap: 0.25rem; }
@@ -894,9 +895,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #3a5070;
-  color: #fff;
-  font-weight: 600;
+  background: #ffde70;
+  color: #ffffffff;
+  font-weight: 700;
   font-size: 16px;
 }
 

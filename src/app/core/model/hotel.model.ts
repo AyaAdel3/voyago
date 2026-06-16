@@ -79,16 +79,18 @@ export interface HotelFeature {
 }
 
 export interface BookingData {
-  hotelId: number;
-  hotelName: string;
-  checkIn: string;
-  checkOut: string;
-  rooms: RoomType[];
-  features: HotelFeature[];
-  totalNights: number;
-  discount: number;
-  serviceCharge: number;
-  totalAmount: number;
+  hotelId:        number;
+  hotelName:      string;
+  checkIn:        string;
+  checkOut:       string;
+  rooms:          RoomType[];
+  features:       HotelFeature[];
+  totalNights:    number;
+  discount:       number;
+  discountAmount: number;
+  serviceCharge:  number;
+  subtotal:       number;
+  totalAmount:    number;
 }
 
 export const BOARD_FEATURE_NAMES = ['Full Board', 'Half Board'];
@@ -98,7 +100,6 @@ export const FIXED_BOOKING_FEATURES: BookingFeatureDef[] = [
   { name: 'Half Board', price: 0 },
 ];
 
-// IDs الثابتة للـ Full Board و Half Board في الـ API
 export const FULL_BOARD_API_ID  = 1001;
 export const HALF_BOARD_API_ID  = 1002;
 
@@ -271,24 +272,21 @@ export interface HotelApiFeature {
   price?: number;
 }
 
-// ── Booking Feature كما بتيجي في GET /hotels/{id} ──────────
-// دي الـ features اللي بتتعرض في الـ widget وبتتبعت في الـ booking request
-// ── Booking Feature كما بترجع فعليًا من GET /hotels/{id} ──
-// الـ API بيرجع: id, name, icon, price, isFixed
 export interface HotelApiBookingFeature {
-  id:      number;   // الـ id اللي بيتبعت في extraFeatures / fullBoardRooms
+  id:      number;
   name:    string;
   icon:    string;
-  price:   number;   // السعر الحقيقي من السيرفر (للغرفة الواحدة في الليلة)
-  isFixed: boolean;  // true لـ Full Board (1001) و Half Board (1002)
+  price:   number;
+  isFixed: boolean;
 }
 
 export interface HotelApiComment {
-  id:       number;
-  userName: string;
-  rating:   number;
-  content:  string;
-  date:     string;
+  id:                 number;
+  userName:           string;
+  rating:             number;
+  content:            string;
+  date:               string;
+  profilePictureUrl?: string | null;  // ← جديد
 }
 
 export interface HotelApiDetail {
@@ -308,8 +306,8 @@ export interface HotelApiDetail {
   discount:        number;
   serviceCharge:   number;
   images:          HotelApiImage[];
-  features:        HotelApiFeature[];           // display features (Great for your stay)
-  bookingFeatures: HotelApiBookingFeature[];    // ← جديد: الـ booking features بالأسعار
+  features:        HotelApiFeature[];
+  bookingFeatures: HotelApiBookingFeature[];
   comments:        HotelApiComment[];
 }
 
@@ -330,8 +328,6 @@ export interface AdminHotelsApiResponse {
   inactiveHotels: number;
   hotels:         AdminHotelApiItem[];
 }
-
-// ── Admin Reviews Interfaces ──────────────────────────────
 
 export interface AdminHotelReviewComment {
   id:                number;
@@ -358,23 +354,17 @@ export interface HotelReview {
   date:        string;
 }
 
-// ── Admin Hotel Features API (/admin/hotel-features) ─────
-
 export interface HotelFeatureApiItem {
   id:   number;
   name: string;
   icon: string;
 }
 
-// ── Admin Booking Features API (/admin/booking-features) ─
-
 export interface BookingFeatureApiItem {
   id:   number;
   name: string;
   icon: string;
 }
-
-// ── Admin Add/Update Hotel API Interfaces ─────────────────
 
 export interface AdminBookingFeaturePayload {
   bookingFeatureId: number;
@@ -407,10 +397,6 @@ export interface AdminAddHotelResponse {
   message?: string;
   [key: string]: any;
 }
-
-// ════════════════════════════════════════════════════════
-// ── Booking Endpoint: POST /hotels/{id}/bookings ─────────
-// ════════════════════════════════════════════════════════
 
 export enum RoomTypeEnum {
   Single = 1,

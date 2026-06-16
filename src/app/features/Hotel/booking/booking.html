@@ -52,16 +52,14 @@
 
       </div>
 
-      <!-- ══ Cash On Arrival: Deposit Section ══ -->
+      <!-- Cash On Arrival: Deposit Section -->
       <div *ngIf="selectedMethod === 'cash'" class="deposit-section">
-
         <div class="deposit-notice">
           <p class="deposit-title">Deposit Required</p>
           <p class="deposit-amount">{{ depositAmount | number }}LE <span class="deposit-sub">/ 30% of total</span></p>
           <p class="deposit-desc">The remaining {{ booking.totalAmount - depositAmount | number }}LE will be paid on arrival.</p>
         </div>
 
-        <!-- Deposit: Credit Card Form -->
         <div class="card-form">
           <div class="form-header">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="#5a7090">
@@ -97,10 +95,9 @@
             Your Payment Information Is Encrypted And Secure
           </p>
         </div>
-
       </div>
 
-      <!-- ══ Credit Card Form (full payment) ══ -->
+      <!-- Credit Card Form (full payment) -->
       <div *ngIf="selectedMethod === 'credit'" class="card-form">
         <div class="form-header">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="#5a7090">
@@ -180,14 +177,20 @@
           </div>
         </div>
 
+        <!-- Breakdown -->
         <div class="breakdown">
-          <div class="b-row"><span>Venue Rental</span><span>{{ booking.totalAmount - booking.serviceCharge | number:'1.2-2' }}LE</span></div>
-          <div class="b-row"><span>Service Fee</span><span>{{ booking.serviceCharge | number:'1.2-2' }}LE</span></div>
-<!-- أضف السطر ده -->
-<div *ngIf="booking.discount > 0" class="b-row b-discount">
-  <span>Discount ({{ booking.discount }}%)</span>
-  <span>-{{ booking.totalAmount * booking.discount / (100 - booking.discount) | number:'1.2-2' }}LE</span>
-</div>
+          <div class="b-row">
+            <span>Venue Rental</span>
+            <span>{{ booking.subtotal | number:'1.2-2' }}LE</span>
+          </div>
+          <div class="b-row">
+            <span>Service Fee</span>
+            <span>{{ booking.serviceCharge | number:'1.2-2' }}LE</span>
+          </div>
+          <div *ngIf="booking.discount > 0" class="b-row b-discount">
+            <span>Discount ({{ booking.discount }}%)</span>
+            <span>-{{ booking.discountAmount | number:'1.2-2' }}LE</span>
+          </div>
           <div class="b-row b-total">
             <span>Total Amount</span>
             <span class="total-num">{{ booking.totalAmount | number:'1.2-2' }}LE</span>
