@@ -31,11 +31,12 @@
             >
               {{ offer.title }}
             </p>
-            <button
-              class="bg-yellow-400 text-black text-xs sm:text-sm font-bold px-4 sm:px-6 py-1.5 sm:py-2 rounded-full w-fit"
-            >
-              BOOK NOW
-            </button>
+           <button
+  (click)="navigateToOffer(offer)"
+  class="bg-yellow-400 text-black text-xs sm:text-sm font-bold px-4 sm:px-6 py-1.5 sm:py-2 rounded-full w-fit"
+>
+  BOOK NOW
+</button>
           </div>
         </div>
       }
@@ -57,10 +58,7 @@
   <!-- ══ Recommended ══ -->
   <section class="mb-8">
     <div class="flex justify-between items-center mb-3">
-      <h2 class="text-lg font-semibold">
-        Recommended in fayoum
-        <span class="text-red-500 text-xs ml-1">●</span>
-      </h2>
+      <h2 class="text-2xl font-semibold">Recommended in fayoum</h2>
       <div class="flex gap-2 text-gray-400 text-sm">
         <button (click)="prevRecommended()" class="cursor-pointer hover:text-white">❮</button>
         <button (click)="nextRecommended()" class="cursor-pointer hover:text-white">❯</button>
@@ -71,7 +69,7 @@
       @for (item of visibleRecommended; track item.id) {
         <div
           class="card-footer-home bg-[#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer"
-          [routerLink]="getDetailsRoute(item)"
+          (click)="navigateTo(item)"
         >
           <div class="relative w-full">
             <img
@@ -109,7 +107,7 @@
   <!-- ══ Available this week ══ -->
   <section class="mb-24">
     <div class="flex justify-between items-center mb-3">
-      <h2 class="text-lg font-semibold">Available this week</h2>
+      <h2 class="text-2xl font-semibold">Available this week</h2>
       <div class="flex gap-2 text-gray-400 text-sm">
         <button (click)="prevAvailable()" class="cursor-pointer hover:text-white">❮</button>
         <button (click)="nextAvailable()" class="cursor-pointer hover:text-white">❯</button>
@@ -120,7 +118,7 @@
       @for (item of visibleAvailable; track item.id) {
         <div
           class="card-footer-home bg-[#0d1b2e] hover:bg-[#0D2B4C] rounded-2xl overflow-hidden transition-colors duration-200 cursor-pointer"
-          [routerLink]="getDetailsRoute(item)"
+          (click)="navigateTo(item)"
         >
           <div class="relative w-full">
             <img

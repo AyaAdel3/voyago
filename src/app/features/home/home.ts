@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, effect, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { Chatbot } from '../../shared/components/chatbot/chatbot';
 import { FavoritesService } from '../../core/services/favorites.service';
 import { HomeService, HomeResponse } from '../../core/services/home.service';
@@ -36,7 +36,8 @@ export class Home implements OnInit, OnDestroy {
     private homeService: HomeService,
     private authService: AuthService,
     private authModal: AuthModalService,
-    private injector: Injector
+    private injector: Injector,
+    private router: Router
   ) {
     effect(() => {
       const user = this.authService.currentUser();
@@ -114,7 +115,7 @@ export class Home implements OnInit, OnDestroy {
           ...i,
           price: `${i.minPrice} - ${i.maxPrice} LE`,
           image: i.mainImageUrl || FALLBACK_IMAGE,
-          itemType: i.type?.toLowerCase() || 'hotel',
+          itemType: i.type?.toLowerCase().replace(/[\s_-]/g, '') || 'hotel',
         }));
 
         this.isLoading = false;
@@ -192,11 +193,24 @@ export class Home implements OnInit, OnDestroy {
       case 'restaurant':
         return `/restaurant/details/${item.id}`;
       case 'attraction':
+      case 'touristattraction':
         return `/tourist-attraction/details/${item.id}`;
+      case 'tourguide':
+        return `/tour-guide`;
       default:
         return '/home';
     }
   }
+
+ navigateTo(item: any) {
+  const route = this.getDetailsRoute(item);
+  console.log('Navigating to:', route);
+  this.router.navigate([route]);
+}
+
+navigateToOffer(offer: any) {
+  this.router.navigate([`/hotels/details/${offer.id}`]);
+}
 
   isItemLiked(item: any): boolean {
     return this.favoritesService.isFavorite(item.name);

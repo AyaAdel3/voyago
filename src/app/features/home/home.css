@@ -63,3 +63,6 @@
 .fav-btn.active {
   background: rgba(255, 222, 112, 0.2);
 }
+h2 {
+  font-size: 1.70rem; 
+}
