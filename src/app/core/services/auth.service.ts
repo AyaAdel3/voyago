@@ -59,7 +59,7 @@ export class AuthService {
   }
 
   login(email: string, password: string): Observable<{ success: boolean; message: string }> {
-    return this.http.post<AuthResponse>(`${BASE_URL}/Auth`, { email, password }).pipe(
+    return this.http.post<AuthResponse>(`${BASE_URL}/auth`, { email, password }).pipe(
       tap(res => this._saveTokens(res)),
       switchMap(res =>
         this.http.get<any>(`${BASE_URL}/Account/profile`).pipe(
@@ -86,12 +86,10 @@ export class AuthService {
     const token        = localStorage.getItem('voyago_token');
     const refreshToken = localStorage.getItem('voyago_refresh_token');
 
-    // ✅ Guard: لو مفيش tokens، لا تبعتش request
     if (!token || !refreshToken) {
       return throwError(() => new Error('No tokens available'));
     }
 
-    // ✅ Guard: لو الـ refreshToken expiration فات، لا تحاول
     const refreshExpStr = localStorage.getItem('voyago_refresh_token_expiration');
     if (refreshExpStr) {
       const refreshExp = new Date(refreshExpStr).getTime();
@@ -102,15 +100,16 @@ export class AuthService {
     }
 
     return this.http.post<AuthResponse>(
-      `${BASE_URL}/Auth/refresh`,
-      { token, refreshToken },
-      { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
+      `${BASE_URL}/auth/refresh`,
+      { token, refreshToken }
     ).pipe(
-      map(res => {
-        this._saveTokens(res);
-        return res;
-      }),
-      catchError(err => throwError(() => err))
+      map(res => { this._saveTokens(res); return res; }),
+      catchError(err => {
+        // الـ backend رفض التوكنات (400/401) — مفيش فايدة من إعادة المحاولة
+        // ننظف على طول عشان منعملش loop من 401 → refresh فاشل → 401 تاني
+        this._clearLocalStorage();
+        return throwError(() => err);
+      })
     );
   }
 
@@ -165,7 +164,7 @@ export class AuthService {
 
     if (token && refreshToken) {
       return this.http.post(
-        `${BASE_URL}/Auth/revoke-refresh-token`,
+        `${BASE_URL}/auth/revoke-refresh-token`,
         { token, refreshToken },
         { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
       ).pipe(
@@ -182,23 +181,23 @@ export class AuthService {
     const token        = localStorage.getItem('voyago_token');
     const refreshToken = localStorage.getItem('voyago_refresh_token');
 
+    // ننظف فورًا — مفيش داعي ننتظر رد السيرفر عشان نمسح الجلسة محليًا
+    this._clearLocalStorage();
+
     if (token && refreshToken) {
       this.http.post(
-        `${BASE_URL}/Auth/revoke-refresh-token`,
+        `${BASE_URL}/auth/revoke-refresh-token`,
         { token, refreshToken },
         { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
-      ).subscribe({ error: () => {} });
+      ).subscribe({ error: () => {} }); // best-effort فقط، التوكنات ممكن تكون بايظة فعلاً
     }
-
-    this._clearLocalStorage();
   }
 
   private _clearLocalStorage(): void {
     localStorage.removeItem('voyago_current_user');
     localStorage.removeItem('voyago_token');
     localStorage.removeItem('voyago_refresh_token');
-    localStorage.removeItem('voyago_token_expires_at');
-    localStorage.removeItem('voyago_refresh_token_expiration'); // ✅ جديد
+    localStorage.removeItem('voyago_refresh_token_expiration');
     localStorage.removeItem('voyago_favorites');
     this.currentUser.set(null);
   }
@@ -206,9 +205,6 @@ export class AuthService {
   private _saveTokens(res: AuthResponse): void {
     localStorage.setItem('voyago_token', res.token);
     localStorage.setItem('voyago_refresh_token', res.refreshToken);
-    const expiresAt = Date.now() + (res.expiresIn * 1000);
-    localStorage.setItem('voyago_token_expires_at', expiresAt.toString());
-    // ✅ احفظ refresh token expiration
     if (res.refreshTokenExpiration) {
       localStorage.setItem('voyago_refresh_token_expiration', res.refreshTokenExpiration);
     }
@@ -233,7 +229,7 @@ export class AuthService {
 
   verifyOtp(code: string): Observable<any> {
     return this.http.post(
-      `${BASE_URL}/Auth/verify-otp`,
+      `${BASE_URL}/auth/verify-otp`,
       { email: this.pendingEmail, code },
       { responseType: 'text' }
     ).pipe(catchError(err => throwError(() => err)));
