@@ -1,5 +1,4 @@
 <div class="bg-[#021526] min-h-screen text-white px-4 py-6">
-
   <!-- ══ Offers ══ -->
   <section class="mb-10">
     <div class="flex justify-between items-center mb-4">
@@ -8,11 +7,15 @@
         <button
           (click)="prevOffer()"
           class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm"
-        >❮</button>
+        >
+          ❮
+        </button>
         <button
           (click)="nextOffer()"
           class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm"
-        >❯</button>
+        >
+          ❯
+        </button>
       </div>
     </div>
 
@@ -20,11 +23,17 @@
       @for (offer of visibleOffers; track $index) {
         <div class="relative flex-1 h-[180px] sm:h-[200px] rounded-2xl overflow-hidden">
           <img [src]="offer.image" alt="offer" class="w-full h-full object-cover" />
-          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex flex-col justify-end p-4 sm:p-5">
-            <p class="text-white text-base sm:text-xl font-bold mb-2 sm:mb-3 max-w-[220px] leading-snug">
+          <div
+            class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent flex flex-col justify-end p-4 sm:p-5"
+          >
+            <p
+              class="text-white text-base sm:text-xl font-bold mb-2 sm:mb-3 max-w-[220px] leading-snug"
+            >
               {{ offer.title }}
             </p>
-            <button class="bg-yellow-400 text-black text-xs sm:text-sm font-bold px-4 sm:px-6 py-1.5 sm:py-2 rounded-full w-fit">
+            <button
+              class="bg-yellow-400 text-black text-xs sm:text-sm font-bold px-4 sm:px-6 py-1.5 sm:py-2 rounded-full w-fit"
+            >
               BOOK NOW
             </button>
           </div>
@@ -65,12 +74,24 @@
           [routerLink]="getDetailsRoute(item)"
         >
           <div class="relative w-full">
-            <img [src]="item.image" alt="place" class="w-full h-[160px] sm:h-[180px] object-cover" />
+            <img
+              [src]="item.image"
+              alt="place"
+              class="w-full h-[160px] sm:h-[180px] object-cover"
+            />
             <button
               (click)="toggleLike(item); $event.stopPropagation()"
-              class="absolute top-2 right-2 bg-white/80 rounded-full p-1.5 text-sm transition-transform active:scale-90"
+              class="fav-btn"
+              [class.active]="isItemLiked(item)"
             >
-              {{ item.liked ? '❤️' : '🤍' }}
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                  [attr.fill]="isItemLiked(item) ? '#FFDE70' : 'none'"
+                  [attr.stroke]="isItemLiked(item) ? '#FFDE70' : 'white'"
+                  stroke-width="2"
+                />
+              </svg>
             </button>
           </div>
           <div class="p-3">
@@ -102,12 +123,24 @@
           [routerLink]="getDetailsRoute(item)"
         >
           <div class="relative w-full">
-            <img [src]="item.image" alt="place" class="w-full h-[160px] sm:h-[180px] object-cover" />
+            <img
+              [src]="item.image"
+              alt="place"
+              class="w-full h-[160px] sm:h-[180px] object-cover"
+            />
             <button
               (click)="toggleLike(item); $event.stopPropagation()"
-              class="absolute top-2 right-2 bg-white/80 rounded-full p-1.5 text-sm transition-transform active:scale-90"
+              class="fav-btn"
+              [class.active]="isItemLiked(item)"
             >
-              {{ item.liked ? '❤️' : '🤍' }}
+              <svg viewBox="0 0 24 24" width="22" height="22">
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                  [attr.fill]="isItemLiked(item) ? '#FFDE70' : 'none'"
+                  [attr.stroke]="isItemLiked(item) ? '#FFDE70' : 'white'"
+                  stroke-width="2"
+                />
+              </svg>
             </button>
           </div>
           <div class="p-3">
@@ -134,5 +167,4 @@
     </div>
     <app-chatbot (openChange)="chatbotOpen = $event"></app-chatbot>
   </div>
-
 </div>

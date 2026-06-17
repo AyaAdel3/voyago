@@ -282,3 +282,249 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* ── msg-card as button (navigation) ────────────────────── */
+.msg-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: #f6faff;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.2s,
+    transform 0.1s;
+}
+.msg-card:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateX(2px);
+}
+.msg-card:active {
+  transform: scale(0.98);
+}
+
+/* ── User Avatar — profile pic or initial ────────────────── */
+.user-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user-avatar-initial {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #a3c4eb;
+  line-height: 1;
+}
+
+/* ── Clear history button ────────────────────────────────── */
+.clear-btn {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  color: #a3c4eb;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.clear-btn:hover {
+  background: rgba(255, 80, 80, 0.15);
+  color: #ff8080;
+  border-color: rgba(255, 80, 80, 0.3);
+}
+
+/* ── Confirmation dialog ─────────────────────────────────── */
+.clear-confirm {
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  animation: popIn 0.15s ease;
+}
+.clear-confirm p {
+  color: #f6faff;
+  font-size: 0.78rem;
+  margin: 0;
+}
+.confirm-btns {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.btn-cancel-clear {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #f6faff;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-cancel-clear:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.btn-confirm-clear {
+  background: rgba(220, 50, 50, 0.7);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-confirm-clear:hover {
+  background: rgba(220, 50, 50, 0.95);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Tablet (max 768px) ──────────────────────────────────── */
+@media (max-width: 768px) {
+  .chat-wrapper {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .chat-fab {
+    width: 56px;
+    height: 56px;
+  }
+
+  .chat-overlay {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px !important;
+  }
+
+  .chat-modal {
+    width: 92% !important;
+    max-width: 420px !important;
+    border-radius: 18px !important;
+    padding: 28px 20px 24px 20px;
+    max-height: 88dvh;
+    display: flex;
+    flex-direction: column;
+    animation: popIn 0.2s ease !important;
+  }
+
+  .modal-title {
+    font-size: 1.3rem;
+    margin: 14px 0 20px 0;
+  }
+
+  .chat-messages {
+    max-height: 52dvh;
+    flex: 1;
+  }
+
+  .msg-avatar {
+    width: 46px;
+    height: 46px;
+  }
+
+  .user-av {
+    width: 34px;
+    height: 34px;
+  }
+
+  .msg-bubble {
+    font-size: 0.82rem;
+  }
+
+  .msg-content {
+    max-width: calc(100% - 60px);
+  }
+
+  .chat-input-row {
+    padding-left: 8px;
+  }
+
+  .clear-btn {
+    top: 12px;
+    left: 12px;
+  }
+}
+
+/* ── Mobile small (max 400px) ────────────────────────────── */
+@media (max-width: 400px) {
+  .chat-modal {
+    padding: 24px 14px 20px 14px;
+    max-height: 92dvh;
+  }
+
+  .modal-title {
+    font-size: 1.15rem;
+    margin: 10px 0 16px 0;
+  }
+
+  .chat-messages {
+    max-height: 55dvh;
+  }
+
+  .msg-avatar {
+    width: 38px;
+    height: 38px;
+  }
+
+  .user-av {
+    width: 28px;
+    height: 28px;
+  }
+
+  .msg-bubble {
+    font-size: 0.78rem;
+    padding: 5px 10px;
+  }
+
+  .msg-card {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+  }
+
+  .chat-fab {
+    width: 50px;
+    height: 50px;
+  }
+
+  .chat-send-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* ── Tablet landscape / small desktop (769px–1024px) ─────── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .chat-modal {
+    width: 340px;
+  }
+
+  .chat-messages {
+    max-height: 300px;
+  }
+}

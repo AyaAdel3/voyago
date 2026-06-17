@@ -1142,3 +1142,79 @@ body:not(.dark-mode) .hamburger-btn {
   background: rgba(13, 21, 38, 0.07) !important;
   border-color: rgba(13, 21, 38, 0.18) !important;
 }
+
+body:not(.dark-mode) .modal-title {
+  color: #f6faff !important;
+}
+/* ══════════════════════════════════════
+   CHAT WIDGET — Light Mode
+══════════════════════════════════════ */
+body:not(.dark-mode) .chat-modal {
+  background: #f6faff !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.18) !important;
+}
+
+body:not(.dark-mode) .chat-modal .modal-title {
+  color: #173b64 !important;
+}
+
+body:not(.dark-mode) .close-btn {
+  color: #5a6a7a !important;
+}
+body:not(.dark-mode) .close-btn:hover {
+  color: #173b64 !important;
+}
+
+body:not(.dark-mode) .clear-btn {
+  background: rgba(13, 27, 42, 0.05) !important;
+  border-color: rgba(13, 27, 42, 0.12) !important;
+  color: #5a6a7a !important;
+}
+body:not(.dark-mode) .clear-btn:hover {
+  background: rgba(220, 50, 50, 0.08) !important;
+  color: #d33 !important;
+  border-color: rgba(220, 50, 50, 0.25) !important;
+}
+
+body:not(.dark-mode) .clear-confirm {
+  background: #f0f4f8 !important;
+  border-color: #d0dce8 !important;
+}
+body:not(.dark-mode) .clear-confirm p {
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .btn-cancel-clear {
+  background: #e2eaf4 !important;
+  border-color: #d0dce8 !important;
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .btn-cancel-clear:hover {
+  background: #d8e4f0 !important;
+}
+
+body:not(.dark-mode) .chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(13, 27, 42, 0.15) !important;
+}
+
+body:not(.dark-mode) .msg-card {
+  background: #f0f4f8 !important;
+  border-color: #d0dce8 !important;
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .msg-card:hover {
+  background: #e2eaf4 !important;
+}
+
+body:not(.dark-mode) .chat-input-row {
+  border-top-color: rgba(13, 27, 42, 0.1) !important;
+}
+body:not(.dark-mode) .chat-input {
+  color: #0d1b2a !important;
+  border-bottom-color: #173b64 !important;
+}
+body:not(.dark-mode) .chat-input::placeholder {
+  color: #8899bb !important;
+}
+body:not(.dark-mode) .chat-input:focus {
+  border-bottom-color: #f5c518 !important;
+}

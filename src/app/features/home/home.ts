@@ -1,9 +1,12 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, effect, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Chatbot } from '../../shared/components/chatbot/chatbot';
 import { FavoritesService } from '../../core/services/favorites.service';
 import { HomeService, HomeResponse } from '../../core/services/home.service';
+import { AuthService } from '../../core/services/auth.service';
+import { AuthModalService } from '../../core/services/auth-modal.service';
+
 
 const FALLBACK_IMAGE = 'assets/images/placeholder.jpg';
 
@@ -30,10 +33,50 @@ export class Home implements OnInit, OnDestroy {
   constructor(
     private cdr: ChangeDetectorRef,
     private favoritesService: FavoritesService,
-    private homeService: HomeService
-  ) {}
+    private homeService: HomeService,
+    private authService: AuthService,
+    private authModal: AuthModalService,
+    private injector: Injector
+  ) {
+    effect(() => {
+      const user = this.authService.currentUser();
+      if (user) {
+        this.favoritesService.getAllFavoritesFromApi().subscribe({
+          next: (res) => {
+            const items = this.favoritesService.mapApiToFavoriteItems(res);
+            this.favoritesService.saveFavorites(items);
+            this.cdr.detectChanges();
+          }
+        });
+      }
+    }, { injector: this.injector });
+  }
 
   ngOnInit() {
+    let favLoaded = !this.authService.isLoggedIn();
+    let homeLoaded = false;
+
+    const tryRender = () => {
+      if (favLoaded && homeLoaded) {
+        this.cdr.detectChanges();
+      }
+    };
+
+    if (this.authService.isLoggedIn()) {
+      this.favoritesService.getAllFavoritesFromApi().subscribe({
+        next: (res) => {
+          const items = this.favoritesService.mapApiToFavoriteItems(res);
+          this.favoritesService.saveFavorites(items);
+          favLoaded = true;
+          tryRender();
+        },
+        error: () => {
+          favLoaded = true;
+          tryRender();
+        }
+      });
+    }
+
     this.homeService.getHomeData().subscribe({
       next: (data: HomeResponse) => {
         this.offers = data.offers.map((o: any) => ({
@@ -48,7 +91,6 @@ export class Home implements OnInit, OnDestroy {
           ...h,
           price: `${h.minPrice} - ${h.maxPrice} LE`,
           image: h.mainImageUrl || FALLBACK_IMAGE,
-          liked: false,
           itemType: 'hotel',
         }));
 
@@ -56,7 +98,6 @@ export class Home implements OnInit, OnDestroy {
           ...r,
           price: `${r.minPrice} - ${r.maxPrice} LE`,
           image: r.mainImageUrl || FALLBACK_IMAGE,
-          liked: false,
           itemType: 'restaurant',
         }));
 
@@ -64,7 +105,6 @@ export class Home implements OnInit, OnDestroy {
           ...a,
           price: '',
           image: a.mainImageUrl || FALLBACK_IMAGE,
-          liked: false,
           itemType: 'attraction',
         }));
 
@@ -74,18 +114,19 @@ export class Home implements OnInit, OnDestroy {
           ...i,
           price: `${i.minPrice} - ${i.maxPrice} LE`,
           image: i.mainImageUrl || FALLBACK_IMAGE,
-          liked: false,
           itemType: i.type?.toLowerCase() || 'hotel',
         }));
 
         this.isLoading = false;
-        this.syncFavorites();
         this.startAutoSlide();
-        this.cdr.detectChanges();
+        homeLoaded = true;
+        tryRender();
       },
       error: (err: any) => {
         console.error('Home API error:', err);
         this.isLoading = false;
+        homeLoaded = true;
+        tryRender();
       }
     });
   }
@@ -157,38 +198,37 @@ export class Home implements OnInit, OnDestroy {
     }
   }
 
- toggleLike(item: any) {
-  item.liked = !item.liked;
+  isItemLiked(item: any): boolean {
+    return this.favoritesService.isFavorite(item.name);
+  }
 
-  // بعت للـ API
-  this.favoritesService.toggleFavoriteApi(item.itemType, item.id).subscribe({
-    next: () => {
-      if (item.liked) {
-        this.favoritesService.addToFavorites({
-          id:     item.id,
-          title:  item.name,
-          image:  item.image,
-          price:  item.price,
-          rating: item.rating,
-          type:   item.itemType as 'hotel' | 'restaurant' | 'tourGuide' | 'attraction'
-        });
-      } else {
-        this.favoritesService.removeFavorite(item.name);
-      }
-    },
-    error: (err: any) => {
-      // لو فشل، نرجع الحالة
-      item.liked = !item.liked;
-      console.error('Toggle favorite failed:', err);
+  toggleLike(item: any) {
+    if (!this.authService.isLoggedIn()) {
+      this.authModal.openLogin();
+      return;
     }
-  });
-}
 
-  syncFavorites() {
-    const favorites = this.favoritesService.getFavorites();
-    const allItems = [...this.recommended, ...this.availableThisWeek];
-    allItems.forEach((item: any) => {
-      item.liked = favorites.some((f: any) => f.title === item.name);
+    const isFav = this.favoritesService.isFavorite(item.name);
+
+    this.favoritesService.toggleFavoriteApi(item.itemType, item.id).subscribe({
+      next: () => {
+        if (isFav) {
+          this.favoritesService.removeFavorite(item.name);
+        } else {
+          this.favoritesService.addToFavorites({
+            id:     item.id,
+            title:  item.name,
+            image:  item.image,
+            price:  item.price,
+            rating: item.rating,
+            type:   item.itemType as 'hotel' | 'restaurant' | 'tourGuide' | 'attraction'
+          });
+        }
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Toggle favorite failed:', err);
+      }
     });
   }
 }

@@ -7,6 +7,7 @@ import {
 
 import { CommonModule } from '@angular/common';
 import { Details } from '../details/details';
+import { ActivatedRoute } from '@angular/router';
 
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/services/auth.service';
@@ -42,10 +43,11 @@ export class Card implements OnInit, OnDestroy {
 
   constructor(
     private favoritesService: FavoritesService,
-    private authService: AuthService,
-    private authModal: AuthModalService,
+    private authService:      AuthService,
+    private authModal:        AuthModalService,
     private tourGuideService: TourGuideService,
-    private cdr: ChangeDetectorRef
+    private cdr:              ChangeDetectorRef,
+    private route:            ActivatedRoute       // ← إضافة
   ) {}
 
   get totalPages(): number {
@@ -86,6 +88,32 @@ export class Card implements OnInit, OnDestroy {
       finalize(() => {
         this.loading = false;
         this.cdr.detectChanges();
+
+        // ── افتح الـ popup لو جه من الشات ──────────────────
+        this.route.queryParams.subscribe(params => {
+          const guideId = params['openGuide'];
+          if (!guideId) return;
+
+          const id = Number(guideId);
+
+          // أولاً: جرب من الـ guides المحملة
+          const fromList = this.guides.find(g => g.id === id);
+          if (fromList) {
+            this.openDetails(fromList);
+            this.cdr.detectChanges();
+            return;
+          }
+
+          // ثانياً: لو مش موجود في الـ list، جيبه من الـ API مباشرة
+          this.tourGuideService.getById_API(id).subscribe({
+            next: (guide) => {
+              this.openDetails(guide);
+              this.cdr.detectChanges();
+            },
+            error: () => console.warn('Tour guide not found:', id)
+          });
+        });
+        // ────────────────────────────────────────────────────
       })
     ).subscribe({
       next: (data) => {
