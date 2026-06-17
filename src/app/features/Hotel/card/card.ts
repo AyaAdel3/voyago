@@ -105,18 +105,25 @@ export class Card implements OnInit {
 
     const isFav = this.isHotelInFav(hotel.name);
 
-    if (isFav) {
-      this.favoritesService.removeFavorite(hotel.name);
-    } else {
-      this.favoritesService.addToFavorites({
-        title: hotel.name,
-        image: hotel.mainImageUrl,
-        price: hotel.minPrice + ' LE / night',
-        rating: hotel.rating,
-        type: 'hotel',
-      });
-    }
-    this.cdr.detectChanges();
+    // ← بعت للـ API زي الريستورانت
+    this.favoritesService.toggleFavoriteApi('hotel', hotel.id).subscribe({
+      next: () => {
+        if (isFav) {
+          this.favoritesService.removeFavorite(hotel.name);
+        } else {
+          this.favoritesService.addToFavorites({
+            id:     hotel.id,
+            title:  hotel.name,
+            image:  hotel.mainImageUrl,
+            price:  hotel.minPrice + ' LE / night',
+            rating: hotel.rating,
+            type:   'hotel',
+          });
+        }
+        this.cdr.detectChanges();
+      },
+      error: err => console.error('Failed to toggle favorite:', err),
+    });
   }
 
   getPriceRange(hotel: HotelApiItem): string {
