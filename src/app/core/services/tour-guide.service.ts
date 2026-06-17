@@ -24,6 +24,12 @@ export type TourGuide = {
   inactiveTourGuides?: number;
 }
 
+// ── Booking shape returned by GET /tour-guides/{id}/bookings ──
+export interface GuideBooking {
+  bookingDate: string;
+  numberOfDays: number;
+}
+
 const BASE_URL = 'http://voyagoo.runasp.net';
 
 @Injectable({ providedIn: 'root' })
@@ -152,6 +158,13 @@ adminUpdateStatus(id: number, status: string): Observable<any> {
     return this.http.post(
       `${BASE_URL}/tour-guides/${guideId}/bookings`,
       { bookingDate, numberOfDays }
+    ).pipe(catchError(err => throwError(() => err)));
+  }
+
+  // ── Booked dates for a guide (used to disable booked days in the calendar) ──
+  getBookedDates(guideId: number): Observable<GuideBooking[]> {
+    return this.http.get<GuideBooking[]>(
+      `${BASE_URL}/tour-guides/${guideId}/bookings`
     ).pipe(catchError(err => throwError(() => err)));
   }
 }

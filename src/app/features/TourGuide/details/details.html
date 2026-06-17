@@ -55,15 +55,63 @@
           <!-- Booking Form — بيظهر دايماً إلا لو الـ login prompt شغال -->
           <ng-container *ngIf="!showLoginPrompt">
             <div class="booking-row">
-              <div class="booking-field">
+              <div class="booking-field date-picker-wrapper">
                 <label>Date</label>
-                <input
-                  type="date"
-                  [(ngModel)]="selectedDate"
-                  [min]="minDate"
-                  class="booking-input"
-                  (change)="onDateChange()"
-                />
+
+                <button
+                  type="button"
+                  class="date-display-btn"
+                  (click)="toggleCalendar()"
+                  [disabled]="loadingBookedDates"
+                >
+                  <span *ngIf="!loadingBookedDates">{{ displaySelectedDate }}</span>
+                  <span *ngIf="loadingBookedDates" class="spinner small"></span>
+                </button>
+
+                <!-- Custom Calendar Popup -->
+                <div class="calendar-popup" *ngIf="showCalendar" (click)="$event.stopPropagation()">
+                  <div class="calendar-header">
+                    <button
+                      type="button"
+                      class="calendar-nav-btn"
+                      (click)="prevMonth()"
+                      [disabled]="!canGoPrevMonth"
+                    >‹</button>
+                    <span class="calendar-month-label">{{ monthLabel }}</span>
+                    <button
+                      type="button"
+                      class="calendar-nav-btn"
+                      (click)="nextMonth()"
+                    >›</button>
+                  </div>
+
+                  <div class="calendar-weekdays">
+                    <span *ngFor="let wd of weekDays" class="calendar-weekday">{{ wd }}</span>
+                  </div>
+
+                  <div class="calendar-body">
+                    <div class="calendar-week" *ngFor="let week of calendarWeeks">
+                      <button
+                        type="button"
+                        *ngFor="let cell of week"
+                        class="calendar-day"
+                        [class.empty]="!cell.inCurrentMonth"
+                        [class.disabled]="cell.disabled"
+                        [class.today]="cell.isToday"
+                        [class.selected]="cell.isSelected"
+                        [disabled]="cell.disabled || !cell.inCurrentMonth"
+                        (click)="selectDay(cell)"
+                      >
+                        {{ cell.inCurrentMonth ? cell.day : '' }}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="calendar-legend">
+                    <span class="legend-item"><span class="legend-dot booked"></span> Booked</span>
+                    <span class="legend-item"><span class="legend-dot selected"></span> Selected</span>
+                  </div>
+                </div>
               </div>
             </div>
 
