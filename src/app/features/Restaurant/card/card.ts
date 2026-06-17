@@ -42,30 +42,33 @@ export class Card implements OnInit {
     private cdr: ChangeDetectorRef,
   ) {}
 
-  ngOnInit(): void {
-    if (this.authService.isLoggedIn()) {
-      this.favoritesService.getAllFavoritesFromApi().subscribe({
-        next: (res) => {
-          const items = this.favoritesService.mapApiToFavoriteItems(res);
-          this.favoritesService.saveFavorites(items);
-          this.cdr.detectChanges();
-        }
-      });
-    }
+ ngOnInit(): void {
+  this.loading = true;
 
-    this.restaurantService.getRestaurants().subscribe({
-      next: data => {
-        this.restaurants = data;
-        this.loading = false;
+  if (this.authService.isLoggedIn()) {
+    this.favoritesService.getAllFavoritesFromApi().subscribe({
+      next: (res) => {
+        const items = this.favoritesService.mapApiToFavoriteItems(res);
+        this.favoritesService.saveFavorites(items);
         this.cdr.detectChanges();
-      },
-      error: () => {
-        this.loading = false;
-        this.cdr.detectChanges();
-      },
+      }
     });
   }
 
+  this.restaurantService.getRestaurants().subscribe({
+    next: data => {
+      if (data.length > 0) {        // ← انتظر لحد ما في data فعلية
+        this.restaurants = data;
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    },
+    error: () => {
+      this.loading = false;
+      this.cdr.detectChanges();
+    },
+  });
+}
   goToPage(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
