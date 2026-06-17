@@ -1,38 +1,65 @@
-// ============================================================
-// budget.service.ts  →  src/app/core/services/
-// كل الـ logic بتاعة الـ Budget Planning
-// ============================================================
-
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of, forkJoin } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import {
   Attraction, BudgetPlan, BudgetBreakdown,
-  MOCK_ATTRACTIONS, MOCK_HOTELS,
 } from '../model/Budget.model';
 import { Hotel } from '../model/hotel.model';
 import { Restaurant, RestaurantApiResponse } from '../model/restaurant.model';
+import {
+  AttractionService,
+  Attraction as ApiAttraction,
+} from './attraction.service';
+
+export interface HotelApiItem {
+  id:           number;
+  name:         string;
+  description:  string;
+  location:     string;
+  rating:       number;
+  minPrice:     number;
+  maxPrice:     number;
+  mainImageUrl: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class BudgetService {
 
+  private readonly hotelsApiUrl      = 'http://voyagoo.runasp.net/hotels';
   private readonly restaurantsApiUrl = 'http://voyagoo.runasp.net/Restaurants';
 
-  // ── Current Plan (يتعدي بين صفحة الـ main والـ details) ──
   private currentPlan = signal<BudgetPlan | null>(null);
+  private savedPlans  = signal<BudgetPlan[]>([]);
 
-  // ── Saved Plans ───────────────────────────────────────────
-  private savedPlans = signal<BudgetPlan[]>([]);
-
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http:              HttpClient,
+    private attractionService: AttractionService,
+  ) {}
 
   // ════════════════════════════════════════════════════════
   // GET DATA
   // ════════════════════════════════════════════════════════
 
   getHotels(): Observable<Hotel[]> {
-    return of(MOCK_HOTELS);
+    return this.http.get<HotelApiItem[]>(this.hotelsApiUrl).pipe(
+      map(apiList => apiList.map(h => this.mapToHotel(h)))
+    );
+  }
+
+  private mapToHotel(h: HotelApiItem): Hotel {
+    return {
+      id:            h.id,
+      name:          h.name,
+      description:   h.description,
+      location:      h.location,
+      rating:        h.rating,
+      stars:         Math.round(h.rating),
+      pricePerNight: h.minPrice,
+      amenities:     [],
+      images:        [h.mainImageUrl],
+      status:        'Active',
+    };
   }
 
   getRestaurants(): Observable<Restaurant[]> {
@@ -60,8 +87,33 @@ export class BudgetService {
     };
   }
 
+  // ✅ بتجيب الـ list الأول، وبعدين لكل واحدة تجيب التفاصيل عشان ticketPrice
   getAttractions(): Observable<Attraction[]> {
-    return of(MOCK_ATTRACTIONS);
+    return this.attractionService.getAll().pipe(
+      switchMap(list => {
+        if (!list.length) return of([]);
+
+        // forkJoin بيبعت كل الـ requests مع بعض (parallel)
+        return forkJoin(
+          list.map(a =>
+            this.attractionService.getById(a.id).pipe(
+              map(details => ({
+                id:          details.id,
+                name:        details.name,
+                description: details.description,
+                rating:      details.rating,
+                category:    details.category,
+                entryFee:    details.ticketPrice ?? 0,
+                location:    details.location ?? 'Fayoum, Egypt',
+                images:      details.images?.length
+                               ? [details.images.find(i => i.isMain)?.imageUrl ?? details.images[0].imageUrl]
+                               : [a.mainImageUrl ?? ''],
+              } as Attraction))
+            )
+          )
+        );
+      })
+    );
   }
 
   // ════════════════════════════════════════════════════════
@@ -81,8 +133,9 @@ export class BudgetService {
   }
 
   getRecommendedHotels(hotels: Hotel[], hotelBudget: number, days: number): Hotel[] {
-    return hotels.filter(h => h.pricePerNight * days <= hotelBudget)
-                 .sort((a, b) => b.rating - a.rating);
+    return hotels
+      .filter(h => h.pricePerNight * days <= hotelBudget)
+      .sort((a, b) => b.rating - a.rating);
   }
 
   getRecommendedRestaurants(restaurants: Restaurant[], restaurantBudget: number): Restaurant[] {
@@ -129,10 +182,10 @@ export class BudgetService {
   }
 
   calculateTotalCost(
-    hotel: Hotel | null,
+    hotel:       Hotel      | null,
     restaurants: Restaurant[],
     attractions: Attraction[],
-    days: number,
+    days:        number,
   ): number {
     const hotelCost      = hotel ? hotel.pricePerNight * days : 0;
     const attractionCost = attractions.reduce((s, a) => s + a.entryFee, 0);

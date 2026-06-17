@@ -60,21 +60,19 @@ export class Plan implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.budgetService.getHotels().subscribe(h => {
-      this.allHotels = h;
-      this.recalcMinBudget();
-    });
+  this.budgetService.getHotels().subscribe(h => {
+    this.allHotels = h;
+    this.recalcMinBudget(); // ✅ اتحسبت بعد ما البيانات وصلت
+  });
 
-    this.budgetService.getRestaurants().subscribe(r => {
-      this.allRestaurants = r;
-    });
+  this.budgetService.getRestaurants().subscribe(r => {
+    this.allRestaurants = r;
+  });
 
-    this.budgetService.getAttractions().subscribe(a => {
-      this.allAttractions = a;
-      this.recalcMinBudget();
-    });
-  }
-
+  this.budgetService.getAttractions().subscribe(a => {
+    this.allAttractions = a;
+  });
+}
   private recalcMinBudget(): void {
     if (!this.allHotels.length) return;
     const cheapestHotel = Math.min(...this.allHotels.map(h => h.pricePerNight));
