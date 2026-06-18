@@ -2,15 +2,13 @@ import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { catchError, throwError, switchMap, filter, take, BehaviorSubject } from 'rxjs';
-
-// ده module-level state — بيتشارك بين كل الـ requests
-let isRefreshing = false;
-let refreshTokenSubject = new BehaviorSubject<string | null>(null);
+import { catchError, throwError, switchMap, filter, take } from 'rxjs';
+import { RefreshStateService } from '../services/refresh-state.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  const router      = inject(Router);
+  const authService    = inject(AuthService);
+  const router         = inject(Router);
+  const refreshState   = inject(RefreshStateService);
 
   // skip الـ auth endpoints عشان متعملش loop
   if (
@@ -20,7 +18,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req);
   }
 
-  const token = localStorage.getItem('voyago_token');
+  const token   = localStorage.getItem('voyago_token');
   const authReq = token ? addToken(req, token) : req;
 
   return next(authReq).pipe(
@@ -37,8 +35,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       // لو في refresh جاري، استنى نتيجته
-      if (isRefreshing) {
-        return refreshTokenSubject.pipe(
+      if (refreshState.isRefreshing) {
+        return refreshState.tokenSubject.pipe(
           filter(t => t !== null),
           take(1),
           switchMap(t => next(addToken(req, t!)))
@@ -46,20 +44,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       // ابدأ refresh جديد
-      isRefreshing = true;
-      refreshTokenSubject.next(null);
+      refreshState.isRefreshing = true;
+      refreshState.tokenSubject.next(null);
 
       return authService.refreshToken().pipe(
         switchMap(res => {
-          isRefreshing = false;
-          refreshTokenSubject.next(res.token);
+          refreshState.isRefreshing = false;
+          refreshState.tokenSubject.next(res.token);
           return next(addToken(req, res.token));
         }),
         catchError(refreshError => {
-          isRefreshing = false;
-          refreshTokenSubject.next(null); // ← reset عشان الـ pending requests ما تتعلقش
-          // ملحوظة: authService.refreshToken() دلوقتي بينظف الـ localStorage بنفسه عند الفشل،
-          // فـ forceLogout هنا مش هيحاول يبعت revoke بتوكنات بايظة لأنها بقت ممسوحة فعلاً
+          refreshState.isRefreshing = false;
+          refreshState.tokenSubject.next(null);
           authService.forceLogout();
           router.navigate(['/home']);
           return throwError(() => refreshError);

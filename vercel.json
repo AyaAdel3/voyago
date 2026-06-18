@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://voyagoo.runasp.net/:path*"
+      "destination": "http://voyagoo.runasp.net/:path*"
     }
   ]
 }
