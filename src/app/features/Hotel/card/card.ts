@@ -6,7 +6,6 @@ import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 import { environment } from '../../../../environments/environment';
-
 export interface HotelApiItem {
   id: number;
   name: string;
@@ -31,8 +30,7 @@ export class Card implements OnInit {
   pageSize = 5;
   currentPage = 1;
 
-  private readonly apiUrl = 'http://voyagoo.runasp.net/hotels';
-
+private readonly apiUrl = `${environment.apiUrl}/hotels`;
   constructor(
     private http: HttpClient,
     private favoritesService: FavoritesService,
