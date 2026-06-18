@@ -1333,9 +1333,6 @@ body:not(.dark-mode) .modal-close:hover {
   background: #d8e4f0 !important;
   color: #173b64 !important;
 }
-body:not(.dark-mode) .modal-title {
-  color: #0d1b2a !important;
-}
 body:not(.dark-mode) .modal-val-bold {
   color: #173b64 !important;
 }
