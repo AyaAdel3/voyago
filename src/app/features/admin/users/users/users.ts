@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { catchError, finalize, of } from 'rxjs';
-
+import { environment } from '../../../../../environments/environment';
 interface ApiUser {
   id: string;
   fullName: string;
@@ -38,7 +38,7 @@ export class AdminUsers implements OnInit {
   private http = inject(HttpClient);
   private cdr  = inject(ChangeDetectorRef);
 
-  private readonly API_BASE = 'http://voyagoo.runasp.net';
+  private readonly API_BASE = environment.apiUrl;
 
   users: User[] = [];
   isLoading = false;

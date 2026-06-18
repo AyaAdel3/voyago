@@ -13,7 +13,7 @@ import {
   AdminRestaurantUpdateRequest,
   RestaurantDetailApiResponse,
 } from '../../../../core/model/restaurant.model';
-
+import { environment } from '../../../../../environments/environment';
 interface ImageSlot {
   id:  number | null;
   url: string;
@@ -96,7 +96,7 @@ export class ManageRestaurant implements OnInit {
   private loadRestaurant(id: number) {
     this.service.http
       .get<RestaurantDetailApiResponse>(
-        `http://voyagoo.runasp.net/admin/restaurants/${id}`,
+       `${environment.apiUrl}/admin/restaurants/${id}`,
         { headers: { Authorization: `Bearer ${this.token}` } }
       )
       .subscribe({
@@ -190,7 +190,7 @@ export class ManageRestaurant implements OnInit {
     if (slot.id !== null && this.restaurantId !== null) {
       this.service.http
         .delete<void>(
-          `http://voyagoo.runasp.net/admin/restaurants/${this.restaurantId}/images/${slot.id}`,
+          `${environment.apiUrl}/admin/restaurants/${this.restaurantId}/images/${slot.id}`,
           { headers: { Authorization: `Bearer ${this.token}` } }
         )
         .subscribe({
