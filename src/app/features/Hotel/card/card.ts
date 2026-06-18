@@ -31,7 +31,7 @@ export class Card implements OnInit {
   pageSize = 5;
   currentPage = 1;
 
-private readonly apiUrl = `${environment.apiUrl}/hotels`;
+  private readonly apiUrl = 'http://voyagoo.runasp.net/hotels';
 
   constructor(
     private http: HttpClient,

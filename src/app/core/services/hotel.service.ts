@@ -18,8 +18,8 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class HotelService {
 
-  private readonly apiBase     = `${environment.apiUrl}/hotels`;
-private readonly apiBaseCase = `${environment.apiUrl}/Hotels`;
+  private readonly apiBase          = `${environment.apiUrl}/hotels`;
+private readonly apiBaseCase      = `${environment.apiUrl}/Hotels`;
 private readonly adminApiUrl      = `${environment.apiUrl}/admin/hotels`;
 private readonly adminFeaturesUrl = `${environment.apiUrl}/admin/hotel-features`;
 private readonly adminBookingFeatUrl = `${environment.apiUrl}/admin/booking-features`;
