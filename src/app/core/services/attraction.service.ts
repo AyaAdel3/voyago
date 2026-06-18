@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 export interface AttractionImage {
   id: number;
@@ -65,7 +66,7 @@ export class AttractionService {
 
   private apiUrl   = '/api/Attractions';
   private adminUrl = '/api/admin/attractions';
-  private favUrl   = 'http://voyagoo.runasp.net/Favorites/attractions';
+private favUrl = `${environment.apiUrl}/Favorites/attractions`;
 
   private _cache: Attraction[] | null = null;
 

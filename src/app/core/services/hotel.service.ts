@@ -13,16 +13,16 @@ import {
   HotelFeatureApiItem, BookingFeatureApiItem,
   CreateBookingRequest, CreateBookingResponse,
 } from '../model/hotel.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class HotelService {
 
-  private readonly apiBase             = 'http://voyagoo.runasp.net/hotels';
-  private readonly apiBaseCase         = 'http://voyagoo.runasp.net/Hotels';
-  private readonly adminApiUrl         = 'http://voyagoo.runasp.net/admin/hotels';
-  private readonly adminFeaturesUrl    = 'http://voyagoo.runasp.net/admin/hotel-features';
-  private readonly adminBookingFeatUrl = 'http://voyagoo.runasp.net/admin/booking-features';
-
+  private readonly apiBase          = `${environment.apiUrl}/hotels`;
+private readonly apiBaseCase      = `${environment.apiUrl}/Hotels`;
+private readonly adminApiUrl      = `${environment.apiUrl}/admin/hotels`;
+private readonly adminFeaturesUrl = `${environment.apiUrl}/admin/hotel-features`;
+private readonly adminBookingFeatUrl = `${environment.apiUrl}/admin/booking-features`;
   private hotelsSubject  = new BehaviorSubject<Hotel[]>([...MOCK_HOTELS]);
   hotels$                = this.hotelsSubject.asObservable();
 

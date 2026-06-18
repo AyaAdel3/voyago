@@ -19,12 +19,13 @@ import {
   DEFAULT_TABLES,
 } from '../model/restaurant.model';
 
+import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class RestaurantService {
 
-  private readonly apiUrl      = 'http://voyagoo.runasp.net/Restaurants';
-  private readonly adminApiUrl = 'http://voyagoo.runasp.net/admin/restaurants';
-  private readonly favApiUrl   = 'http://voyagoo.runasp.net/Favorites/restaurants';
+  private readonly apiUrl      = `${environment.apiUrl}/Restaurants`;
+private readonly adminApiUrl = `${environment.apiUrl}/admin/restaurants`;
+private readonly favApiUrl   = `${environment.apiUrl}/Favorites/restaurants`;
 
   private restaurantsSubject = new BehaviorSubject<Restaurant[]>([]);
   restaurants$ = this.restaurantsSubject.asObservable();
@@ -128,7 +129,8 @@ export class RestaurantService {
 }
   getFeatures(token: string): Observable<Feature[]> {
     return this.http.get<Feature[]>(
-      'http://voyagoo.runasp.net/admin/features',
+      `${environment.apiUrl}/admin/features`
+,
       { headers: { Authorization: `Bearer ${token}` } }
     );
   }

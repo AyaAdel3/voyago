@@ -10,6 +10,7 @@ export interface FavoriteItem {
   rating: number;
   type: 'hotel' | 'restaurant' | 'tourGuide' | 'attraction';
 }
+import { environment } from '../../../environments/environment';
 
 export interface FavoritesApiResponse {
   restaurants: {
@@ -41,7 +42,7 @@ export interface FavoritesApiResponse {
   }[];
 }
 
-const BASE_URL = 'http://voyagoo.runasp.net';
+const BASE_URL = environment.apiUrl;
 
 @Injectable({ providedIn: 'root' })
 export class FavoritesService {

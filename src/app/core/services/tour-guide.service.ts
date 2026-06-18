@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 export type TourGuide = {
   id: number;
@@ -29,7 +30,7 @@ export interface GuideBooking {
   numberOfDays: number;
 }
 
-const BASE_URL = 'http://voyagoo.runasp.net';
+const BASE_URL = environment.apiUrl;
 
 @Injectable({ providedIn: 'root' })
 export class TourGuideService {

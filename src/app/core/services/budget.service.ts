@@ -11,6 +11,7 @@ import {
   AttractionService,
   Attraction as ApiAttraction,
 } from './attraction.service';
+import { environment } from '../../../environments/environment';
 
 export interface HotelApiItem {
   id:           number;
@@ -26,8 +27,8 @@ export interface HotelApiItem {
 @Injectable({ providedIn: 'root' })
 export class BudgetService {
 
-  private readonly hotelsApiUrl      = 'http://voyagoo.runasp.net/hotels';
-  private readonly restaurantsApiUrl = 'http://voyagoo.runasp.net/Restaurants';
+  private readonly hotelsApiUrl      = `${environment.apiUrl}/hotels`;
+private readonly restaurantsApiUrl = `${environment.apiUrl}/Restaurants`;
 
   private currentPlan = signal<BudgetPlan | null>(null);
   private savedPlans  = signal<BudgetPlan[]>([]);

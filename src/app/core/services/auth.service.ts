@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { switchMap, map, catchError, tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 export interface User {
   firstName:    string;
@@ -37,7 +38,8 @@ export interface AuthResponse {
   roles:                  string[];
 }
 
-const BASE_URL = 'http://voyagoo.runasp.net';
+const BASE_URL = environment.apiUrl;
+
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {

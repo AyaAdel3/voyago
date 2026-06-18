@@ -2,12 +2,12 @@
   "name": "voyago",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
-  },
+  "ng": "ng",
+  "start": "ng serve --proxy-config proxy.conf.json",
+  "build": "ng build",
+  "watch": "ng build --watch --configuration development",
+  "test": "ng test"
+},
   "private": true,
   "packageManager": "npm@10.9.4",
   "dependencies": {
