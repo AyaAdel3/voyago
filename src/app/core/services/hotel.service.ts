@@ -54,10 +54,6 @@ export class HotelService {
     return of(MOCK_DISPLAY_FEATURES);
   }
 
-  /**
-   * GET /admin/hotel-features
-   * Display features (Great for your stay) — shown as amenity tags on the hotel card.
-   */
   getHotelFeaturesFromApi(token: string): Observable<HotelFeatureDef[]> {
     return this.http
       .get<HotelFeatureApiItem[]>(
@@ -76,12 +72,6 @@ export class HotelService {
       );
   }
 
-  /**
-   * GET /admin/booking-features
-   * Booking features the admin can assign to a hotel.
-   * Full Board (id:1001) and Half Board (id:1002) are always shown as fixed fields.
-   * The rest appear in the "Add extra feature" dropdown.
-   */
   getBookingFeaturesFromApi(token: string): Observable<BookingFeatureApiItem[]> {
     return this.http.get<BookingFeatureApiItem[]>(
       this.adminBookingFeatUrl,
@@ -100,18 +90,18 @@ export class HotelService {
     );
   }
 
-getComments(hotelId: number): Observable<HotelApiComment[]> {
-  return this.http.get<HotelApiDetail>(`${this.apiBase}/${hotelId}`).pipe(
-    map(r => (r.comments ?? []).map((c: any) => ({
-      id:                c.id,
-      userName:          c.userName,
-      rating:            c.rating,
-      content:           c.content,
-      date:              c.date ?? c.createdAt,
-      profilePictureUrl: c.profilePictureUrl ?? null,
-    })))
-  );
-}
+  getComments(hotelId: number): Observable<HotelApiComment[]> {
+    return this.http.get<HotelApiDetail>(`${this.apiBase}/${hotelId}`).pipe(
+      map(r => (r.comments ?? []).map((c: any) => ({
+        id:                c.id,
+        userName:          c.userName,
+        rating:            c.rating,
+        content:           c.content,
+        date:              c.date ?? c.createdAt,
+        profilePictureUrl: c.profilePictureUrl ?? null,
+      })))
+    );
+  }
 
   addComment(hotelId: number, content: string, rating: number): Observable<any> {
     return this.http.post(
@@ -126,11 +116,6 @@ getComments(hotelId: number): Observable<HotelApiComment[]> {
     );
   }
 
-  /**
-   * POST /hotels/{id}/bookings
-   * بيبعت طلب حجز جديد ويرجع تفاصيل الحجز كاملة مع الأسعار المحسوبة من السيرفر
-   * (الغرف، البورد، الإكسترا فيتشرز، الخصم، رسوم الخدمة، والإجمالي النهائي).
-   */
   createBooking(
     hotelId: number,
     payload: CreateBookingRequest,
@@ -157,19 +142,11 @@ getComments(hotelId: number): Observable<HotelApiComment[]> {
     );
   }
 
-  /**
-   * POST /admin/hotels
-   * Sends JSON body — images are NOT included in this request.
-   * The API accepts: name, description, location, rating, rooms, prices,
-   * discount, serviceCharge, fullBoardPrice, halfBoardPrice, featureIds, bookingFeatures
-   */
   addHotelAdmin(
     payload: AdminAddHotelRequest,
-    images:  string[],   // kept for signature compatibility — not sent to this endpoint
+    images:  string[],
     token:   string
   ): Observable<AdminAddHotelResponse> {
-    console.log('📤 POST /admin/hotels payload:', JSON.stringify(payload, null, 2));
-
     return this.http.post<AdminAddHotelResponse>(
       this.adminApiUrl,
       payload,
@@ -182,18 +159,12 @@ getComments(hotelId: number): Observable<HotelApiComment[]> {
     );
   }
 
-  /**
-   * PUT /admin/hotels/{id}
-   * Sends JSON body — same structure as POST.
-   */
   updateHotelAdmin(
     hotelId: number,
     payload: AdminAddHotelRequest,
-    images:  string[],   // kept for signature compatibility — not sent to this endpoint
+    images:  string[],
     token:   string
   ): Observable<any> {
-    console.log(`📤 PUT /admin/hotels/${hotelId} payload:`, JSON.stringify(payload, null, 2));
-
     return this.http.put(
       `${this.adminApiUrl}/${hotelId}`,
       payload,
@@ -206,10 +177,6 @@ getComments(hotelId: number): Observable<HotelApiComment[]> {
     );
   }
 
-  /**
-   * PATCH /admin/hotels/{id}/status
-   * Body: { "status": "active" } or { "status": "inactive" }
-   */
   updateHotelStatus(hotelId: number, status: string, token: string): Observable<any> {
     return this.http.patch(
       `${this.adminApiUrl}/${hotelId}/status`,
@@ -223,10 +190,6 @@ getComments(hotelId: number): Observable<HotelApiComment[]> {
     );
   }
 
-  /**
-   * GET /admin/hotels/{id}
-   * Returns full hotel details for edit form.
-   */
   getAdminHotelById(hotelId: number, token: string): Observable<any> {
     return this.http.get<any>(
       `${this.adminApiUrl}/${hotelId}`,
@@ -236,11 +199,6 @@ getComments(hotelId: number): Observable<HotelApiComment[]> {
 
   // ── Admin Hotel Images ────────────────────────────────────
 
-  /**
-   * POST /admin/hotels/{id}/images
-   * Uploads new images as multipart/form-data.
-   * Field name must be "images" (plural).
-   */
   uploadHotelImages(hotelId: number, dataUrls: string[], token: string): Observable<any> {
     const formData = new FormData();
     dataUrls.forEach((dataUrl, i) => {
@@ -255,9 +213,6 @@ getComments(hotelId: number): Observable<HotelApiComment[]> {
     );
   }
 
-  /**
-   * DELETE /admin/hotels/{hotelId}/images/{imageId}
-   */
   deleteHotelImage(hotelId: number, imageId: number, token: string): Observable<void> {
     return this.http.delete<void>(
       `${this.adminApiUrl}/${hotelId}/images/${imageId}`,
@@ -371,13 +326,40 @@ getComments(hotelId: number): Observable<HotelApiComment[]> {
     return this.getHotelBookingFeatures(hotel);
   }
 
-  confirmBooking(booking: BookingData, method: string): Observable<{ bookingId: string }> {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    const rand  = Array.from({ length: 8 }, () =>
-      chars[Math.floor(Math.random() * chars.length)]
-    ).join('');
-    return of({ bookingId: `BK-${rand}` });
+  /**
+   * POST /hotels/{hotelId}/bookings/{bookingId}/confirm
+   * Body: { "paymentType": "card" } or { "paymentType": "cash on arrival" }
+   * بيكنفيرم الحجز ويرجع الـ bookingId الكامل للعرض في صفحة التأكيد.
+   */
+  confirmBooking(
+    booking: BookingData,
+    method:  'credit' | 'cash',
+  ): Observable<{ bookingId: string }> {
+    const token       = localStorage.getItem('voyago_token') ?? '';
+    const paymentType = method === 'credit' ? 'card' : 'cash on arrival';
+    const bookingId   = this.currentBookingId();
+
+    return this.http.post<any>(
+      `${this.apiBase}/${booking.hotelId}/bookings/${bookingId}/confirm`,
+      { paymentType },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type':  'application/json',
+        },
+      }
+    ).pipe(
+      map(() => ({ bookingId: `MH-${bookingId}` }))
+    );
   }
+
+  /**
+   * بتحفظ الـ booking ID اللي رجع من createBooking عشان يتستخدم في confirmBooking.
+   */
+  private bookingIdSignal = signal<number>(0);
+
+  saveBookingId(id: number): void      { this.bookingIdSignal.set(id); }
+  currentBookingId(): number           { return this.bookingIdSignal(); }
 
   // ── Helpers ───────────────────────────────────────────────
 

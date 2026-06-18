@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { TourGuideService } from '../../../core/services/tour-guide.service';
 
 export interface TourGuideBookingData {
   guideId:    number;
@@ -11,6 +12,7 @@ export interface TourGuideBookingData {
   time:       string;
   days:       number;
   totalPrice: number;
+  bookingId:  number;   // ← الـ numeric ID من الـ API عشان نبعته في confirm
 }
 
 @Component({
@@ -26,10 +28,10 @@ export class Booking implements OnInit {
   selectedMethod: 'credit' | 'cash' = 'credit';
   isProcessing = false;
 
-  cardNumber  = '';
-  expiryDate  = '';
-  cvv           = '';
-  cvvInputType  = "text"; // unused, kept for safety
+  cardNumber   = '';
+  expiryDate   = '';
+  cvv          = '';
+  cvvInputType = 'text';
 
   cardError   = '';
   expiryError = '';
@@ -39,7 +41,10 @@ export class Booking implements OnInit {
     return Math.round((this.booking?.totalPrice ?? 0) * 0.3);
   }
 
-  constructor(private router: Router) {}
+  constructor(
+    private router:          Router,
+    private tourGuideService: TourGuideService,
+  ) {}
 
   ngOnInit(): void {
     const state = history.state;
@@ -56,6 +61,7 @@ export class Booking implements OnInit {
         time:       '09:00 AM',
         days:       res.numberOfDays,
         totalPrice: res.totalPrice,
+        bookingId:  res.bookingId,   // ← بيتحفظ من الـ API response
       };
 
       sessionStorage.setItem('tourGuideBooking', JSON.stringify(this.booking));
@@ -76,12 +82,12 @@ export class Booking implements OnInit {
   }
 
   private resetFields(): void {
-    this.cardNumber   = '';
-    this.expiryDate   = '';
-    this.cvv          = '';
-    this.cardError    = '';
-    this.expiryError  = '';
-    this.cvvError     = '';
+    this.cardNumber  = '';
+    this.expiryDate  = '';
+    this.cvv         = '';
+    this.cardError   = '';
+    this.expiryError = '';
+    this.cvvError    = '';
   }
 
   formatCard(): void {
@@ -98,8 +104,8 @@ export class Booking implements OnInit {
     this.expiryDate = val;
   }
 
-  onCvvFocus(): void { }
-  onCvvBlur(): void { if (!this.cvv) this.cvvInputType = 'text'; }
+  onCvvFocus(): void { this.cvvInputType = 'password'; }
+  onCvvBlur():  void { if (!this.cvv) this.cvvInputType = 'text'; }
 
   formatCvv(): void {
     this.cvvError = '';
@@ -115,7 +121,7 @@ export class Booking implements OnInit {
     if (!/^\d{2}\/\d{2}$/.test(this.expiryDate)) return false;
     const [mm, yy] = this.expiryDate.split('/').map(Number);
     if (mm < 1 || mm > 12) return false;
-    const now = new Date();
+    const now      = new Date();
     const cardYear = 2000 + yy;
     return cardYear > now.getFullYear() ||
       (cardYear === now.getFullYear() && mm >= now.getMonth() + 1);
@@ -139,23 +145,32 @@ export class Booking implements OnInit {
     this.cardError = this.expiryError = this.cvvError = '';
     let hasError = false;
 
-    // Both 'credit' and 'cash' (deposit) require card details
     if (!this.isValidCard())   { this.cardError   = 'Please enter a valid card number.'; hasError = true; }
     if (!this.isValidExpiry()) { this.expiryError = 'Please enter a valid expiry date.'; hasError = true; }
-    if (!this.isValidCvv())    { this.cvvError    = 'Please enter a valid CVV.';          hasError = true; }
-
+    if (!this.isValidCvv())    { this.cvvError    = 'Please enter a valid CVV.';         hasError = true; }
     if (hasError) return;
 
     this.isProcessing = true;
 
-    setTimeout(() => {
-      this.isProcessing = false;
-      this.router.navigate(['/tour-guide/booking-confirmed'], {
-        queryParams: {
-          method:  this.selectedMethod,
-          deposit: this.selectedMethod === 'cash' ? this.depositAmount : null,
+    const paymentType = this.selectedMethod === 'credit' ? 'card' : 'cash on arrival';
+
+    this.tourGuideService
+      .confirmBooking(this.booking.guideId, this.booking.bookingId, paymentType)
+      .subscribe({
+        next: () => {
+          this.isProcessing = false;
+          this.router.navigate(['/tour-guide/booking-confirmed'], {
+            queryParams: {
+              bookingId: `TG-${this.booking!.bookingId}`,
+              method:    this.selectedMethod,
+              deposit:   this.selectedMethod === 'cash' ? this.depositAmount : null,
+            },
+          });
+        },
+        error: (err) => {
+          console.error('Confirm booking failed:', err);
+          this.isProcessing = false;
         },
       });
-    }, 1200);
   }
 }

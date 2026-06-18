@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { tap, catchError, map } from 'rxjs/operators';
 
@@ -24,9 +24,8 @@ export type TourGuide = {
   inactiveTourGuides?: number;
 }
 
-// ── Booking shape returned by GET /tour-guides/{id}/bookings ──
 export interface GuideBooking {
-  bookingDate: string;
+  bookingDate:  string;
   numberOfDays: number;
 }
 
@@ -36,7 +35,7 @@ const BASE_URL = 'http://voyagoo.runasp.net';
 export class TourGuideService {
 
   private _guides: TourGuide[] = [];
-  private _cache: TourGuide[] | null = null;
+  private _cache:  TourGuide[] | null = null;
 
   adminStats = { total: 0, active: 0, inactive: 0 };
 
@@ -57,12 +56,13 @@ export class TourGuideService {
       catchError(err => throwError(() => err))
     );
   }
-adminGetById(id: number): Observable<TourGuide> {
-  return this.http.get<TourGuide>(`${BASE_URL}/admin/tour-guides/${id}`).pipe(
-    map(g => ({ ...g, image: g.profilePictureUrl })),
-    catchError(err => throwError(() => err))
-  );
-}
+
+  adminGetById(id: number): Observable<TourGuide> {
+    return this.http.get<TourGuide>(`${BASE_URL}/admin/tour-guides/${id}`).pipe(
+      map(g => ({ ...g, image: g.profilePictureUrl })),
+      catchError(err => throwError(() => err))
+    );
+  }
 
   adminGetAll(): Observable<TourGuide[]> {
     return this.http.get<any>(`${BASE_URL}/admin/tour-guides/GetAllTourGuides`).pipe(
@@ -124,12 +124,12 @@ adminGetById(id: number): Observable<TourGuide> {
     );
   }
 
-adminUpdateStatus(id: number, status: string): Observable<any> {
-  return this.http.patch<any>(
-    `${BASE_URL}/admin/tour-guides/${id}/status`,
-    { status: status.toLowerCase() }
-  ).pipe(catchError(err => throwError(() => err)));
-}
+  adminUpdateStatus(id: number, status: string): Observable<any> {
+    return this.http.patch<any>(
+      `${BASE_URL}/admin/tour-guides/${id}/status`,
+      { status: status.toLowerCase() }
+    ).pipe(catchError(err => throwError(() => err)));
+  }
 
   adminGetLanguages(): Observable<{ id: number; name: string }[]> {
     return this.http.get<{ id: number; name: string }[]>(
@@ -143,7 +143,6 @@ adminUpdateStatus(id: number, status: string): Observable<any> {
     ).pipe(catchError(err => throwError(() => err)));
   }
 
-  // ── FAVORITES API ────────────────────────────────────────
   toggleFavoriteApi(guideId: number): Observable<void> {
     return this.http.post<void>(
       `${BASE_URL}/Favorites/tour-guides/${guideId}/toggle`,
@@ -155,16 +154,44 @@ adminUpdateStatus(id: number, status: string): Observable<any> {
   getById(id: number): TourGuide | undefined { return this._guides.find(g => g.id === id); }
 
   bookGuide(guideId: number, bookingDate: string, numberOfDays: number): Observable<any> {
+    const token = localStorage.getItem('voyago_token') ?? '';
     return this.http.post(
       `${BASE_URL}/tour-guides/${guideId}/bookings`,
-      { bookingDate, numberOfDays }
+      { bookingDate, numberOfDays },
+      {
+        headers: new HttpHeaders({
+          'Authorization': `Bearer ${token}`,
+          'Content-Type':  'application/json',
+        }),
+      }
     ).pipe(catchError(err => throwError(() => err)));
   }
 
-  // ── Booked dates for a guide (used to disable booked days in the calendar) ──
   getBookedDates(guideId: number): Observable<GuideBooking[]> {
     return this.http.get<GuideBooking[]>(
       `${BASE_URL}/tour-guides/${guideId}/bookings`
+    ).pipe(catchError(err => throwError(() => err)));
+  }
+
+  /**
+   * POST /tour-guides/{guideId}/bookings/{bookingId}/confirm
+   * Body: { "paymentType": "card" } or { "paymentType": "cash on arrival" }
+   */
+  confirmBooking(
+    guideId:     number,
+    bookingId:   number,
+    paymentType: string,
+  ): Observable<any> {
+    const token = localStorage.getItem('voyago_token') ?? '';
+    return this.http.post(
+      `${BASE_URL}/tour-guides/${guideId}/bookings/${bookingId}/confirm`,
+      { paymentType },
+      {
+        headers: new HttpHeaders({
+          'Authorization': `Bearer ${token}`,
+          'Content-Type':  'application/json',
+        }),
+      }
     ).pipe(catchError(err => throwError(() => err)));
   }
 }

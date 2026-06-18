@@ -2,6 +2,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 /* ── Shared shape: hotel rooms & restaurant tables ─────────── */
 export interface BookingRoom {
@@ -12,15 +13,11 @@ export interface BookingRoom {
 
 /* ── Fields shared by every booking type ──────────────────── */
 interface BaseBookingItem {
-  bookingId:   string;
-  totalAmount: number;
-  /**
-   * status الخام جاي من الباك إند — مش بيتستخدم في العرض أو الفلترة دلوقتي.
-   * المصدر الفعلي للحالة هو effectiveStatus() (مبني على paymentMethod).
-   * سايبينها هنا احتياطي لو الباك إند احتاجها بعدين.
-   */
-  status:      'confirmed' | 'pending';
-  createdAt?:  string;
+  bookingId:    string;   // string مع prefix للعرض  e.g. "MH-29"
+  rawBookingId: number;   // الـ numeric ID الأصلي للـ API calls
+  totalAmount:  number;
+  status:       'confirmed' | 'pending';
+  createdAt?:   string;
 }
 
 /* ── Hotel booking ─────────────────────────────────────────── */
@@ -76,6 +73,52 @@ interface BookingSection {
   items: MyBookingItem[];
 }
 
+/* ── شكل الـ API response ─────────────────────────────────── */
+interface ApiHotelBooking {
+  bookingId:    number;
+  hotelName:    string;
+  checkIn:      string;
+  checkOut:     string;
+  nights:       number;
+  totalPrice:   number;
+  paymentType:  string;
+  status:       string;
+  createdAt:    string;
+  mainImageUrl: string;
+}
+
+interface ApiTourGuideBooking {
+  bookingId:         number;
+  tourGuideName:     string;
+  bookingDate:       string;
+  numberOfDays:      number;
+  totalPrice:        number;
+  paymentType:       string;
+  status:            string;
+  createdAt:         string;
+  profilePictureUrl: string;
+}
+
+interface ApiRestaurantBooking {
+  bookingId:         number;
+  restaurantName:    string;
+  restaurantAddress: string;
+  bookingDate:       string;
+  guestName:         string;
+  guestPhone:        string;
+  tablesForTwo:      number;
+  tablesForFour:     number;
+  tablesForSix:      number;
+  createdAt:         string;
+  mainImageUrl:      string;
+}
+
+interface BookingsApiResponse {
+  hotelBookings:      ApiHotelBooking[];
+  tourGuideBookings:  ApiTourGuideBooking[];
+  restaurantBookings: ApiRestaurantBooking[];
+}
+
 @Component({
   selector: 'app-my-bookings',
   standalone: true,
@@ -98,17 +141,133 @@ export class MyBookingsComponent implements OnInit {
     { label: 'Pending',   value: 'pending'   },
   ];
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  private readonly apiUrl = 'http://voyagoo.runasp.net/Account/bookings';
+
+  constructor(
+    private cdr: ChangeDetectorRef,
+    private http: HttpClient,
+  ) {}
 
   ngOnInit(): void {
-    // ── Dummy data – استبدليها بـ API calls (hotel + tour guide + restaurant) بعدين ──
-    setTimeout(() => {
-      this.bookings = MOCK_BOOKINGS;
-      this.applyFilter('all');
-      this.isLoading = false;
-      this.cdr.detectChanges();
-    }, 600);
+    this.loadBookings();
   }
+
+  private loadBookings(): void {
+    const token = localStorage.getItem('voyago_token');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    this.http.get<BookingsApiResponse>(this.apiUrl, { headers }).subscribe({
+      next: (res) => {
+        this.bookings = [
+          ...this.mapHotelBookings(res.hotelBookings ?? []),
+          ...this.mapTourGuideBookings(res.tourGuideBookings ?? []),
+          ...this.mapRestaurantBookings(res.restaurantBookings ?? []),
+        ];
+        this.applyFilter('all');
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to load bookings:', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  /* ── Mappers: API → internal model ─────────────────────── */
+
+  private mapHotelBookings(list: ApiHotelBooking[]): HotelBookingItem[] {
+    return list.map((b): HotelBookingItem => ({
+      bookingType:    'hotel',
+      bookingId:      `MH-${b.bookingId}`,
+      rawBookingId:   b.bookingId,
+      hotelName:      b.hotelName,
+      hotelImage:     b.mainImageUrl,
+      checkIn:        b.checkIn,
+      checkOut:       b.checkOut,
+      totalNights:    b.nights,
+      rooms:          [],           // الباك إند مش بيرجع تفاصيل الأوضة — هيتعرض بدون rooms breakdown
+      totalAmount:    b.totalPrice,
+      serviceCharge:  0,            // مش موجود في الـ response
+      discount:       0,
+      discountAmount: 0,
+      paymentMethod:  this.mapPaymentType(b.paymentType),
+      status:         this.mapStatus(b.status),
+      createdAt:      this.formatDate(b.createdAt),
+    }));
+  }
+
+  private mapTourGuideBookings(list: ApiTourGuideBooking[]): TourGuideBookingItem[] {
+    return list.map((b): TourGuideBookingItem => ({
+      bookingType:   'tourguide',
+      bookingId:     `TG-${b.bookingId}`,
+      rawBookingId:  b.bookingId,
+      guideName:     b.tourGuideName,
+      guideImage:    b.profilePictureUrl,
+      date:          b.bookingDate,
+      days:          b.numberOfDays,
+      pricePerDay:   b.numberOfDays > 0 ? Math.round(b.totalPrice / b.numberOfDays) : undefined,
+      totalAmount:   b.totalPrice,
+      paymentMethod: this.mapPaymentType(b.paymentType),
+      status:        this.mapStatus(b.status),
+      createdAt:     this.formatDate(b.createdAt),
+    }));
+  }
+
+  private mapRestaurantBookings(list: ApiRestaurantBooking[]): RestaurantBookingItem[] {
+    return list.map((b): RestaurantBookingItem => {
+      const tables: BookingRoom[] = [];
+      if (b.tablesForTwo  > 0) tables.push({ type: 'Table for 2', quantity: b.tablesForTwo,  price: 0 });
+      if (b.tablesForFour > 0) tables.push({ type: 'Table for 4', quantity: b.tablesForFour, price: 0 });
+      if (b.tablesForSix  > 0) tables.push({ type: 'Table for 6', quantity: b.tablesForSix,  price: 0 });
+
+      return {
+        bookingType:       'restaurant',
+        bookingId:         `RES-${b.bookingId}`,
+        rawBookingId:      b.bookingId,
+        restaurantName:    b.restaurantName,
+        restaurantImage:   b.mainImageUrl,
+        restaurantAddress: b.restaurantAddress,
+        date:              b.bookingDate,
+        guestName:         b.guestName,
+        phone:             b.guestPhone,
+        tables,
+        totalAmount:       0,
+        status:            'confirmed',
+        createdAt:         this.formatDate(b.createdAt),
+      };
+    });
+  }
+
+  /* ── Utility helpers ────────────────────────────────────── */
+
+  /**
+   * بتحول paymentType من الـ API لـ 'credit' | 'cash'
+   * API بيبعت: "card" | "cash on arrival"
+   */
+  private mapPaymentType(paymentType: string): 'credit' | 'cash' {
+    return paymentType?.toLowerCase() === 'card' ? 'credit' : 'cash';
+  }
+
+  /**
+   * بتحول status من الـ API لـ 'confirmed' | 'pending'
+   * API بيبعت: "Completed" | "Pending" | "Confirmed" وغيرهم
+   */
+  private mapStatus(status: string): 'confirmed' | 'pending' {
+    const s = status?.toLowerCase();
+    return s === 'completed' || s === 'confirmed' ? 'confirmed' : 'pending';
+  }
+
+  /** بتحول ISO date string لـ YYYY-MM-DD */
+  private formatDate(iso: string): string {
+    if (!iso) return '';
+    return iso.split('T')[0];
+  }
+
+  /* ── Filter & sections ──────────────────────────────────── */
 
   applyFilter(status: FilterStatus): void {
     this.activeFilter = status;
@@ -118,11 +277,6 @@ export class MyBookingsComponent implements OnInit {
         : this.bookings.filter(b => this.effectiveStatus(b) === status);
   }
 
-  /**
-   * بتقسم filteredBookings (اللي بالفعل متفلترة حسب All/Confirmed/Pending)
-   * لـ 3 سكاشن حسب النوع. السكشن اللي مفيهوش عناصر هيتشال من العرض في الـ HTML
-   * (مش بيتعرض فاضي).
-   */
   get bookingSections(): BookingSection[] {
     return [
       {
@@ -146,11 +300,6 @@ export class MyBookingsComponent implements OnInit {
     ];
   }
 
-  /**
-   * بتحرك شريط السكشن (slider) لشمال أو يمين.
-   * track: العنصر اللي عليه overflow-x (مأخوذ من template reference variable).
-   * direction: -1 لليسار، 1 لليمين.
-   */
   scrollSection(track: HTMLElement, direction: number): void {
     const amount = track.clientWidth * 0.85 * direction;
     track.scrollBy({ left: amount, behavior: 'smooth' });
@@ -203,15 +352,8 @@ export class MyBookingsComponent implements OnInit {
     return items.map(i => `${i.quantity}× ${i.type}`).join(', ');
   }
 
-  /**
-   * الحالة الفعلية اللي بتتعرض وبتتفلتر عليها الواجهة.
-   * - مطعم → confirmed دايمًا
-   * - كاش (فندق/تور جايد) → pending
-   * - كريدت (فندق/تور جايد) → confirmed
-   */
   effectiveStatus(b: MyBookingItem): 'confirmed' | 'pending' {
-    if (this.isRestaurant(b)) return 'confirmed';
-    return b.paymentMethod === 'cash' ? 'pending' : 'confirmed';
+    return b.status;
   }
 
   depositAmount(b: HotelBookingItem | TourGuideBookingItem): number {
@@ -235,80 +377,28 @@ export class MyBookingsComponent implements OnInit {
   confirmDelete(): void {
     if (!this.bookingToDelete) return;
 
-    // TODO: استبدليها بـ API call لمسح الحجز من السيرفر، وبعد الـ success امسحيها محليًا
-    this.bookings = this.bookings.filter(b => b.bookingId !== this.bookingToDelete!.bookingId);
-    this.applyFilter(this.activeFilter);
+    const b         = this.bookingToDelete;
+    const token     = localStorage.getItem('voyago_token');
+    const headers   = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    const url       = `http://voyagoo.runasp.net/Account/bookings/${b.rawBookingId}?bookingType=${b.bookingType}`;
 
-    if (this.selectedBooking?.bookingId === this.bookingToDelete.bookingId) {
-      this.selectedBooking = null;
-    }
+    this.http.delete(url, { headers }).subscribe({
+      next: () => {
+        this.bookings = this.bookings.filter(item => item.bookingId !== b.bookingId);
+        this.applyFilter(this.activeFilter);
 
-    this.bookingToDelete = null;
-    this.cdr.detectChanges();
+        if (this.selectedBooking?.bookingId === b.bookingId) {
+          this.selectedBooking = null;
+        }
+
+        this.bookingToDelete = null;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to delete booking:', err);
+        this.bookingToDelete = null;
+        this.cdr.detectChanges();
+      },
+    });
   }
 }
-
-/* ── Mock data ─────────────────────────────────────────────── */
-const MOCK_BOOKINGS: MyBookingItem[] = [
-  {
-    bookingType:    'hotel',
-    bookingId:      'MH-2024-0001',
-    hotelName:      'Grand Nile Tower',
-    hotelImage:     'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80',
-    checkIn:        '2025-07-10',
-    checkOut:       '2025-07-14',
-    totalNights:    4,
-    rooms:          [{ type: 'Deluxe Double', quantity: 1, price: 850 }],
-    totalAmount:    3740,
-    serviceCharge:  340,
-    discount:       5,
-    discountAmount: 187,
-    paymentMethod:  'credit',
-    status:         'confirmed',
-    createdAt:      '2025-06-01',
-  },
-  {
-    bookingType:    'hotel',
-    bookingId:      'MH-2024-0002',
-    hotelName:      'Marriott Mena House',
-    hotelImage:     'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=80',
-    checkIn:        '2025-08-01',
-    checkOut:       '2025-08-05',
-    totalNights:    4,
-    rooms:          [{ type: 'Suite', quantity: 1, price: 1200 }],
-    totalAmount:    5100,
-    serviceCharge:  300,
-    discount:       0,
-    discountAmount: 0,
-    paymentMethod:  'cash',
-    status:         'pending',
-    createdAt:      '2025-06-10',
-  },
-  {
-    bookingType:   'tourguide',
-    bookingId:     'TG-9F3K-22LP',
-    guideName:     'Ahmed Hassan',
-    guideImage:    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80',
-    date:          '2025-07-20',
-    days:          2,
-    pricePerDay:   600,
-    totalAmount:   1200,
-    paymentMethod: 'credit',
-    status:        'confirmed',
-    createdAt:     '2025-06-15',
-  },
-  {
-    bookingType:       'restaurant',
-    bookingId:         'RES-7QX4KD2A',
-    restaurantName:    'Nile Breeze Restaurant',
-    restaurantImage:   'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80',
-    restaurantAddress: 'Corniche El Nil, Fayoum',
-    date:              '2025-07-05',
-    guestName:         'Mona Saeed',
-    phone:             '01012345678',
-    tables:            [{ type: 'Table For 4', quantity: 1, price: 0 }],
-    totalAmount:       0,
-    status:            'confirmed',
-    createdAt:         '2025-06-12',
-  },
-];

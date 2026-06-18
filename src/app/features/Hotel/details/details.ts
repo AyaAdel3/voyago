@@ -350,14 +350,13 @@ export class Details implements OnInit {
       extraFeatures,
     };
 
-    console.log('📤 Payload:', JSON.stringify(payload, null, 2));
-    console.log('📋 Selected features:', JSON.stringify(this.selectedFeatures, null, 2));
-
     const token = localStorage.getItem('voyago_token') ?? '';
 
     this.bookingSubmitting = true;
     this.hotelService.createBooking(this.hotel.id, payload, token).subscribe({
       next: (res) => {
+        // ✅ حفظ الـ bookingId عشان confirmBooking يقدر يبني الـ URL صح
+        this.hotelService.saveBookingId(res.bookingId);
         this.bookingSubmitting = false;
 
         const bookingData: BookingData = {
@@ -381,8 +380,6 @@ export class Details implements OnInit {
       },
       error: (err) => {
         console.error('Booking failed:', err);
-        console.error('Error status:', err.status);
-        console.error('Error body:', JSON.stringify(err.error, null, 2));
         this.bookingSubmitting = false;
         this.bookingError = err?.error?.message || 'Failed to create booking. Please try again.';
         this.cdr.detectChanges();

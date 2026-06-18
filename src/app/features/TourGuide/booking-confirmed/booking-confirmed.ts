@@ -1,8 +1,3 @@
-// ============================================================
-// booking-confirmed.ts  →  src/app/features/TourGuide/booking-confirmed/
-// صفحة التأكيد بعد إتمام حجز التور جايد
-// ============================================================
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,20 +21,13 @@ export class BookingConfirmed implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // جيب الـ params من الـ URL
-    this.paymentMethod = this.route.snapshot.queryParamMap.get('method') || 'credit';
+    // الـ bookingId والـ method بييجوا من الـ queryParams اللي بعتهم booking.ts
+    this.bookingId     = this.route.snapshot.queryParamMap.get('bookingId') || 'TG-0000';
+    this.paymentMethod = this.route.snapshot.queryParamMap.get('method')    || 'credit';
 
-    // ولد booking ID عشوائي
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    this.bookingId = 'TG-' +
-      Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('') + '-' +
-      Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
-
-    // جيب البيانات من الـ sessionStorage
     const raw = sessionStorage.getItem('tourGuideBooking');
     if (raw) {
       this.booking = JSON.parse(raw);
-      // امسح بعد ما قرأت
       sessionStorage.removeItem('tourGuideBooking');
     } else {
       this.router.navigate(['/home']);
