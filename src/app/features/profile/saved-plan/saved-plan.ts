@@ -1,3 +1,4 @@
+// saved-plan.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
@@ -15,87 +16,27 @@ export class SavedPlanComponent implements OnInit, OnDestroy {
   plans: SavedPlan[] = [];
   private planSub?: Subscription;
 
-  // ── 1. ستايدر الخطط الأساسي (Your Plans) ──
-  planOffset = 0; 
-  readonly PLANS_VISIBLE = 3; 
-
-  // ── 2. إندكس السلايدر الداخلي (المطاعم والأماكن) ──
-  sliderIndex: {
-    [planId: string]: {
-      restaurants: number;
-      tourGuides: number;
-      attractions: number;
-    };
-  } = {};
+  /** الخطة المطلوب مسحها — بتفتح بوب أب التأكيد، زي منطق البوكينج */
+  planToDelete: SavedPlan | null = null;
 
   constructor(private planService: PlanService, private router: Router) {}
 
   ngOnInit(): void {
     this.planSub = this.planService.plans$.subscribe((data: SavedPlan[]) => {
       this.plans = data;
-      
-      // لو مسحت خطة والـ offset كان كبير، نرجعه لورا عشان ميبقاش "Not Found"
-      if (this.planOffset >= this.plans.length && this.plans.length > 0) {
-        this.planOffset = Math.max(0, this.plans.length - this.PLANS_VISIBLE);
-      }
-
-      this.plans.forEach(plan => {
-        if (!this.sliderIndex[plan.id]) {
-          this.sliderIndex[plan.id] = {
-            restaurants: 0,
-            tourGuides: 0,
-            attractions: 0
-          };
-        }
-      });
     });
   }
 
-  // ── 3. دوال السلايدر الأساسي (الخطط) ──
-  nextPlans() {
-    if (this.planOffset + this.PLANS_VISIBLE < this.plans.length) {
-      this.planOffset++;
-    }
+  /**
+   * بتحرك أي سلايدر أفقي (هوتيل/مطاعم/أماكن) لشمال أو يمين.
+   * نفس فكرة scrollSection بتاعة صفحة البوكينج بالظبط.
+   */
+  scrollSection(track: HTMLElement, direction: number): void {
+    const amount = track.clientWidth * 0.85 * direction;
+    track.scrollBy({ left: amount, behavior: 'smooth' });
   }
 
-  prevPlans() {
-    if (this.planOffset > 0) {
-      this.planOffset--;
-    }
-  }
-
-  get visiblePlans(): SavedPlan[] {
-    return this.plans.slice(this.planOffset, this.planOffset + this.PLANS_VISIBLE);
-  }
-
-  // ── 4. دوال السلايدر الداخلي (المطاعم والأماكن جوه الخطة) ──
-  readonly VISIBLE = 1; // عدد العناصر اللي بتظهر في السلايدر الداخلي
-
-  slideNext(planId: string, section: 'restaurants' | 'tourGuides' | 'attractions', total: number) {
-    const max = Math.max(0, total - this.VISIBLE);
-    this.sliderIndex[planId][section] = Math.min(this.sliderIndex[planId][section] + 1, max);
-  }
-
-  slidePrev(planId: string, section: 'restaurants' | 'tourGuides' | 'attractions') {
-    this.sliderIndex[planId][section] = Math.max(0, this.sliderIndex[planId][section] - 1);
-  }
-
-  canSlideNext(planId: string, section: 'restaurants' | 'tourGuides' | 'attractions', total: number): boolean {
-    return (this.sliderIndex[planId]?.[section] ?? 0) < total - this.VISIBLE;
-  }
-
-  canSlidePrev(planId: string, section: 'restaurants' | 'tourGuides' | 'attractions'): boolean {
-    return (this.sliderIndex[planId]?.[section] ?? 0) > 0;
-  }
-
-  getVisible(items: any[], planId: string, section: 'restaurants' | 'tourGuides' | 'attractions'): any[] {
-    if (!items) return [];
-    const start = this.sliderIndex[planId]?.[section] ?? 0;
-    return items.slice(start, start + this.VISIBLE);
-  }
-
-  // ── 5. دوال مساعدة ──
-  goToDetails(category: string, id: any) {
+  goToDetails(category: string, id: any): void {
     if (!id) return;
     this.router.navigateByUrl(`/${category}/details/${id}`);
   }
@@ -112,8 +53,20 @@ export class SavedPlanComponent implements OnInit, OnDestroy {
     return fallbacks[type];
   }
 
-  deletePlan(planId: string) {
-    this.planService.deletePlan(planId);
+  /* ── Delete flow (تأكيد قبل المسح، زي البوكينج) ────────── */
+  requestDeletePlan(plan: SavedPlan, event: MouseEvent): void {
+    event.stopPropagation();
+    this.planToDelete = plan;
+  }
+
+  cancelDeletePlan(): void {
+    this.planToDelete = null;
+  }
+
+  confirmDeletePlan(): void {
+    if (!this.planToDelete) return;
+    this.planService.deletePlan(this.planToDelete.id);
+    this.planToDelete = null;
   }
 
   ngOnDestroy(): void {

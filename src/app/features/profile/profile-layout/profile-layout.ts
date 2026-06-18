@@ -29,6 +29,7 @@ export class ProfileLayout {
     '/profile/personal-information': 'Personal Information',
     '/profile/favorites':            'Favorites',
     '/profile/saved-plan':           'Saved Plan',
+    '/profile/my-bookings': 'My Bookings',
   };
 
   currentTitle = 'Profile';

@@ -1,3 +1,4 @@
+/* saved-plan.css */
 :host {
   display: block;
   font-family: 'Poppins', sans-serif;
@@ -19,74 +20,23 @@
   margin: 0;
 }
 
-/* ─── Main Slider Controls ────────────────────────── */
-.main-slider-controls {
+/* ─── Plans List (خطة تحت خطة) ───────────────────── */
+.plans-list {
   display: flex;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.arrow-btn {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: white;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.arrow-btn:hover:not(:disabled) {
-  background: rgba(255, 225, 148, 0.3);
-  color: #FFE194;
-}
-
-.arrow-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-/* ─── Plans Row ───────────────────────────────────── */
-.plans-row {
-  display: flex;
-  flex-direction: row;
-  gap: 1.5rem;
-  overflow-x: auto;
-  padding-bottom: 1.5rem;
-  align-items: flex-start;
-  scrollbar-width: thin;
-  scrollbar-color: #1e2e40 transparent;
-}
-
-.plans-row::-webkit-scrollbar {
-  height: 6px;
-}
-
-.plans-row::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.plans-row::-webkit-scrollbar-thumb {
-  background: #1e2e40;
-  border-radius: 3px;
-}
-
-/* ─── Plan Column ─────────────────────────────────── */
-.plan-column {
-  min-width: 340px;
-  max-width: 340px;
+/* ─── Plan Section (خطة واحدة بعرض كامل) ──────────── */
+.plan-section {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid #1e2e40;
   border-radius: 20px;
-  padding: 1.5rem;
-  flex-shrink: 0;
+  padding: 1.75rem;
 }
 
 /* ─── Plan Header ─────────────────────────────────── */
@@ -101,23 +51,39 @@
 .plan-title {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #FFE194;
+  color: #ffe194;
   margin: 0;
 }
 
 .delete-plan-btn {
-  background: rgba(255, 80, 80, 0.15);
-  border: 1px solid rgba(255, 80, 80, 0.3);
-  color: #ff6b6b;
-  padding: 0.3rem 0.6rem;
-  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 0.5px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  font-size: 1rem;
   transition: background 0.2s;
+  flex-shrink: 0;
 }
 
 .delete-plan-btn:hover {
-  background: rgba(255, 80, 80, 0.3);
+  background: rgba(239, 68, 68, 0.22);
+}
+
+/* ─── Plan Columns (Hotel / Restaurants / Attractions جنب بعض) ── */
+.plan-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.plan-columns > .fav-section:not(:first-child) {
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  padding-left: 1.5rem;
 }
 
 /* ─── Section ─────────────────────────────────────── */
@@ -125,6 +91,8 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .section-header {
@@ -141,6 +109,13 @@
   color: #ffffff;
   flex: 1;
   margin: 0;
+}
+
+.section-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  margin-left: 6px;
 }
 
 /* ─── Inner Slider Controls ───────────────────────── */
@@ -163,16 +138,32 @@
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
+  flex-shrink: 0;
 }
 
 .small-arrow:hover:not(:disabled) {
   background: rgba(255, 225, 148, 0.3);
-  color: #FFE194;
+  color: #ffe194;
 }
 
 .small-arrow:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+}
+
+/* ─── Horizontal Slider Track ── */
+.slider-track {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.slider-track::-webkit-scrollbar {
+  display: none;
 }
 
 /* ─── Card ────────────────────────────────────────── */
@@ -181,7 +172,9 @@
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid #1e2e40;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .actual-card:hover {
@@ -189,9 +182,19 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
+.slider-track .actual-card {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
+.slider-track:has(.actual-card:only-child) .actual-card {
+  flex: 1 1 auto;
+  width: 100%;
+}
+
 .card-img {
   width: 100%;
-  height: 160px;
+  height: 140px;
   object-fit: cover;
   display: block;
 }
@@ -212,14 +215,14 @@
 }
 
 .view-btn {
-  background: #FFE194;
+  background: #ffe194;
   border: none;
   padding: 0.4rem 1rem;
   width: 100%;
   border-radius: 20px;
   font-weight: 700;
   cursor: pointer;
-  color: #0A1128;
+  color: #0a1128;
   font-size: 0.82rem;
   transition: opacity 0.2s;
 }
@@ -258,149 +261,227 @@
   border-radius: 12px;
   color: rgba(255, 255, 255, 0.35);
   font-size: 0.85rem;
+  text-align: center;
+  flex: 1;
 }
 
 .empty-state-small p {
   margin: 0;
 }
 
+/* ── Delete Confirmation Popup ── */
+.confirm-delete-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.confirm-delete-card {
+  background: #0f1b2d;
+  border: 0.5px solid rgba(239, 68, 68, 0.25);
+  border-radius: 18px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.confirm-delete-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.confirm-delete-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.confirm-delete-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+  margin: 0 0 6px;
+}
+
+.confirm-delete-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.btn-cancel-delete {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  color: #e0eaf7;
+  padding: 9px 0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-cancel-delete:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-confirm-delete {
+  flex: 1;
+  background: rgba(239, 68, 68, 0.85);
+  border: none;
+  color: #fff;
+  padding: 9px 0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-confirm-delete:hover {
+  background: rgba(239, 68, 68, 1);
+}
+
 /* ════════════════════════════════════════════════════════
    RESPONSIVE
 ════════════════════════════════════════════════════════ */
-
-/* Large screens: 1200px فأقل */
 @media (max-width: 1200px) {
   .content {
     padding: 30px 30px;
   }
-
   .info-header h1 {
     font-size: 28px;
   }
-
-  .plan-column {
-    min-width: 300px;
-    max-width: 300px;
+  .slider-track .actual-card {
+    flex: 0 0 145px;
   }
 }
 
-/* Tablet landscape: 1024px فأقل */
 @media (max-width: 1024px) {
   .content {
     padding: 24px 24px;
   }
-
   .info-header h1 {
     font-size: 24px;
   }
-
-  .plan-column {
-    min-width: 270px;
-    max-width: 270px;
-  }
-
   .card-img {
-    height: 140px;
+    height: 130px;
+  }
+  .plan-columns {
+    gap: 1.1rem;
+  }
+  .plan-columns > .fav-section:not(:first-child) {
+    padding-left: 1.1rem;
+  }
+  .slider-track .actual-card {
+    flex: 0 0 140px;
   }
 }
 
-/* Tablet portrait + Mobile: 768px فأقل */
+@media (max-width: 860px) {
+  .plan-columns {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  .plan-columns > .fav-section:not(:first-child) {
+    border-left: none;
+    padding-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+    padding-top: 1.25rem;
+  }
+  .slider-track .actual-card {
+    flex: 0 0 230px;
+  }
+}
+
 @media (max-width: 768px) {
   .content {
     padding: 16px 12px;
     gap: 1.25rem;
   }
-
   .info-header h1 {
     font-size: 20px;
   }
-
-  /* الخطط تبقى vertical stack بدل horizontal scroll */
-  .plans-row {
-    flex-direction: column;
-    overflow-x: visible;
-    padding-bottom: 0;
-    gap: 1rem;
+  .plans-list {
+    gap: 1.25rem;
   }
-
-  .plan-column {
-    min-width: 100%;
-    max-width: 100%;
+  .plan-section {
     padding: 1rem;
     gap: 1rem;
   }
-
   .empty-state {
     padding: 3rem 2rem;
     font-size: 0.9rem;
   }
-
-  .card-img {
-    height: 180px;
-  }
 }
 
-/* Small Mobile: 480px فأقل */
 @media (max-width: 480px) {
   .content {
     padding: 12px 10px;
   }
-
   .info-header h1 {
     font-size: 18px;
   }
-
-  .plan-column {
+  .plan-section {
     padding: 0.85rem;
     border-radius: 14px;
   }
-
   .plan-title {
     font-size: 0.95rem;
   }
-
-  .card-img {
-    height: 160px;
+  .slider-track .actual-card {
+    flex: 0 0 75%;
   }
-
+  .card-img {
+    height: 150px;
+  }
   .card-body h3 {
     font-size: 0.85rem;
   }
-
   .view-btn {
     font-size: 0.78rem;
     padding: 0.35rem 0.75rem;
   }
-
   .empty-state {
     padding: 2rem 1rem;
     font-size: 0.85rem;
   }
-
   .empty-state .empty-icon {
     font-size: 2.5rem;
   }
 }
 
-/* Extra Small Mobile: 400px فأقل */
 @media (max-width: 400px) {
   .content {
     padding: 10px 8px;
   }
-
   .info-header h1 {
     font-size: 16px;
   }
-
-  .plan-column {
+  .plan-section {
     padding: 0.75rem;
     gap: 0.75rem;
   }
-
-  .card-img {
-    height: 140px;
-  }
-
   .section-header h3 {
     font-size: 0.85rem;
   }

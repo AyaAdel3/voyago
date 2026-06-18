@@ -37,6 +37,7 @@ import { ProfileLayout } from './features/profile/profile-layout/profile-layout'
 import { FavoritesComponent } from './features/profile/favorites/favorites';
 import { PersonalInformation } from './features/profile/personal-information/personal-information';
 import { SavedPlanComponent } from './features/profile/saved-plan/saved-plan';
+import { MyBookingsComponent } from './features/profile/my-bookings/my-bookings';
 
 // Not Found
 import { NotFound } from './features/not-found/not-found';
@@ -60,10 +61,7 @@ export const routes: Routes = [
     path: '',
     component: MainLayout,
     children: [
-      // ✅ root — الأدمن يتوجه للـ dashboard، غيره يشوف الـ home
       { path: '', component: Home, canActivate: [rootGuard], title: 'Home' },
-
-      // ✅ متاح للكل
       { path: 'home', component: Home, title: 'Home' },
 
       // Hotel Routes
@@ -108,6 +106,7 @@ export const routes: Routes = [
       { path: 'personal-information', component: PersonalInformation, title: 'Personal Information' },
       { path: 'favorites', component: FavoritesComponent, title: 'My Favorites' },
       { path: 'saved-plan', component: SavedPlanComponent, title: 'Saved Plans' },
+      { path: 'my-bookings', component: MyBookingsComponent, title: 'My Bookings' },
     ],
   },
 

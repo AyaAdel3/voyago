@@ -951,89 +951,88 @@ body:not(.dark-mode) .profile-input {
 }
 
 /* ── Plan columns ── */
-body:not(.dark-mode) .profile-layout .plan-column {
+body:not(.dark-mode) .plan-section {
   background: #ffffff !important;
   border-color: #d0dce8 !important;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06) !important;
 }
 
-body:not(.dark-mode) .profile-layout .plan-header {
+body:not(.dark-mode) .plan-header {
   border-bottom-color: #d0dce8 !important;
 }
 
-body:not(.dark-mode) .profile-layout .plan-title {
+body:not(.dark-mode) .plan-title {
   color: #173b64 !important;
 }
 
 /* ── Section headers ── */
-body:not(.dark-mode) .profile-layout .section-header {
+body:not(.dark-mode) .section-header {
   border-bottom-color: #d0dce8 !important;
 }
 
-body:not(.dark-mode) .profile-layout .section-header h3 {
+body:not(.dark-mode) .section-header h3 {
   color: #173b64 !important;
 }
 
-body:not(.dark-mode) .profile-layout .section-count {
+body:not(.dark-mode) .section-count {
   background: #e2eaf4 !important;
   color: #1e6ab0 !important;
-}
-body:not(.dark-mode) .profile-layout {
-  background: #f6faff !important;
 }
 
 body:not(.dark-mode) .plan-column {
   background-color: #ffffff;
 }
-body:not(.dark-mode) .plans-row .actual-card {
-  background-color: #173b64 !important;
+body:not(.dark-mode) .actual-card {
+  background-color: #1e6ab0 !important;
 }
 body:not(.dark-mode) .plans-row .card-body h3 {
   color: #f8fafc !important;
 }
 
 /* ── Cards ── */
-body:not(.dark-mode) .profile-layout .actual-card {
-  background: #f8fafc !important;
-  border-color: #d0dce8 !important;
-}
 
 body:not(.dark-mode) .profile-layout .card-body h3 {
   color: #1e6ab0 !important;
 }
 
 /* ── Slider controls ── */
-body:not(.dark-mode) .profile-layout .slider-controls button {
+body:not(.dark-mode) .inner-slider-controls button {
   background: #e2eaf4 !important;
   color: #0d1b2a !important;
 }
 
-body:not(.dark-mode) .profile-layout .slider-controls button:hover:not(:disabled) {
+body:not(.dark-mode) .inner-slider-controls button:hover:not(:disabled) {
   background: rgba(23, 59, 100, 0.15) !important;
   color: #173b64 !important;
 }
 
 /* ── Empty states ── */
-body:not(.dark-mode) .profile-layout .empty-state {
+body:not(.dark-mode) .empty-state {
   border-color: #d0dce8 !important;
   color: #8899bb !important;
 }
 
-body:not(.dark-mode) .profile-layout .empty-state-small {
+body:not(.dark-mode).empty-state-small {
   border-color: #d0dce8 !important;
   color: #8899bb !important;
 }
 
 /* ── Scrollbar ── */
-body:not(.dark-mode) .profile-layout .plans-row {
+body:not(.dark-mode) .plans-row {
   scrollbar-color: #a3c4eb transparent !important;
 }
 
 /* ── Delete plan button ── */
-body:not(.dark-mode) .profile-layout .delete-plan-btn {
-  background: rgba(239, 68, 68, 0.08) !important;
-  border-color: rgba(239, 68, 68, 0.25) !important;
-  color: #ef4444 !important;
+body:not(.dark-mode) .delete-plan-btn {
+  background: rgba(13, 27, 42, 0.05) !important;
+  border-color: rgba(13, 27, 42, 0.12) !important;
+  color: #5a6a7a !important;
+}
+
+body:not(.dark-mode) .delete-plan-btn:hover {
+  background: rgba(220, 50, 50, 0.08) !important;
+  color: #d33 !important;
+  border-color: rgba(220, 50, 50, 0.25) !important;
 }
 
 /* ── Favourites — Light Mode ── */
@@ -1078,11 +1077,11 @@ body:not(.dark-mode) .nav-counter {
   color: #5a6a7a !important;
 }
 
-body:not(.dark-mode) .heart-btn {
-  background: #ffffff !important;
-}
-body:not(.dark-mode) .heart-btn:hover {
+body:not(.dark-mode) .col-footer .heart-btn {
   background: #e2eaf4 !important;
+}
+body:not(.dark-mode) .col-footer .heart-btn:hover {
+  background: #8899bb !important;
 }
 body:not(.dark-mode) .empty-col {
   color: #8899bb !important;
@@ -1217,4 +1216,192 @@ body:not(.dark-mode) .chat-input::placeholder {
 }
 body:not(.dark-mode) .chat-input:focus {
   border-bottom-color: #f5c518 !important;
+}
+
+/* ══════════════════════════════════════
+   MY BOOKINGS — Light Mode
+══════════════════════════════════════ */
+
+/* ── Filter Tabs ── */
+body:not(.dark-mode) .filter-tab {
+  background: #ffffff !important;
+  border-color: #d0dce8 !important;
+  color: #5a6a7a !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+}
+body:not(.dark-mode) .filter-tab:hover {
+  background: #e2eaf4 !important;
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .filter-tab.active {
+  background: #173b64 !important;
+  border-color: #173b64 !important;
+  color: #ffffff !important;
+}
+body:not(.dark-mode) .filter-count {
+  background: #e2eaf4 !important;
+  color: #5a6a7a !important;
+}
+body:not(.dark-mode) .filter-tab.active .filter-count {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+/* ── Loading / Empty ── */
+body:not(.dark-mode) .loading-wrap,
+body:not(.dark-mode) .empty-state {
+  color: #8899bb !important;
+}
+body:not(.dark-mode) .spinner {
+  border-color: rgba(13, 27, 42, 0.12) !important;
+  border-top-color: #f5c518 !important;
+}
+
+/* ── Booking Card ── */
+body:not(.dark-mode) .booking-card {
+  border-color: #e2eaf4 !important;
+}
+body:not(.dark-mode) .booking-card:hover {
+  border-color: rgba(23, 59, 100, 0.3) !important;
+}
+body:not(.dark-mode) .card-img-placeholder {
+  background: #f0f4f8 !important;
+  color: #b9c6d4 !important;
+}
+body:not(.dark-mode) .card-hotel-name {
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .card-booking-id {
+  color: #8899bb !important;
+}
+
+/* ── Dates ── */
+body:not(.dark-mode) .date-item {
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .date-label {
+  color: #8899bb !important;
+}
+body:not(.dark-mode) .date-val {
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .date-arrow {
+  color: #c3cedc !important;
+}
+
+/* ── Meta Chips ── */
+body:not(.dark-mode) .meta-chip {
+  background: #f0f4f8 !important;
+  border-color: #d0dce8 !important;
+  color: #5a6a7a !important;
+}
+body:not(.dark-mode) .pay-chip {
+  color: #173b64 !important;
+  border-color: rgba(23, 59, 100, 0.2) !important;
+}
+
+/* ── Card Footer ── */
+body:not(.dark-mode) .footer-label {
+  color: #8899bb !important;
+}
+body:not(.dark-mode) .footer-amount {
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .footer-deposit-note {
+  color: #8899bb !important;
+}
+body:not(.dark-mode) .footer-details-btn {
+  background: #e2eaf4 !important;
+  color: #173b64 !important;
+  border-color: rgba(23, 59, 100, 0.25) !important;
+}
+body:not(.dark-mode) .footer-details-btn:hover {
+  background: #d8e4f0 !important;
+}
+
+/* ── Modal ── */
+body:not(.dark-mode) .modal-box {
+  background: #ffffff !important;
+  border-color: #d0dce8 !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15) !important;
+}
+body:not(.dark-mode) .modal-close {
+  background: #e2eaf4 !important;
+  color: #5a6a7a !important;
+}
+body:not(.dark-mode) .modal-close:hover {
+  background: #d8e4f0 !important;
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .modal-title {
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .modal-val-bold {
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .modal-divider {
+  background: #e8f0f8 !important;
+}
+body:not(.dark-mode) .modal-section-title {
+  color: #8899bb !important;
+}
+body:not(.dark-mode) .modal-label {
+  color: #5a6a7a !important;
+}
+body:not(.dark-mode) .modal-val {
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .modal-row-discount .modal-val {
+  color: #16a34a !important;
+}
+body:not(.dark-mode) .modal-row-total {
+  border-top-color: #d0dce8 !important;
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .modal-deposit-note {
+  background: #fff7e6 !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  color: #5a6a7a !important;
+}
+body:not(.dark-mode) .modal-deposit-note svg {
+  color: #d97706 !important;
+}
+body:not(.dark-mode) .modal-deposit-note strong {
+  color: #d97706 !important;
+}
+
+/* ── Delete Confirmation ── */
+body:not(.dark-mode) .confirm-delete-card {
+  background: #ffffff !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.15) !important;
+}
+body:not(.dark-mode) .confirm-delete-title {
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .confirm-delete-text {
+  color: #5a6a7a !important;
+}
+body:not(.dark-mode) .btn-cancel-delete {
+  background: #e2eaf4 !important;
+  border-color: #d0dce8 !important;
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .btn-cancel-delete:hover {
+  background: #d8e4f0 !important;
+}
+
+/* ── Type Sections (Hotels / Restaurants / Tour Guides) ── */
+body:not(.dark-mode) .type-section-title {
+  color: #0d1b2a !important;
+}
+body:not(.dark-mode) .type-section-count {
+  color: #8899bb !important;
+}
+body:not(.dark-mode) .slider-arrow {
+  background: #ffffff !important;
+  border-color: #d0dce8 !important;
+  color: #173b64 !important;
+}
+body:not(.dark-mode) .slider-arrow:hover {
+  background: #e2eaf4 !important;
 }

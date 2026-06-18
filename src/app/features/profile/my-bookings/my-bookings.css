@@ -1,0 +1,736 @@
+:host {
+  display: block;
+  font-family: 'Poppins', sans-serif;
+}
+
+.content {
+  flex: 1;
+  padding: 30px 40px;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.info-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: white;
+}
+
+/* ── Filter Tabs ────────────────────────────────────────── */
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.filter-tab:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e0eaf7;
+}
+
+.filter-tab.active {
+  background: rgba(255, 225, 148, 0.15);
+  border-color: #ffe194;
+  color: #ffe194;
+}
+
+.filter-count {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 11px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.filter-tab.active .filter-count {
+  background: rgba(255, 225, 148, 0.2);
+  color: #ffe194;
+}
+
+/* ── Loading ─────────────────────────────────────────────── */
+.loading-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 4rem 0;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 13px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: #ffe194;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Empty ───────────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 4rem 0;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 14px;
+}
+
+.empty-state p {
+  margin: 0;
+}
+
+/* ── Grid ────────────────────────────────────────────────── */
+.bookings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+/* ── Booking Card ───────────────────────────────────────── */
+.booking-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 0.5px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition:
+    border-color 0.2s,
+    transform 0.15s;
+}
+
+.booking-card:hover {
+  border-color: rgba(255, 225, 148, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ── Image ───────────────────────────────────────────────── */
+.card-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/7;
+  overflow: hidden;
+}
+
+.card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s;
+}
+
+.booking-card:hover .card-img {
+  transform: scale(1.03);
+}
+
+.card-img-placeholder {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Status Badge ───────────────────────────────────────── */
+.status-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.status-confirmed {
+  background: rgba(34, 197, 94, 0.85);
+  color: #fff;
+}
+
+.status-pending {
+  background: rgba(251, 191, 36, 0.85);
+  color: #1a1a00;
+}
+
+/* non-absolute badge inside modal */
+.modal-id-row .status-badge {
+  position: static;
+}
+
+/* ── Card Body ───────────────────────────────────────────── */
+.card-body {
+  padding: 14px 16px 10px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.card-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-hotel-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e0eaf7;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.card-booking-id {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── Dates ───────────────────────────────────────────────── */
+.card-dates {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #7a9cc6;
+}
+
+.date-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.date-val {
+  font-size: 12px;
+  font-weight: 500;
+  color: #a3c4eb;
+}
+
+.date-arrow {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 13px;
+}
+
+/* ── Meta Chips ──────────────────────────────────────────── */
+.card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.meta-chip {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.05);
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.pay-chip {
+  color: #ffe194;
+  border-color: rgba(255, 225, 148, 0.15);
+}
+
+/* ── Card Footer ─────────────────────────────────────────── */
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-top: 0.5px solid rgba(255, 255, 255, 0.06);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.footer-total {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.footer-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.footer-amount {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffe194;
+}
+
+.footer-deposit-note {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  flex: 1;
+  text-align: center;
+}
+
+.footer-details-btn {
+  background: rgba(255, 225, 148, 0.12);
+  color: #ffe194;
+  border: 0.5px solid rgba(255, 225, 148, 0.3);
+  padding: 5px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'Poppins', sans-serif;
+  white-space: nowrap;
+}
+
+.footer-details-btn:hover {
+  background: rgba(255, 225, 148, 0.22);
+}
+
+/* ══════════════════════════════════════════════════════════
+   MODAL
+══════════════════════════════════════════════════════════ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.modal-box {
+  background: #0d1f33;
+  border: 0.5px solid rgba(163, 196, 235, 0.15);
+  border-radius: 20px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 480px;
+  max-height: 88vh;
+  overflow-y: auto;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  transition: background 0.2s;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #e0eaf7;
+  margin: 0 0 4px;
+}
+
+.modal-img {
+  width: 100%;
+  aspect-ratio: 16/7;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.modal-id-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.modal-val-bold {
+  font-size: 13px;
+  font-weight: 700;
+  color: #a3c4eb;
+  margin: 2px 0 0;
+}
+
+.modal-divider {
+  height: 0.5px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 4px 0;
+}
+
+.modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.3);
+  margin: 4px 0 2px;
+}
+
+.modal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.modal-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.modal-val {
+  font-size: 13px;
+  font-weight: 500;
+  color: #c8dff5;
+  text-align: right;
+}
+
+.modal-row-discount .modal-val {
+  color: #4ade80;
+}
+
+.modal-row-total {
+  padding-top: 8px;
+  border-top: 0.5px solid rgba(255, 255, 255, 0.08);
+  font-weight: 700;
+  color: #ffe194;
+  font-size: 15px;
+}
+
+.modal-deposit-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  background: rgba(251, 191, 36, 0.08);
+  border: 0.5px solid rgba(251, 191, 36, 0.2);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+}
+
+.modal-deposit-note svg {
+  flex-shrink: 0;
+  color: #fbbf24;
+  margin-top: 1px;
+}
+.modal-deposit-note strong {
+  color: #fbbf24;
+}
+/* ── Type Badge (Hotel / Tour Guide) ── */
+.type-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(13, 31, 51, 0.75);
+  color: #c8dff5;
+  backdrop-filter: blur(2px);
+  white-space: nowrap;
+}
+
+/* ── Footer Actions (Delete + Details) ── */
+.footer-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footer-delete-btn {
+  background: rgba(239, 68, 68, 0.1);
+  border: 0.5px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.footer-delete-btn:hover {
+  background: rgba(239, 68, 68, 0.22);
+}
+
+/* ── Delete Confirmation Popup ── */
+.confirm-delete-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 1rem;
+}
+
+.confirm-delete-card {
+  background: #0d1f33;
+  border: 0.5px solid rgba(239, 68, 68, 0.25);
+  border-radius: 18px;
+  padding: 1.75rem;
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.confirm-delete-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.confirm-delete-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e0eaf7;
+  margin: 0;
+}
+
+.confirm-delete-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+  margin: 0 0 6px;
+}
+
+.confirm-delete-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.btn-cancel-delete {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  color: #c8dff5;
+  padding: 9px 0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-cancel-delete:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-confirm-delete {
+  flex: 1;
+  background: rgba(239, 68, 68, 0.85);
+  border: none;
+  color: #fff;
+  padding: 9px 0;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.btn-confirm-delete:hover {
+  background: rgba(239, 68, 68, 1);
+}
+
+/* ── Sections (Hotels / Restaurants / Tour Guides) ── */
+.bookings-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.type-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.type-section-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #e0eaf7;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.type-section-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.slider-nav {
+  display: flex;
+  gap: 6px;
+}
+
+.slider-arrow {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: #c8dff5;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.slider-arrow:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.slider-track {
+  display: flex;
+  gap: 18px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.slider-track::-webkit-scrollbar {
+  display: none;
+}
+
+.slider-track .booking-card {
+  flex: 0 0 360px;
+  scroll-snap-align: start;
+  cursor: default;
+}
+
+@media (max-width: 640px) {
+  .slider-track .booking-card {
+    flex: 0 0 90%;
+  }
+}
+
+.card-dates .date-item {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .content {
+    padding: 20px 16px;
+  }
+  .bookings-grid {
+    grid-template-columns: 1fr;
+  }
+  .info-header h1 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 16px 12px;
+  }
+  .filter-tab {
+    font-size: 12px;
+    padding: 5px 12px;
+  }
+  .card-hotel-name {
+    font-size: 14px;
+  }
+  .footer-amount {
+    font-size: 14px;
+  }
+  .modal-box {
+    padding: 1.25rem;
+  }
+}
