@@ -20,6 +20,9 @@ export class AdminLayout {
   currentTitle = 'Dashboard';
   currentSubtitle = "Welcome back! Here's an overview of your tourism management system";
 
+  // ✅ Sidebar state
+  isSidebarOpen = false;
+
   navItems = [
     { label: 'Dashboard',   icon: 'dashboard',   path: '/admin/dashboard' },
     { label: 'Hotels',      icon: 'hotel',       path: '/admin/hotels' },
@@ -51,6 +54,9 @@ export class AdminLayout {
         this.currentTitle = info.title;
         this.currentSubtitle = info.subtitle;
       }
+
+      // ✅ تقفل الـ drawer تلقائياً عند التنقل بين الصفحات
+      this.isSidebarOpen = false;
     });
   }
 
@@ -60,10 +66,14 @@ export class AdminLayout {
     return this.router.url.startsWith(path);
   }
 
-  // ✅ الصح
-logout(): void {
-  this.auth.logout().subscribe({
-    complete: () => this.router.navigate(['/home'])
-  });
-}
+  // ✅ Toggle الـ sidebar
+  toggleSidebar(): void {
+    this.isSidebarOpen = !this.isSidebarOpen;
+  }
+
+  logout(): void {
+    this.auth.logout().subscribe({
+      complete: () => this.router.navigate(['/home'])
+    });
+  }
 }
