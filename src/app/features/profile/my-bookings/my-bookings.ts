@@ -3,7 +3,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-
+import { environment } from '../../../../environments/environment';
 /* ── Shared shape: hotel rooms & restaurant tables ─────────── */
 export interface BookingRoom {
   type:     string;
@@ -141,7 +141,7 @@ export class MyBookingsComponent implements OnInit {
     { label: 'Pending',   value: 'pending'   },
   ];
 
-  private readonly apiUrl = 'http://voyagoo.runasp.net/Account/bookings';
+  private readonly apiUrl = `${environment.apiUrl}/Account/bookings`;
 
   constructor(
     private cdr: ChangeDetectorRef,
@@ -380,7 +380,7 @@ export class MyBookingsComponent implements OnInit {
     const b         = this.bookingToDelete;
     const token     = localStorage.getItem('voyago_token');
     const headers   = new HttpHeaders({ Authorization: `Bearer ${token}` });
-    const url       = `http://voyagoo.runasp.net/Account/bookings/${b.rawBookingId}?bookingType=${b.bookingType}`;
+   const url = `${environment.apiUrl}/Account/bookings/${b.rawBookingId}?bookingType=${b.bookingType}`;
 
     this.http.delete(url, { headers }).subscribe({
       next: () => {
