@@ -84,36 +84,36 @@ export class AuthService {
     );
   }
 
-  refreshToken(): Observable<AuthResponse> {
-    const token        = localStorage.getItem('voyago_token');
-    const refreshToken = localStorage.getItem('voyago_refresh_token');
+ refreshToken(): Observable<AuthResponse> {
+  const token = localStorage.getItem('voyago_token');
+  const refreshToken = localStorage.getItem('voyago_refresh_token');
 
-    if (!token || !refreshToken) {
-      return throwError(() => new Error('No tokens available'));
-    }
-
-    const refreshExpStr = localStorage.getItem('voyago_refresh_token_expiration');
-    if (refreshExpStr) {
-      const refreshExp = new Date(refreshExpStr).getTime();
-      if (Date.now() >= refreshExp) {
-        this._clearLocalStorage();
-        return throwError(() => new Error('Refresh token expired'));
-      }
-    }
-
-    return this.http.post<AuthResponse>(
-      `${BASE_URL}/auth/refresh`,
-      { token, refreshToken }
-    ).pipe(
-      map(res => { this._saveTokens(res); return res; }),
-      catchError(err => {
-        // الـ backend رفض التوكنات (400/401) — مفيش فايدة من إعادة المحاولة
-        // ننظف على طول عشان منعملش loop من 401 → refresh فاشل → 401 تاني
-        this._clearLocalStorage();
-        return throwError(() => err);
-      })
-    );
+  if (!token || !refreshToken) {
+    return throwError(() => new Error('No tokens available'));
   }
+
+  const refreshExpStr = localStorage.getItem('voyago_refresh_token_expiration');
+  if (refreshExpStr) {
+    const refreshExp = new Date(refreshExpStr).getTime();
+    if (Date.now() >= refreshExp) {
+      this._clearLocalStorage();
+      return throwError(() => new Error('Refresh token expired'));
+    }
+  }
+
+  return this.http.post<AuthResponse>(
+    `${BASE_URL}/auth/refresh`,
+    { token, refreshToken }
+  ).pipe(
+    map(res => { this._saveTokens(res); return res; }),
+    catchError(err => {
+      // نسجل الـ response الحقيقي في الكونسول عشان نشوف رسالة الباك إند بالظبط
+      console.error('Refresh failed. Backend response:', err?.error);
+      this._clearLocalStorage();
+      return throwError(() => err);
+    })
+  );
+}
 
   getProfile(): Observable<User> {
     return this.http.get<any>(`${BASE_URL}/Account/profile`).pipe(
