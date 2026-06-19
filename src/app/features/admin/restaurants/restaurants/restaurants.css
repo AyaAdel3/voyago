@@ -611,36 +611,56 @@ h2.section-title {
     font-size: 0.75rem;
   }
 
-  /* الـ badge والأزرار في سطر واحد */
-  .actions-cell {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    margin-top: 0.4rem;
-    padding-top: 0.4rem;
-    border-top: 1px solid #e2e8f0;
-  }
-
+  /* ===== السطر الأخير: الـ badge + كل الأزرار في صف واحد واحد ===== */
   .table-row.rest-grid > span:has(.status-badge) {
     order: 9;
+    width: auto;
+    flex-shrink: 0;
     margin-top: 0.4rem;
     padding-top: 0.4rem;
     border-top: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
   }
 
   .actions-cell {
     order: 10;
-    border-top: none;
-    margin-top: 0;
-    padding-top: 0;
     width: auto;
+    flex: 1;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.3rem;
+    margin-top: 0.4rem;
+    padding-top: 0.4rem;
+    border-top: 1px solid #e2e8f0;
+    overflow-x: auto;
   }
 
-  /* wrapper للسطر الأخير يجمع الـ badge والأزرار */
-  .table-row.rest-grid > span:has(.status-badge),
-  .actions-cell {
+  /* تصغير الأزرار شوية عشان تتسع كلها في صف واحد */
+  .actions-cell .btn-view-site,
+  .actions-cell .btn-reviews {
+    padding: 4px 7px;
+    font-size: 0.68rem;
+    gap: 3px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  .actions-cell .btn-icon {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    padding: 0;
     display: flex;
     align-items: center;
+    justify-content: center;
+  }
+
+  .status-badge {
+    font-size: 0.7rem;
+    padding: 3px 8px;
+    white-space: nowrap;
   }
 }

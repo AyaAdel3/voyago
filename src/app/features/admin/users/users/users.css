@@ -1,6 +1,33 @@
+/* ── Users card row layout ── */
+.users-grid-header {
+  grid-template-columns: 1fr auto;
+}
+
+.users-card-row {
+  display: flex !important;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.users-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.users-card-email {
+  font-size: 0.78rem;
+  color: #64748b;
+  text-align: left;
+}
+
+/* ── باقي CSS بتاعك زي ما هو ── */
 .users-grid {
   grid-template-columns: 2fr 2fr 1fr;
 }
+
 .mini-rating {
   display: flex;
   align-items: center;
@@ -15,7 +42,7 @@
 .status-badge:hover {
   opacity: 0.8;
 }
-/* ── Error banner ──────────────────────────────────────────────────── */
+
 .error-banner {
   display: flex;
   align-items: center;
@@ -44,7 +71,6 @@
   background: #e0a800;
 }
 
-/* ── Refresh button ────────────────────────────────────────────────── */
 .refresh-btn {
   display: flex;
   align-items: center;
@@ -62,22 +88,21 @@
 .refresh-btn:hover:not(:disabled) {
   background: #eef3f8;
 }
+
 .refresh-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
+
 .spin {
   display: inline-block;
   animation: spin 0.8s linear infinite;
 }
 
-/* ── Skeleton rows ─────────────────────────────────────────────────── */
 .skeleton-row {
   pointer-events: none;
 }
@@ -97,15 +122,10 @@
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-/* ── Empty state ───────────────────────────────────────────────────── */
 .empty-state {
   padding: 40px;
   text-align: center;

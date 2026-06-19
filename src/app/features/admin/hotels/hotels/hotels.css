@@ -447,3 +447,21 @@ h2.section-title {
     order: 9;
   }
 }
+/* في الـ CSS بتاع الهوتيلز */
+
+/* الـ mobile badge مخفي دايماً في الديسكتوب */
+.status-badge-mobile {
+  display: none;
+}
+
+/* بيظهر بس في الموبايل */
+@media (max-width: 768px) {
+  .status-badge-mobile {
+    display: inline-flex;
+  }
+
+  /* وتخبي النسخة الـ desktop */
+  .status-cell-desktop {
+    display: none;
+  }
+}

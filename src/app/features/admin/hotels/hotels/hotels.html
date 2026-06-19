@@ -70,12 +70,22 @@
           <span class="rooms-total">{{ h.totalRooms }} rooms</span>
         </div>
         <span class="price-cell">{{ h.priceRange }}</span>
-        <span>
+
+        <!-- النسخة الأصلية: تفضل ظاهرة في الديسكتوب في عمودها،
+             وتختفي في الموبايل (عبر كلاس status-cell-desktop) -->
+        <span class="status-cell-desktop">
           <span class="status-badge" [ngClass]="'status-' + h.status.toLowerCase()">
             {{ h.status }}
           </span>
         </span>
+
         <div class="actions-cell">
+          <!-- النسخة المكررة: مخفية في الديسكتوب، وتظهر بس في
+               الموبايل جنب أزرار View / Reviews / Edit / Delete -->
+          <span class="status-badge status-badge-mobile" [ngClass]="'status-' + h.status.toLowerCase()">
+            {{ h.status }}
+          </span>
+
           <button class="btn-view-site" (click)="viewOnSite(h)">
             <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
               <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>

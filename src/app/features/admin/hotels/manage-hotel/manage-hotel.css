@@ -137,9 +137,24 @@
 .room-input-wrap { display: flex; flex-direction: column; gap: 0.3rem; }
 
 .room-input-label {
-  font-size: 0.75rem; font-weight: 700;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: #7a9cbf;
-  text-transform: uppercase; letter-spacing: 0.04em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  min-height: 2.1em;
+  display: flex;
+  align-items: flex-end;
+  line-height: 1.05;
+}
+
+.price-badge-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #4a6a88;
 }
 
 .room-input { text-align: center; font-weight: 700; font-size: 1rem; }

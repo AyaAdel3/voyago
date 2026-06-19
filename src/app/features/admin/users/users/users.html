@@ -36,7 +36,6 @@
             S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
           />
         </svg>
-
         <input
           type="text"
           placeholder="Search Users..."
@@ -44,30 +43,24 @@
           (ngModelChange)="onSearch()"
         />
       </div>
-
       <button class="refresh-btn" (click)="loadUsers()">↻ Refresh</button>
     </div>
 
-    <!-- Table -->
+    <!-- Table Header -->
     <div class="admin-table">
-      <div class="table-header users-grid">
+      <div class="table-header users-grid-header">
         <span>Users Name</span>
-        <span>Email</span>
         <span>Status</span>
       </div>
 
       <div *ngIf="filtered.length === 0" class="empty-state">
-        <span> No users found{{ searchQuery ? ' for "' + searchQuery + '"' : '' }} </span>
+        <span>No users found{{ searchQuery ? ' for "' + searchQuery + '"' : '' }}</span>
       </div>
 
-      <div *ngFor="let u of filtered" class="table-row users-grid">
-        <span class="cell-name">{{ u.name }}</span>
-
-        <span class="cell-muted">
-          {{ u.email }}
-        </span>
-
-        <span>
+      <!-- User Card Row -->
+      <div *ngFor="let u of filtered" class="table-row users-card-row">
+        <div class="users-card-top">
+          <span class="cell-name">{{ u.name }}</span>
           <span
             class="status-badge"
             [ngClass]="'status-' + u.status.toLowerCase()"
@@ -77,14 +70,14 @@
           >
             {{ u.status }}
           </span>
-        </span>
+        </div>
+        <span class="users-card-email">{{ u.email }}</span>
       </div>
     </div>
 
     <!-- Pagination -->
     <div class="pagination" *ngIf="totalPages.length > 1">
       <button class="page-btn arrow" [disabled]="currentPage === 1" (click)="prevPage()">‹</button>
-
       <button
         *ngFor="let p of totalPages"
         class="page-btn"
@@ -93,7 +86,6 @@
       >
         {{ p }}
       </button>
-
       <button
         class="page-btn arrow"
         [disabled]="currentPage === totalPages.length"

@@ -124,7 +124,6 @@
 .mini-row {
   display: grid;
   grid-template-columns: 2fr 1.5fr 1fr 1.5fr;
-  gap: 0.5rem; /* ✅ مهم: يمنع التراكب بين الأعمدة */
   padding: 0.4rem 0.75rem;
   font-size: 0.75rem;
   align-items: center;
@@ -146,11 +145,6 @@
   font-weight: 700;
   color: #0d1526;
   font-size: 0.8rem;
-  /* ✅ منع اسم طويل من دفع الأعمدة التانية */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
 }
 
 .mini-muted {
@@ -161,7 +155,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   min-width: 0;
-  display: block;
 }
 
 .mini-rating {
@@ -176,10 +169,8 @@
 .mini-actions {
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* ✅ يثبت الزرار يمين العمود بتاعه دايمًا */
   gap: 0.4rem;
-  flex-wrap: nowrap; /* ✅ يمنع نزول الزرار تحت الإيميل */
-  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .status-badge {
@@ -188,7 +179,6 @@
   padding: 0.2rem 0.5rem;
   border-radius: 20px;
   white-space: nowrap;
-  flex-shrink: 0; /* ✅ يمنع انضغاط أو دخول الزرار تحت أي عنصر */
 }
 
 .status-active {
@@ -218,7 +208,6 @@
   cursor: pointer;
   transition: background 0.2s;
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .btn-view-site:hover {
@@ -238,18 +227,38 @@
   grid-template-columns: 1fr 0.6fr 0.5fr;
 }
 
-/* ✅ Users - عدلنا النسب + overflow للـ email */
-.users-header,
+/* ✅ Users - card layout: name+badge on top, email below */
+.users-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #7a9cbf;
+}
+
 .users-row {
-  grid-template-columns: 1.2fr 1.8fr 0.9fr; /* ✅ مساحة أكبر وثابتة لعمود الـ Active */
+  display: flex !important;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.55rem 0.75rem;
+  background: #f1f5f9;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  grid-template-columns: unset !important;
+}
+
+.users-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
 }
 
-.users-row .mini-muted {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  min-width: 0;
+.users-email {
+  font-size: 0.72rem;
+  color: #64748b;
+  word-break: break-all;
 }
 
 /* ── Hotels (full width) ── */
@@ -257,6 +266,7 @@
 .hotels-row {
   grid-template-columns: 3fr 3fr 2fr 1fr;
 }
+
 
 /* ── restaurant ── */
 .rest-header,
@@ -298,58 +308,15 @@
     min-width: 420px;
   }
 
-  .users-row,
-  .users-header {
-    min-width: 0;
-  }
-
-  .recent-block:has(.users-row) .mini-table {
-    min-width: 0;
-    width: 100%;
-  }
-
   .hotels-header,
   .hotels-row {
     grid-template-columns: 2fr 2fr 1fr 1fr;
   }
 
-  /* ✅ Users على mobile: الاسم فوق، الإيميل تحته، Active لوحده يمين */
+  /* ✅ Users على mobile - نفس الـ card layout */
+  .users-header,
   .users-row {
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "name status"
-      "email status";
-    gap: 0.2rem 0.5rem;
-  }
-
-  .users-row .mini-name {
-    grid-area: name;
-  }
-
-  .users-row .mini-muted {
-    grid-area: email;
-  }
-
-  .users-row .mini-actions {
-    grid-area: status;
-    align-self: center;
-    justify-content: flex-end;
-  }
-
-  .users-header {
-    display: none;
-  }
-
-  /* ✅ Restaurant على mobile: عمود أوسع للأكشن عشان يستحمل الزرارين فوق بعض */
-  .rest-header,
-  .rest-row {
-    grid-template-columns: 2fr 1.2fr 0.8fr 1fr;
-  }
-
-  /* ✅ Tour Guides على mobile: عمود أوسع للأكشن */
-  .guides-header,
-  .guides-row {
-    grid-template-columns: 1.3fr 0.8fr 1fr;
+    grid-template-columns: unset;
   }
 }
 
@@ -390,11 +357,6 @@
     font-size: 0.62rem;
     padding: 0.15rem 0.4rem;
   }
-
-  .status-badge {
-    font-size: 0.62rem;
-    padding: 0.15rem 0.4rem;
-  }
 }
 
 /* Small mobile: 400px */
@@ -415,10 +377,6 @@
     font-size: 0.7rem;
     padding: 0.2rem 0.5rem;
   }
-
-  .users-row .mini-muted {
-    font-size: 0.68rem;
-  }
 }
 
 /* ── Fix mobile overflow ── */
@@ -432,26 +390,15 @@
     min-width: 380px;
   }
 
+  .guides-header,
+  .guides-row {
+    grid-template-columns: 1.5fr 1fr 1.2fr;
+    min-width: unset;
+  }
+
   .hotels-header,
   .hotels-row {
     grid-template-columns: 1.5fr 1.2fr 0.8fr 1fr;
-  }
-
-  /* ✅ في Restaurant و Tour Guides فقط: الزرارين (Active / View) فوق بعض في الموبايل */
-  .rest-row .mini-actions,
-  .guides-row .mini-actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.3rem;
-  }
-
-  .rest-row .mini-actions .status-badge,
-  .rest-row .mini-actions .btn-view-site,
-  .guides-row .mini-actions .status-badge,
-  .guides-row .mini-actions .btn-view-site {
-    justify-content: center;
-    text-align: center;
-    width: 100%;
   }
 }
 
