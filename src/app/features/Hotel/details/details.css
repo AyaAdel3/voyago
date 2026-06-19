@@ -624,15 +624,26 @@
     flex-direction: column;
     gap: 1.25rem;
   }
-  .left-col { transform: translateX(0); order: 1; }
+  .left-col {
+    transform: translateX(0);
+    /* خليها contents عشان نقدر نتحكم في ترتيب أولادها
+       (gallery / details / reviews-form) مع booking-widget مع بعض */
+    display: contents;
+  }
+  .gallery { order: 1; }
+  .details-section { order: 2; }
   .booking-widget {
-    order: 2;
+    order: 3;
     width: 100%;
     max-width: 580px;
     margin: 0 auto;
     transform: translateX(0);
     border-radius: 1.75rem;
     position: static;
+  }
+  .mobile-order-reviews-form {
+    order: 4;
+    width: 100%;
   }
   .reviews-section { transform: translate(0, 0); }
   .date-input { width: 100%; transform: translateX(0); }

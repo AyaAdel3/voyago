@@ -867,16 +867,30 @@
     padding: 1.5rem 1.25rem 3rem;
   }
   .top-row {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 1.25rem;
   }
+  .gallery-col {
+    /* خليها contents عشان الـ write-review تقدر تتنقل تترتيبها
+       بعد الـ reservation-widget مع باقي عناصر top-row */
+    display: contents;
+  }
+  .gallery-wrap { order: 1; }
+  .rest-header { order: 2; }
+  .section-block { order: 3; }
   .reservation-widget {
+    order: 4;
     width: 100%;
     max-width: 520px;
     margin: 0 auto;
     border-radius: 1.75rem;
     position: static;
     overflow: visible;
+  }
+  .write-review {
+    order: 5;
+    width: 100%;
   }
 }
 

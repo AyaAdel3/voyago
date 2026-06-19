@@ -1,6 +1,6 @@
 <!-- ============================================================
   main.html  →  src/app/features/BudgetPlanning/main/
-  Input Section + Generated Plan cards
+  Input Section + Empty State (plan.jpeg) + Generated Plan cards
 ============================================================ -->
 
 <div class="budget-page font-[Nunito Sans]">
@@ -39,6 +39,44 @@
 
     <!-- Input Error -->
     <p *ngIf="inputError" class="input-error">⚠ {{ inputError }}</p>
+  </div>
+
+  <!-- ══ EMPTY STATE (قبل ما يعمل Generate) ══════════════ -->
+  <div *ngIf="!planGenerated" class="empty-state">
+    <div class="empty-img-wrap">
+      <img src="image/plan.jpeg" alt="Plan your trip" class="empty-img" />
+    </div>
+
+    <h2 class="empty-title">Plan Your Trip Budget</h2>
+    <p class="empty-subtitle">
+      Enter your total budget and number of days, then hit
+      <strong>Generate Plan</strong> to get started.
+    </p>
+
+    <!-- Steps explanation -->
+    <div class="empty-steps">
+      <div class="empty-step">
+        <span class="step-num">1</span>
+        <div>
+          <p class="step-title">We split your budget</p>
+          <p class="step-desc">60% Hotels • 30% Restaurants • 20% Attractions</p>
+        </div>
+      </div>
+      <div class="empty-step">
+        <span class="step-num">2</span>
+        <div>
+          <p class="step-title">We recommend options</p>
+          <p class="step-desc">Hotels, restaurants & attractions that fit your budget</p>
+        </div>
+      </div>
+      <div class="empty-step">
+        <span class="step-num">3</span>
+        <div>
+          <p class="step-title">You build your plan</p>
+          <p class="step-desc">Pick what you like, then save your trip plan</p>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ══ GENERATED PLAN ════════════════════════════════ -->
@@ -151,7 +189,8 @@
                 {{ r.rating }}
               </span>
             </div>
-<p class="card-price">{{ r.cuisine }} • {{ r.minPrice }}-{{ r.maxPrice }} LE</p>            <p class="card-desc">{{ r.description | slice:0:100 }}...</p>
+            <p class="card-price">{{ r.cuisine }} • {{ r.minPrice }}-{{ r.maxPrice }} LE</p>
+            <p class="card-desc">{{ r.description | slice:0:100 }}...</p>
             <div class="card-btns">
               <button class="btn-view"  (click)="viewRestaurantDetails(r.id)">View Details</button>
               <button class="btn-add"   (click)="addRestaurantToPlan(r)"
