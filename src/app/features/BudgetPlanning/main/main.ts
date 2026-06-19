@@ -24,7 +24,7 @@ import { BudgetService } from '../../../core/services/budget.service';
 export class Main implements OnInit {
 
   // ── Input fields ──────────────────────────────────────────
-  totalBudget = 0;
+  totalBudget: number | null = null;
   days        = 1;
   inputError  = '';
 
@@ -210,7 +210,7 @@ export class Main implements OnInit {
   }
 
   get budgetRemaining(): number {
-    return this.totalBudget - this.totalCost;
+    return (this.totalBudget ?? 0) - this.totalCost;
   }
 
   // ════════════════════════════════════════════════════════
@@ -220,7 +220,7 @@ export class Main implements OnInit {
   savePlan(): void {
     const plan: BudgetPlan = {
       id:                   Date.now(),
-      totalBudget:          this.totalBudget,
+      totalBudget:          this.totalBudget ?? 0,
       days:                 this.days,
       dailyBudget:          this.dailyBudget,
       selectedHotel:        this.selectedHotel,
@@ -240,7 +240,7 @@ export class Main implements OnInit {
     this.selectedHotel       = null;
     this.selectedRestaurants = [];
     this.selectedAttractions = [];
-    this.totalBudget         = 0;
+    this.totalBudget         = null;
     this.days                = 1;
   }
 

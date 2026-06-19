@@ -50,7 +50,7 @@
     <div class="right-group">
       <div class="auth-group">
         <ng-container *ngIf="!auth.isLoggedIn()">
-          <a class="become-host">{{ lang.t('nav.becomeHost') }}</a>
+          <a class="become-host">Join the Experience</a>
           <button class="btn-outline" (click)="modal.openLogin()">{{ lang.t('nav.login') }}</button>
           <button class="btn-outline" (click)="modal.openSignup()">
             {{ lang.t('nav.signup') }}
