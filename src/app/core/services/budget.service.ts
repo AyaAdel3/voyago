@@ -1,15 +1,15 @@
 // ============================================================
 // budget.service.ts  →  src/app/core/services/
 // بيكلم الـ endpoints الحقيقية:
-//   POST /budget-planning/suggest
-//   POST /budget-planning/save
-//   GET  /budget-planning/my-plans   (لصفحة الـ saved plans)
+//   POST   /budget-planning/suggest
+//   POST   /budget-planning/save
+//   GET    /budget-planning            (كل البلانات المحفوظة لليوزر)
 //   DELETE /budget-planning/{id}
 // ============================================================
 
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import {
   SuggestBudgetPlanRequest,
   SuggestBudgetPlanResponse,
@@ -27,6 +27,9 @@ export class BudgetService {
 
   // آخر بلان اتعمله suggest/save — تستخدمه details.ts بعد الـ save مباشرة
   private currentPlan = signal<BudgetPlanResponse | null>(null);
+
+  // كل البلانات المحفوظة لليوزر — تستخدمه صفحة saved-plan في البروفايل
+  private myPlans = signal<BudgetPlanResponse[]>([]);
 
   constructor(private http: HttpClient) {}
 
@@ -46,23 +49,42 @@ export class BudgetService {
     return this.http.post<SuggestBudgetPlanResponse>(`${this.baseUrl}/suggest`, body);
   }
 
-  /** بيحفظ البلان النهائي (هوتيل واحد + مطاعم + أماكن مختارة) */
+  /**
+   * بيحفظ البلان النهائي (هوتيل واحد + مطاعم + أماكن مختارة) في الباك.
+   * بعد الحفظ بنحط البلان الراجع في currentPlan (عشان details.ts)
+   * وكمان بنضيفه على myPlans (عشان لو رجع المستخدم لصفحة saved-plan
+   * من غير ما يعمل reload، يلاقيه موجود على طول من غير ما ننتظر فetch جديد).
+   */
   savePlan(request: SaveBudgetPlanRequest): Observable<BudgetPlanResponse> {
-    return this.http.post<BudgetPlanResponse>(`${this.baseUrl}/save`, request).pipe();
+    return this.http.post<BudgetPlanResponse>(`${this.baseUrl}/save`, request).pipe(
+      tap((plan) => {
+        this.currentPlan.set(plan);
+        this.myPlans.update((plans) => [plan, ...plans.filter((p) => p.id !== plan.id)]);
+      }),
+    );
   }
 
-  /** كل البلانات المحفوظة لليوزر الحالي */
+  /**
+   * كل البلانات المحفوظة لليوزر الحالي.
+   * GET /budget-planning
+   */
   getMyPlans(): Observable<BudgetPlanResponse[]> {
-    return this.http.get<BudgetPlanResponse[]>(`${this.baseUrl}/my-plans`);
+    return this.http.get<BudgetPlanResponse[]>(`${this.baseUrl}`).pipe(
+      tap((plans) => this.myPlans.set(plans)),
+    );
   }
 
   /** حذف بلان محفوظ */
   deletePlan(planId: number): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/${planId}`);
+    return this.http.delete<void>(`${this.baseUrl}/${planId}`).pipe(
+      tap(() => {
+        this.myPlans.update((plans) => plans.filter((p) => p.id !== planId));
+      }),
+    );
   }
 
   // ════════════════════════════════════════════════════════
-  // CURRENT PLAN (في الذاكرة بس — بتتستخدم بين main/plan → details)
+  // CURRENT PLAN (آخر بلان اتعمله — بتتستخدم بين main/plan → details)
   // ════════════════════════════════════════════════════════
 
   setCurrentPlan(plan: BudgetPlanResponse): void {

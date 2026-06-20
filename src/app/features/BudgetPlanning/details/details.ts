@@ -2,6 +2,11 @@
 // details.ts  →  src/app/features/BudgetPlanning/details/
 // بتعرض الـ BudgetPlanResponse الراجع من POST /budget-planning/save
 // بتتفتح مباشرة بعد main.savePlan() أو plan.savePlan() (currentPlan في الذاكرة)
+//
+// ملحوظة: البلان بيتحفظ في الباك أوتوماتيك جوه BudgetService.savePlan()
+// (هي اللي بتنادي POST /budget-planning/save)، يعني أي بلان بيوصل هنا
+// يبقى أصلاً متسجل في حساب اليوزر، وهيظهر في GET /budget-planning
+// (صفحة saved-plan في البروفايل) من غير أي خطوة إضافية.
 // ============================================================
 
 import { Component, OnInit } from '@angular/core';
@@ -53,7 +58,11 @@ export class Details implements OnInit {
     return Array(Math.round(n)).fill(0);
   }
 
-  /** البلان أصلاً متحفظ في الباك من savePlan()، هنا بس بنرجع لصفحة البلانز */
+  /**
+   * البلان أصلاً اتحفظ في الباك وقت savePlan() (POST /budget-planning/save)،
+   * هنا بس بنفضي الـ currentPlan المؤقت ونرجع لصفحة "My Plans" في البروفايل
+   * اللي هتجيب كل البلانات (بما فيها دي) من GET /budget-planning.
+   */
   goToSavedPlans(): void {
     this.budgetService.clearCurrentPlan();
     this.router.navigate(['/profile/saved-plan']);

@@ -4,19 +4,33 @@
     <h1>Your Plans</h1>
   </div>
 
-  @if (plans.length === 0) {
+  @if (loading) {
+    <div class="empty-state">
+      <span class="empty-icon">⏳</span>
+      <p>Loading your plans...</p>
+    </div>
+  }
+
+  @if (!loading && errorMsg) {
+    <div class="empty-state">
+      <span class="empty-icon">⚠️</span>
+      <p>{{ errorMsg }}</p>
+    </div>
+  }
+
+  @if (!loading && !errorMsg && plans.length === 0) {
     <div class="empty-state">
       <span class="empty-icon">🗺️</span>
       <p>No saved plans yet</p>
     </div>
   }
 
-  @if (plans.length > 0) {
+  @if (!loading && !errorMsg && plans.length > 0) {
     <div class="plans-list">
       @for (plan of plans; track plan.id; let i = $index) {
         <div class="plan-section">
           <div class="plan-header">
-            <h2 class="plan-title">{{ plan.name || 'Plan ' + (i + 1) }}</h2>
+            <h2 class="plan-title">{{ plan.hotel?.name || 'Trip Plan #' + plan.id }}</h2>
             <button
               class="delete-plan-btn"
               (click)="requestDeletePlan(plan, $event)"
@@ -52,7 +66,7 @@
               @if (plan.hotel) {
                 <div class="slider-track">
                   <div class="actual-card">
-                    <img [src]="getImage(plan.hotel, 'hotel')" class="card-img" alt="Hotel" />
+                    <img [src]="plan.hotel.mainImageUrl" class="card-img" alt="Hotel" />
                     <div class="card-body">
                       <h3>{{ plan.hotel.name }}</h3>
                       <button class="view-btn" (click)="goToDetails('hotels', plan.hotel.id)">
@@ -101,7 +115,7 @@
                 <div class="slider-track" #restTrack>
                   @for (item of plan.restaurants; track item.id) {
                     <div class="actual-card">
-                      <img [src]="getImage(item, 'rest')" class="card-img" alt="Restaurant" />
+                      <img [src]="item.mainImageUrl" class="card-img" alt="Restaurant" />
                       <div class="card-body">
                         <h3>{{ item.name }}</h3>
                         <button class="view-btn" (click)="goToDetails('restaurant', item.id)">
@@ -155,7 +169,7 @@
                 <div class="slider-track" #attrTrack>
                   @for (item of plan.attractions; track item.id) {
                     <div class="actual-card">
-                      <img [src]="getImage(item, 'attr')" class="card-img" alt="Attraction" />
+                      <img [src]="item.mainImageUrl" class="card-img" alt="Attraction" />
                       <div class="card-body">
                         <h3>{{ item.name }}</h3>
                         <button
@@ -208,8 +222,9 @@
         </div>
         <p class="confirm-delete-title">Delete Plan</p>
         <p class="confirm-delete-text">
-          Are you sure you want to delete "{{ planToDelete.name || 'this plan' }}"? This action
-          cannot be undone.
+          Are you sure you want to delete "{{
+            planToDelete.hotel?.name || 'Trip Plan #' + planToDelete.id
+          }}"? This action cannot be undone.
         </p>
         <div class="confirm-delete-actions">
           <button class="btn-cancel-delete" (click)="cancelDeletePlan()">Cancel</button>
