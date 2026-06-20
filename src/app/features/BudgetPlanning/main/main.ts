@@ -4,9 +4,11 @@
 //   - Input: total budget + days → POST /budget-planning/suggest
 //   - Output: hotels/restaurants/attractions كروت مع Add to Plan
 //   - Save → POST /budget-planning/save
+//   - السلايدر هنا بقى صفحة كاملة (pageSize) بدل offset، بالظبط
+//     زي details.ts (نفس breakpoints: 900px و 540px)
 // ============================================================
 
-import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -60,10 +62,16 @@ export class Main implements OnInit {
   selectedRestaurants: SuggestedRestaurantItem[] = [];
   selectedAttractions: SuggestedAttractionItem[] = [];
 
-  // ── Carousel offsets ───────────────────────────────────────
-  hotelOffset      = 0;
-  restaurantOffset = 0;
-  attractionOffset = 0;
+  // ── Slider state — حجم الصفحة بيتغير حسب عرض الشاشة ──────
+  // Desktop (>900px): 3 كاردز فالصفحة
+  // Tablet  (541–900px): 2 كاردز فالصفحة
+  // Mobile  (<=540px): كارد واحد فالصفحة
+  // (لازم يطابق breakpoints main.css: 900px و 540px — نفس details)
+  pageSize = 3;
+
+  hotelPage      = 0;
+  restaurantPage = 0;
+  attractionPage = 0;
 
   // ── Warnings ──────────────────────────────────────────────
   hotelWarning      = '';
@@ -76,7 +84,34 @@ export class Main implements OnInit {
     private cdr:           ChangeDetectorRef,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.updatePageSize();
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    const prevPageSize = this.pageSize;
+    this.updatePageSize();
+
+    // لو حجم الصفحة تغيّر، رجّع المؤشر لأول صفحة عشان نتجنب
+    // صفحة فاضية بعد تغيير عدد العناصر بالصفحة
+    if (prevPageSize !== this.pageSize) {
+      this.hotelPage      = 0;
+      this.restaurantPage = 0;
+      this.attractionPage = 0;
+    }
+  }
+
+  private updatePageSize(): void {
+    const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    if (width <= 540) {
+      this.pageSize = 1;
+    } else if (width <= 900) {
+      this.pageSize = 2;
+    } else {
+      this.pageSize = 3;
+    }
+  }
 
   // ════════════════════════════════════════════════════════
   // AUTH GUARD HELPER
@@ -148,9 +183,9 @@ export class Main implements OnInit {
         this.selectedHotel       = null;
         this.selectedRestaurants = [];
         this.selectedAttractions = [];
-        this.hotelOffset         = 0;
-        this.restaurantOffset    = 0;
-        this.attractionOffset    = 0;
+        this.hotelPage           = 0;
+        this.restaurantPage      = 0;
+        this.attractionPage      = 0;
         this.hotelWarning        = '';
         this.restaurantWarning   = '';
         this.attractionWarning   = '';
@@ -191,7 +226,7 @@ export class Main implements OnInit {
   }
 
   // ════════════════════════════════════════════════════════
-  // RESTAURANT SELECTION — max = days
+  // RESTAURANT SELECTION
   // ════════════════════════════════════════════════════════
 
   addRestaurantToPlan(r: SuggestedRestaurantItem): void {
@@ -219,7 +254,7 @@ export class Main implements OnInit {
   }
 
   // ════════════════════════════════════════════════════════
-  // ATTRACTION SELECTION — max = max(3, days×0.5)
+  // ATTRACTION SELECTION
   // ════════════════════════════════════════════════════════
 
   addAttractionToPlan(a: SuggestedAttractionItem): void {
@@ -314,26 +349,103 @@ export class Main implements OnInit {
   }
 
   // ════════════════════════════════════════════════════════
-  // CAROUSEL
+  // SLIDER — Hotels (صفحات بحجم pageSize، نفس نظام details)
   // ════════════════════════════════════════════════════════
 
-  canScroll(list: any[], offset: number, dir: 'prev'|'next', visible = 3): boolean {
-    return dir === 'next' ? offset + visible < list.length : offset > 0;
+  get hotelPageCount(): number {
+    return Math.ceil(this.recommendedHotels.length / this.pageSize);
   }
 
-  scrollHotels(dir: 'prev'|'next'):      void { this.hotelOffset      = this.scroll(dir, this.hotelOffset,      this.recommendedHotels.length); }
-  scrollRestaurants(dir: 'prev'|'next'): void { this.restaurantOffset = this.scroll(dir, this.restaurantOffset, this.recommendedRestaurants.length); }
-  scrollAttractions(dir: 'prev'|'next'): void { this.attractionOffset = this.scroll(dir, this.attractionOffset, this.recommendedAttractions.length); }
-
-  private scroll(dir: 'prev'|'next', offset: number, total: number, visible = 3): number {
-    if (dir === 'next' && offset + visible < total) return offset + 1;
-    if (dir === 'prev' && offset > 0)               return offset - 1;
-    return offset;
+  visibleHotels(): SuggestedHotelItem[] {
+    const start = this.hotelPage * this.pageSize;
+    return this.recommendedHotels.slice(start, start + this.pageSize);
   }
 
-  visibleHotels():      SuggestedHotelItem[]      { return this.recommendedHotels     .slice(this.hotelOffset,      this.hotelOffset      + 3); }
-  visibleRestaurants(): SuggestedRestaurantItem[] { return this.recommendedRestaurants.slice(this.restaurantOffset, this.restaurantOffset + 3); }
-  visibleAttractions(): SuggestedAttractionItem[] { return this.recommendedAttractions.slice(this.attractionOffset, this.attractionOffset + 3); }
+  nextHotelPage(): void {
+    const total = this.hotelPageCount;
+    if (total <= 1) return;
+    this.hotelPage = (this.hotelPage + 1) % total;
+  }
+
+  prevHotelPage(): void {
+    const total = this.hotelPageCount;
+    if (total <= 1) return;
+    this.hotelPage = (this.hotelPage - 1 + total) % total;
+  }
+
+  goToHotelPage(i: number): void {
+    this.hotelPage = i;
+  }
+
+  hotelPages(): number[] {
+    return Array.from({ length: this.hotelPageCount }, (_, i) => i);
+  }
+
+  // ════════════════════════════════════════════════════════
+  // SLIDER — Restaurants
+  // ════════════════════════════════════════════════════════
+
+  get restaurantPageCount(): number {
+    return Math.ceil(this.recommendedRestaurants.length / this.pageSize);
+  }
+
+  visibleRestaurants(): SuggestedRestaurantItem[] {
+    const start = this.restaurantPage * this.pageSize;
+    return this.recommendedRestaurants.slice(start, start + this.pageSize);
+  }
+
+  nextRestaurantPage(): void {
+    const total = this.restaurantPageCount;
+    if (total <= 1) return;
+    this.restaurantPage = (this.restaurantPage + 1) % total;
+  }
+
+  prevRestaurantPage(): void {
+    const total = this.restaurantPageCount;
+    if (total <= 1) return;
+    this.restaurantPage = (this.restaurantPage - 1 + total) % total;
+  }
+
+  goToRestaurantPage(i: number): void {
+    this.restaurantPage = i;
+  }
+
+  restaurantPages(): number[] {
+    return Array.from({ length: this.restaurantPageCount }, (_, i) => i);
+  }
+
+  // ════════════════════════════════════════════════════════
+  // SLIDER — Attractions
+  // ════════════════════════════════════════════════════════
+
+  get attractionPageCount(): number {
+    return Math.ceil(this.recommendedAttractions.length / this.pageSize);
+  }
+
+  visibleAttractions(): SuggestedAttractionItem[] {
+    const start = this.attractionPage * this.pageSize;
+    return this.recommendedAttractions.slice(start, start + this.pageSize);
+  }
+
+  nextAttractionPage(): void {
+    const total = this.attractionPageCount;
+    if (total <= 1) return;
+    this.attractionPage = (this.attractionPage + 1) % total;
+  }
+
+  prevAttractionPage(): void {
+    const total = this.attractionPageCount;
+    if (total <= 1) return;
+    this.attractionPage = (this.attractionPage - 1 + total) % total;
+  }
+
+  goToAttractionPage(i: number): void {
+    this.attractionPage = i;
+  }
+
+  attractionPages(): number[] {
+    return Array.from({ length: this.attractionPageCount }, (_, i) => i);
+  }
 
   // ── Navigation ────────────────────────────────────────────
   viewHotelDetails(id: number):      void { this.router.navigate(['/hotels/details', id]); }

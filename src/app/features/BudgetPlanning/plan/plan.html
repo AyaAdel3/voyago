@@ -1,6 +1,7 @@
 <!-- ============================================================
   plan.html  →  src/app/features/BudgetPlanning/plan/
   مربوطة بـ SuggestBudgetPlanResponse من الباك
+  السلايدر هنا صفحة كاملة + نقط لكل سكشن، بالظبط زي details.html
 ============================================================ -->
 
 <div class="budget-page font-[Nunito Sans]">
@@ -87,16 +88,16 @@
           <h2 class="section-title">Recommended Hotels Section</h2>
           <p class="section-sub">Choose 1 hotel from the best options within your budget</p>
         </div>
-        <div class="carousel-btns" *ngIf="recommendedHotels.length > 3">
-          <button class="carousel-btn" (click)="scrollHotels('prev')" [disabled]="!canScrollHotels('prev')">‹</button>
-          <button class="carousel-btn" (click)="scrollHotels('next')" [disabled]="!canScrollHotels('next')">›</button>
+        <div class="slider-arrows" *ngIf="hotelPageCount > 1">
+          <button class="slider-arrow" (click)="prevHotelPage()" aria-label="Previous hotels">‹</button>
+          <button class="slider-arrow" (click)="nextHotelPage()" aria-label="Next hotels">›</button>
         </div>
       </div>
 
       <p *ngIf="hotelWarning" class="section-warning">{{ hotelWarning }}</p>
 
-      <div class="cards-grid">
-        <div *ngFor="let h of visibleHotels()" class="item-card" [class.selected-card]="isHotelSelected(h.id)">
+      <div class="slider-viewport slider-viewport-grid">
+        <div *ngFor="let h of visibleHotels()" class="item-card slider-card" [class.selected-card]="isHotelSelected(h.id)">
           <div class="card-img-wrap">
             <img [src]="h.mainImageUrl" [alt]="h.name" class="card-img" />
             <div *ngIf="isHotelSelected(h.id)" class="selected-badge">✓ Selected</div>
@@ -115,14 +116,25 @@
             <p class="card-price-total">{{ h.estimatedTotalPrice | number }}LE for {{ days }} night{{ days > 1 ? 's' : '' }}</p>
             <p class="card-desc">{{ h.location }}</p>
             <div class="card-btns">
-              <button class="btn-view" (click)="viewHotelDetails(h.id); $event.stopPropagation()">View Details</button>
+              <button class="btn-view" (click)="viewHotelDetails(h.id)">View Details</button>
               <button class="btn-add" [class.btn-remove]="isHotelSelected(h.id)"
-                (click)="addHotelToPlan(h); $event.stopPropagation()">
+                (click)="addHotelToPlan(h)">
                 {{ isHotelSelected(h.id) ? 'Remove' : 'Add To Plan' }}
               </button>
             </div>
           </div>
         </div>
+      </div>
+
+      <!-- Dots -->
+      <div class="slider-dots" *ngIf="hotelPageCount > 1">
+        <button
+          *ngFor="let p of hotelPages()"
+          class="slider-dot"
+          [class.active]="p === hotelPage"
+          (click)="goToHotelPage(p)"
+          [attr.aria-label]="'Go to hotels page ' + (p + 1)"
+        ></button>
       </div>
 
       <p *ngIf="recommendedHotels.length === 0" class="empty-msg">No hotels found within your budget.</p>
@@ -150,10 +162,18 @@
         </div>
       </div>
 
+      <!-- Slider arrows row -->
+      <div class="slider-arrows-row" *ngIf="restaurantPageCount > 1">
+        <div class="slider-arrows">
+          <button class="slider-arrow" (click)="prevRestaurantPage()" aria-label="Previous restaurants">‹</button>
+          <button class="slider-arrow" (click)="nextRestaurantPage()" aria-label="Next restaurants">›</button>
+        </div>
+      </div>
+
       <p *ngIf="restaurantWarning" class="section-warning">{{ restaurantWarning }}</p>
 
-      <div class="cards-grid">
-        <div *ngFor="let r of availableRestaurants" class="item-card" [class.selected-card]="isRestaurantSelected(r.id)">
+      <div class="slider-viewport slider-viewport-grid">
+        <div *ngFor="let r of visibleRestaurants()" class="item-card slider-card" [class.selected-card]="isRestaurantSelected(r.id)">
           <div class="card-img-wrap">
             <img [src]="r.mainImageUrl" [alt]="r.name" class="card-img" />
             <div *ngIf="isRestaurantSelected(r.id)" class="selected-badge">✓ Selected</div>
@@ -180,7 +200,18 @@
         </div>
       </div>
 
-      <p *ngIf="availableRestaurants.length === 0" class="empty-msg">No restaurants available.</p>
+      <!-- Dots -->
+      <div class="slider-dots" *ngIf="restaurantPageCount > 1">
+        <button
+          *ngFor="let p of restaurantPages()"
+          class="slider-dot"
+          [class.active]="p === restaurantPage"
+          (click)="goToRestaurantPage(p)"
+          [attr.aria-label]="'Go to restaurants page ' + (p + 1)"
+        ></button>
+      </div>
+
+      <p *ngIf="recommendedRestaurants.length === 0" class="empty-msg">No restaurants available.</p>
     </div>
 
     <!-- ════ ATTRACTIONS SECTION ════ -->
@@ -205,10 +236,18 @@
         </div>
       </div>
 
+      <!-- Slider arrows row -->
+      <div class="slider-arrows-row" *ngIf="attractionPageCount > 1">
+        <div class="slider-arrows">
+          <button class="slider-arrow" (click)="prevAttractionPage()" aria-label="Previous attractions">‹</button>
+          <button class="slider-arrow" (click)="nextAttractionPage()" aria-label="Next attractions">›</button>
+        </div>
+      </div>
+
       <p *ngIf="attractionWarning" class="section-warning">{{ attractionWarning }}</p>
 
-      <div class="cards-grid">
-        <div *ngFor="let a of availableAttractions" class="item-card" [class.selected-card]="isAttractionSelected(a.id)">
+      <div class="slider-viewport slider-viewport-grid">
+        <div *ngFor="let a of visibleAttractions()" class="item-card slider-card" [class.selected-card]="isAttractionSelected(a.id)">
           <div class="card-img-wrap">
             <img [src]="a.mainImageUrl" [alt]="a.name" class="card-img" />
             <div *ngIf="isAttractionSelected(a.id)" class="selected-badge">✓ Selected</div>
@@ -236,7 +275,18 @@
         </div>
       </div>
 
-      <p *ngIf="availableAttractions.length === 0" class="empty-msg">
+      <!-- Dots -->
+      <div class="slider-dots" *ngIf="attractionPageCount > 1">
+        <button
+          *ngFor="let p of attractionPages()"
+          class="slider-dot"
+          [class.active]="p === attractionPage"
+          (click)="goToAttractionPage(p)"
+          [attr.aria-label]="'Go to attractions page ' + (p + 1)"
+        ></button>
+      </div>
+
+      <p *ngIf="recommendedAttractions.length === 0" class="empty-msg">
         No attractions available within your attractions budget.
       </p>
     </div>
