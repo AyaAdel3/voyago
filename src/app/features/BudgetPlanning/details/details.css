@@ -8,31 +8,45 @@
   min-height: 100vh;
   padding: 1.5rem 2rem 4rem;
   color: #f6faff;
+  overflow-x: hidden; /* أمان إضافي ضد أي overflow أفقي بسيط */
+  box-sizing: border-box;
 }
 
-/* ── Page Header ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ── Page Header (أول لاين كامل جوه content-card، كحلي غامق) ── */
+.page-header-card {
+  grid-column: 1 / -1;
+  background: #0d2540;
+  border-radius: 1.5rem 1.5rem 2rem 2rem;
+  margin: 0 -1.75rem 1.5rem;
+  padding: 1.5rem 1.75rem 1rem;
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: .6rem;
+  margin-bottom: 1.25rem;
+  gap: 1rem;
 }
-.your-plan-label { font-size: .78rem; color: #8899bb; margin: 0 0 .2rem; }
-.plan-title      { font-size: 1.6rem; color: #f6faff; margin: 0; font-weight: 400; }
+.your-plan-label { font-size: .78rem; color: #8899bb; margin: 0 0 .3rem; }
+.plan-title      { font-size: 1.9rem; color: #f6faff; margin: 0; font-weight: 400; line-height: 1.2; }
 .plan-title strong { font-weight: 800; }
 
-.header-budget       { text-align: right; }
-.header-budget-label { font-size: .78rem; color: #8899bb; display: block; }
-.header-budget-val   { font-size: 1.8rem; font-weight: 800; color: #f6faff; }
+.header-budget       { text-align: right; flex-shrink: 0; }
+.header-budget-label { font-size: .78rem; color: #8899bb; display: block; margin-bottom: .2rem; }
+.header-budget-val   { font-size: 1.8rem; font-weight: 800; color: #f6faff; white-space: nowrap; }
 
 /* ── Meta Row (Date / Time / Venue) ─────────────────────── */
 .meta-row {
   display: flex;
-  gap: 2rem;
-  margin-bottom: 1.5rem;
+  gap: 2.5rem;
   flex-wrap: wrap;
 }
-.meta-item  { display: flex; align-items: center; gap: .6rem; }
+.meta-item  { display: flex; align-items: center; gap: .65rem; min-width: 0; }
 .meta-icon  {
   width: 34px; height: 34px;
   background: #173b64; border-radius: 50%;
@@ -40,22 +54,40 @@
   flex-shrink: 0;
 }
 .meta-label { font-size: .72rem; color: #8899bb; margin: 0 0 .1rem; }
-.meta-value { font-size: .85rem; color: #f6faff; margin: 0; font-weight: 500; }
+.meta-value { font-size: .85rem; color: #f6faff; margin: 0; font-weight: 600; }
 
-/* ── Main Content Card ───────────────────────────────────── */
+/* ── Main Content Card (الـ container الرئيسي، فيه page-header-card جواه) ── */
 .content-card {
-  background: #0d2540;
+  background: #173b64;
   border-radius: 1.5rem;
-  padding: 1.75rem;
+  padding: 0 1.75rem 1.75rem;
   display: grid;
   grid-template-columns: 1fr 280px;
   gap: 2rem;
   align-items: start;
+  
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  box-sizing: border-box;
 }
-
+.hotel-section{
+  width: 36rem;
+}
 /* ── Section Title ───────────────────────────────────────── */
 .section-title { font-size: 1.4rem; font-weight: 700; color: #f6faff; margin: 0 0 .9rem; }
 
+/* ── Section header row (title + slider arrows) ──────────── */
+.section-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: .2rem;
+  gap: .75rem;
+}
+.section-header-row .section-title { margin-bottom: 0; }
+.Restaurants-sec{
+  width: 48rem;
+}
 /* ════════════════════════════════════════════════════════
    SELECTED HOTEL (big card)
 ════════════════════════════════════════════════════════ */
@@ -68,7 +100,7 @@
 .hotel-img-wrap { position: relative; height: 200px; }
 .hotel-img      { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* Stars overlay на снимке */
+/* Stars overlay على الصورة */
 .stars-overlay {
   position: absolute; bottom: 8px; left: 10px;
   display: flex; align-items: center; gap: 4px;
@@ -124,9 +156,75 @@
 .btn-view-sm:hover { background: #f5c842; }
 
 /* ════════════════════════════════════════════════════════
+   SLIDER (Desktop: 3 كاردز/صفحة | Tablet: 2 | Mobile: 1)
+   حجم الصفحة فعلياً متحكم فيه من TS (pageSize) ومتزامن مع
+   نفس الـ breakpoints هنا (900px و 540px) عشان العرض المرسوم
+   في CSS يطابق عدد العناصر الفعلي اللي الـ TS بيرجعه.
+════════════════════════════════════════════════════════ */
+.slider-arrows { display: flex; gap: .5rem; flex-shrink: 0; }
+.slider-arrow {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: #021526;
+  color: #f6faff;
+  font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background .15s;
+}
+.slider-arrow:hover { background: #173b64; }
+
+/* فيوبورت السلايدر — صفحة كاملة (لحد 3 كاردز) ظاهرة مع بعض.
+   الكاردز عرضها ثابت (مش 1fr) عشان لو العدد أقل من المطلوب
+   الكارد يفضل بنفس مقاس زمايله، مش يتمدد ياخد المساحة الفاضية. */
+.slider-viewport {
+  margin-bottom: .75rem;
+  width: 100%;
+}
+.slider-viewport-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+}
+.slider-card {
+  flex: 0 0 calc((100% - 2rem) / 3); /* Desktop: 3 كاردز + 2 gap بمقاس 1rem */
+  max-width: calc((100% - 2rem) / 3);
+  min-width: 0; /* يمنع الكارد من التمدد عشان محتواه (صورة/نص) */
+  width: auto;
+  box-sizing: border-box;
+}
+
+/* النقط أسفل السلايدر — واحدة لكل صفحة (مش لكل عنصر) */
+.slider-dots {
+  display: flex;
+  gap: .4rem;
+  margin-bottom: 1.75rem;
+}
+.slider-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: #3a5070;
+  cursor: pointer;
+  padding: 0;
+  transition: background .15s, transform .15s;
+}
+.slider-dot.active {
+  background: #ffde70;
+  transform: scale(1.25);
+}
+
+/* ════════════════════════════════════════════════════════
    RIGHT SIDE — Cost Breakdown + Note + Save
 ════════════════════════════════════════════════════════ */
-.right-side { display: flex; flex-direction: column; gap: .9rem; }
+.right-side {
+  display: flex;
+  flex-direction: column;
+  gap: .9rem;
+  min-width: 0;
+}
 
 /* Cost card */
 .cost-card {
@@ -158,15 +256,15 @@
 .rest-icon  { background: #1e3a5f; }
 .attr-icon  { background: #0f2e50; }
 
-.cost-name   { flex: 1; font-size: .8rem; color: #c8d6e8; }
+.cost-name   { flex: 1; font-size: .8rem; color: #c8d6e8; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cost-amount { font-size: .78rem; color: #f6faff; font-weight: 600; white-space: nowrap; }
 .cost-link   { color: #ffde70; cursor: pointer; text-decoration: underline; font-size: .75rem; }
 .cost-link:hover { color: #f5c842; }
 
 .cost-divider    { border: none; border-top: 1px solid #1e3a5f; margin: .5rem 0; }
-.cost-total-row  { display: flex; justify-content: space-between; align-items: center; }
+.cost-total-row  { display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
 .cost-total-row span:first-child { font-size: .85rem; color: #8899bb; }
-.cost-total-val  { font-size: 1rem; font-weight: 800; color: #ffde70; }
+.cost-total-val  { font-size: 1rem; font-weight: 800; color: #ffde70; white-space: nowrap; }
 
 /* Note card */
 .note-card {
@@ -202,12 +300,61 @@
   cursor: pointer;
 }
 
-/* ── Responsive ─────────────────────────────────────────── */
+/* ════════════════════════════════════════════════════════
+   RESPONSIVE
+   Desktop  (> 900px):  3 كاردز/صفحة
+   Tablet   (541–900px): 2 كاردز/صفحة
+   Mobile   (<= 540px):  1 كارد/صفحة
+════════════════════════════════════════════════════════ */
+
+/* ── Tablet ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .content-card   { grid-template-columns: 1fr; }
+  .details-page   { padding: 1.25rem 1rem 3rem; }
+  .content-card   {
+    grid-template-columns: 1fr;
+    width: 100%;
+    max-width: 100%;
+    padding: 0 1.25rem 1.25rem;
+  }
   .items-grid     { grid-template-columns: repeat(2, 1fr); }
+  .slider-card    {
+    flex: 0 0 calc((100% - 1rem) / 2); /* 2 كاردز + gap واحد */
+    max-width: calc((100% - 1rem) / 2);
+    min-width: 0;
+  }
 }
+
+/* ── Phones (لاندسكيب صغير / تابلت ضيق) ──────────────────── */
+@media (max-width: 640px) {
+  .details-page     { padding: 1rem .75rem 3rem; }
+  .content-card     { padding: 0 1rem 1rem; }
+  .page-header-card { margin: 0 -1rem 1.25rem; padding: 1.25rem 1rem 1rem; }
+  .page-header      { flex-direction: column; gap: .75rem; }
+  .header-budget    { text-align: left; }
+  .plan-title       { font-size: 1.5rem; }
+  .meta-row         { gap: 1.25rem; }
+}
+
+/* ── Mobile: كارد واحد بس في كل مرة ──────────────────────── */
 @media (max-width: 540px) {
-  .items-grid     { grid-template-columns: 1fr; }
-  .meta-row       { flex-direction: column; gap: .75rem; }
+  .details-page          { padding: .85rem .6rem 2.5rem; }
+  .content-card          { padding: 0 .75rem .75rem; }
+  .page-header-card      { margin: 0 -.75rem 1.1rem; padding: 1.1rem .9rem .9rem; }
+  .items-grid            { grid-template-columns: 1fr; }
+  .meta-row              { flex-direction: column; gap: .75rem; align-items: flex-start; }
+  .slider-viewport-grid  { flex-direction: column; }
+  .slider-card           {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  .hotel-img-wrap        { height: 160px; }
+  .plan-title            { font-size: 1.3rem; }
+  .header-budget-val     { font-size: 1.4rem; }
+}
+
+/* ── شاشات ضيقة جداً (موبايلات صغيرة) ────────────────────── */
+@media (max-width: 380px) {
+  .details-page      { padding: .75rem .5rem 2.5rem; }
+  .content-card      { padding: 0 .6rem .6rem; }
+  .page-header-card  { margin: 0 -.6rem 1rem; padding: 1rem .75rem .75rem; }
 }

@@ -25,6 +25,12 @@ import { BudgetService } from '../../../core/services/budget.service';
 export class Details implements OnInit {
   plan: BudgetPlanResponse | null = null;
 
+  // ── Slider state — صفحة كاملة (3 entries) بتظهر في كل مرة ──
+  readonly pageSize = 3;
+
+  restaurantPage = 0;
+  attractionPage = 0;
+
   constructor(
     private budgetService: BudgetService,
     public router: Router,
@@ -50,6 +56,72 @@ export class Details implements OnInit {
 
   viewAttractionDetails(id: number): void {
     this.router.navigate(['/tourist-attraction/details', id]);
+  }
+
+  // ── Restaurants Slider (صفحات بحجم pageSize) ────────────────
+
+  get restaurantPageCount(): number {
+    if (!this.plan) return 0;
+    return Math.ceil(this.plan.restaurants.length / this.pageSize);
+  }
+
+  get visibleRestaurants() {
+    if (!this.plan) return [];
+    const start = this.restaurantPage * this.pageSize;
+    return this.plan.restaurants.slice(start, start + this.pageSize);
+  }
+
+  nextRestaurantPage(): void {
+    const total = this.restaurantPageCount;
+    if (total <= 1) return;
+    this.restaurantPage = (this.restaurantPage + 1) % total;
+  }
+
+  prevRestaurantPage(): void {
+    const total = this.restaurantPageCount;
+    if (total <= 1) return;
+    this.restaurantPage = (this.restaurantPage - 1 + total) % total;
+  }
+
+  goToRestaurantPage(i: number): void {
+    this.restaurantPage = i;
+  }
+
+  restaurantPages(): number[] {
+    return Array.from({ length: this.restaurantPageCount }, (_, i) => i);
+  }
+
+  // ── Attractions Slider (صفحات بحجم pageSize) ────────────────
+
+  get attractionPageCount(): number {
+    if (!this.plan) return 0;
+    return Math.ceil(this.plan.attractions.length / this.pageSize);
+  }
+
+  get visibleAttractions() {
+    if (!this.plan) return [];
+    const start = this.attractionPage * this.pageSize;
+    return this.plan.attractions.slice(start, start + this.pageSize);
+  }
+
+  nextAttractionPage(): void {
+    const total = this.attractionPageCount;
+    if (total <= 1) return;
+    this.attractionPage = (this.attractionPage + 1) % total;
+  }
+
+  prevAttractionPage(): void {
+    const total = this.attractionPageCount;
+    if (total <= 1) return;
+    this.attractionPage = (this.attractionPage - 1 + total) % total;
+  }
+
+  goToAttractionPage(i: number): void {
+    this.attractionPage = i;
+  }
+
+  attractionPages(): number[] {
+    return Array.from({ length: this.attractionPageCount }, (_, i) => i);
   }
 
   // ── Helpers ───────────────────────────────────────────────
