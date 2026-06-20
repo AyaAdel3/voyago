@@ -1,3 +1,4 @@
+/* ── Desktop grid ────────────────────── */
 .attr-grid {
   grid-template-columns: 2fr 2fr 1fr 1fr;
   align-items: center;
@@ -29,146 +30,180 @@
   font-weight: 700;
   color: #0d1b2a;
 }
-.price-cell {
-  font-weight: 700;
-}
+
+.price-cell { font-weight: 700; }
+
 /* ── Toast ───────────────────────────── */
 .toast {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  background: #0d1f33;
-  color: #c8dff0;
-  border-radius: 12px;
-  padding: 0.75rem 1.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.88rem;
-  font-weight: 600;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  z-index: 9999;
-  animation: slideIn 0.3s ease;
+  bottom: 2rem; right: 2rem;
+  background: #0d1f33; color: #c8dff0;
+  border-radius: 12px; padding: 0.75rem 1.25rem;
+  display: flex; align-items: center; gap: 0.5rem;
+  font-size: 0.88rem; font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  z-index: 9999; animation: slideIn 0.3s ease;
 }
-.toast-delete {
-  border: 1px solid rgba(239, 68, 68, 0.35);
-}
+.toast-delete         { border: 1px solid rgba(239,68,68,0.35); }
+.toast-delete-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
 .toast-close {
-  background: none;
-  border: none;
-  color: #7a9cbf;
-  font-size: 0.85rem;
-  cursor: pointer;
-  padding-left: 0.5rem;
-  line-height: 1;
-  transition: color 0.2s;
+  background: none; border: none; color: #7a9cbf;
+  font-size: 0.85rem; cursor: pointer; padding-left: 0.5rem;
+  line-height: 1; transition: color 0.2s;
 }
-.toast-close:hover {
-  color: #ef4444;
-}
+.toast-close:hover { color: #ef4444; }
 
 @keyframes slideIn {
-  from {
-    transform: translateY(1rem);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
+  from { transform: translateY(1rem); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
 }
 
-/* ── Confirm Delete Modal ─────────────────────────────── */
+/* ── Confirm Modal ───────────────────── */
 .modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px);
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000; backdrop-filter: blur(4px);
 }
-
 .confirm-modal {
   background: #0d1f33;
-  border: 1px solid rgba(163, 196, 235, 0.15);
-  border-radius: 16px;
-  padding: 2rem 2.2rem;
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(163,196,235,0.15);
+  border-radius: 16px; padding: 2rem 2.2rem;
+  max-width: 400px; width: 90%; text-align: center;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
 }
-
 .confirm-icon {
-  width: 52px;
-  height: 52px;
-  background: rgba(239, 68, 68, 0.12);
-  border: 1.5px solid rgba(239, 68, 68, 0.3);
+  width: 52px; height: 52px;
+  background: rgba(239,68,68,0.12);
+  border: 1.5px solid rgba(239,68,68,0.3);
   border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 12px auto 1rem;
+}
+.confirm-modal h3 { margin: 0 0 0.5rem; font-size: 1.1rem; font-weight: 700; color: #e2edf7; }
+.confirm-modal p  { font-size: 0.88rem; color: #7a9cbf; line-height: 1.6; }
+.confirm-modal p strong { color: #c8dff0; font-weight: 700; }
+.confirm-actions { display: flex; gap: 0.75rem; justify-content: center; margin-top: 1.5rem; }
+.btn-cancel-modal {
+  padding: 0.55rem 1.6rem; border-radius: 10px;
+  border: 1.5px solid rgba(163,196,235,0.2); background: #162a40;
+  color: #7a9cbf; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.btn-cancel-modal:hover { background: #1e3a5a; color: #c8dff0; }
+.btn-confirm-delete {
+  padding: 0.55rem 1.6rem; border-radius: 10px; border: none;
+  background: #ef4444; color: #fff; font-size: 0.88rem; font-weight: 700;
+  cursor: pointer; transition: background 0.2s;
+}
+.btn-confirm-delete:hover { background: #dc2626; }
+
+.attr-name-inner {
   display: flex;
   align-items: center;
-  justify-content: center;
-  margin: 0 auto 0.1rem;
-  margin-top: 12px;
-  margin-bottom: 0px;
+  gap: 0.65rem;
 }
 
-.confirm-modal h3 {
-  margin: 0 0 0.5rem;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #e2edf7;
+/* الديسكتوب: الـ category جوه attr-name-cell مخفية */
+.attr-name-cell > .attr-category {
+  display: none;
 }
 
-.confirm-modal p {
-  font-size: 0.88rem;
-  color: #7a9cbf;
-  line-height: 1.6;
+/* الديسكتوب: عمود الـ category الأصلي ظاهر */
+.attr-category-desktop {
+  display: block;
 }
 
-.confirm-modal p strong {
-  color: #c8dff0;
-  font-weight: 700;
-}
+/* ════════════════════════════════════════════════════════
+   MOBILE ONLY — الديسكتوب مش بيتأثر خالص
+════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
 
-.confirm-actions {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
-  margin-top: 1.5rem;
-}
+  /* إخفاء هيدر الجدول */
+  .table-header.attr-grid { display: none; }
 
-.btn-cancel-modal {
-  padding: 0.55rem 1.6rem;
-  border-radius: 10px;
-  border: 1.5px solid rgba(163, 196, 235, 0.2);
-  background: #162a40;
-  color: #7a9cbf;
-  font-size: 0.88rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition:
-    background 0.2s,
-    color 0.2s;
-}
-.btn-cancel-modal:hover {
-  background: #1e3a5a;
-  color: #c8dff0;
-}
+  /* ✅ كل رو بيبقى flex column */
+  .table-row.attr-grid {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.7rem 0.75rem;
+    background: #fff;
+    border-radius: 12px;
+    margin-bottom: 0.6rem;
+    border: 1px solid #e2e8f0;
+  }
 
-.btn-confirm-delete {
-  padding: 0.55rem 1.6rem;
-  border-radius: 10px;
-  border: none;
-  background: #ef4444;
-  color: #fff;
-  font-size: 0.88rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.btn-confirm-delete:hover {
-  background: #dc2626;
+  /* ✅ السطر الأول: صورة+اسم على الشمال | category على اليمين */
+  .attr-name-cell {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* wrapper للصورة والاسم */
+  .attr-name-inner {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .cell-name {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #0d1b2a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ✅ category على اليمين */
+  .attr-name-cell > .attr-category {
+    font-size: 0.75rem;
+    color: #64748b;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-left: 0.5rem;
+  }
+
+  /* إخفاء عمود الـ category الأصلي في الموبايل */
+  .attr-category-desktop {
+    display: none !important;
+  }
+
+  /* إظهار الـ category جوه attr-name-cell في الموبايل */
+  .attr-name-cell > .attr-category {
+    display: block;
+  }
+
+  /* ✅ السطر الثاني: rating + أزرار */
+  .actions-cell {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .rating-cell {
+    flex: 1;
+    font-size: 0.8rem;
+  }
+
+  /* نخبي عمود الـ rating الأصلي — هيظهر جوه الـ actions-cell */
+  .table-row.attr-grid > .rating-cell {
+    display: none;
+  }
+
+  /* ✅ rating يظهر جوه actions-cell */
+  .actions-cell .rating-cell {
+    display: flex;
+  }
 }

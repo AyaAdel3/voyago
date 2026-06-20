@@ -46,10 +46,11 @@
       <button class="refresh-btn" (click)="loadUsers()">↻ Refresh</button>
     </div>
 
-    <!-- Table Header -->
+    <!-- Table -->
     <div class="admin-table">
       <div class="table-header users-grid-header">
         <span>Users Name</span>
+        <span>Email</span>
         <span>Status</span>
       </div>
 
@@ -57,21 +58,19 @@
         <span>No users found{{ searchQuery ? ' for "' + searchQuery + '"' : '' }}</span>
       </div>
 
-      <!-- User Card Row -->
+      <!-- User Row -->
       <div *ngFor="let u of filtered" class="table-row users-card-row">
-        <div class="users-card-top">
-          <span class="cell-name">{{ u.name }}</span>
-          <span
-            class="status-badge"
-            [ngClass]="'status-' + u.status.toLowerCase()"
-            (click)="toggleStatus(u)"
-            style="cursor: pointer"
-            [title]="'Click to mark as ' + (u.status === 'Active' ? 'Inactive' : 'Active')"
-          >
-            {{ u.status }}
-          </span>
-        </div>
+        <span class="cell-name">{{ u.name }}</span>
         <span class="users-card-email">{{ u.email }}</span>
+        <span
+          class="status-badge"
+          [ngClass]="'status-' + u.status.toLowerCase()"
+          (click)="toggleStatus(u)"
+          style="cursor: pointer"
+          [title]="'Click to mark as ' + (u.status === 'Active' ? 'Inactive' : 'Active')"
+        >
+          {{ u.status }}
+        </span>
       </div>
     </div>
 

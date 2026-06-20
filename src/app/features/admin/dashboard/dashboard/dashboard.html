@@ -37,16 +37,15 @@
       </div>
       <div class="mini-table">
         <div class="mini-header users-header">
-          <span>Name</span><span>Status</span>
+          <span>Name</span><span>Email</span><span>Status</span>
         </div>
+        <!-- التعديل: شيلنا users-top وخلينا الـ 3 عناصر مباشرة في الـ row -->
         <div *ngFor="let u of recentUsers" class="mini-row users-row">
-          <div class="users-top">
-            <span class="mini-name">{{ u.name }}</span>
-            <span class="status-badge" [ngClass]="'status-' + u.status.toLowerCase()">
-              {{ u.status }}
-            </span>
-          </div>
+          <span class="mini-name">{{ u.name }}</span>
           <span class="users-email">{{ u.email }}</span>
+          <span class="status-badge" [ngClass]="'status-' + u.status.toLowerCase()">
+            {{ u.status }}
+          </span>
         </div>
       </div>
     </div>

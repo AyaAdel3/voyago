@@ -15,9 +15,7 @@
   <div class="toolbar">
     <div class="toolbar-search">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="#4a6a88">
-        <path
-          d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
-        />
+        <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
       </svg>
       <input
         type="text"
@@ -47,40 +45,45 @@
     </div>
 
     <div *ngFor="let a of filtered" class="table-row attr-grid">
+      <!-- العمود 1: صورة + اسم + category (category على اليمين في الموبايل) -->
       <div class="attr-name-cell">
-        <img [src]="getImage(a)" [alt]="a.name" class="attr-thumb" />
-        <span class="cell-name">{{ a.name }}</span>
+        <div class="attr-name-inner">
+          <img [src]="getImage(a)" [alt]="a.name" class="attr-thumb" />
+          <span class="cell-name">{{ a.name }}</span>
+        </div>
+        <span class="attr-category">{{ a.category }}</span>
       </div>
-      <span>{{ a.category }}</span>
+      <!-- العمود 2: category (ديسكتوب بس) -->
+      <span class="attr-category-desktop">{{ a.category }}</span>
+      <!-- العمود 3: rating -->
       <span class="rating-cell">
         <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
-          <path
-            d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
-          />
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z" />
         </svg>
         {{ a.rating }}
       </span>
+      <!-- العمود 4: actions + rating (rating بيتحرك هنا في الموبايل) -->
       <div class="actions-cell">
+        <span class="rating-cell">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="#f5c518">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z" />
+          </svg>
+          {{ a.rating }}
+        </span>
         <button class="btn-view-site" (click)="viewOnSite(a)">
           <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
-            <path
-              d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"
-            />
+            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z" />
           </svg>
           View
         </button>
         <button class="btn-icon btn-edit" (click)="edit(a)">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <path
-              d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-            />
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
           </svg>
         </button>
         <button class="btn-icon btn-delete" (click)="askDelete(a)">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-            <path
-              d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
-            />
+            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
           </svg>
         </button>
       </div>
@@ -90,28 +93,9 @@
   </div>
 
   <div class="pagination" *ngIf="totalPages.length > 1">
-    <button
-      class="page-btn arrow"
-      [disabled]="currentPage === 1"
-      (click)="currentPage = currentPage - 1"
-    >
-      ‹
-    </button>
-    <button
-      *ngFor="let p of totalPages"
-      class="page-btn"
-      [class.active]="p === currentPage"
-      (click)="currentPage = p"
-    >
-      {{ p }}
-    </button>
-    <button
-      class="page-btn arrow"
-      [disabled]="currentPage === totalPages.length"
-      (click)="currentPage = currentPage + 1"
-    >
-      ›
-    </button>
+    <button class="page-btn arrow" [disabled]="currentPage === 1" (click)="currentPage = currentPage - 1">‹</button>
+    <button *ngFor="let p of totalPages" class="page-btn" [class.active]="p === currentPage" (click)="currentPage = p">{{ p }}</button>
+    <button class="page-btn arrow" [disabled]="currentPage === totalPages.length" (click)="currentPage = currentPage + 1">›</button>
   </div>
 </div>
 
@@ -124,10 +108,7 @@
       </svg>
     </div>
     <h3>Delete Attraction</h3>
-    <p>
-      Are you sure you want to delete <strong>{{ attractionToDelete?.name }}</strong
-      >?<br />This action cannot be undone.
-    </p>
+    <p>Are you sure you want to delete <strong>{{ attractionToDelete?.name }}</strong>?<br />This action cannot be undone.</p>
     <div class="confirm-actions">
       <button class="btn-cancel-modal" (click)="cancelDelete()">Cancel</button>
       <button class="btn-confirm-delete" (click)="confirmDelete()">Yes, Delete</button>
@@ -136,11 +117,7 @@
 </div>
 
 <!-- Toast -->
-<div
-  class="toast"
-  *ngIf="deleteToastVisible"
-  [ngClass]="deleteToastSuccess ? 'toast-delete-success' : 'toast-delete'"
->
+<div class="toast" *ngIf="deleteToastVisible" [ngClass]="deleteToastSuccess ? 'toast-delete-success' : 'toast-delete'">
   <svg *ngIf="deleteToastSuccess" viewBox="0 0 24 24" width="18" height="18" fill="#22c55e">
     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
   </svg>
