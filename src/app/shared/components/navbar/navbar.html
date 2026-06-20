@@ -10,20 +10,14 @@
         <span class="logo-text font-semibold font-[manrope]">VOYAGO</span>
       </a>
 
+      <!--
+        ✅ الزرار دلوقتي بيعرض حالة "هتحول لإيها" مش الحالة الحالية:
+           - لو إحنا فعلاً في Dark Mode  → يكتب "LIGHT MODE" + أيقونة شمس
+           - لو إحنا فعلاً في Light Mode → يكتب "DARK MODE"  + أيقونة قمر
+      -->
       <button class="dark-pill" (click)="toggleDarkMode()">
         <svg
           *ngIf="darkMode.isDarkMode()"
-          width="13"
-          height="13"
-          viewBox="0 0 24 24"
-          fill="#c8d6e8"
-        >
-          <path
-            d="M21.4 13.7C20.6 17.4 17.4 20.2 13.5 20.5c-4.8.4-8.8-3.3-8.8-8 0-4.5 3.5-8.1 8-8.2.5 0 .6.7.2 1C11.4 6.5 10.8 8 11 9.5c.3 2.8 2.6 5 5.4 5.1 1.4.1 2.7-.3 3.7-1.1.5-.4 1.2.1 1 .6h.3z"
-          />
-        </svg>
-        <svg
-          *ngIf="!darkMode.isDarkMode()"
           width="13"
           height="13"
           viewBox="0 0 24 24"
@@ -33,7 +27,18 @@
             d="M12 2a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v1a1 1 0 0 1-2 0v-1a1 1 0 0 1 1-1zm8-8a1 1 0 0 1 0 2h-1a1 1 0 0 1 0-2h1zM4 11a1 1 0 0 1 0 2H3a1 1 0 0 1 0-2h1zm13.66-5.66a1 1 0 0 1 0 1.41l-.71.71a1 1 0 1 1-1.41-1.41l.71-.71a1 1 0 0 1 1.41 0zM7.05 16.95a1 1 0 0 1 0 1.41l-.71.71a1 1 0 1 1-1.41-1.41l.71-.71a1 1 0 0 1 1.41 0zm9.9 0a1 1 0 0 1 1.41 0l.71.71a1 1 0 1 1-1.41 1.41l-.71-.71a1 1 0 0 1 0-1.41zM5.64 5.64a1 1 0 0 1 1.41 0l.71.71A1 1 0 1 1 6.35 7.76l-.71-.71a1 1 0 0 1 0-1.41zM12 7a5 5 0 1 1 0 10A5 5 0 0 1 12 7z"
           />
         </svg>
-        <span class="pill-label">{{ darkMode.isDarkMode() ? 'DARK' : 'LIGHT' }}<br />MODE</span>
+        <svg
+          *ngIf="!darkMode.isDarkMode()"
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="#c8d6e8"
+        >
+          <path
+            d="M21.4 13.7C20.6 17.4 17.4 20.2 13.5 20.5c-4.8.4-8.8-3.3-8.8-8 0-4.5 3.5-8.1 8-8.2.5 0 .6.7.2 1C11.4 6.5 10.8 8 11 9.5c.3 2.8 2.6 5 5.4 5.1 1.4.1 2.7-.3 3.7-1.1.5-.4 1.2.1 1 .6h.3z"
+          />
+        </svg>
+        <span class="pill-label">{{ darkMode.isDarkMode() ? 'LIGHT' : 'DARK' }}<br />MODE</span>
       </button>
 
       <!-- <button class="lang-pill" (click)="lang.toggle()">
