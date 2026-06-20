@@ -5,7 +5,7 @@
 //   - Output: hotels/restaurants/attractions كروت مع Add to Plan
 // ============================================================
 
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -13,6 +13,8 @@ import { Hotel } from '../../../core/model/hotel.model';
 import { Restaurant } from '../../../core/model/restaurant.model';
 import { Attraction, BudgetBreakdown, BudgetPlan } from '../../../core/model/Budget.model';
 import { BudgetService } from '../../../core/services/budget.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { AuthModalService } from '../../../core/services/auth-modal.service';
 
 @Component({
   selector: 'app-budget-main',
@@ -22,6 +24,15 @@ import { BudgetService } from '../../../core/services/budget.service';
   styleUrl: './main.css',
 })
 export class Main implements OnInit {
+
+  // ── Auth ──────────────────────────────────────────────────
+  private auth      = inject(AuthService);
+  private authModal = inject(AuthModalService);
+
+  /** بيستخدم في الـ template (مثلاً [readonly]="!isLoggedIn") */
+  get isLoggedIn(): boolean {
+    return this.auth.isLoggedIn();
+  }
 
   // ── Input fields ──────────────────────────────────────────
   totalBudget: number | null = null;
@@ -70,10 +81,55 @@ export class Main implements OnInit {
   }
 
   // ════════════════════════════════════════════════════════
+  // AUTH GUARD HELPER
+  // ════════════════════════════════════════════════════════
+
+  /**
+   * لو مش عامل login → يفتح المودال ويرجع false.
+   * لو عامل login → يرجع true.
+   * تستخدم قبل أي action محتاج auth (input focus, +/-, generate).
+   */
+  private requireAuth(): boolean {
+    if (!this.auth.isLoggedIn()) {
+      this.authModal.openLogin();
+      return false;
+    }
+    return true;
+  }
+
+  /** بتستخدم في (focus) و (click) على input الـ Total Budget */
+  onBudgetFieldInteraction(event: Event): void {
+    if (!this.requireAuth()) {
+      (event.target as HTMLInputElement).blur();
+    }
+  }
+
+  /** بتستخدم في (keydown) على input الـ Total Budget لمنع الكتابة لو مش logged in */
+  onBudgetKeydown(event: KeyboardEvent): void {
+    if (!this.auth.isLoggedIn()) {
+      event.preventDefault();
+      this.requireAuth();
+    }
+  }
+
+  incrementDays(): void {
+    if (!this.requireAuth()) return;
+    this.days = this.days + 1;
+  }
+
+  decrementDays(): void {
+    if (!this.requireAuth()) return;
+    this.days = this.days > 1 ? this.days - 1 : 1;
+  }
+
+  // ════════════════════════════════════════════════════════
   // GENERATE PLAN
   // ════════════════════════════════════════════════════════
 
   generatePlan(): void {
+    // 🔒 لازم يكون عامل login الأول قبل أي Generate
+    if (!this.requireAuth()) return;
+
     // Validation
     if (!this.totalBudget || this.totalBudget <= 0) {
       this.inputError = 'Please enter a valid total budget.';

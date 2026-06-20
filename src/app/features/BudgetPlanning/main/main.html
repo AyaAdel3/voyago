@@ -17,6 +17,10 @@
           placeholder="Ex:2000EGP"
           [(ngModel)]="totalBudget"
           (input)="inputError=''"
+          (focus)="onBudgetFieldInteraction($event)"
+          (click)="onBudgetFieldInteraction($event)"
+          (keydown)="onBudgetKeydown($event)"
+          [readonly]="!isLoggedIn"
           class="budget-input"
           min="0"
         />
@@ -26,9 +30,9 @@
       <div class="input-field">
         <label>Number Of Days</label>
         <div class="days-ctrl">
-          <button (click)="days = days > 1 ? days - 1 : 1" class="days-btn">-</button>
+          <button (click)="decrementDays()" class="days-btn">-</button>
           <span class="days-val">{{ days }}</span>
-          <button (click)="days = days + 1" class="days-btn">+</button>
+          <button (click)="incrementDays()" class="days-btn">+</button>
         </div>
       </div>
 
