@@ -1,6 +1,6 @@
 <!-- ============================================================
   details.html  →  src/app/features/BudgetPlanning/details/
-  صفحة البلان المحفوظ — زي Budget_planning_details.png
+  بتعرض BudgetPlanResponse الراجع من /budget-planning/save
 ============================================================ -->
 
 <div class="details-page font-[Nunito Sans]" *ngIf="plan">
@@ -10,17 +10,16 @@
     <div>
       <p class="your-plan-label">Your Trip Plan</p>
       <h1 class="plan-title">
-        {{ plan.selectedHotel?.name ?? 'Your Trip' }},
-        <strong>{{ plan.selectedHotel?.location ?? '' }}</strong>
+        {{ plan.hotel?.name ?? 'Your Trip' }}
       </h1>
     </div>
     <div class="header-budget">
-      <span class="header-budget-label">Daily Budget</span>
-      <span class="header-budget-val">{{ plan.dailyBudget | number }}EGP</span>
+      <span class="header-budget-label">Total Budget</span>
+      <span class="header-budget-val">{{ plan.totalBudget | number }}EGP</span>
     </div>
   </div>
 
-  <!-- Event meta row (date/time/venue placeholders) -->
+  <!-- Event meta row -->
   <div class="meta-row">
     <div class="meta-item">
       <div class="meta-icon">
@@ -29,7 +28,7 @@
         </svg>
       </div>
       <div>
-        <p class="meta-label">Event Date</p>
+        <p class="meta-label">Created On</p>
         <p class="meta-value">{{ plan.createdAt | date:'EEEE, MMMM d, y' }}</p>
       </div>
     </div>
@@ -40,8 +39,8 @@
         </svg>
       </div>
       <div>
-        <p class="meta-label">Event Time</p>
-        <p class="meta-value">6:00 PM – 11:00 PM</p>
+        <p class="meta-label">Number Of Days</p>
+        <p class="meta-value">{{ plan.numberOfDays }} day{{ plan.numberOfDays > 1 ? 's' : '' }}</p>
       </div>
     </div>
     <div class="meta-item">
@@ -51,8 +50,8 @@
         </svg>
       </div>
       <div>
-        <p class="meta-label">Venue</p>
-        <p class="meta-value">{{ plan.selectedHotel?.location ?? 'TBD' }}</p>
+        <p class="meta-label">Hotel</p>
+        <p class="meta-value">{{ plan.hotel?.name ?? 'N/A' }}</p>
       </div>
     </div>
   </div>
@@ -64,43 +63,25 @@
     <div class="left-side">
 
       <!-- Selected Hotel -->
-      <section *ngIf="plan.selectedHotel">
+      <section *ngIf="plan.hotel">
         <h2 class="section-title">Selected Hotel</h2>
         <div
           class="hotel-card-big"
-          (click)="viewHotelDetails(plan.selectedHotel.id)"
-          (keydown.enter)="viewHotelDetails(plan.selectedHotel.id)"
+          (click)="viewHotelDetails(plan.hotel.id)"
+          (keydown.enter)="viewHotelDetails(plan.hotel.id)"
           tabindex="0"
           role="button"
-          [attr.aria-label]="'View details for ' + plan.selectedHotel.name"
+          [attr.aria-label]="'View details for ' + plan.hotel.name"
         >
           <div class="hotel-img-wrap">
-            <img [src]="plan.selectedHotel.images[0]" [alt]="plan.selectedHotel.name" class="hotel-img" />
-            <!-- Stars overlay -->
-            <div class="stars-overlay">
-              <svg *ngFor="let s of starsArray(plan.selectedHotel.stars)" viewBox="0 0 24 24" width="14" height="14" fill="#f5c518">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
-              </svg>
-              <span class="stars-count">{{ plan.selectedHotel.rating }}</span>
-            </div>
+            <img [src]="plan.hotel.mainImageUrl" [alt]="plan.hotel.name" class="hotel-img" />
           </div>
           <div class="hotel-info">
-            <h3 class="hotel-name">{{ plan.selectedHotel.name }}</h3>
-            <p class="hotel-location">{{ plan.selectedHotel.location }}</p>
-            <!-- Amenities chips -->
-            <div class="amenities-row">
-              <span *ngFor="let a of plan.selectedHotel.amenities.slice(0,3)" class="amenity-chip">
-                {{ a }}
-              </span>
-            </div>
+            <h3 class="hotel-name">{{ plan.hotel.name }}</h3>
             <div class="hotel-price-row">
               <div>
-                <p class="price-per-night">{{ plan.selectedHotel.pricePerNight | number }}LE</p>
-                <p class="price-label">Per Night</p>
-              </div>
-              <div>
-                <p class="price-total">{{ hotelTotalCost | number }}LE</p>
-                <p class="price-label">{{ plan.days }} Nights Total</p>
+                <p class="price-total">{{ plan.hotel.price | number }}LE</p>
+                <p class="price-label">{{ plan.numberOfDays }} Night{{ plan.numberOfDays > 1 ? 's' : '' }} Total</p>
               </div>
             </div>
           </div>
@@ -108,11 +89,11 @@
       </section>
 
       <!-- Selected Restaurants -->
-      <section *ngIf="plan.selectedRestaurants.length > 0">
+      <section *ngIf="plan.restaurants.length > 0">
         <h2 class="section-title">Selected Restaurants</h2>
         <div class="items-grid">
           <div
-            *ngFor="let r of plan.selectedRestaurants"
+            *ngFor="let r of plan.restaurants"
             class="mini-card"
             (click)="viewRestaurantDetails(r.id)"
             (keydown.enter)="viewRestaurantDetails(r.id)"
@@ -121,19 +102,13 @@
             [attr.aria-label]="'View details for ' + r.name"
           >
             <div class="mini-img-wrap">
-              <img [src]="r.images[0]" [alt]="r.name" class="mini-img" />
+              <img [src]="r.mainImageUrl" [alt]="r.name" class="mini-img" />
             </div>
             <div class="mini-info">
               <div class="mini-name-row">
                 <span class="mini-name">{{ r.name }}</span>
-                <span class="mini-rating">
-                  <svg viewBox="0 0 24 24" width="10" height="10" fill="#f5c518">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
-                  </svg>
-                  {{ r.rating }}
-                </span>
               </div>
-              <p class="mini-sub">{{ r.cuisine }}</p>
+              <p class="mini-sub">{{ r.estimatedPrice | number }}LE</p>
               <button class="btn-view-sm" (click)="$event.stopPropagation(); viewRestaurantDetails(r.id)">View Details</button>
             </div>
           </div>
@@ -141,11 +116,11 @@
       </section>
 
       <!-- Tourist Attractions -->
-      <section *ngIf="plan.selectedAttractions.length > 0">
+      <section *ngIf="plan.attractions.length > 0">
         <h2 class="section-title">Tourist Attractions</h2>
         <div class="items-grid">
           <div
-            *ngFor="let a of plan.selectedAttractions"
+            *ngFor="let a of plan.attractions"
             class="mini-card"
             (click)="viewAttractionDetails(a.id)"
             (keydown.enter)="viewAttractionDetails(a.id)"
@@ -154,19 +129,13 @@
             [attr.aria-label]="'View details for ' + a.name"
           >
             <div class="mini-img-wrap">
-              <img [src]="a.images[0]" [alt]="a.name" class="mini-img" />
+              <img [src]="a.mainImageUrl" [alt]="a.name" class="mini-img" />
             </div>
             <div class="mini-info">
               <div class="mini-name-row">
                 <span class="mini-name">{{ a.name }}</span>
-                <span class="mini-rating">
-                  <svg viewBox="0 0 24 24" width="10" height="10" fill="#f5c518">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
-                  </svg>
-                  {{ a.rating }}
-                </span>
               </div>
-              <p class="mini-sub">{{ a.category }}</p>
+              <p class="mini-sub">{{ a.ticketPrice === 0 ? 'Free' : (a.ticketPrice | number) + 'LE' }}</p>
               <button class="btn-view-sm" (click)="$event.stopPropagation(); viewAttractionDetails(a.id)">View Details</button>
             </div>
           </div>
@@ -175,7 +144,7 @@
 
     </div>
 
-    <!-- ════ RIGHT SIDE (Cost Breakdown + Save) ════ -->
+    <!-- ════ RIGHT SIDE (Cost Breakdown) ════ -->
     <div class="right-side">
 
       <!-- Cost Breakdown card -->
@@ -189,25 +158,25 @@
 
         <!-- Hotel cost -->
         <div
-          *ngIf="plan.selectedHotel"
+          *ngIf="plan.hotel"
           class="cost-row cost-row-clickable"
-          (click)="viewHotelDetails(plan.selectedHotel.id)"
-          (keydown.enter)="viewHotelDetails(plan.selectedHotel.id)"
+          (click)="viewHotelDetails(plan.hotel.id)"
+          (keydown.enter)="viewHotelDetails(plan.hotel.id)"
           tabindex="0"
           role="button"
-          [attr.aria-label]="'View details for ' + plan.selectedHotel.name"
+          [attr.aria-label]="'View details for ' + plan.hotel.name"
         >
           <div class="cost-icon hotel-icon">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="#f6faff">
               <path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/>
             </svg>
           </div>
-          <span class="cost-name">{{ plan.selectedHotel.name }}</span>
-          <span class="cost-amount">{{ hotelTotalCost | number }}LE</span>
+          <span class="cost-name">{{ plan.hotel.name }}</span>
+          <span class="cost-amount">{{ plan.totalHotelCost | number }}LE</span>
         </div>
 
         <!-- Restaurants costs -->
-        <div *ngFor="let r of plan.selectedRestaurants" class="cost-row">
+        <div *ngFor="let r of plan.restaurants" class="cost-row">
           <div class="cost-icon rest-icon">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="#f6faff">
               <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/>
@@ -222,12 +191,12 @@
             role="button"
             [attr.aria-label]="'View details for ' + r.name"
           >
-            Reservation Table
+            {{ r.estimatedPrice | number }}LE
           </span>
         </div>
 
         <!-- Attractions costs -->
-        <div *ngFor="let a of plan.selectedAttractions" class="cost-row">
+        <div *ngFor="let a of plan.attractions" class="cost-row">
           <div class="cost-icon attr-icon">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="#f6faff">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
@@ -242,7 +211,7 @@
             role="button"
             [attr.aria-label]="'View details for ' + a.name"
           >
-            View Details
+            {{ a.ticketPrice | number }}LE
           </span>
         </div>
 
@@ -250,8 +219,8 @@
 
         <!-- Total -->
         <div class="cost-total-row">
-          <span>Budget Used</span>
-          <span class="cost-total-val">{{ plan.totalCost | number }}LE</span>
+          <span>Total Estimated Cost</span>
+          <span class="cost-total-val">{{ plan.totalEstimatedCost | number }}LE</span>
         </div>
       </div>
 
@@ -263,8 +232,8 @@
         <p>Saving Your Plan Does Not Complete Any Bookings. You Can Proceed To Book Individual Hotels, Restaurants, Or Tour Guides Separately At Your Convenience.</p>
       </div>
 
-      <!-- Save Trip Plan button -->
-      <button class="btn-save-trip" (click)="saveTripPlan()">Save Trip Plan</button>
+      <!-- Back to my plans -->
+      <button class="btn-save-trip" (click)="goToSavedPlans()">Back To My Plans</button>
 
     </div>
 

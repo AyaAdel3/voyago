@@ -1,5 +1,6 @@
 <!-- ============================================================
   plan.html  →  src/app/features/BudgetPlanning/plan/
+  مربوطة بـ SuggestBudgetPlanResponse من الباك
 ============================================================ -->
 
 <div class="budget-page font-[Nunito Sans]">
@@ -35,7 +36,9 @@
       </div>
 
       <!-- Generate Button -->
-      <button class="btn-generate" (click)="generatePlan()">Generate Plan</button>
+      <button class="btn-generate" (click)="generatePlan()" [disabled]="isLoading">
+        {{ isLoading ? 'Generating...' : 'Generate Plan' }}
+      </button>
 
     </div>
 
@@ -95,7 +98,7 @@
       <div class="cards-grid">
         <div *ngFor="let h of visibleHotels()" class="item-card" [class.selected-card]="isHotelSelected(h.id)">
           <div class="card-img-wrap">
-            <img [src]="h.images[0]" [alt]="h.name" class="card-img" />
+            <img [src]="h.mainImageUrl" [alt]="h.name" class="card-img" />
             <div *ngIf="isHotelSelected(h.id)" class="selected-badge">✓ Selected</div>
           </div>
           <div class="card-info">
@@ -108,9 +111,9 @@
                 {{ h.rating }}
               </span>
             </div>
-            <p class="card-price">{{ h.pricePerNight | number }}LE / night</p>
-            <p class="card-price-total">{{ h.pricePerNight * days | number }}LE for {{ days }} night{{ days > 1 ? 's' : '' }}</p>
-            <p class="card-desc">{{ h.description | slice:0:90 }}...</p>
+            <p class="card-price">{{ h.minPrice | number }}LE / night</p>
+            <p class="card-price-total">{{ h.estimatedTotalPrice | number }}LE for {{ days }} night{{ days > 1 ? 's' : '' }}</p>
+            <p class="card-desc">{{ h.location }}</p>
             <div class="card-btns">
               <button class="btn-view" (click)="viewHotelDetails(h.id); $event.stopPropagation()">View Details</button>
               <button class="btn-add" [class.btn-remove]="isHotelSelected(h.id)"
@@ -133,9 +136,6 @@
           <p class="section-sub">
             Select as many as you like •
             <span class="budget-status">{{ restaurantBudgetUsed | number }}LE / {{ breakdown.restaurantBudget | number }}LE</span>
-            <span style="font-size:11px; color:#888">
-              &nbsp;({{ RESTAURANT_COST }}LE × {{ days }} day{{ days > 1 ? 's' : '' }} per restaurant)
-            </span>
           </p>
         </div>
         <!-- Progress bar -->
@@ -155,7 +155,7 @@
       <div class="cards-grid">
         <div *ngFor="let r of availableRestaurants" class="item-card" [class.selected-card]="isRestaurantSelected(r.id)">
           <div class="card-img-wrap">
-            <img [src]="r.images[0]" [alt]="r.name" class="card-img" />
+            <img [src]="r.mainImageUrl" [alt]="r.name" class="card-img" />
             <div *ngIf="isRestaurantSelected(r.id)" class="selected-badge">✓ Selected</div>
           </div>
           <div class="card-info">
@@ -168,8 +168,8 @@
                 {{ r.rating }}
               </span>
             </div>
-<p class="card-price">{{ r.cuisine }} • {{ r.minPrice }}-{{ r.maxPrice }} LE</p>
-            <p class="card-desc">{{ r.description | slice:0:90 }}...</p>
+            <p class="card-price">{{ r.cuisineType }} • {{ r.minPrice }}-{{ r.maxPrice }} LE</p>
+            <p class="card-desc">{{ r.address }}</p>
             <div class="card-btns">
               <button class="btn-view" (click)="viewRestaurantDetails(r.id)">View Details</button>
               <button class="btn-add" [class.btn-remove]="isRestaurantSelected(r.id)" (click)="addRestaurantToPlan(r)">
@@ -210,9 +210,9 @@
       <div class="cards-grid">
         <div *ngFor="let a of availableAttractions" class="item-card" [class.selected-card]="isAttractionSelected(a.id)">
           <div class="card-img-wrap">
-            <img [src]="a.images[0]" [alt]="a.name" class="card-img" />
+            <img [src]="a.mainImageUrl" [alt]="a.name" class="card-img" />
             <div *ngIf="isAttractionSelected(a.id)" class="selected-badge">✓ Selected</div>
-            <div *ngIf="a.entryFee === 0" class="free-badge">Free</div>
+            <div *ngIf="a.ticketPrice === 0" class="free-badge">Free</div>
           </div>
           <div class="card-info">
             <div class="card-name-row">
@@ -224,8 +224,8 @@
                 {{ a.rating }}
               </span>
             </div>
-            <p class="card-price">{{ a.entryFee === 0 ? 'Free Entry' : (a.entryFee | number) + 'LE entry' }}</p>
-            <p class="card-desc">{{ a.description | slice:0:90 }}...</p>
+            <p class="card-price">{{ a.ticketPrice === 0 ? 'Free Entry' : (a.ticketPrice | number) + 'LE entry' }}</p>
+            <p class="card-desc">{{ a.category }} • {{ a.location }}</p>
             <div class="card-btns">
               <button class="btn-view" (click)="viewAttractionDetails(a.id)">View Details</button>
               <button class="btn-add" [class.btn-remove]="isAttractionSelected(a.id)" (click)="addAttractionToPlan(a)">
@@ -257,9 +257,14 @@
       </div>
     </div>
 
+    <!-- Save Error -->
+    <p *ngIf="saveError" class="input-error">⚠ {{ saveError }}</p>
+
     <!-- ════ SAVE / DELETE ════ -->
     <div class="plan-actions">
-      <button class="btn-save"   (click)="savePlan()">Save Plan</button>
+      <button class="btn-save"   (click)="savePlan()" [disabled]="isLoading">
+        {{ isLoading ? 'Saving...' : 'Save Plan' }}
+      </button>
       <button class="btn-delete" (click)="deletePlan()">Delete Plan</button>
     </div>
 

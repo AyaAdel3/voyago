@@ -1,17 +1,23 @@
 // ============================================================
 // main.ts  →  src/app/features/BudgetPlanning/main/
-// صفحة الـ Budget Planning الرئيسية:
-//   - Input: total budget + days → Generate Plan
+// صفحة الـ Budget Planning العامة (محتاجة auth):
+//   - Input: total budget + days → POST /budget-planning/suggest
 //   - Output: hotels/restaurants/attractions كروت مع Add to Plan
+//   - Save → POST /budget-planning/save
 // ============================================================
 
 import { Component, OnInit, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Hotel } from '../../../core/model/hotel.model';
-import { Restaurant } from '../../../core/model/restaurant.model';
-import { Attraction, BudgetBreakdown, BudgetPlan } from '../../../core/model/Budget.model';
+import {
+  SuggestBudgetPlanResponse,
+  SuggestedHotelItem,
+  SuggestedRestaurantItem,
+  SuggestedAttractionItem,
+  BudgetBreakdown,
+  SaveBudgetPlanRequest,
+} from '../../../core/model/Budget.model';
 import { BudgetService } from '../../../core/services/budget.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
@@ -29,7 +35,6 @@ export class Main implements OnInit {
   private auth      = inject(AuthService);
   private authModal = inject(AuthModalService);
 
-  /** بيستخدم في الـ template (مثلاً [readonly]="!isLoggedIn") */
   get isLoggedIn(): boolean {
     return this.auth.isLoggedIn();
   }
@@ -38,26 +43,24 @@ export class Main implements OnInit {
   totalBudget: number | null = null;
   days        = 1;
   inputError  = '';
+  isLoading   = false;
+  saveError   = '';
 
-  // ── Generated data ────────────────────────────────────────
-  planGenerated    = false;
-  breakdown!:      BudgetBreakdown;
-  dailyBudget      = 0;
+  // ── Generated data (من الـ backend) ────────────────────────
+  planGenerated = false;
+  breakdown!:    BudgetBreakdown;
+  dailyBudget    = 0;
 
-  allHotels:      Hotel[]      = [];
-  allRestaurants: Restaurant[] = [];
-  allAttractions: Attraction[] = [];
-
-  recommendedHotels:      Hotel[]      = [];
-  recommendedRestaurants: Restaurant[] = [];
-  recommendedAttractions: Attraction[] = [];
+  recommendedHotels:      SuggestedHotelItem[]      = [];
+  recommendedRestaurants: SuggestedRestaurantItem[] = [];
+  recommendedAttractions: SuggestedAttractionItem[] = [];
 
   // ── User selections ───────────────────────────────────────
-  selectedHotel:        Hotel        | null = null;
-  selectedRestaurants:  Restaurant[] = [];
-  selectedAttractions:  Attraction[] = [];
+  selectedHotel:       SuggestedHotelItem      | null = null;
+  selectedRestaurants: SuggestedRestaurantItem[] = [];
+  selectedAttractions: SuggestedAttractionItem[] = [];
 
-  // ── Carousel offsets (عدد الكروت المرئية = 3) ─────────────
+  // ── Carousel offsets ───────────────────────────────────────
   hotelOffset      = 0;
   restaurantOffset = 0;
   attractionOffset = 0;
@@ -73,22 +76,12 @@ export class Main implements OnInit {
     private cdr:           ChangeDetectorRef,
   ) {}
 
-  ngOnInit(): void {
-    // جيب البيانات من الـ service في الـ background
-    this.budgetService.getHotels().subscribe(h      => this.allHotels      = h);
-    this.budgetService.getRestaurants().subscribe(r => this.allRestaurants = r);
-    this.budgetService.getAttractions().subscribe(a => this.allAttractions = a);
-  }
+  ngOnInit(): void {}
 
   // ════════════════════════════════════════════════════════
   // AUTH GUARD HELPER
   // ════════════════════════════════════════════════════════
 
-  /**
-   * لو مش عامل login → يفتح المودال ويرجع false.
-   * لو عامل login → يرجع true.
-   * تستخدم قبل أي action محتاج auth (input focus, +/-, generate).
-   */
   private requireAuth(): boolean {
     if (!this.auth.isLoggedIn()) {
       this.authModal.openLogin();
@@ -97,14 +90,12 @@ export class Main implements OnInit {
     return true;
   }
 
-  /** بتستخدم في (focus) و (click) على input الـ Total Budget */
   onBudgetFieldInteraction(event: Event): void {
     if (!this.requireAuth()) {
       (event.target as HTMLInputElement).blur();
     }
   }
 
-  /** بتستخدم في (keydown) على input الـ Total Budget لمنع الكتابة لو مش logged in */
   onBudgetKeydown(event: KeyboardEvent): void {
     if (!this.auth.isLoggedIn()) {
       event.preventDefault();
@@ -123,14 +114,12 @@ export class Main implements OnInit {
   }
 
   // ════════════════════════════════════════════════════════
-  // GENERATE PLAN
+  // GENERATE PLAN — POST /budget-planning/suggest
   // ════════════════════════════════════════════════════════
 
   generatePlan(): void {
-    // 🔒 لازم يكون عامل login الأول قبل أي Generate
     if (!this.requireAuth()) return;
 
-    // Validation
     if (!this.totalBudget || this.totalBudget <= 0) {
       this.inputError = 'Please enter a valid total budget.';
       return;
@@ -140,45 +129,60 @@ export class Main implements OnInit {
       return;
     }
     this.inputError = '';
+    this.isLoading   = true;
 
-    // احسب الـ breakdown
-    this.breakdown   = this.budgetService.calculateBreakdown(this.totalBudget);
-    this.dailyBudget = this.budgetService.calculateDailyBudget(this.totalBudget, this.days);
+    this.budgetService.suggestPlan(this.totalBudget, this.days).subscribe({
+      next: (res: SuggestBudgetPlanResponse) => {
+        this.breakdown = {
+          hotelBudget:      res.hotelBudget,
+          restaurantBudget: res.restaurantBudget,
+          attractionBudget: res.attractionBudget,
+        };
+        this.dailyBudget = this.days > 0 ? Math.round(this.totalBudget! / this.days) : this.totalBudget!;
 
-    // فلتر الكروت المناسبة
-    this.recommendedHotels      = this.budgetService.getRecommendedHotels(this.allHotels, this.breakdown.hotelBudget, this.days);
-    this.recommendedRestaurants = this.budgetService.getRecommendedRestaurants(this.allRestaurants, this.breakdown.restaurantBudget);
-    this.recommendedAttractions = this.budgetService.getRecommendedAttractions(this.allAttractions, this.breakdown.attractionBudget, this.days);
+        this.recommendedHotels      = res.suggestedHotels;
+        this.recommendedRestaurants = res.suggestedRestaurants;
+        this.recommendedAttractions = res.suggestedAttractions;
 
-    // reset selections
-    this.selectedHotel        = null;
-    this.selectedRestaurants  = [];
-    this.selectedAttractions  = [];
-    this.hotelOffset          = 0;
-    this.restaurantOffset     = 0;
-    this.attractionOffset     = 0;
+        // reset selections
+        this.selectedHotel       = null;
+        this.selectedRestaurants = [];
+        this.selectedAttractions = [];
+        this.hotelOffset         = 0;
+        this.restaurantOffset    = 0;
+        this.attractionOffset    = 0;
+        this.hotelWarning        = '';
+        this.restaurantWarning   = '';
+        this.attractionWarning   = '';
 
-    this.planGenerated = true;
-    this.cdr.detectChanges();
+        this.planGenerated = true;
+        this.isLoading      = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        // الباك بيرجع BudgetBelowMinimum error لو الميزانية أقل من الحد الأدنى
+        this.inputError = err?.error?.message
+          ?? '⚠ Your budget is too low for this trip. Please increase it and try again.';
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   // ════════════════════════════════════════════════════════
-  // HOTEL SELECTION — يختار هوتيل واحد بس
+  // HOTEL SELECTION — هوتيل واحد بس
   // ════════════════════════════════════════════════════════
 
-  addHotelToPlan(hotel: Hotel): void {
-    // لو نفس الهوتيل → deselect
+  addHotelToPlan(hotel: SuggestedHotelItem): void {
     if (this.selectedHotel?.id === hotel.id) {
-      this.selectedHotel  = null;
-      this.hotelWarning   = '';
+      this.selectedHotel = null;
+      this.hotelWarning  = '';
       return;
     }
-    const cost = hotel.pricePerNight * this.days;
-    if (cost > this.breakdown.hotelBudget) {
-      this.hotelWarning = `⚠ This hotel exceeds your hotel budget by ${(cost - this.breakdown.hotelBudget).toLocaleString()}LE`;
-    } else {
-      this.hotelWarning = '';
-    }
+    // الباك أصلاً بيرجع بس الهوتيلات اللي جوه الميزانية، فالتحقق هنا للأمان بس
+    this.hotelWarning = hotel.estimatedTotalPrice > this.breakdown.hotelBudget
+      ? `⚠ This hotel exceeds your hotel budget by ${(hotel.estimatedTotalPrice - this.breakdown.hotelBudget).toLocaleString()}LE`
+      : '';
     this.selectedHotel = hotel;
   }
 
@@ -190,58 +194,48 @@ export class Main implements OnInit {
   // RESTAURANT SELECTION — max = days
   // ════════════════════════════════════════════════════════
 
-  addRestaurantToPlan(r: Restaurant): void {
+  addRestaurantToPlan(r: SuggestedRestaurantItem): void {
     const idx = this.selectedRestaurants.findIndex(x => x.id === r.id);
     if (idx >= 0) {
-      // deselect
       this.selectedRestaurants = this.selectedRestaurants.filter(x => x.id !== r.id);
       this.restaurantWarning   = '';
       return;
     }
-    if (this.selectedRestaurants.length >= this.days) {
-      this.restaurantWarning = `⚠ You can select up to ${this.days} restaurant${this.days > 1 ? 's' : ''} for your ${this.days}-day trip.`;
+    const newTotal = this.selectedRestaurantsCost + r.estimatedPrice;
+    if (newTotal > this.breakdown.restaurantBudget) {
+      this.restaurantWarning = `⚠ This restaurant exceeds your restaurants budget.`;
       return;
     }
     this.selectedRestaurants = [...this.selectedRestaurants, r];
-    // تحذير لو اقتربنا من الـ limit
-    if (this.selectedRestaurants.length >= this.days) {
-      this.restaurantWarning = `✓ You've reached the maximum restaurants for your trip.`;
-    }
+    this.restaurantWarning = '';
   }
 
   isRestaurantSelected(id: number): boolean {
     return this.selectedRestaurants.some(r => r.id === id);
   }
 
+  get selectedRestaurantsCost(): number {
+    return this.selectedRestaurants.reduce((s, r) => s + r.estimatedPrice, 0);
+  }
+
   // ════════════════════════════════════════════════════════
   // ATTRACTION SELECTION — max = max(3, days×0.5)
   // ════════════════════════════════════════════════════════
 
-  get maxAttractions(): number {
-    return Math.max(3, Math.floor(this.days * 0.5));
-  }
-
-  addAttractionToPlan(a: Attraction): void {
+  addAttractionToPlan(a: SuggestedAttractionItem): void {
     const idx = this.selectedAttractions.findIndex(x => x.id === a.id);
     if (idx >= 0) {
       this.selectedAttractions = this.selectedAttractions.filter(x => x.id !== a.id);
       this.attractionWarning   = '';
       return;
     }
-    if (this.selectedAttractions.length >= this.maxAttractions) {
-      this.attractionWarning = `⚠ You can select up to ${this.maxAttractions} attractions for your ${this.days}-day trip.`;
-      return;
-    }
-    // تحقق من الـ budget
-    const newCost = this.selectedAttractionsCost + a.entryFee;
+    const newCost = this.selectedAttractionsCost + a.ticketPrice;
     if (newCost > this.breakdown.attractionBudget) {
       this.attractionWarning = `⚠ This attraction exceeds your attractions budget.`;
       return;
     }
     this.selectedAttractions = [...this.selectedAttractions, a];
-    if (this.selectedAttractions.length >= this.maxAttractions - 1) {
-      this.attractionWarning = `⚠ Approaching your attractions limit.`;
-    }
+    this.attractionWarning = '';
   }
 
   isAttractionSelected(id: number): boolean {
@@ -249,7 +243,7 @@ export class Main implements OnInit {
   }
 
   get selectedAttractionsCost(): number {
-    return this.selectedAttractions.reduce((s, a) => s + a.entryFee, 0);
+    return this.selectedAttractions.reduce((s, a) => s + a.ticketPrice, 0);
   }
 
   // ════════════════════════════════════════════════════════
@@ -257,12 +251,8 @@ export class Main implements OnInit {
   // ════════════════════════════════════════════════════════
 
   get totalCost(): number {
-    return this.budgetService.calculateTotalCost(
-      this.selectedHotel,
-      this.selectedRestaurants,
-      this.selectedAttractions,
-      this.days,
-    );
+    const hotelCost = this.selectedHotel?.estimatedTotalPrice ?? 0;
+    return hotelCost + this.selectedRestaurantsCost + this.selectedAttractionsCost;
   }
 
   get budgetRemaining(): number {
@@ -270,41 +260,63 @@ export class Main implements OnInit {
   }
 
   // ════════════════════════════════════════════════════════
-  // SAVE / DELETE PLAN
+  // SAVE PLAN — POST /budget-planning/save
   // ════════════════════════════════════════════════════════
 
   savePlan(): void {
-    const plan: BudgetPlan = {
-      id:                   Date.now(),
-      totalBudget:          this.totalBudget ?? 0,
-      days:                 this.days,
-      dailyBudget:          this.dailyBudget,
-      selectedHotel:        this.selectedHotel,
-      selectedRestaurants:  this.selectedRestaurants,
-      selectedAttractions:  this.selectedAttractions,
-      totalCost:            this.totalCost,
-      createdAt:            new Date().toISOString(),
+    if (!this.requireAuth()) return;
+
+    if (!this.selectedHotel) {
+      this.saveError = '⚠ Please select a hotel first.';
+      return;
+    }
+    if (this.selectedRestaurants.length === 0) {
+      this.saveError = '⚠ Please select at least one restaurant.';
+      return;
+    }
+    if (this.selectedAttractions.length === 0) {
+      this.saveError = '⚠ Please select at least one attraction.';
+      return;
+    }
+    this.saveError = '';
+
+    const request: SaveBudgetPlanRequest = {
+      totalBudget:    this.totalBudget!,
+      numberOfDays:   this.days,
+      hotelId:        this.selectedHotel.id,
+      restaurantIds:  this.selectedRestaurants.map(r => r.id),
+      attractionIds:  this.selectedAttractions.map(a => a.id),
     };
-    this.budgetService.setCurrentPlan(plan);
-    this.budgetService.savePlan(plan);
-    this.router.navigate(['/budget-planning/details', plan.id]);
+
+    this.isLoading = true;
+    this.budgetService.savePlan(request).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.budgetService.setCurrentPlan(res);
+        this.router.navigate(['/budget-planning/details', res.id]);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.saveError = err?.error?.message ?? '⚠ Could not save your plan. Please try again.';
+        this.cdr.detectChanges();
+      },
+    });
   }
 
   deletePlan(): void {
-    // reset كل حاجة
     this.planGenerated       = false;
     this.selectedHotel       = null;
     this.selectedRestaurants = [];
     this.selectedAttractions = [];
     this.totalBudget         = null;
     this.days                = 1;
+    this.saveError           = '';
   }
 
   // ════════════════════════════════════════════════════════
   // CAROUSEL
   // ════════════════════════════════════════════════════════
 
-  /** اقدر تتحرك؟ */
   canScroll(list: any[], offset: number, dir: 'prev'|'next', visible = 3): boolean {
     return dir === 'next' ? offset + visible < list.length : offset > 0;
   }
@@ -319,15 +331,14 @@ export class Main implements OnInit {
     return offset;
   }
 
-  /** slice الكروت المرئية */
-  visibleHotels():      Hotel[]      { return this.recommendedHotels     .slice(this.hotelOffset,      this.hotelOffset      + 3); }
-  visibleRestaurants(): Restaurant[] { return this.recommendedRestaurants.slice(this.restaurantOffset, this.restaurantOffset + 3); }
-  visibleAttractions(): Attraction[] { return this.recommendedAttractions.slice(this.attractionOffset, this.attractionOffset + 3); }
+  visibleHotels():      SuggestedHotelItem[]      { return this.recommendedHotels     .slice(this.hotelOffset,      this.hotelOffset      + 3); }
+  visibleRestaurants(): SuggestedRestaurantItem[] { return this.recommendedRestaurants.slice(this.restaurantOffset, this.restaurantOffset + 3); }
+  visibleAttractions(): SuggestedAttractionItem[] { return this.recommendedAttractions.slice(this.attractionOffset, this.attractionOffset + 3); }
 
   // ── Navigation ────────────────────────────────────────────
   viewHotelDetails(id: number):      void { this.router.navigate(['/hotels/details', id]); }
   viewRestaurantDetails(id: number): void { this.router.navigate(['/restaurant/details', id]); }
   viewAttractionDetails(id: number): void { this.router.navigate(['/tourist-attraction/details', id]); }
 
-  starsArray(n: number): number[] { return Array(n).fill(0); }
+  starsArray(n: number): number[] { return Array(Math.round(n)).fill(0); }
 }
