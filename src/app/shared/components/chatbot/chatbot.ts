@@ -31,11 +31,12 @@ interface Message {
 }
 
 interface ChatResponse {
-  message: string;
-  type: 'text' | 'card' | 'emergency' | 'fallback';
-  data?: { items?: CardItem[] };
+  response: string;
   intent?: string;
+  action?: string;
+  navigate_to?: string | null;
   language?: string;
+  data?: { items?: CardItem[] } | null;
 }
 
 const HISTORY_KEY = 'voyago_chat_history';
@@ -71,7 +72,7 @@ export class Chatbot implements OnInit, OnDestroy, AfterViewChecked {
     text:   'Hello! This is Emma from Voyago Support. How can I assist you today?'
   };
 
-  private readonly chatApiUrl = 'https://voyago-chatbot-v2-production.up.railway.app/chat';
+  private readonly chatApiUrl = 'https://voyago-chatbot-production.up.railway.app/chat';
 
   constructor(
     private http:        HttpClient,
@@ -169,11 +170,12 @@ export class Chatbot implements OnInit, OnDestroy, AfterViewChecked {
       })
       .subscribe({
         next: (res) => {
+          const items = res.data?.items ?? [];
           this.messages.push({
             sender: 'bot',
-            text:   res.message,
-            type:   res.type,
-            cards:  res.data?.items ?? []
+            text:   res.response,
+            type:   items.length ? 'card' : 'text',
+            cards:  items
           });
           this.isLoading            = false;
           this.shouldScrollToBottom = true;
