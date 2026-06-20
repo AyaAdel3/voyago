@@ -66,7 +66,14 @@
       <!-- Selected Hotel -->
       <section *ngIf="plan.selectedHotel">
         <h2 class="section-title">Selected Hotel</h2>
-        <div class="hotel-card-big">
+        <div
+          class="hotel-card-big"
+          (click)="viewHotelDetails(plan.selectedHotel.id)"
+          (keydown.enter)="viewHotelDetails(plan.selectedHotel.id)"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="'View details for ' + plan.selectedHotel.name"
+        >
           <div class="hotel-img-wrap">
             <img [src]="plan.selectedHotel.images[0]" [alt]="plan.selectedHotel.name" class="hotel-img" />
             <!-- Stars overlay -->
@@ -104,7 +111,15 @@
       <section *ngIf="plan.selectedRestaurants.length > 0">
         <h2 class="section-title">Selected Restaurants</h2>
         <div class="items-grid">
-          <div *ngFor="let r of plan.selectedRestaurants" class="mini-card">
+          <div
+            *ngFor="let r of plan.selectedRestaurants"
+            class="mini-card"
+            (click)="viewRestaurantDetails(r.id)"
+            (keydown.enter)="viewRestaurantDetails(r.id)"
+            tabindex="0"
+            role="button"
+            [attr.aria-label]="'View details for ' + r.name"
+          >
             <div class="mini-img-wrap">
               <img [src]="r.images[0]" [alt]="r.name" class="mini-img" />
             </div>
@@ -119,7 +134,7 @@
                 </span>
               </div>
               <p class="mini-sub">{{ r.cuisine }}</p>
-              <button class="btn-view-sm" (click)="viewRestaurantDetails(r.id)">View Details</button>
+              <button class="btn-view-sm" (click)="$event.stopPropagation(); viewRestaurantDetails(r.id)">View Details</button>
             </div>
           </div>
         </div>
@@ -129,7 +144,15 @@
       <section *ngIf="plan.selectedAttractions.length > 0">
         <h2 class="section-title">Tourist Attractions</h2>
         <div class="items-grid">
-          <div *ngFor="let a of plan.selectedAttractions" class="mini-card">
+          <div
+            *ngFor="let a of plan.selectedAttractions"
+            class="mini-card"
+            (click)="viewAttractionDetails(a.id)"
+            (keydown.enter)="viewAttractionDetails(a.id)"
+            tabindex="0"
+            role="button"
+            [attr.aria-label]="'View details for ' + a.name"
+          >
             <div class="mini-img-wrap">
               <img [src]="a.images[0]" [alt]="a.name" class="mini-img" />
             </div>
@@ -144,7 +167,7 @@
                 </span>
               </div>
               <p class="mini-sub">{{ a.category }}</p>
-              <button class="btn-view-sm" (click)="viewAttractionDetails(a.id)">View Details</button>
+              <button class="btn-view-sm" (click)="$event.stopPropagation(); viewAttractionDetails(a.id)">View Details</button>
             </div>
           </div>
         </div>
@@ -165,7 +188,15 @@
         </div>
 
         <!-- Hotel cost -->
-        <div *ngIf="plan.selectedHotel" class="cost-row">
+        <div
+          *ngIf="plan.selectedHotel"
+          class="cost-row cost-row-clickable"
+          (click)="viewHotelDetails(plan.selectedHotel.id)"
+          (keydown.enter)="viewHotelDetails(plan.selectedHotel.id)"
+          tabindex="0"
+          role="button"
+          [attr.aria-label]="'View details for ' + plan.selectedHotel.name"
+        >
           <div class="cost-icon hotel-icon">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="#f6faff">
               <path d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"/>
@@ -183,7 +214,16 @@
             </svg>
           </div>
           <span class="cost-name">{{ r.name }}</span>
-          <span class="cost-amount cost-link" (click)="viewRestaurantDetails(r.id)">Reservation Table</span>
+          <span
+            class="cost-amount cost-link"
+            (click)="viewRestaurantDetails(r.id)"
+            (keydown.enter)="viewRestaurantDetails(r.id)"
+            tabindex="0"
+            role="button"
+            [attr.aria-label]="'View details for ' + r.name"
+          >
+            Reservation Table
+          </span>
         </div>
 
         <!-- Attractions costs -->
@@ -194,8 +234,15 @@
             </svg>
           </div>
           <span class="cost-name">{{ a.name }}</span>
-          <span class="cost-amount cost-link" (click)="viewAttractionDetails(a.id)">
-            {{ a.entryFee === 0 ? 'Free' : (a.entryFee | number) + 'LE' }}
+          <span
+            class="cost-amount cost-link"
+            (click)="viewAttractionDetails(a.id)"
+            (keydown.enter)="viewAttractionDetails(a.id)"
+            tabindex="0"
+            role="button"
+            [attr.aria-label]="'View details for ' + a.name"
+          >
+            View Details
           </span>
         </div>
 
@@ -227,5 +274,5 @@
 <!-- No plan state -->
 <div *ngIf="!plan" class="no-plan">
   <p>No plan found.</p>
-  <button (click)="router.navigate(['/Budget Planning'])">Create a Plan</button>
+  <button (click)="router.navigate(['/budget-planning'])">Create a Plan</button>
 </div>

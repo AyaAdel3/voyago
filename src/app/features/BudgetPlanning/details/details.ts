@@ -1,6 +1,6 @@
 // ============================================================
 // details.ts  →  src/app/features/BudgetPlanning/details/
-// FIXED: حل TS2345 + إضافة id و name + تحسين بسيط
+// FIXED: حل TS2345 + إضافة id و name + تصحيح الـ navigation routes
 // ============================================================
 
 import { Component, OnInit } from '@angular/core';
@@ -36,17 +36,19 @@ export class Details implements OnInit {
   }
 
   // ── Navigation ─────────────────────────────────────────────
+  // ✅ مصححة عشان تطابق نفس الـ routes المستخدمة في باقي المشروع
+  // (نفس الـ paths اللي في hotel/card.ts, restaurant/card.ts, attraction/card.ts)
 
   viewHotelDetails(id: number): void {
     this.router.navigate(['/hotels/details', id]);
   }
 
   viewRestaurantDetails(id: number): void {
-    this.router.navigate(['/Restaurants/details', id]);
+    this.router.navigate(['/restaurant/details', id]);
   }
 
   viewAttractionDetails(id: number): void {
-    this.router.navigate(['/Attractions/details', id]);
+    this.router.navigate(['/tourist-attraction/details', id]);
   }
 
   // ── Save Trip Plan (FIXED) ────────────────────────────────
