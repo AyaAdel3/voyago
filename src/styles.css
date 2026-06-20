@@ -1250,7 +1250,7 @@ body:not(.dark-mode) .filter-tab.active .filter-count {
 /* ── Loading / Empty ── */
 body:not(.dark-mode) .loading-wrap,
 body:not(.dark-mode) .empty-state {
-  color: #8899bb !important;
+  color: #173b64 !important;
 }
 body:not(.dark-mode) .spinner {
   border-color: rgba(13, 27, 42, 0.12) !important;
@@ -1401,4 +1401,8 @@ body:not(.dark-mode) .slider-arrow {
 }
 body:not(.dark-mode) .slider-arrow:hover {
   background: #e2eaf4 !important;
+}
+
+body:not(.dark-mode) .admin-shell .hamburger-btn span {
+  background-color: #e2eaf4 !important;
 }

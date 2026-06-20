@@ -1,14 +1,13 @@
 import { Injectable, signal } from '@angular/core';
 import { Observable, BehaviorSubject, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {
   Hotel, Review, RoomType, HotelFeature, HotelFeatureDef, BookingData,
   BookingFeatureDef, FIXED_BOOKING_FEATURES,
   MOCK_HOTELS, MOCK_REVIEWS, MOCK_HOTEL_FEATURES, MOCK_DISPLAY_FEATURES,
   buildDefaultRooms, HotelRoomPrices, HotelApiDetail, HotelApiComment,
-  AdminHotelApiItem, AdminHotelsApiResponse,
-  AdminHotelReviewsApiResponse, HotelReview,
+  AdminHotelsApiResponse, AdminHotelReviewsApiResponse, HotelReview,
   AdminAddHotelRequest, AdminAddHotelResponse,
   HotelFeatureApiItem, BookingFeatureApiItem,
   CreateBookingRequest, CreateBookingResponse,
@@ -18,21 +17,54 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class HotelService {
 
-  private readonly apiBase          = `${environment.apiUrl}/hotels`;
-private readonly apiBaseCase      = `${environment.apiUrl}/Hotels`;
-private readonly adminApiUrl      = `${environment.apiUrl}/admin/hotels`;
-private readonly adminFeaturesUrl = `${environment.apiUrl}/admin/hotel-features`;
-private readonly adminBookingFeatUrl = `${environment.apiUrl}/admin/booking-features`;
-  private hotelsSubject  = new BehaviorSubject<Hotel[]>([...MOCK_HOTELS]);
-  hotels$                = this.hotelsSubject.asObservable();
+  private readonly apiBase             = `${environment.apiUrl}/hotels`;
+  private readonly apiBaseCase         = `${environment.apiUrl}/Hotels`;
+  private readonly adminApiUrl         = `${environment.apiUrl}/admin/hotels`;
+  private readonly adminFeaturesUrl    = `${environment.apiUrl}/admin/hotel-features`;
+  private readonly adminBookingFeatUrl = `${environment.apiUrl}/admin/booking-features`;
 
-  private reviewsSubject = new BehaviorSubject<Review[]>([...MOCK_REVIEWS]);
-  reviews$               = this.reviewsSubject.asObservable();
+  private hotelsSubject      = new BehaviorSubject<Hotel[]>([...MOCK_HOTELS]);
+  hotels$                    = this.hotelsSubject.asObservable();
 
-  private favIds         = signal<Set<number>>(new Set());
-  private currentBooking = signal<BookingData | null>(null);
+  private reviewsSubject     = new BehaviorSubject<Review[]>([...MOCK_REVIEWS]);
+  reviews$                   = this.reviewsSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  // ── Hotels List Cache ─────────────────────────────────────
+  private hotelsListSubject    = new BehaviorSubject<any[]>([]);
+  private hotelsLoadingSubject = new BehaviorSubject<boolean>(true);
+  hotelsLoading$                = this.hotelsLoadingSubject.asObservable();
+
+  private favIds             = signal<Set<number>>(new Set());
+  private currentBooking     = signal<BookingData | null>(null);
+  private bookingIdSignal    = signal<number>(0);
+
+  constructor(private http: HttpClient) {
+    this.loadHotelsList();
+  }
+
+  private loadHotelsList(): void {
+    this.hotelsLoadingSubject.next(true);
+    this.http.get<any[]>(this.apiBase).subscribe({
+      next: data => {
+        this.hotelsListSubject.next(data);
+        this.hotelsLoadingSubject.next(false);
+      },
+      error: err => {
+        console.error('Failed to load hotels:', err);
+        this.hotelsLoadingSubject.next(false);
+      },
+    });
+  }
+
+  getHotelsList(): Observable<any[]> {
+    return this.hotelsListSubject.asObservable();
+  }
+
+  getHotelsLoading(): Observable<boolean> {
+    return this.hotelsLoading$;
+  }
+
+  // ─────────────────────────────────────────────────────────
 
   getHotels(): Observable<Hotel[]> { return this.hotels$; }
 
@@ -97,7 +129,7 @@ private readonly adminBookingFeatUrl = `${environment.apiUrl}/admin/booking-feat
         userName:          c.userName,
         rating:            c.rating,
         content:           c.content,
-        date:              c.date ?? c.createdAt,
+        createdAt:         c.createdAt,
         profilePictureUrl: c.profilePictureUrl ?? null,
       })))
     );
@@ -246,7 +278,7 @@ private readonly adminBookingFeatUrl = `${environment.apiUrl}/admin/booking-feat
     );
   }
 
-  // ── LOCAL WRITE (mock / optimistic) ──────────────────────
+  // ── LOCAL WRITE ───────────────────────────────────────────
 
   addHotel(hotel: Hotel): void {
     const current = this.hotelsSubject.getValue();
@@ -313,7 +345,6 @@ private readonly adminBookingFeatUrl = `${environment.apiUrl}/admin/booking-feat
     const features: BookingFeatureDef[] = hotel.bookingFeatures?.length
       ? hotel.bookingFeatures
       : [...FIXED_BOOKING_FEATURES];
-
     return features.map(f => ({
       name:     f.name,
       price:    f.price,
@@ -326,11 +357,6 @@ private readonly adminBookingFeatUrl = `${environment.apiUrl}/admin/booking-feat
     return this.getHotelBookingFeatures(hotel);
   }
 
-  /**
-   * POST /hotels/{hotelId}/bookings/{bookingId}/confirm
-   * Body: { "paymentType": "card" } or { "paymentType": "cash on arrival" }
-   * بيكنفيرم الحجز ويرجع الـ bookingId الكامل للعرض في صفحة التأكيد.
-   */
   confirmBooking(
     booking: BookingData,
     method:  'credit' | 'cash',
@@ -353,13 +379,8 @@ private readonly adminBookingFeatUrl = `${environment.apiUrl}/admin/booking-feat
     );
   }
 
-  /**
-   * بتحفظ الـ booking ID اللي رجع من createBooking عشان يتستخدم في confirmBooking.
-   */
-  private bookingIdSignal = signal<number>(0);
-
-  saveBookingId(id: number): void      { this.bookingIdSignal.set(id); }
-  currentBookingId(): number           { return this.bookingIdSignal(); }
+  saveBookingId(id: number): void  { this.bookingIdSignal.set(id); }
+  currentBookingId(): number       { return this.bookingIdSignal(); }
 
   // ── Helpers ───────────────────────────────────────────────
 

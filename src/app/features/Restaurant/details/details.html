@@ -1,6 +1,7 @@
 <div class="rest-page font-[Nunito Sans]">
   <div *ngIf="loading" class="loading-wrap">
-    <p class="text-white text-xl">Loading...</p>
+    <div class="spinner"></div>
+    <p>Loading...</p>
   </div>
 
   <div *ngIf="error" class="error-wrap">

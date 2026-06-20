@@ -1,33 +1,44 @@
 <div class="hotel-page py-4 font-[Nunito Sans]">
-
   <!-- Loading -->
-  <div *ngIf="loading" class="flex justify-center items-center min-h-screen">
-    <p class="text-white text-xl">Loading...</p>
+  <div *ngIf="loading" class="loading-wrap">
+    <div class="spinner"></div>
+    <p>Loading...</p>
   </div>
-
   <!-- Error -->
-  <div *ngIf="!loading && error" class="loading-wrap"
-       style="color:white; flex-direction:column; gap:1rem;">
+  <div
+    *ngIf="!loading && error"
+    class="loading-wrap"
+    style="color: white; flex-direction: column; gap: 1rem"
+  >
     <p>Failed to load hotel. Please try again.</p>
-    <button (click)="router.navigate(['/hotels'])"
-      style="background:#f5c518;border:none;padding:.5rem 1.5rem;border-radius:8px;cursor:pointer;font-weight:700;">
+    <button
+      (click)="router.navigate(['/hotels'])"
+      style="
+        background: #f5c518;
+        border: none;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 700;
+      "
+    >
       Back to Hotels
     </button>
   </div>
 
   <!-- Content -->
   <div *ngIf="!loading && !error && hotel" class="outer-row">
-
     <!-- LEFT COL -->
     <div class="left-col">
-
       <!-- GALLERY -->
       <div class="gallery">
         <div class="gallery-main" (click)="openLightbox(activeImage)">
           <img [src]="hotelImages[activeImage]" [alt]="hotel.name" />
           <div class="main-overlay">
-            <svg viewBox="0 0 24 24" width="28" height="28" fill="white" style="opacity:.7">
-              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            <svg viewBox="0 0 24 24" width="28" height="28" fill="white" style="opacity: 0.7">
+              <path
+                d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+              />
             </svg>
           </div>
         </div>
@@ -37,12 +48,14 @@
             *ngFor="let img of hotelImages.slice(1, 3); let i = index"
             class="gallery-thumb"
             [class.active-thumb]="activeImage === i + 1"
-            (click)="setActiveImage(i + 1)">
-            <img [src]="img" [alt]="hotel.name + ' ' + (i+2)" />
+            (click)="setActiveImage(i + 1)"
+          >
+            <img [src]="img" [alt]="hotel.name + ' ' + (i + 2)" />
             <div
               *ngIf="i === 1 && hotelImages.length > 3"
               class="more-photos"
-              (click)="openLightbox(i + 1); $event.stopPropagation()">
+              (click)="openLightbox(i + 1); $event.stopPropagation()"
+            >
               +{{ hotelImages.length - 3 }} photos
             </div>
           </div>
@@ -57,7 +70,9 @@
           </h1>
           <div class="rating-badge-new">
             <svg viewBox="0 0 24 24" width="13" height="13" fill="#FFDE70">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
+              />
             </svg>
             <span>{{ hotel.rating }}</span>
           </div>
@@ -99,17 +114,26 @@
             <span class="host-name font-medium">{{ currentUserName }}</span>
           </div>
           <div class="review-form-row">
-            <input type="text" placeholder="Write your comment..."
-                   [(ngModel)]="newComment" class="review-input" />
+            <input
+              type="text"
+              placeholder="Write your comment..."
+              [(ngModel)]="newComment"
+              class="review-input"
+            />
             <div class="review-form-actions">
               <div class="star-picker">
                 <svg
-                  *ngFor="let s of [1,2,3,4,5]"
-                  viewBox="0 0 24 24" width="24" height="24"
+                  *ngFor="let s of [1, 2, 3, 4, 5]"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  height="24"
                   [style.fill]="s <= newRating ? '#FFDE70' : '#F6FAFF'"
                   (click)="newRating = s"
-                  style="cursor:pointer">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                  style="cursor: pointer"
+                >
+                  <path
+                    d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
+                  />
                 </svg>
               </div>
               <button class="btn-submit" (click)="submitReview()" [disabled]="submitting">
@@ -117,12 +141,11 @@
               </button>
             </div>
           </div>
-          <p *ngIf="reviewError" class="booking-error-msg" style="margin-top:.5rem;">
+          <p *ngIf="reviewError" class="booking-error-msg" style="margin-top: 0.5rem">
             {{ reviewError }}
           </p>
         </div>
       </div>
-
     </div>
 
     <!-- RIGHT: Booking Widget -->
@@ -139,15 +162,23 @@
         <div class="dates-row">
           <div class="date-field">
             <label>Check in</label>
-            <input type="date" [(ngModel)]="checkIn" (change)="onDateChange()"
-                   class="date-input"
-                   [class.input-date-error]="bookingError && !checkIn" />
+            <input
+              type="date"
+              [(ngModel)]="checkIn"
+              (change)="onDateChange()"
+              class="date-input"
+              [class.input-date-error]="bookingError && !checkIn"
+            />
           </div>
           <div class="date-field">
             <label>Check out</label>
-            <input type="date" [(ngModel)]="checkOut" (change)="onDateChange()"
-                   class="date-input"
-                   [class.input-date-error]="bookingError && !checkOut" />
+            <input
+              type="date"
+              [(ngModel)]="checkOut"
+              (change)="onDateChange()"
+              class="date-input"
+              [class.input-date-error]="bookingError && !checkOut"
+            />
           </div>
         </div>
 
@@ -168,7 +199,9 @@
 
         <div class="widget-section" *ngIf="selectedFeatures && selectedFeatures.length">
           <h4 class="widget-label">Features</h4>
-          <p class="features-hint" *ngIf="totalRoomsSelected === 0">Select rooms first to add features</p>
+          <p class="features-hint" *ngIf="totalRoomsSelected === 0">
+            Select rooms first to add features
+          </p>
           <div *ngFor="let f of selectedFeatures; let i = index" class="option-row">
             <span class="option-name">{{ f.name }}</span>
             <div class="option-right">
@@ -210,7 +243,6 @@
         </button>
       </ng-container>
     </div>
-
   </div>
 
   <!-- REVIEWS GRID -->
@@ -218,14 +250,19 @@
     <div class="show-review text-[#F6FAFF]">
       <h2 class="section-title">Customer Reviews</h2>
       <div class="reviews-grid">
-        <div *ngFor="let review of reviews" class="review-card"
-             [class.my-review]="isMyReview(review)">
-
+        <div
+          *ngFor="let review of reviews"
+          class="review-card"
+          [class.my-review]="isMyReview(review)"
+        >
           <button
             *ngIf="isMyReview(review)"
             class="delete-review-btn"
             (click)="requestDeleteReview(review)"
-            title="Delete your review">✕</button>
+            title="Delete your review"
+          >
+            ✕
+          </button>
 
           <div class="reviewer-info">
             <div class="reviewer-avatar">
@@ -242,12 +279,19 @@
             <div class="reviewer-meta">
               <p class="reviewer-name">{{ review.userName }}</p>
               <div class="review-stars">
-                <svg *ngFor="let s of [1,2,3,4,5]" viewBox="0 0 24 24" width="11" height="11"
-                  [style.fill]="s <= review.rating ? '#f5c518' : '#3a5070'">
-                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                <svg
+                  *ngFor="let s of [1, 2, 3, 4, 5]"
+                  viewBox="0 0 24 24"
+                  width="11"
+                  height="11"
+                  [style.fill]="s <= review.rating ? '#f5c518' : '#3a5070'"
+                >
+                  <path
+                    d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
+                  />
                 </svg>
               </div>
-              <p class="review-date">{{ formatReviewDate(review.date) }}</p>
+              <p class="review-date">{{ formatReviewDate(review.createdAt) }}</p>
             </div>
           </div>
           <p class="review-comment">{{ review.content }}</p>
@@ -260,16 +304,26 @@
   <div class="confirm-overlay" *ngIf="reviewToDelete" (click)="cancelDelete()">
     <div class="confirm-card" (click)="$event.stopPropagation()">
       <div class="confirm-icon">
-        <svg viewBox="0 0 24 24" width="22" height="22" fill="none"
-          stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="3 6 5 6 21 6"/>
-          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-          <path d="M10 11v6M14 11v6"/>
-          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+        <svg
+          viewBox="0 0 24 24"
+          width="22"
+          height="22"
+          fill="none"
+          stroke="#ef4444"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="3 6 5 6 21 6" />
+          <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+          <path d="M10 11v6M14 11v6" />
+          <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
         </svg>
       </div>
       <p class="confirm-title">Delete Review</p>
-      <p class="confirm-text">Are you sure you want to delete your review? This action cannot be undone.</p>
+      <p class="confirm-text">
+        Are you sure you want to delete your review? This action cannot be undone.
+      </p>
       <div class="confirm-actions">
         <button class="btn-cancel-delete" (click)="cancelDelete()">Cancel</button>
         <button class="btn-confirm-delete" (click)="confirmDeleteReview()">Delete</button>
@@ -283,14 +337,17 @@
       <button class="lb-close" (click)="closeLightbox()">✕</button>
       <button class="lb-arrow lb-prev" (click)="lbPrev()" [disabled]="lbIndex === 0">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
-          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
         </svg>
       </button>
       <img [src]="hotelImages[lbIndex]" [alt]="hotel.name" class="lb-img" />
-      <button class="lb-arrow lb-next" (click)="lbNext()"
-              [disabled]="lbIndex === hotelImages.length - 1">
+      <button
+        class="lb-arrow lb-next"
+        (click)="lbNext()"
+        [disabled]="lbIndex === hotelImages.length - 1"
+      >
         <svg viewBox="0 0 24 24" width="24" height="24" fill="white">
-          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
         </svg>
       </button>
       <div class="lb-counter">{{ lbIndex + 1 }} / {{ hotelImages.length }}</div>
@@ -299,9 +356,9 @@
           *ngFor="let img of hotelImages; let i = index"
           class="lb-dot"
           [class.active]="i === lbIndex"
-          (click)="lbIndex = i"></span>
+          (click)="lbIndex = i"
+        ></span>
       </div>
     </div>
   </div>
-
 </div>

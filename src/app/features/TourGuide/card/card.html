@@ -1,7 +1,8 @@
 <div class="guidepage bg-[#021526]">
   <!-- Loading State -->
-  <div *ngIf="loading" class="flex justify-center items-center min-h-screen">
-    <p class="text-white text-xl">Loading...</p>
+  <div *ngIf="loading" class="loading-wrap">
+    <div class="spinner"></div>
+    <p>Loading...</p>
   </div>
 
   <!-- Error State -->

@@ -4,7 +4,7 @@
   padding: 1rem 0;
 }
 
-/* Loading */
+/* ── Loading ────────────────────────────────────────────── */
 .loading-wrap {
   display: flex;
   flex-direction: column;
@@ -12,8 +12,14 @@
   justify-content: center;
   min-height: 60vh;
   gap: 1rem;
-  color: #a3c4eb;
-  font-size: 1rem;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #284974;
+  border-top-color: #f5c518;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {

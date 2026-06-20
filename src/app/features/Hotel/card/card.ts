@@ -1,11 +1,11 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
 import { FavoritesService } from '../../../core/services/favorites.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
-import { environment } from '../../../../environments/environment';
+import { HotelService } from '../../../core/services/hotel.service';
+
 export interface HotelApiItem {
   id: number;
   name: string;
@@ -26,13 +26,12 @@ export interface HotelApiItem {
 })
 export class Card implements OnInit {
   hotels: HotelApiItem[] = [];
-  loading = false;
+  loading = true;
   pageSize = 5;
   currentPage = 1;
 
-private readonly apiUrl = `${environment.apiUrl}/hotels`;
   constructor(
-    private http: HttpClient,
+    private hotelService: HotelService,
     private favoritesService: FavoritesService,
     private authService: AuthService,
     private authModal: AuthModalService,
@@ -61,8 +60,6 @@ private readonly apiUrl = `${environment.apiUrl}/hotels`;
   }
 
   ngOnInit(): void {
-    this.loading = true;
-
     if (this.authService.isLoggedIn()) {
       this.favoritesService.getAllFavoritesFromApi().subscribe({
         next: (res) => {
@@ -73,14 +70,16 @@ private readonly apiUrl = `${environment.apiUrl}/hotels`;
       });
     }
 
-    this.http.get<HotelApiItem[]>(this.apiUrl).subscribe({
-      next: (data) => {
-        this.hotels = data;
-        this.loading = false;
+    this.hotelService.getHotelsLoading().subscribe({
+      next: (isLoading) => {
+        this.loading = isLoading;
         this.cdr.detectChanges();
       },
-      error: () => {
-        this.loading = false;
+    });
+
+    this.hotelService.getHotelsList().subscribe({
+      next: (data) => {
+        this.hotels = data;
         this.cdr.detectChanges();
       },
     });
@@ -104,7 +103,6 @@ private readonly apiUrl = `${environment.apiUrl}/hotels`;
 
     const isFav = this.isHotelInFav(hotel.name);
 
-    // ← بعت للـ API زي الريستورانت
     this.favoritesService.toggleFavoriteApi('hotel', hotel.id).subscribe({
       next: () => {
         if (isFav) {

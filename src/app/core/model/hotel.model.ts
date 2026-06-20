@@ -285,7 +285,7 @@ export interface HotelApiComment {
   userName:           string;
   rating:             number;
   content:            string;
-  date:               string;
+  createdAt: string;             
   profilePictureUrl?: string | null;  // ← جديد
 }
 

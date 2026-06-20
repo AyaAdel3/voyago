@@ -9,6 +9,14 @@
   min-height: 60vh;
   gap: 1rem;
 }
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #284974;
+  border-top-color: #f5c518;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
 
 @keyframes spin {
   to {
@@ -876,9 +884,15 @@
        بعد الـ reservation-widget مع باقي عناصر top-row */
     display: contents;
   }
-  .gallery-wrap { order: 1; }
-  .rest-header { order: 2; }
-  .section-block { order: 3; }
+  .gallery-wrap {
+    order: 1;
+  }
+  .rest-header {
+    order: 2;
+  }
+  .section-block {
+    order: 3;
+  }
   .reservation-widget {
     order: 4;
     width: 100%;

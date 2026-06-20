@@ -33,8 +33,14 @@ export interface PriceLine {
 export class Details implements OnInit {
   hotel!: HotelApiDetail;
   reviews: HotelApiComment[] = [];
-  loading = true;
-  error   = false;
+
+  // ── Loading split into two independent stages ─────────────
+  // `loading`        → gates the core page (hero, images, rooms, pricing)
+  // `reviewsLoading`  → gates only the reviews section, so the rest of the
+  //                      page never waits on comments to render
+  loading        = true;
+  reviewsLoading = true;
+  error          = false;
 
   checkIn  = '';
   checkOut = '';
@@ -83,9 +89,11 @@ export class Details implements OnInit {
     this.route.params.subscribe(params => {
       const id = +params['id'];
       if (!id || isNaN(id)) { this.router.navigate(['/hotels']); return; }
-      this.loading = true;
-      this.error   = false;
-      this.hotel   = null!;
+      this.loading        = true;
+      this.reviewsLoading = true;
+      this.error          = false;
+      this.hotel          = null!;
+      this.reviews         = [];
       this.cdr.detectChanges();
       this.loadHotel(id);
     });
@@ -94,8 +102,7 @@ export class Details implements OnInit {
   private loadHotel(id: number): void {
     this.hotelService.getHotelApiById(id).subscribe({
       next: (hotel) => {
-        this.hotel   = hotel;
-        this.reviews = hotel.comments ?? [];
+        this.hotel = hotel;
 
         this.selectedRooms = [
           { type: 'Single', price: hotel.singlePrice, quantity: 0 },
@@ -113,26 +120,43 @@ export class Details implements OnInit {
           quantity: 0,
         }));
 
+        // Core page is ready now — release the main loading gate
+        // immediately, without waiting on reviews to be processed.
         this.loading = false;
         this.error   = false;
         this.recalc();
         this.cdr.detectChanges();
+
+        // Reviews already arrived inside the same payload — assign them
+        // on a separate tick/state so the reviews section can show its
+        // own (smaller) skeleton independently of the rest of the page.
+        this.reviews        = hotel.comments ?? [];
+        this.reviewsLoading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
-        this.loading = false;
-        this.error   = true;
+        this.loading        = false;
+        this.reviewsLoading = false;
+        this.error           = true;
         this.cdr.detectChanges();
       },
     });
   }
 
   private loadReviews(id: number): void {
+    this.reviewsLoading = true;
+    this.cdr.detectChanges();
     this.hotelService.getComments(id).subscribe({
       next: (reviews: HotelApiComment[]) => {
-        this.reviews = reviews;
+        this.reviews        = reviews;
+        this.reviewsLoading = false;
         this.cdr.detectChanges();
       },
-      error: (err) => console.error('Failed to load reviews:', err),
+      error: (err) => {
+        console.error('Failed to load reviews:', err);
+        this.reviewsLoading = false;
+        this.cdr.detectChanges();
+      },
     });
   }
 

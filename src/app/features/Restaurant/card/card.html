@@ -1,9 +1,9 @@
 <div class="restaurantpage">
   <!-- Loading -->
-  <div *ngIf="loading" class="flex justify-center items-center min-h-screen">
-    <p class="text-white text-xl">Loading...</p>
+  <div *ngIf="loading" class="loading-wrap">
+    <div class="spinner"></div>
+    <p>Loading...</p>
   </div>
-
   <div *ngIf="!loading" class="restaurants-page">
     <div
       *ngFor="let r of pagedRestaurants"
@@ -40,7 +40,9 @@
           </div>
           <div class="rating-badge">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="#021526">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+              <path
+                d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"
+              />
             </svg>
             <span>{{ r.rating }}</span>
           </div>
@@ -64,7 +66,9 @@
       <button *ngFor="let p of pagesArray" [class.active]="p === currentPage" (click)="goToPage(p)">
         {{ p }}
       </button>
-      <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">&#8250;</button>
+      <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+        &#8250;
+      </button>
     </div>
   </div>
 </div>
