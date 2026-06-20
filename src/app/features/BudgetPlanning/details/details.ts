@@ -2,14 +2,9 @@
 // details.ts  →  src/app/features/BudgetPlanning/details/
 // بتعرض الـ BudgetPlanResponse الراجع من POST /budget-planning/save
 // بتتفتح مباشرة بعد main.savePlan() أو plan.savePlan() (currentPlan في الذاكرة)
-//
-// ملحوظة: البلان بيتحفظ في الباك أوتوماتيك جوه BudgetService.savePlan()
-// (هي اللي بتنادي POST /budget-planning/save)، يعني أي بلان بيوصل هنا
-// يبقى أصلاً متسجل في حساب اليوزر، وهيظهر في GET /budget-planning
-// (صفحة saved-plan في البروفايل) من غير أي خطوة إضافية.
 // ============================================================
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { BudgetPlanResponse } from '../../../core/model/Budget.model';
@@ -25,11 +20,22 @@ import { BudgetService } from '../../../core/services/budget.service';
 export class Details implements OnInit {
   plan: BudgetPlanResponse | null = null;
 
-  // ── Slider state — صفحة كاملة (3 entries) بتظهر في كل مرة ──
-  readonly pageSize = 3;
+  // ── Slider state — حجم الصفحة بيتغير حسب عرض الشاشة ──────
+  // Desktop (>900px): 3 كاردز فالصفحة
+  // Tablet  (541–900px): 2 كاردز فالصفحة
+  // Mobile  (<=540px): كارد واحد فالصفحة
+  // (لازم يطابق breakpoints details.css: 900px و 540px)
+  pageSize = 3;
 
   restaurantPage = 0;
   attractionPage = 0;
+
+  // مفتاح تخزين البلان في sessionStorage — بديل احتياطي للذاكرة
+  // (BudgetService.getCurrentPlan()) عشان لو المستخدم عمل reload
+  // للصفحة، الصفحة تفضل عارضة نفس البلان من غير ما تتوه أو تحوّل
+  // لـ /budget-planning. sessionStorage (مش localStorage) عشان
+  // البلان المؤقت ده يتصفر طبيعي لما المستخدم يقفل التاب.
+  private readonly STORAGE_KEY = 'budget-planning:current-plan';
 
   constructor(
     private budgetService: BudgetService,
@@ -37,10 +43,78 @@ export class Details implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // 1) جرّب الذاكرة الأساسية (BudgetService) الأول
     this.plan = this.budgetService.getCurrentPlan();
 
+    // 2) لو فاضية (حصل reload وراحت الذاكرة)، جرّب sessionStorage
+    if (!this.plan) {
+      this.plan = this.loadPlanFromStorage();
+    }
+
+    // 3) لو لسه مفيش بلان نهائي، فعلاً مفيش داتا نعرضها → رجّع للبدء
     if (!this.plan) {
       this.router.navigate(['/budget-planning']);
+      return;
+    }
+
+    // خزّن/جدّد النسخة الاحتياطية عشان أي reload تاني يفضل شغال
+    this.savePlanToStorage(this.plan);
+
+    this.updatePageSize();
+  }
+
+  // ── sessionStorage backup ────────────────────────────────────
+
+  private savePlanToStorage(plan: BudgetPlanResponse): void {
+    if (typeof window === 'undefined') return;
+    try {
+      window.sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify(plan));
+    } catch {
+      // sessionStorage ممكن يفشل (خصوصية المتصفح، الخ) — مفيش مشكلة،
+      // هنرجع للسيرفر/الـ navigation العادي لو حصل ده
+    }
+  }
+
+  private loadPlanFromStorage(): BudgetPlanResponse | null {
+    if (typeof window === 'undefined') return null;
+    try {
+      const raw = window.sessionStorage.getItem(this.STORAGE_KEY);
+      return raw ? (JSON.parse(raw) as BudgetPlanResponse) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private clearPlanFromStorage(): void {
+    if (typeof window === 'undefined') return;
+    try {
+      window.sessionStorage.removeItem(this.STORAGE_KEY);
+    } catch {
+      // تجاهل أي خطأ في الحذف
+    }
+  }
+
+  @HostListener('window:resize')
+  onResize(): void {
+    const prevPageSize = this.pageSize;
+    this.updatePageSize();
+
+    // لو حجم الصفحة تغيّر، رجّع المؤشر لأول صفحة عشان نتجنب
+    // صفحة فاضية أو index غير منطقي بعد تغيير عدد العناصر بالصفحة
+    if (prevPageSize !== this.pageSize) {
+      this.restaurantPage = 0;
+      this.attractionPage = 0;
+    }
+  }
+
+  private updatePageSize(): void {
+    const width = typeof window !== 'undefined' ? window.innerWidth : 1200;
+    if (width <= 540) {
+      this.pageSize = 1;
+    } else if (width <= 900) {
+      this.pageSize = 2;
+    } else {
+      this.pageSize = 3;
     }
   }
 
@@ -130,13 +204,10 @@ export class Details implements OnInit {
     return Array(Math.round(n)).fill(0);
   }
 
-  /**
-   * البلان أصلاً اتحفظ في الباك وقت savePlan() (POST /budget-planning/save)،
-   * هنا بس بنفضي الـ currentPlan المؤقت ونرجع لصفحة "My Plans" في البروفايل
-   * اللي هتجيب كل البلانات (بما فيها دي) من GET /budget-planning.
-   */
+  /** البلان أصلاً متحفظ في الباك من savePlan()، هنا بس بنرجع لصفحة البلانز */
   goToSavedPlans(): void {
     this.budgetService.clearCurrentPlan();
+    this.clearPlanFromStorage();
     this.router.navigate(['/profile/saved-plan']);
   }
 }

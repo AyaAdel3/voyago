@@ -65,8 +65,7 @@
   grid-template-columns: 1fr 280px;
   gap: 2rem;
   align-items: start;
-  
-  max-width: 1200px;
+  width: 95%;
   margin: 0 auto 2rem;
   box-sizing: border-box;
 }
@@ -201,6 +200,7 @@
   display: flex;
   gap: .4rem;
   margin-bottom: 1.75rem;
+  transform: translateX(9rem);
 }
 .slider-dot {
   width: 8px; height: 8px;
@@ -224,6 +224,10 @@
   flex-direction: column;
   gap: .9rem;
   min-width: 0;
+  
+  transform: translateX(-1.4rem);
+  width: 20rem;
+
 }
 
 /* Cost card */
@@ -316,6 +320,9 @@
     max-width: 100%;
     padding: 0 1.25rem 1.25rem;
   }
+  .hotel-section{
+  width: 20rem;
+}
   .items-grid     { grid-template-columns: repeat(2, 1fr); }
   .slider-card    {
     flex: 0 0 calc((100% - 1rem) / 2); /* 2 كاردز + gap واحد */
@@ -333,6 +340,16 @@
   .header-budget    { text-align: left; }
   .plan-title       { font-size: 1.5rem; }
   .meta-row         { gap: 1.25rem; }
+    .hotel-section{
+  width: 20rem;
+}
+.Restaurants-sec{
+  width: 20rem;
+}
+.right-side{
+  transform: translateX(1.8rem);
+  width: 18rem;
+}
 }
 
 /* ── Mobile: كارد واحد بس في كل مرة ──────────────────────── */
@@ -350,11 +367,23 @@
   .hotel-img-wrap        { height: 160px; }
   .plan-title            { font-size: 1.3rem; }
   .header-budget-val     { font-size: 1.4rem; }
+    .hotel-section{
+  width: 20rem;
+}
+.Restaurants-sec{
+  width: 20rem;
+}
 }
 
 /* ── شاشات ضيقة جداً (موبايلات صغيرة) ────────────────────── */
 @media (max-width: 380px) {
+    .hotel-section{
+  width: 14rem;
+}
   .details-page      { padding: .75rem .5rem 2.5rem; }
   .content-card      { padding: 0 .6rem .6rem; }
   .page-header-card  { margin: 0 -.6rem 1rem; padding: 1rem .75rem .75rem; }
+  .Restaurants-sec{
+  width: 20rem;
+}
 }

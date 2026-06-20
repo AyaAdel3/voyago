@@ -6,7 +6,7 @@
 <div class="details-page font-[Nunito Sans]" *ngIf="plan">
 
   <!-- ══ MAIN CONTENT ══ -->
-  <div class="content-card">
+  <div class="content-card top-3.5">
 
     <!-- ══ TOP HEADER CARD (جوه content-card، أول لاين كامل) ══ -->
     <div class="page-header-card">
@@ -64,7 +64,7 @@
     </div>
 
     <!-- ════ LEFT SIDE ════ -->
-    <div class="left-side">
+    <div class="left-side translate-x-2.5">
 
       <!-- Selected Hotel -->
       <section *ngIf="plan.hotel" class="hotel-section">
@@ -93,7 +93,7 @@
       </section>
 
       <!-- Selected Restaurants -->
-      <section *ngIf="plan.restaurants.length > 0" class="Restaurants-sec">
+      <section *ngIf="plan.restaurants.length > 0" class="Restaurants-sec bottom-3.5">
         <div class="section-header-row">
           <h2 class="section-title">Selected Restaurants</h2>
           <div class="slider-arrows" *ngIf="restaurantPageCount > 1">
@@ -185,7 +185,7 @@
     </div>
 
     <!-- ════ RIGHT SIDE (Cost Breakdown) ════ -->
-    <div class="right-side translate-x-[-.5rem]">
+    <div class="right-side ">
 
       <!-- Cost Breakdown card -->
       <div class="cost-card">
