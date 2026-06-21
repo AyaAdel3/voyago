@@ -528,3 +528,39 @@
     max-height: 300px;
   }
 }
+
+/* ── Card Type Icon ──────────────────────────────────────── */
+.card-type-icon {
+  display: flex;
+  align-items: center;
+  opacity: 0.75;
+  flex-shrink: 0;
+  margin-right: 6px;
+  color: #ffde70;
+}
+
+/* ── Card Type Icon ──────────────────────────────────────── */
+.card-type-icon {
+  display: flex;
+  align-items: center;
+  opacity: 0.75;
+  flex-shrink: 0;
+  margin-right: 6px;
+  color: #ffde70;
+}
+
+/* ── Card Arrow ──────────────────────────────────────────── */
+.card-arrow {
+  opacity: 0;
+  flex-shrink: 0;
+  margin-left: 4px;
+  color: #ffde70;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.msg-card:hover .card-arrow {
+  opacity: 1;
+  transform: translateX(3px);
+}

@@ -82,9 +82,94 @@
                 *ngFor="let card of msg.cards"
                 class="msg-card"
                 (click)="navigateToCard(card)"
+                title="Click to view details"
               >
+                <!-- Card Type Icon -->
+                <span class="card-type-icon">
+                  <ng-container [ngSwitch]="card.item_type">
+                    <!-- Hotel -->
+                    <svg
+                      *ngSwitchCase="'hotel'"
+                      viewBox="0 0 24 24"
+                      width="13"
+                      height="13"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M7 13c1.66 0 3-1.34 3-3S8.66 7 7 7s-3 1.34-3 3 1.34 3 3 3zm12-6h-8v7H3V5H1v15h2v-3h18v3h2v-9c0-2.21-1.79-4-4-4z"
+                      />
+                    </svg>
+
+                    <!-- Restaurant -->
+                    <svg
+                      *ngSwitchCase="'restaurant'"
+                      viewBox="0 0 24 24"
+                      width="13"
+                      height="13"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M18.06 22.99h1.66c.84 0 1.53-.64 1.63-1.46L23 5.05h-5V1h-1.97v4.05h-4.97l.3 2.34c1.71.47 3.31 1.32 4.27 2.26 1.44 1.42 2.43 2.89 2.43 5.29v8.05zM1 21.99V21h15.03v.99c0 .55-.45 1-1.01 1H2.01c-.56 0-1.01-.45-1.01-1zm15.03-7c0-4.5-6.72-5-8.03-5C5.55 9.99 1 10.5 1 14.99v1h15.03v-1z"
+                      />
+                    </svg>
+
+                    <!-- Attraction -->
+                    <svg
+                      *ngSwitchCase="'attraction'"
+                      viewBox="0 0 24 24"
+                      width="13"
+                      height="13"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                      />
+                    </svg>
+
+                    <!-- Tour Guide -->
+                    <svg
+                      *ngSwitchCase="'tour_guide'"
+                      viewBox="0 0 24 24"
+                      width="13"
+                      height="13"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                      />
+                    </svg>
+
+                    <!-- Default fallback -->
+                    <svg
+                      *ngSwitchDefault
+                      viewBox="0 0 24 24"
+                      width="13"
+                      height="13"
+                      fill="currentColor"
+                    >
+                      <path
+                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"
+                      />
+                    </svg>
+                  </ng-container>
+                </span>
+
+                <!-- Name -->
                 <span class="card-name">{{ card.name }}</span>
+
+                <!-- Rating -->
                 <span class="card-rating" *ngIf="card.rating">⭐ {{ card.rating }}</span>
+
+                <!-- Arrow -->
+                <svg
+                  class="card-arrow"
+                  viewBox="0 0 24 24"
+                  width="12"
+                  height="12"
+                  fill="currentColor"
+                >
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                </svg>
               </button>
             </div>
           </div>
@@ -98,7 +183,7 @@
               class="user-avatar-img"
             />
             <span *ngIf="!currentUserAvatar" class="user-avatar-initial">
-              {{ currentUserInitial || 'user' }}
+              {{ currentUserInitial || 'U' }}
             </span>
           </div>
         </div>

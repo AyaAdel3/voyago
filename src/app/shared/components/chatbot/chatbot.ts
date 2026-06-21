@@ -36,7 +36,7 @@ interface ChatResponse {
   action?: string;
   navigate_to?: string | null;
   language?: string;
-  data?: { items?: CardItem[] } | null;
+ data?: CardItem[] | { items?: CardItem[] } | null;
 }
 
 const HISTORY_KEY = 'voyago_chat_history';
@@ -57,13 +57,11 @@ export class Chatbot implements OnInit, OnDestroy, AfterViewChecked {
   isLoading        = false;
   userInput        = '';
   sessionId        = '';
-  showClearConfirm = false;   // لإظهار confirmation قبل المسح
+  showClearConfirm = false;
 
   private shouldScrollToBottom = false;
   private isUserScrollingUp    = false;
-
-  // نتذكر آخر userId عشان نعرف لما اليوزر اتغير فعلاً
-  private lastUserId = '';
+  private lastUserId           = '';
 
   messages: Message[] = [];
 
@@ -79,22 +77,17 @@ export class Chatbot implements OnInit, OnDestroy, AfterViewChecked {
     private router:      Router,
     private authService: AuthService
   ) {
-    // effect بيراقب الـ currentUser signal —
-    // لما اليوزر يتغير (login أو logout) بيحمّل الهيستوري المناسب
     effect(() => {
-      const user    = this.authService.currentUser();
-      const newId   = user?.email ?? '';
+      const user  = this.authService.currentUser();
+      const newId = user?.email ?? '';
 
-      // متعملش حاجة لو نفس اليوزر
       if (newId === this.lastUserId) return;
 
-      // احفظ هيستوري اليوزر القديم قبل ما نغير
       if (this.lastUserId) this.saveHistoryFor(this.lastUserId);
 
       this.lastUserId = newId;
       this.loadHistory();
 
-      // لو الشات مفتوح نزّله للأسفل
       if (this.isOpen) {
         this.isUserScrollingUp    = false;
         this.shouldScrollToBottom = true;
@@ -111,12 +104,12 @@ export class Chatbot implements OnInit, OnDestroy, AfterViewChecked {
     return this.authService.currentUser()?.firstName?.charAt(0).toUpperCase() || '';
   }
 
-  // ─────────────────────────────────────────────────────────
+  // ────────────────────────────────────────────────────────
 
   ngOnInit(): void {
     this.sessionId  = 'session_' + Math.random().toString(36).substring(2, 11);
-    this.lastUserId = this.getUserId();  // سجّل الـ id عشان الـ effect ميشتغلش تاني فوراً
-    this.loadHistory();                  // حمّل الهيستوري (أو رسالة الترحيب) فوراً
+    this.lastUserId = this.getUserId();
+    this.loadHistory();
   }
 
   ngOnDestroy(): void {
@@ -170,13 +163,26 @@ export class Chatbot implements OnInit, OnDestroy, AfterViewChecked {
       })
       .subscribe({
         next: (res) => {
-          const items = res.data?.items ?? [];
+         const rawItems = Array.isArray(res.data) 
+  ? res.data 
+  : (res.data?.items ?? []);
+
+          // استنتج النوع من الـ navigate_to لو الـ item_type مش موجود
+          const fallbackType = this.resolveTypeFromRoute(res.navigate_to ?? '');
+
+          // ضيف item_type لكل card لو مش موجود
+          const cards: CardItem[] = rawItems.map((item: CardItem) => ({
+            ...item,
+            item_type: item.item_type ?? fallbackType
+          }));
+
           this.messages.push({
             sender: 'bot',
             text:   res.response,
-            type:   items.length ? 'card' : 'text',
-            cards:  items
+            type:   cards.length ? 'card' : 'text',
+            cards
           });
+
           this.isLoading            = false;
           this.shouldScrollToBottom = true;
           this.saveHistory();
@@ -197,14 +203,12 @@ export class Chatbot implements OnInit, OnDestroy, AfterViewChecked {
     if (event.key === 'Enter') this.sendMessage();
   }
 
-  // ── Clear History ─────────────────────────────────────────
+  // ── Clear History ────────────────────────────────────────
   clearHistory(): void {
-    // امسح من الـ localStorage
     const userId = this.getUserId();
     if (userId) {
       localStorage.removeItem(`${HISTORY_KEY}_${userId}`);
     }
-    // ابدأ من الأول بالرسالة الافتراضية
     this.messages             = [{ ...this.defaultWelcome }];
     this.showClearConfirm     = false;
     this.isUserScrollingUp    = false;
@@ -218,36 +222,56 @@ export class Chatbot implements OnInit, OnDestroy, AfterViewChecked {
     let path   = '';
 
     switch (type) {
-      case 'hotel':      path = `/hotels/details/${card.id}`;            break;
-      case 'restaurant': path = `/restaurant/details/${card.id}`;        break;
-      case 'attraction': path = `/tourist-attraction/details/${card.id}`; break;
-      case 'tour_guide': path = `/tour-guide?openGuide=${card.id}`;      break;
-      default:           path = '/tour-guide';
+      case 'hotel':
+        path = `/hotels/details/${card.id}`;
+        break;
+      case 'restaurant':
+        path = `/restaurant/details/${card.id}`;
+        break;
+      case 'attraction':
+        path = `/tourist-attraction/details/${card.id}`;
+        break;
+      case 'tour_guide':
+        path = `/tour-guide?openGuide=${card.id}`;
+        break;
+      default:
+        path = '/home';
     }
 
-    window.open(path, '_blank');
+    this.router.navigateByUrl(path);
   }
 
   private resolveType(card: CardItem): string {
+    // ١. item_type موجود مباشرة في الـ card
     if (card.item_type) return card.item_type.toLowerCase();
 
+    // ٢. استنتاج من الـ link
     if (card.link) {
       const url = card.link.toLowerCase();
-      if (url.includes('/hotels/'))      return 'hotel';
-      if (url.includes('/restaurants/')) return 'restaurant';
-      if (url.includes('/attractions/')) return 'attraction';
-      if (url.includes('/tour-guides/')) return 'tour_guide';
+      if (url.includes('/hotels/'))       return 'hotel';
+      if (url.includes('/restaurants/') || url.includes('/Restaurants/')) return 'restaurant';
+      if (url.includes('/attractions/') || url.includes('/Attractions/')) return 'attraction';
+      if (url.includes('/tour-guides/') || url.includes('/tour-guide'))   return 'tour_guide';
     }
 
     return 'unknown';
   }
 
-  // ── History ───────────────────────────────────────────────
+  // استنتاج النوع من الـ navigate_to اللي بييجي من الـ API response
+  private resolveTypeFromRoute(route: string): string {
+    const r = route.toLowerCase();
+    if (r.includes('restaurant'))  return 'restaurant';
+    if (r.includes('hotel'))       return 'hotel';
+    if (r.includes('attraction'))  return 'attraction';
+    if (r.includes('tour-guide') || r.includes('tour_guide')) return 'tour_guide';
+    return 'unknown';
+  }
+
+  // ── History ──────────────────────────────────────────────
   private loadHistory(): void {
     const userId = this.getUserId();
 
     if (!userId) {
-      // مش logged in → رسالة ترحيب دايماً
       this.messages             = [{ ...this.defaultWelcome }];
       this.shouldScrollToBottom = true;
       return;
@@ -270,7 +294,7 @@ export class Chatbot implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private saveHistoryFor(userId: string): void {
-    if (!userId) return;   // مش logged in → متحفظش
+    if (!userId) return;
     try {
       const key    = `${HISTORY_KEY}_${userId}`;
       const toSave = this.messages.slice(-100);
