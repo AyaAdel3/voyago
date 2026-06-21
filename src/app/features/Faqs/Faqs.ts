@@ -9,7 +9,7 @@ interface FaqCategory { title: string; items: FaqItem[]; }
 @Component({
   selector: 'app-faqs',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Chatbot],
   templateUrl: './Faqs.html',
   styleUrl: './Faqs.css'
 })

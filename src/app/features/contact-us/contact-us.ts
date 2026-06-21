@@ -6,7 +6,7 @@ import { Chatbot } from '../../shared/components/chatbot/chatbot';
 @Component({
   selector: 'app-contact-us',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Chatbot],
   templateUrl: './contact-us.html',
   styleUrl: './contact-us.css'
 })
