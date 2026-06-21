@@ -2038,8 +2038,9 @@ a.info-value:hover { color: #1e6ab0; }
 }
 
 .form-input:focus {
-  border-color: #1e6ab0;
+ color: #173b64 !important;
 }
+
 
 .form-textarea {
   resize: vertical;
@@ -2124,8 +2125,9 @@ a.info-value:hover { color: #1e6ab0; }
 }
 
 a.info-value:hover {
-  color: #1e6ab0;
+ color: #173b64 !important;
 }
+
 
 .emergency-card {
   background: linear-gradient(135deg, #0b1929, #1e3a5a);
