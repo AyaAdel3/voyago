@@ -1,0 +1,54 @@
+<div class="page-wrapper">
+  <div class="page-hero">
+    <h1 class="page-hero-title">Frequently Asked Questions</h1>
+    <p class="page-hero-sub">Can't find your answer? Ask Emma our AI assistant directly.</p>
+  </div>
+
+  <!-- Ask Emma Banner -->
+  <div class="ask-emma-banner">
+    <div class="emma-banner-left">
+      <img src="image/pana.png" alt="Emma" class="emma-avatar" />
+      <div>
+        <h3>Ask Emma Anything</h3>
+        <p>Get instant answers from our AI assistant — available 24/7</p>
+      </div>
+    </div>
+    <button class="btn-ask-emma" (click)="openChat()">
+      💬 Start Chat
+    </button>
+  </div>
+
+  <!-- FAQ Categories -->
+  <div class="faq-section">
+    <div *ngFor="let category of faqs" class="faq-category">
+      <h2 class="category-title">{{ category.title }}</h2>
+      <div class="faq-list">
+        <div *ngFor="let item of category.items; let i = index"
+             class="faq-item"
+             [class.open]="item.open"
+             (click)="toggle(category, item)">
+          <div class="faq-question">
+            <span>{{ item.q }}</span>
+            <span class="faq-icon">{{ item.open ? '−' : '+' }}</span>
+          </div>
+          <div class="faq-answer" *ngIf="item.open">
+            <p>{{ item.a }}</p>
+            <button class="btn-ask-more" (click)="askEmma(item.q, $event)">
+              Ask Emma for more details →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Still need help -->
+  <div class="still-help">
+    <h3>Still have questions?</h3>
+    <p>Our support team and AI assistant are ready to help you.</p>
+    <div class="still-help-btns">
+      <button class="btn-chat-now" (click)="openChat()">💬 Chat with Emma</button>
+      <a routerLink="/contact-us" class="btn-contact">✉ Contact Us</a>
+    </div>
+  </div>
+</div>

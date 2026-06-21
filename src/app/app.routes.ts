@@ -39,6 +39,12 @@ import { PersonalInformation } from './features/profile/personal-information/per
 import { SavedPlanComponent } from './features/profile/saved-plan/saved-plan';
 import { MyBookingsComponent } from './features/profile/my-bookings/my-bookings';
 
+// Support Pages
+import { ContactUsComponent } from './features/contact-us/contact-us';
+import { FaqsComponent } from './features/Faqs/Faqs';
+import { TermsAndConditionsComponent } from './features/terms-and-conditions/terms-and-conditions';
+import { PrivacyPolicyComponent } from './features/privacy-policy/privacy-policy';
+
 // Not Found
 import { NotFound } from './features/not-found/not-found';
 
@@ -93,10 +99,16 @@ export const routes: Routes = [
       { path: 'Budget Planning', component: BudgetMain, title: 'Budget Planning' },
       { path: 'budget-planning/plan', component: Plan, title: 'Create Plan', canActivate: [userGuard] },
       { path: 'budget-planning/details/:id', component: BudgetDetails, title: 'Budget Details', canActivate: [userGuard] },
+
+      // Support Pages
+      { path: 'contact-us', component: ContactUsComponent, title: 'Contact Us' },
+      { path: 'faqs', component: FaqsComponent, title: 'FAQs' },
+      { path: 'terms-and-conditions', component: TermsAndConditionsComponent, title: 'Terms & Conditions' },
+      { path: 'privacy-policy', component: PrivacyPolicyComponent, title: 'Privacy Policy' },
     ],
   },
 
-  // Profile — محتاج login
+  // Profile
   {
     path: 'profile',
     component: ProfileLayout,
@@ -110,7 +122,7 @@ export const routes: Routes = [
     ],
   },
 
-  // Admin — فقط Admin
+  // Admin
   {
     path: 'admin',
     component: AdminLayout,
@@ -118,19 +130,14 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: 'dashboard', component: Dashboard, title: 'Admin Dashboard' },
-
       { path: 'hotels', component: AdminHotels, title: 'Manage Hotels' },
       { path: 'hotels/manage', component: ManageHotel, title: 'Hotel Form' },
-
       { path: 'restaurants', component: AdminRestaurants, title: 'Manage Restaurants' },
       { path: 'restaurants/manage', component: ManageRestaurant, title: 'Restaurant Form' },
-
       { path: 'attractions', component: AdminAttractions, title: 'Manage Attractions' },
       { path: 'attractions/manage', component: ManageAttraction, title: 'Attraction Form' },
-
       { path: 'tour-guides', component: AdminTourGuides, title: 'Manage Tour Guides' },
       { path: 'tour-guides/manage', component: ManageTourGuide, title: 'Tour Guide Form' },
-
       { path: 'users', component: AdminUsers, title: 'Manage Users' },
     ],
   },

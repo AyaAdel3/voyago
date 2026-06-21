@@ -1,0 +1,89 @@
+<div class="page-wrapper">
+  <div class="page-hero">
+    <h1 class="page-hero-title">Contact Us</h1>
+    <p class="page-hero-sub">We're here to help. Reach out to us anytime.</p>
+  </div>
+
+  <div class="contact-layout">
+    <!-- Contact Form -->
+    <div class="contact-form-card">
+      <h2 class="card-title">Send Us a Message</h2>
+
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" placeholder="Enter your full name" [(ngModel)]="name" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="form-input" placeholder="Enter your email" [(ngModel)]="email" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input type="text" class="form-input" placeholder="What is this about?" [(ngModel)]="subject" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea class="form-input form-textarea" placeholder="Write your message here..." [(ngModel)]="message" rows="5"></textarea>
+      </div>
+
+      <button class="btn-submit" (click)="submitForm()" [disabled]="isSubmitting">
+        <span *ngIf="!isSubmitting">Send Message</span>
+        <span *ngIf="isSubmitting">Sending...</span>
+      </button>
+
+      <div class="success-msg" *ngIf="submitted">
+        ✅ Your message has been sent! We'll get back to you within 24 hours.
+      </div>
+    </div>
+
+    <!-- Contact Info -->
+    <div class="contact-info-col">
+      <div class="info-card">
+        <h2 class="card-title">Get In Touch</h2>
+
+        <div class="info-item">
+          <div class="info-icon">✉</div>
+          <div>
+            <p class="info-label">Email</p>
+            <a href="mailto:tawfik.mohamed.voyago@gmail.com" class="info-value">tawfik.mohamed.voyago@gmail.com</a>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">📱</div>
+          <div>
+            <p class="info-label">WhatsApp</p>
+            <a href="https://wa.me/201094060380" target="_blank" class="info-value">01094060380</a>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">📍</div>
+          <div>
+            <p class="info-label">Location</p>
+            <p class="info-value">Fayum, Egypt</p>
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-icon">🕐</div>
+          <div>
+            <p class="info-label">Support Hours</p>
+            <p class="info-value">Saturday – Thursday, 9AM – 6PM</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency -->
+      <div class="emergency-card">
+        <div class="emergency-icon">🚨</div>
+        <h3>Need Immediate Help?</h3>
+        <p>Use our AI assistant Emma for instant emergency guidance and safety information.</p>
+        <button class="btn-emergency" (click)="openChat()">Open Emergency Chat</button>
+      </div>
+    </div>
+  </div>
+</div>
