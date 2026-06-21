@@ -36,7 +36,7 @@ interface ChatResponse {
   action?: string;
   navigate_to?: string | null;
   language?: string;
- data?: CardItem[] | { items?: CardItem[] } | null;
+  data?: CardItem[] | { items?: CardItem[] } | null;
 }
 
 const HISTORY_KEY = 'voyago_chat_history';
@@ -70,7 +70,7 @@ export class Chatbot implements OnInit, OnDestroy, AfterViewChecked {
     text:   'Hello! This is Emma from Voyago Support. How can I assist you today?'
   };
 
-  private readonly chatApiUrl = 'https://voyago-chatbot-production.up.railway.app/chat';
+ private readonly chatApiUrl = 'http://127.0.0.1:8000/chat';
 
   constructor(
     private http:        HttpClient,
@@ -163,7 +163,7 @@ export class Chatbot implements OnInit, OnDestroy, AfterViewChecked {
       })
       .subscribe({
         next: (res) => {
-         const rawItems = Array.isArray(res.data) 
+          const rawItems = Array.isArray(res.data) 
   ? res.data 
   : (res.data?.items ?? []);
 
