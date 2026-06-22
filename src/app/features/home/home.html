@@ -59,9 +59,19 @@
   <section class="mb-8">
     <div class="flex justify-between items-center mb-3">
       <h2 class="text-2xl font-semibold">Recommended in fayoum</h2>
-      <div class="flex gap-2 text-gray-400 text-sm">
-        <button (click)="prevRecommended()" class="cursor-pointer hover:text-white">❮</button>
-        <button (click)="nextRecommended()" class="cursor-pointer hover:text-white">❯</button>
+      <div class="flex gap-2">
+        <button
+          (click)="prevRecommended()"
+          class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm"
+        >
+          ❮
+        </button>
+        <button
+          (click)="nextRecommended()"
+          class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm"
+        >
+          ❯
+        </button>
       </div>
     </div>
 
@@ -108,9 +118,19 @@
   <section class="mb-24">
     <div class="flex justify-between items-center mb-3">
       <h2 class="text-2xl font-semibold">Available this week</h2>
-      <div class="flex gap-2 text-gray-400 text-sm">
-        <button (click)="prevAvailable()" class="cursor-pointer hover:text-white">❮</button>
-        <button (click)="nextAvailable()" class="cursor-pointer hover:text-white">❯</button>
+      <div class="flex gap-2">
+        <button
+          (click)="prevAvailable()"
+          class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm"
+        >
+          ❮
+        </button>
+        <button
+          (click)="nextAvailable()"
+          class="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center hover:border-white/60 transition-all text-sm"
+        >
+          ❯
+        </button>
       </div>
     </div>
 
