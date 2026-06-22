@@ -11,6 +11,7 @@ import {
   AdminAddHotelRequest, AdminAddHotelResponse,
   HotelFeatureApiItem, BookingFeatureApiItem,
   CreateBookingRequest, CreateBookingResponse,
+  HotelFullyBookedDatesResponse,
 } from '../model/hotel.model';
 import { environment } from '../../../environments/environment';
 
@@ -162,6 +163,22 @@ export class HotelService {
           'Content-Type':  'application/json',
         },
       }
+    );
+  }
+
+  /**
+   * بيرجع الأيام المحجوزة بالكامل (fully booked) لشهر معين في أوتيل معين.
+   * GET /hotels/{id}/bookings/fully-booked-dates?year=YYYY&month=M
+   * بيُستخدم لتعطيل الأيام دي في الكاستم كاليندر بتاع check-in / check-out.
+   */
+  getFullyBookedDates(
+    hotelId: number,
+    year:    number,
+    month:   number,
+  ): Observable<HotelFullyBookedDatesResponse> {
+    return this.http.get<HotelFullyBookedDatesResponse>(
+      `${this.apiBase}/${hotelId}/bookings/fully-booked-dates`,
+      { params: { year, month } }
     );
   }
 

@@ -500,18 +500,6 @@
   margin-bottom: 0.2rem;
   font-weight: 490;
 }
-.date-input {
-  width: 8.18rem;
-  height: 2.5rem;
-  padding: 0.42rem 0.55rem;
-  border-radius: 1.25rem;
-  transform: translateX(-0.5rem);
-  border: none;
-  font-size: 0.78rem;
-  background: #173b64;
-  color: #f6faff;
-  box-sizing: border-box;
-}
 .widget-section {
   margin-bottom: 0.7rem;
 }
@@ -623,6 +611,26 @@
   color: #4a6a8a;
   margin: 0 0 0.4rem;
   font-style: italic;
+}
+
+/* ── Room availability hints (max-count reached / sold out) ── */
+.room-row-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-bottom: 0.2rem;
+}
+.room-availability-hint {
+  font-size: 0.74rem;
+  color: #b45309;
+  margin: 0 0 0.35rem;
+  font-style: italic;
+  line-height: 1.35;
+}
+.room-availability-hint.room-sold-out {
+  color: #ef4444;
+  font-weight: 600;
+  font-style: normal;
 }
 
 /* ── Login Prompt ─────────────────────────────────────── */
@@ -813,10 +821,6 @@
   .reviews-section {
     transform: translate(0, 0);
   }
-  .date-input {
-    width: 100%;
-    transform: translateX(0);
-  }
   .btn-book {
     width: 10rem;
     margin: 0.8rem auto 0;
@@ -891,15 +895,6 @@
     font-weight: 700;
     margin-bottom: 0.35rem;
   }
-  .date-input {
-    width: 100%;
-    transform: translateX(0);
-    font-size: 0.92rem;
-    height: 2.9rem;
-    border-radius: 0.85rem;
-    padding: 0.4rem 0.7rem;
-    color: #fff;
-  }
   .widget-label {
     font-size: 1.5rem;
     margin-bottom: 0.55rem;
@@ -938,6 +933,9 @@
   }
   .features-hint {
     font-size: 0.9rem;
+  }
+  .room-availability-hint {
+    font-size: 0.82rem;
   }
   .reviews-section {
     transform: none;
@@ -1059,4 +1057,265 @@
   font-weight: 700;
   font-size: 14px;
   flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════════
+   Date Picker / Custom Calendar Styles
+   (نفس منطق الكاليندر بتاع تور جيد، بس مطبّق على حقلين
+   مستقلين Check-in / Check-out جوة booking-widget)
+
+   ⚠️ booking-widget عندها overflow افتراضي visible
+   (مفيش overflow:hidden متعرّف عليها فوق)، فالكاليندر
+   هيظهر برة حدودها طبيعي.
+   ══════════════════════════════════════════════════════ */
+
+.date-picker-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.date-display-btn {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #173b64;
+  color: #f6faff;
+  border: none;
+  border-radius: 1.25rem;
+  padding: 0.42rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  box-sizing: border-box;
+  height: 2.5rem;
+}
+
+.date-display-btn::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>");
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2'><rect x='3' y='4' width='18' height='18' rx='2'/><line x1='16' y1='2' x2='16' y2='6'/><line x1='8' y1='2' x2='8' y2='6'/><line x1='3' y1='10' x2='21' y2='10'/></svg>");
+  background-color: #f6faff;
+  mask-size: contain;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+}
+
+.date-display-btn:hover:not(:disabled) {
+  background: #25496f;
+}
+
+.date-display-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.date-display-btn .spinner.small {
+  width: 14px;
+  height: 14px;
+  border-width: 2px;
+  border-color: rgba(255, 255, 255, 0.35);
+  border-top-color: #f5c518;
+}
+
+/* ── Popup container ── */
+.calendar-popup {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: auto;
+  z-index: 500;
+  width: 260px;
+  max-width: calc(100vw - 32px);
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+  padding: 14px;
+  color: #1e293b;
+  box-sizing: border-box;
+}
+
+/* الكاليندر بتاع check-out بيفتح من اليمين عشان مايخرجش برة الشاشة
+   لو الـ widget قريب من الحافة */
+.calendar-popup-checkOut {
+  left: auto;
+  right: 0;
+}
+
+/* ── Header (month nav) ── */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.calendar-month-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #1e3a5f;
+}
+
+.calendar-nav-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #1e3a5f;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.calendar-nav-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.calendar-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ── Weekday row ── */
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94a3b8;
+  padding: 4px 0;
+}
+
+/* ── Body: weeks/days grid ── */
+.calendar-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar-day {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #1e293b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.calendar-day.empty {
+  cursor: default;
+  pointer-events: none;
+}
+
+.calendar-day:hover:not(.disabled):not(.empty) {
+  background: #e0ecff;
+}
+
+.calendar-day.today {
+  border: 1px solid #1e3a5f;
+  font-weight: 600;
+}
+
+.calendar-day.selected {
+  background: #1e3a5f;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* محجوز أو في الماضي → معطّل بصريًا */
+.calendar-day.disabled {
+  color: #cbd5e1;
+  text-decoration: line-through;
+  cursor: not-allowed;
+  background: #f8fafc;
+}
+
+.calendar-day.disabled:hover {
+  background: #f8fafc;
+}
+
+/* ── Legend ── */
+.calendar-legend {
+  display: flex;
+  gap: 14px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.legend-dot.booked {
+  background: #cbd5e1;
+}
+
+.legend-dot.selected {
+  background: #1e3a5f;
+}
+
+/* ── Mobile tweaks for the calendar popup ─────────────── */
+@media (max-width: 640px) {
+  .date-display-btn {
+    height: 2.9rem;
+    font-size: 0.9rem;
+    border-radius: 0.85rem;
+    padding: 0.4rem 0.7rem;
+  }
+  .calendar-popup {
+    width: 240px;
+  }
+}
+
+@media (max-width: 380px) {
+  .calendar-popup {
+    width: 220px;
+    padding: 10px;
+  }
+  .calendar-day {
+    font-size: 11px;
+  }
 }

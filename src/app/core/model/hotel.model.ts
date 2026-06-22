@@ -465,3 +465,11 @@ export interface CreateBookingResponse {
   serviceChargeAmount:     number;
   totalPrice:              number;
 }
+
+// ── Fully-booked dates (hotel availability calendar) ──────────
+// GET /hotels/{id}/bookings/fully-booked-dates?year=YYYY&month=M
+export interface HotelFullyBookedDatesResponse {
+  year:             number;
+  month:            number;
+  fullyBookedDates: string[];   // e.g. ["2026-06-15", "2026-06-16"]
+}
