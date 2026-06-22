@@ -23,6 +23,20 @@ export interface PriceLine {
   amount: number;
 }
 
+// ── Custom calendar day cell ───────────────────────────────
+interface CalendarDay {
+  date: Date | null;
+  dateStr: string;
+  day: number;
+  disabled: boolean;
+  isToday: boolean;
+  isSelected: boolean;
+  inCurrentMonth: boolean;
+}
+
+// أي حقل من الاتنين (check-in / check-out) بيستخدم نفس الشكل، فبنفرقهم بـ field
+type DateField = 'checkIn' | 'checkOut';
+
 @Component({
   selector: 'app-hotel-details',
   standalone: true,
@@ -48,6 +62,13 @@ export class Details implements OnInit {
   selectedRooms: RoomType[]        = [];
   selectedFeatures: HotelFeature[] = [];
 
+  // ══════════════════════════════════════════════════════
+  // الحد الأقصى لعدد الغرف المتاحة من كل نوع جوه الفندق
+  // (singleRooms / doubleRooms / tripleRooms / suiteRooms)
+  // مفتاحها بنفس "type" بتاع selectedRooms (Single/Double/Triple/Suite)
+  // ══════════════════════════════════════════════════════
+  roomMaxCounts: Record<string, number> = {};
+
   priceLines:    PriceLine[] = [];
   serviceCharge  = 0;
   discountAmount = 0;
@@ -68,6 +89,31 @@ export class Details implements OnInit {
 
   bookingSubmitting = false;
 
+  // ══════════════════════════════════════════════════════
+  // Custom calendar / fully-booked-dates state
+  // كل حقل (check-in / check-out) له كاليندر مستقل تماماً
+  // ══════════════════════════════════════════════════════
+  showCalendarCheckIn  = false;
+  showCalendarCheckOut = false;
+
+  loadingBookedDatesCheckIn  = false;
+  loadingBookedDatesCheckOut = false;
+
+  // الأيام المحجوزة بالكامل، مفتاحها "YYYY-M" (سنة-شهر) عشان نكاش كل شهر اتجاب قبل كده
+  private bookedDatesCacheCheckIn  = new Map<string, Set<string>>();
+  private bookedDatesCacheCheckOut = new Map<string, Set<string>>();
+
+  bookedDatesCheckIn:  Set<string> = new Set();
+  bookedDatesCheckOut: Set<string> = new Set();
+
+  calendarMonthCheckIn:  Date = new Date();
+  calendarMonthCheckOut: Date = new Date();
+
+  calendarWeeksCheckIn:  CalendarDay[][] = [];
+  calendarWeeksCheckOut: CalendarDay[][] = [];
+
+  weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   constructor(
     private route:        ActivatedRoute,
     public  router:       Router,
@@ -85,6 +131,26 @@ export class Details implements OnInit {
     else if (event.key === 'Escape') this.closeLightbox();
   }
 
+  // بيقفل أي كاليندر مفتوح لو ضغطنا برة الـ wrapper بتاعه
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    if (this.showCalendarCheckIn) {
+      if (!target.closest('.calendar-popup-checkIn') && !target.closest('.date-display-btn-checkIn')) {
+        this.showCalendarCheckIn = false;
+        this.cdr.detectChanges();
+      }
+    }
+
+    if (this.showCalendarCheckOut) {
+      if (!target.closest('.calendar-popup-checkOut') && !target.closest('.date-display-btn-checkOut')) {
+        this.showCalendarCheckOut = false;
+        this.cdr.detectChanges();
+      }
+    }
+  }
+
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const id = +params['id'];
@@ -94,6 +160,17 @@ export class Details implements OnInit {
       this.error          = false;
       this.hotel          = null!;
       this.reviews         = [];
+
+      // ريسيت حالة الكاليندرات لما نغير الأوتيل
+      this.checkIn  = '';
+      this.checkOut = '';
+      this.bookedDatesCacheCheckIn.clear();
+      this.bookedDatesCacheCheckOut.clear();
+      this.bookedDatesCheckIn  = new Set();
+      this.bookedDatesCheckOut = new Set();
+      this.calendarMonthCheckIn  = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+      this.calendarMonthCheckOut = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+
       this.cdr.detectChanges();
       this.loadHotel(id);
     });
@@ -110,6 +187,14 @@ export class Details implements OnInit {
           { type: 'Triple', price: hotel.triplePrice, quantity: 0 },
           { type: 'Suite',  price: hotel.suitePrice,  quantity: 0 },
         ];
+
+        // ── الحد الأقصى المتاح من كل نوع روم جوه الفندق ──
+        this.roomMaxCounts = {
+          Single: hotel.singleRooms ?? 0,
+          Double: hotel.doubleRooms ?? 0,
+          Triple: hotel.tripleRooms ?? 0,
+          Suite:  hotel.suiteRooms  ?? 0,
+        };
 
         this.selectedFeatures = (hotel.bookingFeatures ?? []).map((f: HotelApiBookingFeature) => ({
           id:       f.id,
@@ -274,9 +359,38 @@ export class Details implements OnInit {
     this.totalAmount = afterDiscount + this.serviceCharge;
   }
 
+  // ══════════════════════════════════════════════════════
+  // Room max-count helpers
+  // ══════════════════════════════════════════════════════
+
+  /** الحد الأقصى المتاح لنوع روم معين (حسب اسمه: Single/Double/Triple/Suite) */
+  getRoomMax(room: RoomType): number {
+    return this.roomMaxCounts[room.type] ?? 0;
+  }
+
+  /** هل الروم ده وصل لأقصى عدد متاح منه؟ (بنستخدمها في التمبليت لقفل زرار +) */
+  isRoomMaxed(room: RoomType): boolean {
+    return room.quantity >= this.getRoomMax(room);
+  }
+
+  /** هل النوع ده مخلّص بالكامل (مفيش غرف منه أصلاً)؟ */
+  isRoomSoldOut(room: RoomType): boolean {
+    return this.getRoomMax(room) === 0;
+  }
+
   changeRoom(i: number, delta: number): void {
     if (!this.checkAuthBeforeInteract()) return;
-    this.selectedRooms[i].quantity = Math.max(0, this.selectedRooms[i].quantity + delta);
+
+    const room = this.selectedRooms[i];
+    const max  = this.getRoomMax(room);
+
+    let newQty = room.quantity + delta;
+    newQty = Math.max(0, newQty);
+    // ممنوع نتعدى العدد الكلي المتاح من النوع ده جوه الفندق
+    newQty = Math.min(newQty, max);
+
+    room.quantity = newQty;
+
     this.clampFeaturesToRooms();
     if (this.canClearError()) this.bookingError = '';
     this.recalc();
@@ -316,16 +430,6 @@ export class Details implements OnInit {
     }
   }
 
-  onDateChange(): void {
-    if (!this.checkAuthBeforeInteract()) {
-      this.checkIn  = '';
-      this.checkOut = '';
-      return;
-    }
-    if (this.canClearError()) this.bookingError = '';
-    this.recalc();
-  }
-
   private canClearError(): boolean {
     return (
       this.selectedRooms.some(r => r.quantity > 0) &&
@@ -334,6 +438,219 @@ export class Details implements OnInit {
     );
   }
 
+  // ══════════════════════════════════════════════════════
+  // Date helpers
+  // ══════════════════════════════════════════════════════
+  private toDateStr(d: Date): string {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  private monthCacheKey(monthDate: Date): string {
+    return `${monthDate.getFullYear()}-${monthDate.getMonth() + 1}`;
+  }
+
+  // ══════════════════════════════════════════════════════
+  // Fully-booked-dates fetching (per field, per month, cached)
+  // ══════════════════════════════════════════════════════
+  private fetchBookedDates(field: DateField, monthDate: Date): void {
+    if (!this.hotel) return;
+
+    const cache   = field === 'checkIn' ? this.bookedDatesCacheCheckIn : this.bookedDatesCacheCheckOut;
+    const cacheKey = this.monthCacheKey(monthDate);
+
+    if (cache.has(cacheKey)) {
+      this.applyBookedDates(field, cache.get(cacheKey)!);
+      return;
+    }
+
+    if (field === 'checkIn')  this.loadingBookedDatesCheckIn  = true;
+    if (field === 'checkOut') this.loadingBookedDatesCheckOut = true;
+    this.cdr.detectChanges();
+
+    const year  = monthDate.getFullYear();
+    const month = monthDate.getMonth() + 1;
+
+    this.hotelService.getFullyBookedDates(this.hotel.id, year, month).subscribe({
+      next: (res) => {
+        const set = new Set(res.fullyBookedDates ?? []);
+        cache.set(cacheKey, set);
+        this.applyBookedDates(field, set);
+        if (field === 'checkIn')  this.loadingBookedDatesCheckIn  = false;
+        if (field === 'checkOut') this.loadingBookedDatesCheckOut = false;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        // لو الـ API فشل، منمنعش الحجز بالكامل، بس مايبقاش في تواريخ معطلة بسبب فشل الجلب
+        const empty = new Set<string>();
+        cache.set(cacheKey, empty);
+        this.applyBookedDates(field, empty);
+        if (field === 'checkIn')  this.loadingBookedDatesCheckIn  = false;
+        if (field === 'checkOut') this.loadingBookedDatesCheckOut = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  private applyBookedDates(field: DateField, set: Set<string>): void {
+    if (field === 'checkIn') {
+      this.bookedDatesCheckIn = set;
+      this.buildCalendar('checkIn');
+    } else {
+      this.bookedDatesCheckOut = set;
+      this.buildCalendar('checkOut');
+    }
+  }
+
+  // ══════════════════════════════════════════════════════
+  // Calendar rendering (shared logic, parametrized by field)
+  // ══════════════════════════════════════════════════════
+  buildCalendar(field: DateField): void {
+    const monthDate  = field === 'checkIn' ? this.calendarMonthCheckIn : this.calendarMonthCheckOut;
+    const bookedSet  = field === 'checkIn' ? this.bookedDatesCheckIn   : this.bookedDatesCheckOut;
+    const selectedStr = field === 'checkIn' ? this.checkIn             : this.checkOut;
+
+    const year  = monthDate.getFullYear();
+    const month = monthDate.getMonth();
+    const firstDayOfMonth = new Date(year, month, 1);
+    const startWeekday    = firstDayOfMonth.getDay();
+    const daysInMonth     = new Date(year, month + 1, 0).getDate();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // لو بنبني كاليندر check-out، الحد الأدنى للتاريخ المسموح هو اليوم اللي بعد check-in
+    let minAllowed = today;
+    if (field === 'checkOut' && this.checkIn) {
+      const checkInDate = new Date(this.checkIn + 'T00:00:00');
+      const dayAfterCheckIn = new Date(checkInDate);
+      dayAfterCheckIn.setDate(dayAfterCheckIn.getDate() + 1);
+      minAllowed = dayAfterCheckIn > today ? dayAfterCheckIn : today;
+    }
+
+    const cells: CalendarDay[] = [];
+
+    for (let i = 0; i < startWeekday; i++) {
+      cells.push({ date: null, dateStr: '', day: 0, disabled: true, isToday: false, isSelected: false, inCurrentMonth: false });
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const dateStr  = this.toDateStr(date);
+      const isPast   = date.getTime() < minAllowed.getTime();
+      const isBooked = bookedSet.has(dateStr);
+      cells.push({
+        date,
+        dateStr,
+        day,
+        disabled: isPast || isBooked,
+        isToday: date.getTime() === today.getTime(),
+        isSelected: dateStr === selectedStr,
+        inCurrentMonth: true
+      });
+    }
+
+    while (cells.length % 7 !== 0) {
+      cells.push({ date: null, dateStr: '', day: 0, disabled: true, isToday: false, isSelected: false, inCurrentMonth: false });
+    }
+
+    const weeks: CalendarDay[][] = [];
+    for (let i = 0; i < cells.length; i += 7) {
+      weeks.push(cells.slice(i, i + 7));
+    }
+
+    if (field === 'checkIn') this.calendarWeeksCheckIn  = weeks;
+    else                     this.calendarWeeksCheckOut = weeks;
+  }
+
+  monthLabel(field: DateField): string {
+    const monthDate = field === 'checkIn' ? this.calendarMonthCheckIn : this.calendarMonthCheckOut;
+    return monthDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }
+
+  canGoPrevMonth(field: DateField): boolean {
+    const monthDate = field === 'checkIn' ? this.calendarMonthCheckIn : this.calendarMonthCheckOut;
+    const today = new Date();
+    return !(monthDate.getFullYear() === today.getFullYear() && monthDate.getMonth() === today.getMonth());
+  }
+
+  displaySelectedDate(field: DateField): string {
+    const value = field === 'checkIn' ? this.checkIn : this.checkOut;
+    if (!value) return field === 'checkIn' ? 'Check in' : 'Check out';
+    const d = new Date(value + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  prevMonth(field: DateField): void {
+    if (!this.canGoPrevMonth(field)) return;
+    if (field === 'checkIn') {
+      this.calendarMonthCheckIn = new Date(this.calendarMonthCheckIn.getFullYear(), this.calendarMonthCheckIn.getMonth() - 1, 1);
+    } else {
+      this.calendarMonthCheckOut = new Date(this.calendarMonthCheckOut.getFullYear(), this.calendarMonthCheckOut.getMonth() - 1, 1);
+    }
+    this.fetchBookedDates(field, field === 'checkIn' ? this.calendarMonthCheckIn : this.calendarMonthCheckOut);
+  }
+
+  nextMonth(field: DateField): void {
+    const monthDate = field === 'checkIn'
+      ? new Date(this.calendarMonthCheckIn.getFullYear(), this.calendarMonthCheckIn.getMonth() + 1, 1)
+      : new Date(this.calendarMonthCheckOut.getFullYear(), this.calendarMonthCheckOut.getMonth() + 1, 1);
+
+    if (field === 'checkIn') this.calendarMonthCheckIn = monthDate;
+    else                     this.calendarMonthCheckOut = monthDate;
+
+    this.fetchBookedDates(field, monthDate);
+  }
+
+  toggleCalendar(field: DateField): void {
+    if (!this.checkAuthBeforeInteract()) return;
+
+    if (field === 'checkIn') {
+      if (this.loadingBookedDatesCheckIn) return;
+      this.showCalendarCheckIn = !this.showCalendarCheckIn;
+      if (this.showCalendarCheckIn) {
+        this.showCalendarCheckOut = false;
+        this.fetchBookedDates('checkIn', this.calendarMonthCheckIn);
+      }
+    } else {
+      if (this.loadingBookedDatesCheckOut) return;
+      this.showCalendarCheckOut = !this.showCalendarCheckOut;
+      if (this.showCalendarCheckOut) {
+        this.showCalendarCheckIn = false;
+        this.fetchBookedDates('checkOut', this.calendarMonthCheckOut);
+      }
+    }
+  }
+
+  selectDay(field: DateField, cell: CalendarDay): void {
+    if (cell.disabled || !cell.inCurrentMonth) return;
+
+    if (field === 'checkIn') {
+      this.checkIn = cell.dateStr;
+      this.showCalendarCheckIn = false;
+
+      // لو الـ check-out بقى قبل أو يساوي check-in الجديد، فضّيه
+      if (this.checkOut && new Date(this.checkOut) <= new Date(this.checkIn)) {
+        this.checkOut = '';
+      }
+      this.buildCalendar('checkIn');
+      // كاليندر check-out لازم يتبني تاني عشان الحد الأدنى بيعتمد على check-in
+      this.buildCalendar('checkOut');
+    } else {
+      this.checkOut = cell.dateStr;
+      this.showCalendarCheckOut = false;
+      this.buildCalendar('checkOut');
+    }
+
+    if (this.canClearError()) this.bookingError = '';
+    this.recalc();
+    this.cdr.detectChanges();
+  }
+
+  onClose(): void {} // no-op placeholder kept for template parity if needed
+
+  // ══════════════════════════════════════════════════════
+  // Booking
+  // ══════════════════════════════════════════════════════
   bookNow(): void {
     if (!this.checkAuthBeforeInteract()) return;
     if (this.bookingSubmitting) return;

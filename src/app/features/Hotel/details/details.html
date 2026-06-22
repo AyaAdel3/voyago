@@ -160,40 +160,157 @@
 
       <ng-container *ngIf="!showLoginPrompt">
         <div class="dates-row">
-          <div class="date-field">
+          <!-- ══════════════ CHECK-IN ══════════════ -->
+          <div class="date-field date-picker-wrapper">
             <label>Check in</label>
-            <input
-              type="date"
-              [(ngModel)]="checkIn"
-              (change)="onDateChange()"
-              class="date-input"
+
+            <button
+              type="button"
+              class="date-display-btn date-display-btn-checkIn"
               [class.input-date-error]="bookingError && !checkIn"
-            />
+              (click)="toggleCalendar('checkIn')"
+              [disabled]="loadingBookedDatesCheckIn"
+            >
+              <span *ngIf="!loadingBookedDatesCheckIn">{{ displaySelectedDate('checkIn') }}</span>
+              <span *ngIf="loadingBookedDatesCheckIn" class="spinner small"></span>
+            </button>
+
+            <!-- Custom Calendar Popup — Check in -->
+            <div
+              class="calendar-popup calendar-popup-checkIn"
+              *ngIf="showCalendarCheckIn"
+              (click)="$event.stopPropagation()"
+            >
+              <div class="calendar-header">
+                <button
+                  type="button"
+                  class="calendar-nav-btn"
+                  (click)="prevMonth('checkIn')"
+                  [disabled]="!canGoPrevMonth('checkIn')"
+                >
+                  ‹
+                </button>
+                <span class="calendar-month-label">{{ monthLabel('checkIn') }}</span>
+                <button type="button" class="calendar-nav-btn" (click)="nextMonth('checkIn')">›</button>
+              </div>
+
+              <div class="calendar-weekdays">
+                <span *ngFor="let wd of weekDays" class="calendar-weekday">{{ wd }}</span>
+              </div>
+
+              <div class="calendar-body">
+                <div class="calendar-week" *ngFor="let week of calendarWeeksCheckIn">
+                  <button
+                    type="button"
+                    *ngFor="let cell of week"
+                    class="calendar-day"
+                    [class.empty]="!cell.inCurrentMonth"
+                    [class.disabled]="cell.disabled"
+                    [class.today]="cell.isToday"
+                    [class.selected]="cell.isSelected"
+                    [disabled]="cell.disabled || !cell.inCurrentMonth"
+                    (click)="selectDay('checkIn', cell)"
+                  >
+                    {{ cell.inCurrentMonth ? cell.day : '' }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="calendar-legend">
+                <span class="legend-item"><span class="legend-dot booked"></span> Booked</span>
+                <span class="legend-item"><span class="legend-dot selected"></span> Selected</span>
+              </div>
+            </div>
           </div>
-          <div class="date-field">
+
+          <!-- ══════════════ CHECK-OUT ══════════════ -->
+          <div class="date-field date-picker-wrapper">
             <label>Check out</label>
-            <input
-              type="date"
-              [(ngModel)]="checkOut"
-              (change)="onDateChange()"
-              class="date-input"
+
+            <button
+              type="button"
+              class="date-display-btn date-display-btn-checkOut"
               [class.input-date-error]="bookingError && !checkOut"
-            />
+              (click)="toggleCalendar('checkOut')"
+              [disabled]="loadingBookedDatesCheckOut"
+            >
+              <span *ngIf="!loadingBookedDatesCheckOut">{{ displaySelectedDate('checkOut') }}</span>
+              <span *ngIf="loadingBookedDatesCheckOut" class="spinner small"></span>
+            </button>
+
+            <!-- Custom Calendar Popup — Check out -->
+            <div
+              class="calendar-popup calendar-popup-checkOut"
+              *ngIf="showCalendarCheckOut"
+              (click)="$event.stopPropagation()"
+            >
+              <div class="calendar-header">
+                <button
+                  type="button"
+                  class="calendar-nav-btn"
+                  (click)="prevMonth('checkOut')"
+                  [disabled]="!canGoPrevMonth('checkOut')"
+                >
+                  ‹
+                </button>
+                <span class="calendar-month-label">{{ monthLabel('checkOut') }}</span>
+                <button type="button" class="calendar-nav-btn" (click)="nextMonth('checkOut')">›</button>
+              </div>
+
+              <div class="calendar-weekdays">
+                <span *ngFor="let wd of weekDays" class="calendar-weekday">{{ wd }}</span>
+              </div>
+
+              <div class="calendar-body">
+                <div class="calendar-week" *ngFor="let week of calendarWeeksCheckOut">
+                  <button
+                    type="button"
+                    *ngFor="let cell of week"
+                    class="calendar-day"
+                    [class.empty]="!cell.inCurrentMonth"
+                    [class.disabled]="cell.disabled"
+                    [class.today]="cell.isToday"
+                    [class.selected]="cell.isSelected"
+                    [disabled]="cell.disabled || !cell.inCurrentMonth"
+                    (click)="selectDay('checkOut', cell)"
+                  >
+                    {{ cell.inCurrentMonth ? cell.day : '' }}
+                  </button>
+                </div>
+              </div>
+
+              <div class="calendar-legend">
+                <span class="legend-item"><span class="legend-dot booked"></span> Booked</span>
+                <span class="legend-item"><span class="legend-dot selected"></span> Selected</span>
+              </div>
+            </div>
           </div>
         </div>
 
         <div class="widget-section">
           <h4 class="widget-label">Room</h4>
-          <div *ngFor="let r of selectedRooms; let i = index" class="option-row">
-            <span class="option-name">{{ r.type }}</span>
-            <div class="option-right">
-              <span class="option-price">{{ r.price | number }}LE</span>
-              <div class="qty-ctrl">
-                <button (click)="changeRoom(i, -1)">−</button>
-                <span class="qty-val">{{ r.quantity }}</span>
-                <button (click)="changeRoom(i, 1)">+</button>
+          <div *ngFor="let r of selectedRooms; let i = index" class="room-row-wrap">
+            <div class="option-row">
+              <span class="option-name">{{ r.type }}</span>
+              <div class="option-right">
+                <span class="option-price">{{ r.price | number }}LE</span>
+                <div class="qty-ctrl">
+                  <button (click)="changeRoom(i, -1)" [disabled]="r.quantity === 0">−</button>
+                  <span class="qty-val">{{ r.quantity }}</span>
+                  <button (click)="changeRoom(i, 1)" [disabled]="isRoomMaxed(r)">+</button>
+                </div>
               </div>
             </div>
+
+            <!-- لو النوع ده خلص بالكامل (0 متاح) -->
+            <p class="room-availability-hint room-sold-out" *ngIf="isRoomSoldOut(r)">
+              Fully booked — no {{ r.type }} rooms available for the selected dates.
+            </p>
+
+            <!-- لو النوع ده اليوزر وصل لأقصى عدد متاح منه (وفيه أصلاً غرف) -->
+            <p class="room-availability-hint" *ngIf="!isRoomSoldOut(r) && isRoomMaxed(r)">
+              Only {{ getRoomMax(r) }} {{ r.type }} room{{ getRoomMax(r) !== 1 ? 's' : '' }} available — you've selected the maximum.
+            </p>
           </div>
         </div>
 

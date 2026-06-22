@@ -4,7 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { RestaurantService } from '../../../../core/services/resturant.service';
 import { AdminRestaurantApiItem, RestaurantReview } from '../../../../core/model/restaurant.model';
-
+import { environment } from '../../../../../environments/environment';
 @Component({
   selector: 'app-admin-restaurants',
   standalone: true,
