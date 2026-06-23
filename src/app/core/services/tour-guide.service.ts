@@ -168,16 +168,16 @@ export class TourGuideService {
     ).pipe(catchError(err => throwError(() => err)));
   }
 
-  getBookedDates(guideId: number): Observable<GuideBooking[]> {
-    return this.http.get<GuideBooking[]>(
-      `${BASE_URL}/tour-guides/${guideId}/bookings`
-    ).pipe(catchError(err => throwError(() => err)));
+  getFullyBookedDates(guideId: number, year: number, month: number): Observable<string[]> {
+    return this.http.get<{ year: number; month: number; fullyBookedDates: string[] }>(
+      `${BASE_URL}/tour-guides/${guideId}/bookings/fully-booked-dates`,
+      { params: { year: year.toString(), month: month.toString() } }
+    ).pipe(
+      map(res => res.fullyBookedDates ?? []),
+      catchError(() => of([]))
+    );
   }
 
-  /**
-   * POST /tour-guides/{guideId}/bookings/{bookingId}/confirm
-   * Body: { "paymentType": "card" } or { "paymentType": "cash on arrival" }
-   */
   confirmBooking(
     guideId:     number,
     bookingId:   number,

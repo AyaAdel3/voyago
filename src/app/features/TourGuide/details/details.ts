@@ -70,16 +70,21 @@ export class Details implements OnInit {
       }
     });
 
-    this.tourGuideService.getBookedDates(this.guide.id).subscribe({
-      next: (bookings) => {
-        this.bookedDates = this.buildBookedDatesSet(bookings || []);
+    const now = new Date();
+    this.loadFullyBookedDates(now.getFullYear(), now.getMonth() + 1);
+  }
+
+  private loadFullyBookedDates(year: number, month: number): void {
+    this.loadingBookedDates = true;
+    this.tourGuideService.getFullyBookedDates(this.guide.id, year, month).subscribe({
+      next: (dates) => {
+        // كل شهر بيتحمّل بيضيف تواريخه للـ Set (تراكمي)
+        dates.forEach(d => this.bookedDates.add(d.split('T')[0]));
         this.loadingBookedDates = false;
         this.buildCalendar();
         this.cdr.detectChanges();
       },
       error: () => {
-        // لو الـ API فشل، منمنعش الحجز بالكامل، بس مايبقاش في تواريخ معطلة بسبب الحجوزات
-        this.bookedDates = new Set();
         this.loadingBookedDates = false;
         this.buildCalendar();
         this.cdr.detectChanges();
@@ -91,7 +96,6 @@ export class Details implements OnInit {
     return (this.fullGuide?.pricePerDay ?? this.guide.pricePerDay) * this.days;
   }
 
-  // ✅ الأدمن → forceLogout + اقفل الـ popup + روح للهوم
   private checkAuthBeforeInteract(): boolean {
     if (this.authService.isAdmin()) {
       this.authService.forceLogout();
@@ -120,20 +124,6 @@ export class Details implements OnInit {
     return this.toDateStr(d);
   }
 
-  private buildBookedDatesSet(bookings: GuideBooking[]): Set<string> {
-    const set = new Set<string>();
-    bookings.forEach(b => {
-      const startDateStr = (b.bookingDate || '').split('T')[0];
-      if (!startDateStr) return;
-      const numberOfDays = b.numberOfDays && b.numberOfDays > 0 ? b.numberOfDays : 1;
-      for (let i = 0; i < numberOfDays; i++) {
-        set.add(this.addDaysToDateStr(startDateStr, i));
-      }
-    });
-    return set;
-  }
-
-  /** بيرجع true لو أي يوم في المدى من startDateStr لمدة days فيه محجوز */
   private hasDateRangeConflict(startDateStr: string, days: number): boolean {
     for (let i = 0; i < days; i++) {
       if (this.bookedDates.has(this.addDaysToDateStr(startDateStr, i))) return true;
@@ -156,7 +146,6 @@ export class Details implements OnInit {
 
     const cells: CalendarDay[] = [];
 
-    // خلايا فاضية لحد أول يوم في الشهر
     for (let i = 0; i < startWeekday; i++) {
       cells.push({ date: null, dateStr: '', day: 0, disabled: true, isToday: false, isSelected: false, inCurrentMonth: false });
     }
@@ -177,7 +166,6 @@ export class Details implements OnInit {
       });
     }
 
-    // كمّل الأسبوع الأخير بخلايا فاضية
     while (cells.length % 7 !== 0) {
       cells.push({ date: null, dateStr: '', day: 0, disabled: true, isToday: false, isSelected: false, inCurrentMonth: false });
     }
@@ -207,12 +195,12 @@ export class Details implements OnInit {
   prevMonth(): void {
     if (!this.canGoPrevMonth) return;
     this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() - 1, 1);
-    this.buildCalendar();
+    this.loadFullyBookedDates(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() + 1);
   }
 
   nextMonth(): void {
     this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() + 1, 1);
-    this.buildCalendar();
+    this.loadFullyBookedDates(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() + 1);
   }
 
   toggleCalendar(): void {
@@ -233,16 +221,14 @@ export class Details implements OnInit {
   }
 
   @HostListener('document:click', ['$event'])
-onDocumentClick(event: MouseEvent): void {
-  if (!this.showCalendar) return;
-  const target = event.target as HTMLElement;
-  // لو الضغطة جوه الـ calendar-popup نفسه → ماتقفلوش
-  // لو برا الـ date-picker-wrapper كلها → قفّله
-  if (!target.closest('.calendar-popup') && !target.closest('.date-display-btn')) {
-    this.showCalendar = false;
-    this.cdr.detectChanges();
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.showCalendar) return;
+    const target = event.target as HTMLElement;
+    if (!target.closest('.calendar-popup') && !target.closest('.date-display-btn')) {
+      this.showCalendar = false;
+      this.cdr.detectChanges();
+    }
   }
-}
 
   incrementDays(): void {
     if (!this.checkAuthBeforeInteract()) return;

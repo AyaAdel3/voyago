@@ -14,6 +14,16 @@ import { RestaurantService } from '../../../core/services/resturant.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { AuthModalService } from '../../../core/services/auth-modal.service';
 
+interface CalendarDay {
+  date: Date | null;
+  dateStr: string;
+  day: number;
+  disabled: boolean;
+  isToday: boolean;
+  isSelected: boolean;
+  inCurrentMonth: boolean;
+}
+
 @Component({
   selector: 'app-restaurant-details',
   standalone: true,
@@ -50,6 +60,14 @@ export class Details implements OnInit {
   lightboxOpen = false;
   lbIndex = 0;
 
+  // ── Custom calendar / booked-dates state ────────────────
+  showCalendar = false;
+  loadingBookedDates = true;
+  bookedDates: Set<string> = new Set();
+  calendarMonth: Date = new Date();
+  calendarWeeks: CalendarDay[][] = [];
+  weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
   constructor(
     private route: ActivatedRoute,
     public router: Router,
@@ -68,6 +86,8 @@ export class Details implements OnInit {
   }
 
   ngOnInit(): void {
+    this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth(), 1);
+
     this.route.params.subscribe(params => {
       const id = +params['id'];
       if (!id || isNaN(id)) {
@@ -77,6 +97,7 @@ export class Details implements OnInit {
       this.loading = true;
       this.error = false;
       this.loadRestaurant(id);
+      this.loadBookedDates(id);
     });
   }
 
@@ -166,6 +187,146 @@ export class Details implements OnInit {
 
   lbNext(): void {
     if (this.lbIndex < this.restaurant.images.length - 1) this.lbIndex++;
+  }
+
+  // ══════════════════════════════════════════════════════
+  // Booked-dates helpers
+  // ══════════════════════════════════════════════════════
+  private toDateStr(d: Date): string {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+
+  /**
+   * TODO: لما الـ Backend يجهز endpoint بتاع تواريخ الريستورنت المحجوزة،
+   * نستبدل الجزء ده باستدعاء حقيقي لـ RestaurantService، بنفس فكرة
+   * tourGuideService.getBookedDates() الموجودة في تور جيد.
+   *
+   * مثال متوقع:
+   * this.restaurantService.getBookedDates(id).subscribe({
+   *   next: (bookings) => {
+   *     this.bookedDates = this.buildBookedDatesSet(bookings || []);
+   *     this.loadingBookedDates = false;
+   *     this.buildCalendar();
+   *     this.cdr.detectChanges();
+   *   },
+   *   error: () => {
+   *     this.bookedDates = new Set();
+   *     this.loadingBookedDates = false;
+   *     this.buildCalendar();
+   *     this.cdr.detectChanges();
+   *   }
+   * });
+   */
+  private loadBookedDates(id: number): void {
+    // مفيش endpoint جاهز دلوقتي → بنمنع بس الأيام اللي فاتت (زي ما هو في buildCalendar).
+    this.bookedDates = new Set();
+    this.loadingBookedDates = false;
+    this.buildCalendar();
+    this.cdr.detectChanges();
+  }
+
+  // ══════════════════════════════════════════════════════
+  // Calendar rendering
+  // ══════════════════════════════════════════════════════
+  buildCalendar(): void {
+    const year = this.calendarMonth.getFullYear();
+    const month = this.calendarMonth.getMonth();
+    const firstDayOfMonth = new Date(year, month, 1);
+    const startWeekday = firstDayOfMonth.getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const cells: CalendarDay[] = [];
+
+    // خلايا فاضية لحد أول يوم في الشهر
+    for (let i = 0; i < startWeekday; i++) {
+      cells.push({ date: null, dateStr: '', day: 0, disabled: true, isToday: false, isSelected: false, inCurrentMonth: false });
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const dateStr = this.toDateStr(date);
+      const isPast = date.getTime() < today.getTime();
+      const isBooked = this.bookedDates.has(dateStr);
+      cells.push({
+        date,
+        dateStr,
+        day,
+        disabled: isPast || isBooked,
+        isToday: date.getTime() === today.getTime(),
+        isSelected: dateStr === this.selectedDate,
+        inCurrentMonth: true
+      });
+    }
+
+    // كمّل الأسبوع الأخير بخلايا فاضية
+    while (cells.length % 7 !== 0) {
+      cells.push({ date: null, dateStr: '', day: 0, disabled: true, isToday: false, isSelected: false, inCurrentMonth: false });
+    }
+
+    const weeks: CalendarDay[][] = [];
+    for (let i = 0; i < cells.length; i += 7) {
+      weeks.push(cells.slice(i, i + 7));
+    }
+    this.calendarWeeks = weeks;
+  }
+
+  get monthLabel(): string {
+    return this.calendarMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  }
+
+  get canGoPrevMonth(): boolean {
+    const today = new Date();
+    return !(this.calendarMonth.getFullYear() === today.getFullYear() && this.calendarMonth.getMonth() === today.getMonth());
+  }
+
+  get displaySelectedDate(): string {
+    if (!this.selectedDate) return 'Select date';
+    const d = new Date(this.selectedDate + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  prevMonth(): void {
+    if (!this.canGoPrevMonth) return;
+    this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() - 1, 1);
+    this.buildCalendar();
+  }
+
+  nextMonth(): void {
+    this.calendarMonth = new Date(this.calendarMonth.getFullYear(), this.calendarMonth.getMonth() + 1, 1);
+    this.buildCalendar();
+  }
+
+  toggleCalendar(): void {
+    if (this.loadingBookedDates) return;
+    if (!this.checkAuthBeforeInteract()) return;
+    this.showCalendar = !this.showCalendar;
+    if (this.showCalendar) {
+      this.buildCalendar();
+    }
+  }
+
+  selectDay(cell: CalendarDay): void {
+    if (cell.disabled || !cell.inCurrentMonth) return;
+    this.selectedDate = cell.dateStr;
+    this.showCalendar = false;
+    this.resError = '';
+    this.tryCleanError();
+    this.buildCalendar();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.showCalendar) return;
+    const target = event.target as HTMLElement;
+    // لو الضغطة جوه الـ calendar-popup نفسه → ماتقفلوش
+    // لو برا الـ date-picker-wrapper كلها → قفّله
+    if (!target.closest('.calendar-popup') && !target.closest('.date-display-btn')) {
+      this.showCalendar = false;
+      this.cdr.detectChanges();
+    }
   }
 
   onDateChange(): void {

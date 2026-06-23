@@ -48,7 +48,6 @@
         <!-- DETAILS -->
         <div class="rest-header">
           <div class="flex items-center gap-3">
-            <h1 class="rest-name">{{ restaurant.name }}</h1>
             <div class="rating-badge-new">
               <svg viewBox="0 0 24 24" width="13" height="13" fill="#FFDE70">
                 <path
@@ -57,6 +56,7 @@
               </svg>
               <span>{{ restaurant.rating }}</span>
             </div>
+            <h1 class="rest-name">{{ restaurant.name }}</h1>
           </div>
           <p class="rest-address">{{ restaurant.location }}</p>
           <p class="rest-meta">{{ restaurant.cuisine }} • {{ getPriceRange() }}</p>
@@ -141,22 +141,62 @@
 
         <!-- Booking Form -->
         <ng-container *ngIf="!showLoginPrompt">
-          <!-- ✅ Date -->
+          <!-- ✅ Date (Custom Calendar) -->
           <div class="dt-row-single">
-            <div class="custom-date" [class.field-error]="resError && !selectedDate">
-              <div class="date-display" (click)="dateInput.showPicker()">
-                <span class="date-label-inside">Date</span>
-                <span class="date-value">
-                  {{ selectedDate ? formatDate(selectedDate) : 'Select date' }}
-                </span>
-                <input
-                  #dateInput
-                  type="date"
-                  [(ngModel)]="selectedDate"
-                  [min]="todayStr"
-                  (change)="onDateChange()"
-                  class="date-input-hidden"
-                />
+            <div class="date-picker-wrapper" [class.field-error]="resError && !selectedDate">
+              <button
+                type="button"
+                class="date-display-btn"
+                (click)="toggleCalendar()"
+                [disabled]="loadingBookedDates"
+              >
+                <span *ngIf="!loadingBookedDates">{{ displaySelectedDate }}</span>
+                <span *ngIf="loadingBookedDates" class="spinner small"></span>
+              </button>
+
+              <!-- Custom Calendar Popup -->
+              <div class="calendar-popup" *ngIf="showCalendar" (click)="$event.stopPropagation()">
+                <div class="calendar-header">
+                  <button
+                    type="button"
+                    class="calendar-nav-btn"
+                    (click)="prevMonth()"
+                    [disabled]="!canGoPrevMonth"
+                  >
+                    ‹
+                  </button>
+                  <span class="calendar-month-label">{{ monthLabel }}</span>
+                  <button type="button" class="calendar-nav-btn" (click)="nextMonth()">›</button>
+                </div>
+
+                <div class="calendar-weekdays">
+                  <span *ngFor="let wd of weekDays" class="calendar-weekday">{{ wd }}</span>
+                </div>
+
+                <div class="calendar-body">
+                  <div class="calendar-week" *ngFor="let week of calendarWeeks">
+                    <button
+                      type="button"
+                      *ngFor="let cell of week"
+                      class="calendar-day"
+                      [class.empty]="!cell.inCurrentMonth"
+                      [class.disabled]="cell.disabled"
+                      [class.today]="cell.isToday"
+                      [class.selected]="cell.isSelected"
+                      [disabled]="cell.disabled || !cell.inCurrentMonth"
+                      (click)="selectDay(cell)"
+                    >
+                      {{ cell.inCurrentMonth ? cell.day : '' }}
+                    </button>
+                  </div>
+                </div>
+
+                <div class="calendar-legend">
+                  <span class="legend-item"><span class="legend-dot booked"></span> Booked</span>
+                  <span class="legend-item"
+                    ><span class="legend-dot selected"></span> Selected</span
+                  >
+                </div>
               </div>
             </div>
           </div>
